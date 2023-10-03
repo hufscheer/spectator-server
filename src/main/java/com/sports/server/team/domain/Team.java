@@ -11,8 +11,8 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "team_name", nullable = false)
-    private String teamName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Column(name = "logo_image_url", nullable = false)
     private String logoImageUrl;
