@@ -1,9 +1,11 @@
 package com.sports.server.team.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Team {
 
@@ -11,7 +13,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "team_name", nullable = false)
-    private String teamName;
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "logo_image_url", nullable = false)
+    private String logoImageUrl;
 
 }
