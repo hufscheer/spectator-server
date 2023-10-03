@@ -3,9 +3,11 @@ package com.sports.server.record.domain;
 import com.sports.server.game.domain.Game;
 import com.sports.server.team.domain.Team;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Record {
 

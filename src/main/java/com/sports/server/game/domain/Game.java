@@ -1,16 +1,17 @@
 package com.sports.server.game.domain;
 
 import com.sports.server.member.domain.Member;
+import com.sports.server.record.domain.Record;
 import com.sports.server.team.domain.Team;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -46,5 +47,8 @@ public class Game {
 
     @Column(name = "second_team_score", nullable = false)
     private int secondTeamScore;
+
+    @OneToMany(mappedBy = "game")
+    private List<Record> records = new ArrayList<>();
 
 }
