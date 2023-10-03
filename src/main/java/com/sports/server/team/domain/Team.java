@@ -14,4 +14,7 @@ public class Team {
     @Column(name = "team_name", nullable = false)
     private String teamName;
 
+    @Column(name = "logo_image_url", nullable = false)
+    private String logoImageUrl;
+
 }
