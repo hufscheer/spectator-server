@@ -1,9 +1,12 @@
 package com.sports.server.record.dto.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sports.server.record.domain.Record;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RecordResponseDto {
 
     private Long id;
