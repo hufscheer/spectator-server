@@ -2,6 +2,7 @@ package com.sports.server.game.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.sports.server.common.Constants;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameStatus;
 import com.sports.server.record.dto.response.RecordResponseDto;
@@ -22,7 +23,7 @@ public class GameResponseDto {
 
     private String sportsName;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = Constants.DATE_FORMAT)
     private LocalDateTime startTime;
 
     private int firstTeamScore;
@@ -31,7 +32,7 @@ public class GameResponseDto {
 
     private GameStatus gameStatus;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = Constants.DATE_FORMAT)
     private LocalDateTime statusChangedAt;
 
     private List<RecordResponseDto> records;
