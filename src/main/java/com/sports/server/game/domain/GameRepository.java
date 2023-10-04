@@ -11,5 +11,5 @@ public interface GameRepository extends Repository<Game, Long> {
 
     Optional<Game> findById(final Long id);
 
-    List<Game> findAllByStartTimeIsAfter(LocalDateTime sevenDaysAgo);
+    List<Game> findAllByStartTimeIsAfterOrderByStartTime(LocalDateTime sevenDaysAgo);
 }

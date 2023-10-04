@@ -43,6 +43,6 @@ public class GameService {
 
     public List<GameResponseDto> getAllGames() {
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-        return gameRepository.findAllByStartTimeIsAfter(sevenDaysAgo).stream().map(GameResponseDto::new).toList();
+        return gameRepository.findAllByStartTimeIsAfterOrderByStartTime(sevenDaysAgo).stream().map(GameResponseDto::new).toList();
     }
 }
