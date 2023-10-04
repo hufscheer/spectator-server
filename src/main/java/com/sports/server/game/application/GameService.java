@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -41,6 +42,7 @@ public class GameService {
     }
 
     public List<GameResponseDto> getAllGames() {
-        return gameRepository.findAll().stream().map(GameResponseDto::new).toList();
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        return gameRepository.findAllByStartTimeIsAfter(sevenDaysAgo).stream().map(GameResponseDto::new).toList();
     }
 }
