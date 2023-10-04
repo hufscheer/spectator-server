@@ -48,6 +48,13 @@ public class Game {
     @Column(name = "second_team_score", nullable = false)
     private int secondTeamScore;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "game_status", nullable = false)
+    private GameStatus gameStatus;
+
+    @Column(name = "status_changed_at", nullable = false)
+    private LocalDateTime statusChangedAt;
+
     @OneToMany(mappedBy = "game")
     private List<Record> records = new ArrayList<>();
 
