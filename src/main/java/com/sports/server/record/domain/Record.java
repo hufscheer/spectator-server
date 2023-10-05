@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -28,4 +30,7 @@ public class Record {
 
     @Column(name = "score", nullable = false)
     private int score;
+
+    @Column(name = "scored_at", nullable = false)
+    private LocalDateTime scoredAt;
 }

@@ -2,17 +2,19 @@ package com.sports.server.game.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.sports.server.common.Constants;
 import com.sports.server.game.domain.Game;
+import com.sports.server.game.domain.GameStatus;
 import com.sports.server.record.dto.response.RecordResponseDto;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameResponseDto {
     private Long id;
@@ -21,12 +23,17 @@ public class GameResponseDto {
 
     private String sportsName;
 
-    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
+    @DateTimeFormat(pattern = Constants.DATE_FORMAT)
     private LocalDateTime startTime;
 
     private int firstTeamScore;
 
     private int secondTeamScore;
+
+    private GameStatus gameStatus;
+
+    @DateTimeFormat(pattern = Constants.DATE_FORMAT)
+    private LocalDateTime statusChangedAt;
 
     private List<RecordResponseDto> records;
 
@@ -37,6 +44,8 @@ public class GameResponseDto {
         this.startTime = game.getStartTime();
         this.firstTeamScore = game.getFirstTeamScore();
         this.secondTeamScore = game.getSecondTeamScore();
+        this.gameStatus = game.getGameStatus();
+        this.statusChangedAt = game.getStatusChangedAt();
         this.records = game.getRecords().stream().map(RecordResponseDto::new).toList();
     }
 }
