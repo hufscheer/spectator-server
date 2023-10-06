@@ -1,7 +1,5 @@
 package com.sports.server.game.dto.response;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sports.server.game.domain.Game;
 import com.sports.server.record.dto.response.RecordResponseDto;
 import lombok.Getter;
