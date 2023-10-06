@@ -11,7 +11,6 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameDetailResponseDto extends GameResponseDto {
 
     private List<RecordResponseDto> records;

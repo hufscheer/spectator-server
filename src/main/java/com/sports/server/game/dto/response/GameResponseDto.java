@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameResponseDto {
     private Long id;
 
