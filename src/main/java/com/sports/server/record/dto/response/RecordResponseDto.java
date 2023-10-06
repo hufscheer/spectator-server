@@ -1,19 +1,15 @@
 package com.sports.server.record.dto.response;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sports.server.common.Constants;
 import com.sports.server.record.domain.Record;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RecordResponseDto {
 
     private Long id;

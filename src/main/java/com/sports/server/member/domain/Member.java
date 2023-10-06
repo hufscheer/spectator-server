@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,9 @@ public class Member {
 
     @Column(name = "is_administrator", nullable = false)
     private boolean isAdministrator;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 
     public Member(String email, String password, boolean isAdministrator) {
         validateEmail(email);
