@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.sports.server.common.Constants;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameStatus;
+import com.sports.server.team.dto.TeamDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,9 +25,9 @@ public class GameResponseDto {
     @DateTimeFormat(pattern = Constants.DATE_FORMAT)
     private LocalDateTime startTime;
 
-    private int firstTeamScore;
+    private TeamDto firstTeam;
 
-    private int secondTeamScore;
+    private TeamDto secondTeam;
 
     private GameStatus gameStatus;
 
@@ -38,8 +39,8 @@ public class GameResponseDto {
         this.name = game.getName();
         this.sportsName = game.getSportsName();
         this.startTime = game.getStartTime();
-        this.firstTeamScore = game.getFirstTeamScore();
-        this.secondTeamScore = game.getSecondTeamScore();
+        this.firstTeam = new TeamDto(game.getFirstTeam());
+        this.secondTeam = new TeamDto(game.getSecondTeam());
         this.gameStatus = game.getGameStatus();
         this.statusChangedAt = game.getStatusChangedAt();
     }
