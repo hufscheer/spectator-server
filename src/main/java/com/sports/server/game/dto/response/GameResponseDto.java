@@ -29,6 +29,10 @@ public class GameResponseDto {
 
     private TeamDto secondTeam;
 
+    private int firstTeamScore;
+
+    private int secondTeamScore;
+
     private GameStatus gameStatus;
 
     @DateTimeFormat(pattern = Constants.DATE_FORMAT)
@@ -41,6 +45,8 @@ public class GameResponseDto {
         this.startTime = game.getStartTime();
         this.firstTeam = new TeamDto(game.getFirstTeam());
         this.secondTeam = new TeamDto(game.getSecondTeam());
+        this.firstTeamScore = game.getFirstTeamScore();
+        this.secondTeamScore = game.getSecondTeamScore();
         this.gameStatus = game.getGameStatus();
         this.statusChangedAt = game.getStatusChangedAt();
     }
