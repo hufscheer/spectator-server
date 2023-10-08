@@ -5,6 +5,7 @@ import com.sports.server.game.domain.GameRepository;
 import com.sports.server.game.dto.request.GameRegisterRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto;
+import com.sports.server.game.exception.GameNotFoundException;
 import com.sports.server.team.application.TeamService;
 import com.sports.server.team.domain.Team;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,6 @@ public class GameService {
     public Long register(final GameRegisterRequestDto requestDto) {
         Team firstTeam = teamService.findTeamWithId(requestDto.getFirstTeamId());
         Team secondTeam = teamService.findTeamWithId(requestDto.getSecondTeamId());
-
-        // TODO: Member 로그인한 사용자로 변경하기
         Game game = requestDto.toEntity(firstTeam, secondTeam);
         return gameRepository.save(game);
     }
@@ -38,7 +37,7 @@ public class GameService {
     }
 
     public Game findGameWithId(final Long gameId) {
-        return gameRepository.findById(gameId).orElseThrow(IllegalArgumentException::new);
+        return gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
     }
 
     public List<GameResponseDto> getAllGames() {
