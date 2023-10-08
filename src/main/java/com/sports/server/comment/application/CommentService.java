@@ -1,7 +1,7 @@
 package com.sports.server.comment.application;
 
 import com.sports.server.comment.domain.CommentRepository;
-import com.sports.server.comment.dto.CommentDto;
+import com.sports.server.comment.dto.request.CommentRequestDto;
 import com.sports.server.game.application.GameService;
 import com.sports.server.game.domain.Game;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class CommentService {
     private final GameService gameService;
 
     @Transactional
-    public void register(final CommentDto commentDto) {
-        Game game = gameService.findGameWithId(commentDto.getGameId());
-        commentRepository.save(commentDto.toEntity(game));
+    public void register(final CommentRequestDto commentRequestDto) {
+        Game game = gameService.findGameWithId(commentRequestDto.getGameId());
+        commentRepository.save(commentRequestDto.toEntity(game));
     }
 }

@@ -1,4 +1,4 @@
-package com.sports.server.comment.dto;
+package com.sports.server.comment.dto.request;
 
 import com.sports.server.comment.domain.Comment;
 import com.sports.server.common.ValidatorMessages;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class CommentDto {
+public class CommentRequestDto {
 
     @NotBlank(message = ValidatorMessages.CONTENT_OF_COMMENT_CANNOT_BE_BLANK)
     private String content;
