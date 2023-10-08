@@ -1,11 +1,12 @@
 package com.sports.server.game.application;
 
+import com.sports.server.common.exception.ExceptionMessages;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameRepository;
 import com.sports.server.game.dto.request.GameRegisterRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto;
-import com.sports.server.game.exception.GameNotFoundException;
 import com.sports.server.team.application.TeamService;
 import com.sports.server.team.domain.Team;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class GameService {
     }
 
     public Game findGameWithId(final Long gameId) {
-        return gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
+        return gameRepository.findById(gameId).orElseThrow(() -> new NotFoundException(ExceptionMessages.GAME_NOT_FOUND_EXCEPTION));
     }
 
     public List<GameResponseDto> getAllGames() {
