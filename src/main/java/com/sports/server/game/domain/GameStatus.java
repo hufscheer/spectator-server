@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum GameStatus {
     BEFORE(),
     FIRST_HALF(),
+    BREAK_TIME(),
     SECOND_HALF(),
-    OVER();
+    END();
 }
