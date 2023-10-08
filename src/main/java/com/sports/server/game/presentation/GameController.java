@@ -1,5 +1,7 @@
 package com.sports.server.game.presentation;
 
+import com.sports.server.comment.application.CommentService;
+import com.sports.server.comment.dto.response.CommentResponseDto;
 import com.sports.server.game.application.GameService;
 import com.sports.server.game.dto.request.GameRegisterRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
@@ -19,6 +21,8 @@ public class GameController {
 
     private final GameService gameService;
 
+    private final CommentService commentService;
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid final GameRegisterRequestDto requestDto) {
         Long gameId = gameService.register(requestDto);
@@ -33,5 +37,10 @@ public class GameController {
     @GetMapping
     public ResponseEntity<List<GameResponseDto>> getOneGame() {
         return ResponseEntity.ok(gameService.getAllGames());
+    }
+
+    @GetMapping("/{gameId}/comments")
+    public ResponseEntity<List<CommentResponseDto>> getAllComments(@PathVariable final Long gameId) {
+        return ResponseEntity.ok(commentService.getAllCommentsWithGameId(gameId));
     }
 }
