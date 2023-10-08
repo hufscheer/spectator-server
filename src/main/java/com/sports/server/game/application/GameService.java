@@ -37,7 +37,7 @@ public class GameService {
         return new GameDetailResponseDto(game);
     }
 
-    private Game findGameWithId(final Long gameId) {
+    public Game findGameWithId(final Long gameId) {
         return gameRepository.findById(gameId).orElseThrow(IllegalArgumentException::new);
     }
 
