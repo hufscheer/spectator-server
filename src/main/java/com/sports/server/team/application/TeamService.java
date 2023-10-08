@@ -1,6 +1,6 @@
 package com.sports.server.team.application;
 
-import com.sports.server.team.TeamRepository;
+import com.sports.server.team.domain.TeamRepository;
 import com.sports.server.team.domain.Team;
 import com.sports.server.team.dto.TeamDto;
 import lombok.RequiredArgsConstructor;

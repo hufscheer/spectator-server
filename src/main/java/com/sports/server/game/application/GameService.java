@@ -1,5 +1,7 @@
 package com.sports.server.game.application;
 
+import com.sports.server.common.exception.ExceptionMessages;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameRepository;
 import com.sports.server.game.dto.request.GameRegisterRequestDto;
@@ -26,8 +28,6 @@ public class GameService {
     public Long register(final GameRegisterRequestDto requestDto) {
         Team firstTeam = teamService.findTeamWithId(requestDto.getFirstTeamId());
         Team secondTeam = teamService.findTeamWithId(requestDto.getSecondTeamId());
-
-        // TODO: Member 로그인한 사용자로 변경하기
         Game game = requestDto.toEntity(firstTeam, secondTeam);
         return gameRepository.save(game);
     }
@@ -38,7 +38,7 @@ public class GameService {
     }
 
     public Game findGameWithId(final Long gameId) {
-        return gameRepository.findById(gameId).orElseThrow(IllegalArgumentException::new);
+        return gameRepository.findById(gameId).orElseThrow(() -> new NotFoundException(ExceptionMessages.GAME_NOT_FOUND_EXCEPTION));
     }
 
     public List<GameResponseDto> getAllGames() {

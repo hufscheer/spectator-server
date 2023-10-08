@@ -1,4 +1,4 @@
-package com.sports.server.team;
+package com.sports.server.team.domain;
 
 import com.sports.server.team.domain.Team;
 import org.springframework.data.repository.Repository;
