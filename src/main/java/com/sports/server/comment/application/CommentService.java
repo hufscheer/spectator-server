@@ -28,6 +28,6 @@ public class CommentService {
 
     public List<CommentResponseDto> getAllCommentsWithGameId(final Long gameId) {
         Game game = gameService.findGameWithId(gameId);
-        return commentRepository.getAllByGame(game).stream().map(CommentResponseDto::new).toList();
+        return commentRepository.getAllByGameOrderByCreatedAtDesc(game).stream().map(CommentResponseDto::new).toList();
     }
 }
