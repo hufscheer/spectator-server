@@ -23,6 +23,13 @@ public class Comment {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "is_blocked", nullable = false)
+    private boolean isBlocked;
+
+    public boolean getIsBlocked() {
+        return isBlocked;
+    }
+
     @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
