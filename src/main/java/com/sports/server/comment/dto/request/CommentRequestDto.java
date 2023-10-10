@@ -25,6 +25,7 @@ public class CommentRequestDto {
                 .createdAt(LocalDateTime.now())
                 .content(content)
                 .game(game)
+                .isBlocked(false)
                 .build();
     }
 }

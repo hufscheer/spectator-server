@@ -11,13 +11,24 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class CommentResponseDto {
+
+    private Long id;
+
     private String content;
+
+    private boolean isBlocked;
 
     @DateTimeFormat(pattern = Constants.DATE_FORMAT)
     private LocalDateTime createdAt;
 
+    public boolean getIsBlocked() {
+        return isBlocked;
+    }
+
     public CommentResponseDto(final Comment comment) {
+        this.id = comment.getId();
         this.content = comment.getContent();
+        this.isBlocked = comment.getIsBlocked();
         this.createdAt = comment.getCreatedAt();
     }
 }
