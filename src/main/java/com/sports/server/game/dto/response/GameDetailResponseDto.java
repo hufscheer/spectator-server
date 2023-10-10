@@ -13,13 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 public class GameDetailResponseDto extends GameResponseDto {
 
-    private String videoUrl;
+    private String videoId;
 
     private List<RecordResponseDto> records;
 
     public GameDetailResponseDto(Game game) {
         super(game);
-        this.videoUrl = game.getVideoUrl();
+        this.videoId = game.getVideoId();
         this.records = game.getRecords()
                 .stream()
                 .sorted(Comparator.comparing(Record::getScoredAt))
