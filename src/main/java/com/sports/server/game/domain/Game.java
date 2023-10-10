@@ -55,6 +55,9 @@ public class Game {
     @Column(name = "status_changed_at", nullable = false)
     private LocalDateTime statusChangedAt;
 
+    @Column(name = "video_url", nullable = true)
+    private String videoUrl;
+
     @OneToMany(mappedBy = "game")
     private List<Record> records = new ArrayList<>();
 
