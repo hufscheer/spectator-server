@@ -1,4 +1,4 @@
-package com.sports.server.sports.domain;
+package com.sports.server.sport.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

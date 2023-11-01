@@ -2,7 +2,7 @@ package com.sports.server.game.domain;
 
 import com.sports.server.member.domain.Member;
 import com.sports.server.record.domain.Record;
-import com.sports.server.sports.domain.Sports;
+import com.sports.server.sport.domain.Sports;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
