@@ -41,7 +41,7 @@ public class Comment {
     private GameTeam gameTeam;
 
     @ManyToOne
-    @JoinColumn(name = "gmae_id")
+    @JoinColumn(name = "game_id")
     private Game game;
 
     public boolean getIsBlocked() {
