@@ -1,7 +1,5 @@
 package com.sports.server.game.presentation;
 
-import com.sports.server.comment.application.CommentService;
-import com.sports.server.comment.dto.response.CommentResponseDto;
 import com.sports.server.game.application.GameService;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto;
@@ -20,8 +18,6 @@ public class GameController {
 
     private final GameService gameService;
 
-    private final CommentService commentService;
-
     @GetMapping("/{gameId}")
     public ResponseEntity<GameDetailResponseDto> getOneGame(@PathVariable final Long gameId) {
         return ResponseEntity.ok(gameService.getOneGame(gameId));
@@ -30,10 +26,5 @@ public class GameController {
     @GetMapping
     public ResponseEntity<List<GameResponseDto>> getAllGames() {
         return ResponseEntity.ok(gameService.getAllGames());
-    }
-
-    @GetMapping("/{gameId}/comments")
-    public ResponseEntity<List<CommentResponseDto>> getAllComments(@PathVariable final Long gameId) {
-        return ResponseEntity.ok(commentService.getAllCommentsWithGameId(gameId));
     }
 }
