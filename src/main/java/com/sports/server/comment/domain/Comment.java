@@ -1,5 +1,6 @@
 package com.sports.server.comment.domain;
 
+import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +39,10 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "game_team_id")
     private GameTeam gameTeam;
+
+    @ManyToOne
+    @JoinColumn(name = "gmae_id")
+    private Game game;
 
     public boolean getIsBlocked() {
         return isBlocked;
