@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Sports {
+public class Sport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
