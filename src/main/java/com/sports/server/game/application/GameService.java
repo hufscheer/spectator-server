@@ -24,14 +24,6 @@ public class GameService {
     private final GameRepository gameRepository;
     private final TeamService teamService;
 
-    @Transactional
-    public Long register(final GameRegisterRequestDto requestDto) {
-        Team firstTeam = teamService.findTeamWithId(requestDto.getFirstTeamId());
-        Team secondTeam = teamService.findTeamWithId(requestDto.getSecondTeamId());
-        Game game = requestDto.toEntity(firstTeam, secondTeam);
-        return gameRepository.save(game);
-    }
-
     public GameDetailResponseDto getOneGame(final Long gameId) {
         Game game = findGameWithId(gameId);
         return new GameDetailResponseDto(game);
