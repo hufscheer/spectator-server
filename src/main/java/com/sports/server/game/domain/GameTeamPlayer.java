@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameTeamPlayer {
 
@@ -25,6 +27,6 @@ public class GameTeamPlayer {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "name", nullable = true)
+    @Column(name = "description", nullable = true)
     private String description;
 }
