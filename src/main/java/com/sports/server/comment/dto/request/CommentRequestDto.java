@@ -5,7 +5,6 @@ import com.sports.server.common.ValidatorMessages;
 import com.sports.server.game.domain.GameTeam;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,13 +18,7 @@ public class CommentRequestDto {
     @NotNull(message = ValidatorMessages.TEAM_ID_CANNOT_BE_BLANK)
     private Long gameTeamId;
 
-    public Comment toEntity(final GameTeam team) {
-        return Comment.builder()
-                .createdAt(LocalDateTime.now())
-                .content(content)
-                .gameTeam(team)
-                .game(team.getGame())
-                .isBlocked(false)
-                .build();
+    public Comment toEntity(final GameTeam gameTeam) {
+        return new Comment(content, gameTeam, gameTeam.getGame());
     }
 }

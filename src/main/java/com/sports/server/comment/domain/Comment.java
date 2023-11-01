@@ -11,16 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comment {
 
     @Id
@@ -48,4 +44,11 @@ public class Comment {
         return isBlocked;
     }
 
+    public Comment(final String content, final GameTeam gameTeam, final Game game) {
+        this.createdAt = LocalDateTime.now();
+        this.content = content;
+        this.isBlocked = false;
+        this.gameTeam = gameTeam;
+        this.game = game;
+    }
 }
