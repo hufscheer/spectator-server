@@ -29,11 +29,11 @@ public class Record {
 
     @ManyToOne
     @JoinColumn(name = "game_team_id")
-    private GameTeam team;
+    private GameTeam gameTeam;
 
     @ManyToOne
     @JoinColumn(name = "game_team_player_id")
-    private GameTeamPlayer player;
+    private GameTeamPlayer gameTeamPlayer;
 
     @Column(name = "score", nullable = false)
     private int score;
