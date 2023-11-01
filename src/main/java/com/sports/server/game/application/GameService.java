@@ -6,7 +6,6 @@ import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameRepository;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,7 @@ public class GameService {
     }
 
     public List<GameResponseDto> getAllGames() {
-        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-        return gameRepository.findAllByStartTimeIsAfterOrderByStartTime(sevenDaysAgo).stream().map(GameResponseDto::new)
+        return gameRepository.findAll().stream().map(GameResponseDto::new)
                 .toList();
     }
 }
