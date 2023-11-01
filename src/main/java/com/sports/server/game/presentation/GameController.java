@@ -28,7 +28,7 @@ public class GameController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GameResponseDto>> getOneGame() {
+    public ResponseEntity<List<GameResponseDto>> getAllGames() {
         return ResponseEntity.ok(gameService.getAllGames());
     }
 
