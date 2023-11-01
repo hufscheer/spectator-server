@@ -22,12 +22,11 @@ public class RecordResponseDto {
     @DateTimeFormat(pattern = Constants.DATE_FORMAT)
     private LocalDateTime scoredAt;
 
-
     public RecordResponseDto(final Record record) {
         this.id = record.getId();
-        this.teamId = record.getTeam().getId();
-        this.playerName = record.getPlayer().getName();
-        this.score = 1; // TODO: 추후 경기 종목 테이블 추가에 따른 리팩토링
+        this.teamId = record.getGameTeam().getId();
+        this.playerName = record.getGameTeamPlayer().getName();
+        this.score = record.getScore();
         this.scoredAt = record.getScoredAt();
     }
 }
