@@ -1,16 +1,23 @@
 package com.sports.server.record.domain;
 
 import com.sports.server.game.domain.Game;
-import com.sports.server.team.domain.Team;
-import jakarta.persistence.*;
+import com.sports.server.game.domain.GameTeam;
+import com.sports.server.game.domain.GameTeamPlayer;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Record {
 
     @Id
@@ -22,11 +29,12 @@ public class Record {
     private Game game;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @JoinColumn(name = "game_team_id")
+    private GameTeam gameTeam;
 
-    @Column(name = "player_name", nullable = false)
-    private String playerName;
+    @ManyToOne
+    @JoinColumn(name = "game_team_player_id")
+    private GameTeamPlayer gameTeamPlayer;
 
     @Column(name = "score", nullable = false)
     private int score;

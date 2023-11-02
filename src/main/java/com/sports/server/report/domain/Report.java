@@ -1,6 +1,6 @@
-package com.sports.server.team.domain;
+package com.sports.server.report.domain;
 
-import com.sports.server.member.domain.Member;
+import com.sports.server.comment.domain.Comment;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,26 +8,25 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team {
+public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "logo_image_url", nullable = false)
-    private String logoImageUrl;
-
     @ManyToOne
-    @JoinColumn(name = "administrator_id")
-    private Member administrator;
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
+
+    @Column(name = "reported_at", nullable = false)
+    private LocalDateTime reportedAt;
+
+    @Column(name = "is_valid", nullable = false)
+    private boolean isValid;
 }

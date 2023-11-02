@@ -1,6 +1,5 @@
-package com.sports.server.team.domain;
+package com.sports.server.game.domain;
 
-import com.sports.server.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,19 +14,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team {
+public class GameTeamPlayer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "game_team_id")
+    private GameTeam gameTeam;
+
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "logo_image_url", nullable = false)
-    private String logoImageUrl;
-
-    @ManyToOne
-    @JoinColumn(name = "administrator_id")
-    private Member administrator;
+    @Column(name = "description", nullable = true)
+    private String description;
 }

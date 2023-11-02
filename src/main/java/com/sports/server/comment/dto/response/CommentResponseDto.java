@@ -2,11 +2,10 @@ package com.sports.server.comment.dto.response;
 
 import com.sports.server.comment.domain.Comment;
 import com.sports.server.common.Constants;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -28,7 +27,7 @@ public class CommentResponseDto {
     public CommentResponseDto(final Comment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
-        this.isBlocked = comment.getIsBlocked();
+        this.isBlocked = comment.isBlocked();
         this.createdAt = comment.getCreatedAt();
     }
 }
