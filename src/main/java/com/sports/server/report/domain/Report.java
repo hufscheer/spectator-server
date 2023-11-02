@@ -1,5 +1,6 @@
-package com.sports.server.comment.domain;
+package com.sports.server.report.domain;
 
+import com.sports.server.comment.domain.Comment;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
