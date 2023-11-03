@@ -1,6 +1,5 @@
 package com.sports.server.comment.domain;
 
-import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,19 +35,14 @@ public class Comment {
     @JoinColumn(name = "game_team_id")
     private GameTeam gameTeam;
 
-    @ManyToOne
-    @JoinColumn(name = "game_id")
-    private Game game;
-
     public boolean isBlocked() {
         return isBlocked;
     }
 
-    public Comment(final String content, final GameTeam gameTeam, final Game game) {
+    public Comment(final String content, final GameTeam gameTeam) {
         this.createdAt = LocalDateTime.now();
         this.content = content;
         this.isBlocked = false;
         this.gameTeam = gameTeam;
-        this.game = game;
     }
 }

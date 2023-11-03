@@ -19,6 +19,6 @@ public class CommentRequestDto {
     private Long gameTeamId;
 
     public Comment toEntity(final GameTeam gameTeam) {
-        return new Comment(content, gameTeam, gameTeam.getGame());
+        return new Comment(content, gameTeam);
     }
 }
