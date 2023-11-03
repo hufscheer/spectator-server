@@ -39,6 +39,9 @@ public class Record {
     @Column(name = "score", nullable = false)
     private int score;
 
+    @Column(name = "scored_quarter", nullable = false)
+    private String scoredQuarter;
+
     @Column(name = "scored_at", nullable = false)
     private LocalDateTime scoredAt;
 }
