@@ -1,6 +1,7 @@
 package com.sports.server.league.domain;
 
 import com.sports.server.member.domain.Member;
+import com.sports.server.organization.domain.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +24,10 @@ public class League {
     @ManyToOne
     @JoinColumn(name = "administrator_id")
     private Member administrator;
+
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     @Column(name = "name", nullable = false)
     private String name;
