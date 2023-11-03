@@ -1,5 +1,6 @@
 package com.sports.server.game.domain;
 
+import com.sports.server.league.domain.League;
 import com.sports.server.member.domain.Member;
 import com.sports.server.record.domain.Record;
 import com.sports.server.sport.domain.Sport;
@@ -34,6 +35,10 @@ public class Game {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "leauge_id")
+    private League league;
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
