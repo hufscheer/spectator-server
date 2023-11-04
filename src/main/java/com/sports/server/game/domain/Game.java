@@ -39,7 +39,7 @@ public class Game {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "leauge_id")
+    @JoinColumn(name = "league_id")
     private League league;
 
     @Column(name = "start_time", nullable = false)
