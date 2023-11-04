@@ -1,0 +1,3 @@
+[submodule "src/main/resources/be-config"]
+	path = src/main/resources/be-config
+	url = git@github.com:hufs-sports-live/be-config.git

@@ -1,30 +1,28 @@
 spring:
   profiles:
-    active: local # default
+    active: local
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    version: 1
+server:
+  port: 8080
 
-# local
 ---
 spring:
   config:
     activate:
       on-profile: local
-  datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL
-  h2:
-    console:
-      enabled: true
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-    flyway:
-      enabled: true
-      baseline-on-migrate: true
-      version: 1
+    import: application-local.yml
 
-server:
-  port: 8080
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import:
+      - classpath:be-config/application-prod.yml
