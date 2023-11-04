@@ -2,7 +2,7 @@ name: spring server cd
 
 on:
   push:
-    branches: ["chore/#38-cicd"]
+    branches: ["main"]
 
 jobs:
   deploy:
