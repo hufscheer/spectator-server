@@ -1,4 +1,4 @@
-package com.sports.server.sport.domain;
+package com.sports.server.organization.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +10,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "sports")
+@Table(name = "organizations")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Sport {
+public class Organization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
