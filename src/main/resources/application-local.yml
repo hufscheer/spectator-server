@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL
+  h2:
+    console:
+      enabled: true
+  jpa:
+    properties:
+      dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+      hibernate:
+        format_sql: true
+        show_sql: true

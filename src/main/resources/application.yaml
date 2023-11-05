@@ -1,26 +1,28 @@
 spring:
   profiles:
-    active: local # default
+    active: local
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    version: 1
+server:
+  port: 8080
 
-# local
 ---
 spring:
   config:
     activate:
       on-profile: local
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/sports?useSSL=true&useUnicode=true&serverTimezone=Asia/Seoul
-    username: root
-    password: Qwer1234!
+    import: application-local.yml
 
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-
-server:
-  port: 8080
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import:
+      - classpath:be-config/application-prod.yml
