@@ -42,10 +42,19 @@ public class Game {
     @JoinColumn(name = "league_id")
     private League league;
 
+    @OneToMany(mappedBy = "game")
+    private List<Record> records = new ArrayList<>();
+
+    @OneToMany(mappedBy = "game")
+    private List<GameTeam> teams = new ArrayList<>();
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "video_id", nullable = true)
+    @Column(name = "video_id", nullable = false)
     private String videoId;
 
     @Column(name = "quarter_changed_at")
@@ -53,11 +62,5 @@ public class Game {
 
     @Column(name = "game_quarter", nullable = false)
     private String gameQuarter;
-
-    @OneToMany(mappedBy = "game")
-    private List<Record> records = new ArrayList<>();
-
-    @OneToMany(mappedBy = "game")
-    private List<GameTeam> teams = new ArrayList<>();
 
 }

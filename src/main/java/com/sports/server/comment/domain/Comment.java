@@ -26,6 +26,7 @@ public class Comment {
     @Column(name = "is_blocked", nullable = false)
     private boolean isBlocked;
 
+    @Column(name = "game_team_id", nullable = false)
     private Long gameTeamId;
 
     public boolean isBlocked() {
