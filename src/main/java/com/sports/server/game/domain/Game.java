@@ -54,7 +54,7 @@ public class Game {
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "video_id", nullable = false)
+    @Column(name = "video_id")
     private String videoId;
 
     @Column(name = "quarter_changed_at")
