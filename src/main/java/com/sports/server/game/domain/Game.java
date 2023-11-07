@@ -56,4 +56,7 @@ public class Game {
     @Column(name = "game_quarter", nullable = false)
     private String gameQuarter;
 
+    @Column(name = "state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private GameState state;
 }
