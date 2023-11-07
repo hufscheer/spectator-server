@@ -28,8 +28,8 @@ public class Game {
     private Sport sport;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "administrator_id")
+    private Member administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id")
