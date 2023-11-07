@@ -23,6 +23,7 @@ public class Report {
     @Column(name = "reported_at", nullable = false)
     private LocalDateTime reportedAt;
 
-    @Column(name = "is_valid", nullable = false)
-    private boolean isValid;
+    @Column(name = "state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReportState state;
 }
