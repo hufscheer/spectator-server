@@ -7,6 +7,7 @@ CREATE INDEX IDX_COMMENTS_ON_GAME_TEAM_ID ON comments (game_team_id);
 -- games에 name, state 추가
 ALTER TABLE games ADD name VARCHAR(255) NOT NULL;
 ALTER TABLE games ADD state VARCHAR(255) NOT NULL;
+ALTER TABLE reports ADD CONSTRAINT uc_reports_comment UNIQUE (comment_id);
 
 -- meber_id -> administrator_id 컬럼명 변경
 ALTER TABLE games CHANGE member_id administrator_id BIGINT;

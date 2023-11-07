@@ -16,8 +16,8 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id", unique = true)
     private Comment comment;
 
     @Column(name = "reported_at", nullable = false)
