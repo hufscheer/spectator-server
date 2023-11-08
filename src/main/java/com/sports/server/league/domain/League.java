@@ -33,4 +33,7 @@ public class League {
 
     @Column(name = "end_at", nullable = false)
     private LocalDateTime endAt;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 }
