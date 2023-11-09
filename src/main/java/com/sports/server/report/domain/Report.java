@@ -1,14 +1,8 @@
 package com.sports.server.report.domain;
 
 import com.sports.server.comment.domain.Comment;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -22,13 +16,14 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "comment_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id", unique = true)
     private Comment comment;
 
     @Column(name = "reported_at", nullable = false)
     private LocalDateTime reportedAt;
 
-    @Column(name = "is_valid", nullable = false)
-    private boolean isValid;
+    @Column(name = "state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReportState state;
 }

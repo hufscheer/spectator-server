@@ -23,7 +23,7 @@ public class GameService {
         return new GameDetailResponseDto(game);
     }
 
-    public Game findGameWithId(final Long gameId) {
+    private Game findGameWithId(final Long gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessages.GAME_NOT_FOUND_EXCEPTION));
     }
