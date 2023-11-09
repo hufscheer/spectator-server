@@ -20,3 +20,8 @@ ALTER TABLE reports ADD CONSTRAINT uc_reports_comment UNIQUE (comment_id);
 
 -- leagues에 is_deleted 추가
 ALTER TABLE leagues ADD COLUMN is_deleted BOOLEAN NOT NULL;
+
+-- team에 league_id 추가
+ALTER TABLE teams ADD COLUMN league_id BIGINT NOT NULL;
+ALTER TABLE teams
+    ADD CONSTRAINT FK_TEAMS_ON_LEAGUE FOREIGN KEY (league_id) REFERENCES leagues (id);

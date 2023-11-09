@@ -1,5 +1,6 @@
 package com.sports.server.team.domain;
 
+import com.sports.server.league.domain.League;
 import com.sports.server.member.domain.Member;
 import com.sports.server.organization.domain.Organization;
 import jakarta.persistence.*;
@@ -30,5 +31,9 @@ public class Team {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
     private Organization organization;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "league_id")
+    private League league;
 
 }
