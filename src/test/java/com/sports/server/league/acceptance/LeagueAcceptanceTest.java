@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class LeagueAcceptanceTest extends AcceptanceTest {
 
     @Test
-    void 모든_리그를_조회한다() {
+    void 삭제되지_않은_모든_리그를_조회한다() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
