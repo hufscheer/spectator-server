@@ -41,11 +41,14 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 리그의_모든_스포츠를_조회한다() {
+        // given
+        Long threeBuildingCup = 1L;
+
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/1/sports")
+                .get("/leagues/{leagueId}/sports", threeBuildingCup)
                 .then().log().all()
                 .extract();
 
@@ -58,7 +61,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
                         .containsExactly("축구"),
                 () -> assertThat(actual)
                         .map(LeagueSportResponse::sportId)
-                        .containsExactly(1L)
+                        .containsExactly(threeBuildingCup)
         );
     }
 }

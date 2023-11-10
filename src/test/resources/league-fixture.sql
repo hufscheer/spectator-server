@@ -22,8 +22,8 @@ VALUES (4, 1, 1, '루미큐브 대회', '2023-11-01 00:00:00', '2023-11-05 00:00
 
 -- 리그의 스포츠
 INSERT INTO league_sports (id, league_id, sport_id) VALUES (1, 1, 1);
-INSERT INTO league_sports (id, league_id, sport_id) VALUES (1, 2, 2);
-INSERT INTO league_sports (id, league_id, sport_id) VALUES (1, 3, 3);
-INSERT INTO league_sports (id, league_id, sport_id) VALUES (1, 4, 4);
+INSERT INTO league_sports (id, league_id, sport_id) VALUES (2, 2, 2);
+INSERT INTO league_sports (id, league_id, sport_id) VALUES (3, 3, 3);
+INSERT INTO league_sports (id, league_id, sport_id) VALUES (4, 4, 4);
 
 SET foreign_key_checks = 1;

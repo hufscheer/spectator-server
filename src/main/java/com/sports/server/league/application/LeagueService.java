@@ -1,7 +1,9 @@
 package com.sports.server.league.application;
 
 import com.sports.server.league.domain.LeagueRepository;
+import com.sports.server.league.domain.LeagueSportRepository;
 import com.sports.server.league.dto.response.LeagueResponse;
+import com.sports.server.league.dto.response.LeagueSportResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +16,19 @@ import java.util.List;
 public class LeagueService {
 
     private final LeagueRepository leagueRepository;
+    private final LeagueSportRepository leagueSportRepository;
 
     public List<LeagueResponse> findAll() {
         return leagueRepository.findAll()
                 .stream()
-                .map(league -> new LeagueResponse(league.getName()))
+                .map(LeagueResponse::new)
+                .toList();
+    }
+
+    public List<LeagueSportResponse> findSportsByLeague(Long leagueId) {
+        return leagueSportRepository.findByLeagueId(leagueId)
+                .stream()
+                .map(LeagueSportResponse::new)
                 .toList();
     }
 }
