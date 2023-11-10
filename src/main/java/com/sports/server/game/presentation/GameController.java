@@ -1,6 +1,7 @@
 package com.sports.server.game.presentation;
 
 import com.sports.server.game.application.GameService;
+import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto;
 import java.util.List;
@@ -26,5 +27,12 @@ public class GameController {
     @GetMapping
     public ResponseEntity<List<GameResponseDto>> getAllGames() {
         return ResponseEntity.ok(gameService.getAllGames());
+    }
+
+    @GetMapping("/{gameId}/cheer")
+    public ResponseEntity<List<GameTeamCheerResponseDto>> getCheerCountOfGameTeams(
+            @PathVariable final Long gameId
+    ) {
+        return ResponseEntity.ok(gameService.getCheerCountOfGameTeams(gameId));
     }
 }
