@@ -27,4 +27,10 @@ public class AcceptanceTest {
         return response.jsonPath()
                 .getList(".", dtoType);
     }
+
+    protected <T> T toResponse(ExtractableResponse<Response> response,
+                                      Class<T> dtoType) {
+        return response.jsonPath()
+                .getObject(".", dtoType);
+    }
 }

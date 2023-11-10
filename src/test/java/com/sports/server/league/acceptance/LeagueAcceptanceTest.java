@@ -1,5 +1,6 @@
 package com.sports.server.league.acceptance;
 
+import com.sports.server.league.dto.response.LeagueSportResponse;
 import com.sports.server.support.AcceptanceTest;
 import com.sports.server.league.dto.response.LeagueResponse;
 import io.restassured.RestAssured;
@@ -35,6 +36,29 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual)
                         .map(LeagueResponse::name)
                         .containsExactly("삼건물 대회", "농구대잔치", "롤 대회")
+        );
+    }
+
+    @Test
+    void 리그의_모든_스포츠를_조회한다() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/1/sports")
+                .then().log().all()
+                .extract();
+
+        // then
+        List<LeagueSportResponse> actual = toResponses(response, LeagueSportResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual)
+                        .map(LeagueSportResponse::name)
+                        .containsExactly("축구"),
+                () -> assertThat(actual)
+                        .map(LeagueSportResponse::sportId)
+                        .containsExactly(1L)
         );
     }
 }
