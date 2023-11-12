@@ -4,6 +4,7 @@ import com.sports.server.comment.domain.Comment;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "reports")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Report {
 
     private static final String INVALID_REPORT_BLOCKED_COMMENT = "이미 블락된 댓글은 신고할 수 없습니다.";

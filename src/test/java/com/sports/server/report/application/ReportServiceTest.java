@@ -76,13 +76,14 @@ class ReportServiceTest {
             Long commentId = 1L;
             ReportRequest request = new ReportRequest(commentId);
             reportService.report(request);
+            long beforeReport = reportFixtureRepository.count();
 
             // when
             reportService.report(request);
 
             // when
-            long reportCount = reportFixtureRepository.count();
-            assertThat(reportCount).isEqualTo(1);
+            long afterReport = reportFixtureRepository.count();
+            assertThat(afterReport).isEqualTo(beforeReport);
         }
     }
 }
