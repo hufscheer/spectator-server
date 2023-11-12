@@ -4,12 +4,11 @@ import com.sports.server.common.exception.CustomException;
 import com.sports.server.report.ReportFixtureRepository;
 import com.sports.server.report.domain.Report;
 import com.sports.server.report.dto.request.ReportRequest;
-import com.sports.server.support.isolation.DatabaseIsolation;
+import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
@@ -17,10 +16,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@DatabaseIsolation
 @Sql(scripts = "/report-fixture.sql")
-class ReportServiceTest {
+class ReportServiceTest extends ServiceTest {
 
     @Autowired
     private ReportService reportService;
