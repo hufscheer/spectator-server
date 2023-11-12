@@ -13,6 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 @Sql(scripts = "/report-fixture.sql")
 class ReportAcceptanceTest extends AcceptanceTest {
@@ -30,7 +35,10 @@ class ReportAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = 댓글을_신고한다(request);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                    () -> verify(reportCheckClient).check(any())
+            );
         }
 
         @Test
@@ -43,7 +51,10 @@ class ReportAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = 댓글을_신고한다(request);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                    () -> verify(reportCheckClient, never()).check(any())
+            );
         }
 
         @Test
@@ -56,7 +67,10 @@ class ReportAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = 댓글을_신고한다(request);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                    () -> verify(reportCheckClient, never()).check(any())
+            );
         }
 
         @Test
@@ -70,7 +84,10 @@ class ReportAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = 댓글을_신고한다(request);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                    () -> verify(reportCheckClient, times(2)).check(any())
+            );
         }
     }
 

@@ -9,8 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DatabaseIsolation
@@ -20,11 +24,14 @@ public class AcceptanceTest {
     private int port;
 
     @MockBean
-    private ReportCheckClient reportCheckClient;
+    protected ReportCheckClient reportCheckClient;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        given(reportCheckClient.check(any()))
+                .willReturn(ResponseEntity.ok().build());
     }
 
     protected <T> List<T> toResponses(ExtractableResponse<Response> response,
