@@ -1,9 +1,10 @@
 package com.sports.server.game.presentation;
 
 import com.sports.server.game.application.GameService;
-import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
+import com.sports.server.game.application.GameTeamService;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto;
+import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameController {
 
     private final GameService gameService;
+    private final GameTeamService gameTeamService;
 
     @GetMapping("/{gameId}")
     public ResponseEntity<GameDetailResponseDto> getOneGame(@PathVariable final Long gameId) {
@@ -33,6 +35,6 @@ public class GameController {
     public ResponseEntity<List<GameTeamCheerResponseDto>> getCheerCountOfGameTeams(
             @PathVariable final Long gameId
     ) {
-        return ResponseEntity.ok(gameService.getCheerCountOfGameTeams(gameId));
+        return ResponseEntity.ok(gameTeamService.getCheerCountOfGameTeams(gameId));
     }
 }
