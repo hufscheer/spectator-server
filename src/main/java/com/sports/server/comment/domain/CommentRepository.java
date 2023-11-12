@@ -6,6 +6,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository extends Repository<Comment, Long> {
     void save(Comment comment);
@@ -15,4 +16,6 @@ public interface CommentRepository extends Repository<Comment, Long> {
             "where gt.game.id = :gameId " +
             "order by c.createdAt desc")
     List<Comment> getAllByGameOrderByCreatedAtDesc(@Param("gameId") final Long gameId);
+
+    Optional<Comment> findById(Long id);
 }

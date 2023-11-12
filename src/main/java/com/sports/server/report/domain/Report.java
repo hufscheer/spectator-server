@@ -26,4 +26,10 @@ public class Report {
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReportState state;
+
+    public Report(Comment comment) {
+        this.comment = comment;
+        this.reportedAt = LocalDateTime.now();
+        this.state = ReportState.UNCHECKED;
+    }
 }
