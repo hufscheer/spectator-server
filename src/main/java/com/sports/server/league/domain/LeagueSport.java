@@ -3,11 +3,13 @@ package com.sports.server.league.domain;
 import com.sports.server.sport.domain.Sport;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "league_sports")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class LeagueSport {
 
     @Id
