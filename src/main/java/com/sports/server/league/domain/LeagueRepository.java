@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface LeagueRepository extends Repository<League, Long> {
 
-    @Query("select l from League l order by l.startAt, l.endAt")
+    @Query("select l from League l order by l.startAt desc, l.endAt desc")
     List<League> findAll();
 }
