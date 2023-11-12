@@ -1,7 +1,5 @@
 package com.sports.server.game.application;
 
-import com.sports.server.common.exception.ExceptionMessages;
-import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameRepository;
 import com.sports.server.game.dto.response.GameDetailResponseDto;
@@ -17,15 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final GameServiceUtils gameServiceUtils;
 
     public GameDetailResponseDto getOneGame(final Long gameId) {
-        Game game = findGameWithId(gameId);
+        Game game = gameServiceUtils.findGameWithId(gameId);
         return new GameDetailResponseDto(game);
-    }
-
-    public Game findGameWithId(final Long gameId) {
-        return gameRepository.findById(gameId)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessages.GAME_NOT_FOUND_EXCEPTION));
     }
 
     public List<GameResponseDto> getAllGames() {

@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GameTeamService {
 
-    private final GameService gameService;
     private final GameTeamRepository gameTeamRepository;
+    private final GameServiceUtils gameServiceUtils;
 
     public List<GameTeamCheerResponseDto> getCheerCountOfGameTeams(final Long gameId) {
-        Game game = gameService.findGameWithId(gameId);
+        Game game = gameServiceUtils.findGameWithId(gameId);
         List<GameTeam> gameTeams = gameTeamRepository.findAllByGame(game);
         return gameTeams.stream()
                 .map(GameTeamCheerResponseDto::new)
