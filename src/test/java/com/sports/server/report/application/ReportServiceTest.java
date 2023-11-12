@@ -69,5 +69,20 @@ class ReportServiceTest {
                     .isInstanceOf(CustomException.class)
                     .hasMessage("이미 블락된 댓글은 신고할 수 없습니다.");
         }
+
+        @Test
+        void 같은_댓글로_신고하면_중복_저장되지_않는다() {
+            // given
+            Long commentId = 1L;
+            ReportRequest request = new ReportRequest(commentId);
+            reportService.report(request);
+
+            // when
+            reportService.report(request);
+
+            // when
+            long reportCount = reportFixtureRepository.count();
+            assertThat(reportCount).isEqualTo(1);
+        }
     }
 }

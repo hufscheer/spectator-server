@@ -27,13 +27,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             ReportRequest request = new ReportRequest(existComment);
 
             // when
-            ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(request)
-                    .post("/reports")
-                    .then().log().all()
-                    .extract();
+            ExtractableResponse<Response> response = 댓글을_신고한다(request);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -46,13 +40,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             ReportRequest request = new ReportRequest(notExistComment);
 
             // when
-            ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(request)
-                    .post("/reports")
-                    .then().log().all()
-                    .extract();
+            ExtractableResponse<Response> response = 댓글을_신고한다(request);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -65,16 +53,34 @@ class ReportAcceptanceTest extends AcceptanceTest {
             ReportRequest request = new ReportRequest(blockedComment);
 
             // when
-            ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(request)
-                    .post("/reports")
-                    .then().log().all()
-                    .extract();
+            ExtractableResponse<Response> response = 댓글을_신고한다(request);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
+
+        @Test
+        void 이미_신고된_댓글을_또_신고_가능하다() {
+            // given
+            Long existComment = 1L;
+            ReportRequest request = new ReportRequest(existComment);
+            댓글을_신고한다(request);
+
+            // when
+            ExtractableResponse<Response> response = 댓글을_신고한다(request);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+    }
+
+    private static ExtractableResponse<Response> 댓글을_신고한다(ReportRequest request) {
+        return RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/reports")
+                .then().log().all()
+                .extract();
     }
 }
