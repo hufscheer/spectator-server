@@ -57,5 +57,24 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         }
+
+        @Test
+        void 이미_블락된_댓글이면_400을_응답한다() {
+            // given
+            Long blockedComment = 2L;
+            ReportRequest request = new ReportRequest(blockedComment);
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .post("/reports")
+                    .then().log().all()
+                    .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
     }
 }
