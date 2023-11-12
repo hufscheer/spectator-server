@@ -15,12 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReportService {
 
+    public static final String NOT_FOUND_COMMENT = "존재하지 않는 댓글입니다.";
     private final ReportRepository reportRepository;
     private final CommentRepository commentRepository;
 
     public void report(final ReportRequest request) {
-        Comment comment = commentRepository.findById(request.commentId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 댓글입니다."));
+        Comment comment = getCommentById(request.commentId());
         reportRepository.save(new Report(comment));
+    }
+
+    private Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_COMMENT));
     }
 }
