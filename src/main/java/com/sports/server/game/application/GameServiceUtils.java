@@ -4,6 +4,7 @@ import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameRepository;
+import com.sports.server.game.exception.GameErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ public class GameServiceUtils {
 
     public Game findGameWithId(final Long gameId) {
         return gameRepository.findById(gameId)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessages.GAME_NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new NotFoundException(GameErrorMessages.GAME_NOT_FOUND_EXCEPTION));
     }
 
 }
