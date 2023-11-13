@@ -1,7 +1,6 @@
 package com.sports.server.game.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
 import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
@@ -21,9 +20,10 @@ public class GameTeamAcceptanceTest extends AcceptanceTest {
     void 경기에_참여하는_팀을_응원한다() {
 
         //given
-        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto();
         Long gameId = 1L;
+        Long gameTeamId = 1L;
         int cheerCountBeforePost = 1;
+        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto(gameTeamId, 1);
 
         // when
         RestAssured.given().log().all()
@@ -42,11 +42,10 @@ public class GameTeamAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<GameTeamCheerResponseDto> actual = toResponses(response, GameTeamCheerResponseDto.class);
-        assertAll(
-                () -> assertThat(actual)
-                        .map(GameTeamCheerResponseDto::cheerCount)
-                        .isEqualTo(cheerCountBeforePost)
-        );
+        List<GameTeamCheerResponseDto> actual = toResponses(response, GameTeamCheerResponseDto.class).stream()
+                .filter(team -> team.gameTeamId()
+                        .equals(gameTeamId)).toList();
+        assertThat(actual.get(0).cheerCount())
+                .isEqualTo(cheerCountBeforePost + 1);
     }
 }
