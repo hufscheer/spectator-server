@@ -1,5 +1,6 @@
 package com.sports.server.game.application;
 
+import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
@@ -9,6 +10,7 @@ import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.game.exception.GameErrorMessages;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,12 @@ public class GameTeamService {
                 .toList();
     }
 
+    private void validateGameTeam(final GameTeam gameTeam, final Game game) {
+        if (!gameTeam.getGame().equals(game)) {
+            throw new CustomException(HttpStatus.NOT_FOUND, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
+        }
+    }
+
     private GameTeam getGameTeamWithId(final Long gameTeamId) {
         return gameTeamRepository.findById(gameTeamId)
                 .orElseThrow(() -> new NotFoundException(GameErrorMessages.GAME_TEAM_NOT_FOUND_EXCEPTION));
@@ -35,8 +43,9 @@ public class GameTeamService {
 
     @Transactional
     public void updateCheerCount(final Long gameId, final GameTeamCheerRequestDto cheerRequestDto) {
-        gameServiceUtils.findGameWithId(gameId);
-        getGameTeamWithId(cheerRequestDto.gameTeamId());
+        Game game = gameServiceUtils.findGameWithId(gameId);
+        GameTeam gameTeam = getGameTeamWithId(cheerRequestDto.gameTeamId());
+        validateGameTeam(gameTeam, game);
         gameTeamRepository.updateCheerCount(cheerRequestDto.gameTeamId(), cheerRequestDto.cheerCount());
     }
 }
