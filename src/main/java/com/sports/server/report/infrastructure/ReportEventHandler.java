@@ -11,11 +11,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import static com.sports.server.report.exception.ReportErrorMessage.REPORT_CHECK_SERVER_ERROR;
+
 @Component
 @RequiredArgsConstructor
 public class ReportEventHandler {
-
-    private static final String REPORT_CHECK_SERVER_ERROR = "신고 검사 서버에 문제가 발생했습니다";
 
     private final ReportCheckClient reportCheckClient;
 

@@ -10,12 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.sports.server.report.exception.ReportErrorMessage.NOT_FOUND_COMMENT;
+
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ReportFactory {
-
-    private static final String NOT_FOUND_COMMENT = "존재하지 않는 댓글입니다.";
 
     private final ReportRepository reportRepository;
     private final CommentRepository commentRepository;

@@ -9,12 +9,12 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
+import static com.sports.server.report.exception.ReportErrorMessage.INVALID_REPORT_BLOCKED_COMMENT;
+
 @Entity
 @Table(name = "reports")
 @Getter
 public class Report extends BaseEntity<Report> {
-
-    private static final String INVALID_REPORT_BLOCKED_COMMENT = "이미 블락된 댓글은 신고할 수 없습니다.";
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", unique = true)
