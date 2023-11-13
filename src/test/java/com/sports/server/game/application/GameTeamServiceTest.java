@@ -32,4 +32,19 @@ public class GameTeamServiceTest {
         });
 
     }
+
+    @Test
+    void 존재하지_않는_GameTeam에_대해서_요청을_보낼_경우_예외가_발생한다() {
+
+        //given
+        Long gameId = 1L;
+        Long gameTeamId = 10000L;
+        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto(gameTeamId, 1);
+
+        //when&then
+        assertThrows(CustomException.class, () -> {
+            gameTeamService.updateCheerCount(gameId, cheerRequestDto);
+        });
+
+    }
 }
