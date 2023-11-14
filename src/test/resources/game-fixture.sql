@@ -41,5 +41,4 @@ INSERT INTO game_teams (game_id, team_id, cheer_count, score)
 VALUES (3, 1, 1, 0),
        (3, 3, 1, 0);
 
-
-
+SET foreign_key_checks = 1;
