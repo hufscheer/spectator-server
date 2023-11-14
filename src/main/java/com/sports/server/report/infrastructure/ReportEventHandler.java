@@ -20,7 +20,7 @@ public class ReportEventHandler {
     private final ReportCheckClient reportCheckClient;
 
     @TransactionalEventListener
-    @Async
+    @Async("asyncThreadPool")
     public void handle(ReportEvent event) {
         Report report = event.report();
         if (report.isUnchecked()) {
