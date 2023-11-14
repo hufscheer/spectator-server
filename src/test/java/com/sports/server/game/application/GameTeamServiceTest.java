@@ -1,23 +1,21 @@
 package com.sports.server.game.application;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
-import com.sports.server.support.isolation.DatabaseIsolation;
+import com.sports.server.support.ServiceTest;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 
-@SpringBootTest
-@DatabaseIsolation
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @Sql(scripts = "/game-fixture.sql")
-public class GameTeamServiceTest {
+public class GameTeamServiceTest extends ServiceTest {
 
     @Autowired
     private GameTeamService gameTeamService;

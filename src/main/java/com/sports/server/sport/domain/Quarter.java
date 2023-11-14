@@ -1,5 +1,6 @@
 package com.sports.server.sport.domain;
 
+import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -7,11 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "quarters")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Quarter {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Quarter extends BaseEntity<Quarter> {
 
     @Column(name = "name", nullable = false)
     private String name;
