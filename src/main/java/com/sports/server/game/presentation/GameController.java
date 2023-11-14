@@ -46,6 +46,6 @@ public class GameController {
     public ResponseEntity<List<GameTeamCheerResponseDto>> updateCheerCount(@PathVariable final Long gameId,
                                                                            @RequestBody @Valid GameTeamCheerRequestDto cheerRequestDto) {
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
     }
 }
