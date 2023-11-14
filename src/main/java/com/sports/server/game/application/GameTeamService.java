@@ -39,7 +39,7 @@ public class GameTeamService {
     }
 
     private void validateGameTeam(final GameTeam gameTeam, final Game game) {
-        if (!gameTeam.getGame().equals(game)) {
+        if (!gameTeam.matchGame(game)) {
             throw new CustomException(HttpStatus.NOT_FOUND, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
         }
     }

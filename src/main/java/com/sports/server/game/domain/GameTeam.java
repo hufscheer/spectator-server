@@ -26,4 +26,8 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     @Column(name = "score", nullable = false)
     private int score;
+
+    public boolean matchGame(final Game game) {
+        return this.game.equals(game);
+    }
 }
