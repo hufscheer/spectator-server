@@ -1,10 +1,14 @@
 package com.sports.server.game.application;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
 import com.sports.server.support.isolation.DatabaseIsolation;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,5 +50,24 @@ public class GameTeamServiceTest {
             gameTeamService.updateCheerCount(gameId, cheerRequestDto);
         });
 
+    }
+
+    @Test
+    void 동시에_응원_요청을_보낼_경우에도_정상적으로_요청이_반영된다() throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(100);
+        CountDownLatch latch = new CountDownLatch(100);
+        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto(3L, 1);
+
+        for (int i = 0; i < 100; i++) {
+            executor.execute(() -> {
+                gameTeamService.updateCheerCount(2L, cheerRequestDto);
+                latch.countDown();
+            });
+        }
+        latch.await();
+        gameTeamService.getCheerCountOfGameTeams(2L);
+
+        int cheerCount = gameTeamService.getCheerCountOfGameTeams(2L).get(0).cheerCount();
+        assertEquals(cheerCount, 100 + 1);
     }
 }
