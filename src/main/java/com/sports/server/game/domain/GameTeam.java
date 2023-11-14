@@ -1,5 +1,6 @@
 package com.sports.server.game.domain;
 
+import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.team.domain.Team;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,11 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "game_teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GameTeam {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class GameTeam extends BaseEntity<GameTeam> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")

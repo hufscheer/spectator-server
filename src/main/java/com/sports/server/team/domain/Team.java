@@ -1,5 +1,6 @@
 package com.sports.server.team.domain;
 
+import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.league.domain.League;
 import com.sports.server.member.domain.Member;
 import com.sports.server.organization.domain.Organization;
@@ -12,11 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Team extends BaseEntity<Team> {
 
     @Column(name = "name", nullable = false)
     private String name;

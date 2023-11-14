@@ -1,27 +1,24 @@
 package com.sports.server.game.domain;
 
+import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.league.domain.League;
 import com.sports.server.member.domain.Member;
 import com.sports.server.record.domain.Record;
 import com.sports.server.sport.domain.Sport;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "games")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Game {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Game extends BaseEntity<Game> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_id")

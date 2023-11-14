@@ -1,25 +1,22 @@
 package com.sports.server.league.domain;
 
+import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.member.domain.Member;
 import com.sports.server.organization.domain.Organization;
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "leagues")
 @Where(clause = "is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class League {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class League extends BaseEntity<League> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "administrator_id")

@@ -1,24 +1,21 @@
 package com.sports.server.record.domain;
 
+import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamPlayer;
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "records")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Record {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Record extends BaseEntity<Record> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")

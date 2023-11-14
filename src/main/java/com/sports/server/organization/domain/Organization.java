@@ -1,10 +1,8 @@
 package com.sports.server.organization.domain;
 
+import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,11 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "organizations")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Organization {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Organization extends BaseEntity<Organization> {
 
     @Column(name = "name", nullable = false)
     private String name;

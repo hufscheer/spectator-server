@@ -1,6 +1,9 @@
 package com.sports.server.comment.domain;
 
-import jakarta.persistence.*;
+import com.sports.server.common.domain.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "comments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Comment extends BaseEntity<Comment> {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
