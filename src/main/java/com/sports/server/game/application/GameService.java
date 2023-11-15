@@ -24,7 +24,7 @@ public class GameService {
 
     public GameDetailResponse getGameDetail(final Long gameId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
-        List<GameTeam> teams = gameTeamRepository.findAllByGame(game);
+        List<GameTeam> teams = gameTeamRepository.findAllByGameWithTeam(game);
         return new GameDetailResponse(game, teams);
     }
 

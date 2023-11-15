@@ -11,6 +11,9 @@ public interface GameTeamRepository extends Repository<GameTeam, Long> {
 
     List<GameTeam> findAllByGame(final Game game);
 
+    @Query("select gt from GameTeam gt join fetch gt.team where gt.game = :game")
+    List<GameTeam> findAllByGameWithTeam(@Param("game") final Game game);
+
     @Modifying
     @Query("UPDATE GameTeam t SET t.cheerCount = t.cheerCount + :cheerCount WHERE t.id = :gameTeamId")
     void updateCheerCount(@Param("gameTeamId") Long gameTeamId, @Param("cheerCount") int cheerCount);
