@@ -26,8 +26,8 @@ VALUES ('팀 C', 'http://example.com/logo_c.png', 3, 2, 2);
 -- 경기의 팀
 -- 농구 대전 (game_id = 1)
 INSERT INTO game_teams (game_id, team_id, cheer_count, score)
-VALUES (1, 1, 1, 0), -- 팀 A의 정보
-       (1, 2, 1, 0);
+VALUES (1, 1, 1, 1), -- 팀 A의 정보
+       (1, 2, 2, 2);
 -- 팀 B의 정보
 
 -- 롤 챔피언스 (game_id = 2)
