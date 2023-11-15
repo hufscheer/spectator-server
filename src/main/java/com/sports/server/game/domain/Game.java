@@ -3,7 +3,6 @@ package com.sports.server.game.domain;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.league.domain.League;
 import com.sports.server.member.domain.Member;
-import com.sports.server.record.domain.Record;
 import com.sports.server.sport.domain.Sport;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,9 +30,6 @@ public class Game extends BaseEntity<Game> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id")
     private League league;
-
-    @OneToMany(mappedBy = "game")
-    private List<Record> records = new ArrayList<>();
 
     @OneToMany(mappedBy = "game")
     private List<GameTeam> teams = new ArrayList<>();
