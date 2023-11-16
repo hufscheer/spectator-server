@@ -6,8 +6,8 @@ import com.sports.server.comment.domain.Comment;
 import com.sports.server.comment.domain.CommentRepository;
 import com.sports.server.comment.dto.request.CommentRequestDto;
 import com.sports.server.comment.dto.response.CommentResponseDto;
+import com.sports.server.comment.util.BadWordFilter;
 import com.sports.server.common.exception.CustomException;
-import com.vane.badwordfiltering.BadWordFiltering;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final BadWordFiltering badWordFiltering;
+    private final BadWordFilter badwordFilter;
 
     @Transactional
     public void register(final CommentRequestDto commentRequestDto) {
@@ -30,7 +30,7 @@ public class CommentService {
     }
 
     private void validateContent(final String content) {
-        if (badWordFiltering.blankCheck(content)) {
+        if (badwordFilter.containsBadWord(content)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, COMMENT_CONTAINS_BAD_WORD);
         }
     }
