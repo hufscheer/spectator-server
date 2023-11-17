@@ -3,19 +3,15 @@ package com.sports.server.game.presentation;
 import com.sports.server.game.application.GameService;
 import com.sports.server.game.application.GameTeamService;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
-import com.sports.server.game.dto.response.GameDetailResponseDto;
+import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +22,8 @@ public class GameController {
     private final GameTeamService gameTeamService;
 
     @GetMapping("/{gameId}")
-    public ResponseEntity<GameDetailResponseDto> getOneGame(@PathVariable final Long gameId) {
-        return ResponseEntity.ok(gameService.getOneGame(gameId));
+    public ResponseEntity<GameDetailResponse> getGameDetail(@PathVariable final Long gameId) {
+        return ResponseEntity.ok(gameService.getGameDetail(gameId));
     }
 
     @GetMapping
