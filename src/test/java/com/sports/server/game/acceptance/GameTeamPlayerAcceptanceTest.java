@@ -23,8 +23,8 @@ public class GameTeamPlayerAcceptanceTest extends AcceptanceTest {
     void 경기_라인업을_조회한다() {
         // given
         Long basketBallGameId = 1L;
-        Long teamAId = 1L;
-        Long teamBId = 2L;
+        Long gameTeamAId = 1L;
+        Long gameTeamBId = 2L;
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -37,15 +37,20 @@ public class GameTeamPlayerAcceptanceTest extends AcceptanceTest {
         // then
         List<GameLineupResponse> actual = toResponses(response, GameLineupResponse.class);
         GameLineupResponse teamA = actual.stream()
-                .filter(lineup -> lineup.gameTeamId().equals(teamAId))
+                .filter(lineup -> lineup.gameTeamId().equals(gameTeamAId))
                 .toList()
                 .get(0);
         GameLineupResponse teamB = actual.stream()
-                .filter(lineup -> lineup.gameTeamId().equals(teamBId))
+                .filter(lineup -> lineup.gameTeamId().equals(gameTeamBId))
                 .toList()
                 .get(0);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual)
+                        .map(GameLineupResponse::gameTeamId)
+                        .containsExactly(gameTeamAId, gameTeamBId),
+
                 () -> assertThat(teamA.teamName()).isEqualTo("팀 A"),
                 () -> assertThat(teamA.gameTeamPlayers())
                         .map(GameLineupResponse.PlayerResponse::playerName)
