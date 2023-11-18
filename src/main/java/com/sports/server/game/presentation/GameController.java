@@ -1,9 +1,11 @@
 package com.sports.server.game.presentation;
 
 import com.sports.server.game.application.GameService;
+import com.sports.server.game.application.GameTeamPlayerService;
 import com.sports.server.game.application.GameTeamService;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
+import com.sports.server.game.dto.response.GameLineupResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import jakarta.validation.Valid;
@@ -20,6 +22,7 @@ public class GameController {
 
     private final GameService gameService;
     private final GameTeamService gameTeamService;
+    private final GameTeamPlayerService gameTeamPlayerService;
 
     @GetMapping("/{gameId}")
     public ResponseEntity<GameDetailResponse> getGameDetail(@PathVariable final Long gameId) {
@@ -43,5 +46,10 @@ public class GameController {
                                                                            @RequestBody @Valid GameTeamCheerRequestDto cheerRequestDto) {
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{gameId}/lineup")
+    public ResponseEntity<List<GameLineupResponse>> getGameLineup(@PathVariable final Long gameId) {
+        return ResponseEntity.ok(gameTeamPlayerService.getLineup(gameId));
     }
 }
