@@ -19,7 +19,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/comments/register")
+    @PostMapping("/comments")
     public ResponseEntity<Void> register(@RequestBody @Valid final CommentRequestDto commentRequestDto) {
         commentService.register(commentRequestDto);
         return ResponseEntity.ok(null);
