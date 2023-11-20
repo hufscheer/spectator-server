@@ -33,7 +33,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(commentRequestDto)
-                .post("/comments/register")
+                .post("/comments")
                 .then().log().all()
                 .extract();
 
