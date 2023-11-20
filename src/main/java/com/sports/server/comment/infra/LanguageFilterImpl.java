@@ -13,6 +13,7 @@ public class LanguageFilterImpl implements LanguageFilter {
         this.badWordFiltering = new BadWordFiltering();
     }
 
+    @Override
     public boolean containsBadWord(final String content) {
         return badWordFiltering.blankCheck(content);
     }
