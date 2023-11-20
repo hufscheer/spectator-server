@@ -1,6 +1,6 @@
 package com.sports.server.comment.domain;
 
-public interface BadWordFilter {
+public interface LanguageFilter {
 
     boolean containsBadWord(final String content);
 
