@@ -16,5 +16,5 @@ public interface RecordRepository extends Repository<Record, Long> {
             "join fetch r.scoredQuarter rq " +
             "where r.game.id = :gameId " +
             "order by rq.id desc, r.scoredAt desc")
-    List<Record> findByGameId(final @Param("gameId") Long gameId);
+    List<Record> findByGameIdOrderByQuarterAndScoredAtDesc(final @Param("gameId") Long gameId);
 }

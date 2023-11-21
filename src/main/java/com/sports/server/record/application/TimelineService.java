@@ -22,7 +22,7 @@ public class TimelineService {
     private final RecordRepository recordRepository;
 
     public List<TimelineResponse> getTimeline(final Long gameId) {
-        List<Record> records = recordRepository.findByGameId(gameId);
+        List<Record> records = recordRepository.findByGameIdOrderByQuarterAndScoredAtDesc(gameId);
         Map<Quarter, List<Record>> groupedByQuarter = records.stream()
                 .collect(groupingBy(Record::getScoredQuarter));
         return groupedByQuarter.keySet()
