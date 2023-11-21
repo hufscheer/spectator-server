@@ -3,7 +3,7 @@ SET foreign_key_checks = 0;
 -- 스포츠
 INSERT INTO sports (id, name) VALUES (1, '농구');
 -- 농구 쿼터
-INSERT INTO quarters (id, name, sport_id)
+INSERT INTO quarters (id, name, sports_id)
 VALUES (1, '1쿼터', 1),
        (2, '2쿼터', 1),
        (3, '3쿼터', 1),

@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Map;
@@ -16,24 +17,25 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@Sql(scripts = "/record-fixture.sql")
 public class TimelineAcceptanceTest extends AcceptanceTest {
 
     private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_3QUARTER = List.of(
-            new TimelineResponse.RecordResponse(39, "선수 5", "팀 A", 3),
-            new TimelineResponse.RecordResponse(25, "선수 9", "팀 B", 2),
-            new TimelineResponse.RecordResponse(1, "선수 4", "팀 A", 3)
+            new TimelineResponse.RecordResponse(39, "선수5", "팀 A", 3),
+            new TimelineResponse.RecordResponse(25, "선수9", "팀 B", 2),
+            new TimelineResponse.RecordResponse(1, "선수4", "팀 A", 3)
     );
 
     private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_2QUARTER = List.of(
-            new TimelineResponse.RecordResponse(30, "선수 5", "팀 A", 3),
-            new TimelineResponse.RecordResponse(20, "선수 10", "팀 B", 2),
-            new TimelineResponse.RecordResponse(5, "선수 1", "팀 A", 2)
+            new TimelineResponse.RecordResponse(30, "선수5", "팀 A", 3),
+            new TimelineResponse.RecordResponse(20, "선수10", "팀 B", 2),
+            new TimelineResponse.RecordResponse(5, "선수1", "팀 A", 2)
     );
 
     private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_1QUARTER = List.of(
-            new TimelineResponse.RecordResponse(14, "선수 2", "팀 A", 3),
-            new TimelineResponse.RecordResponse(10, "선수 6", "팀 B", 2),
-            new TimelineResponse.RecordResponse(3, "선수 3", "팀 A", 2)
+            new TimelineResponse.RecordResponse(14, "선수2", "팀 A", 3),
+            new TimelineResponse.RecordResponse(10, "선수6", "팀 B", 2),
+            new TimelineResponse.RecordResponse(3, "선수3", "팀 A", 2)
     );
 
     @Test
