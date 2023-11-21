@@ -4,12 +4,11 @@ import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamPlayer;
+import com.sports.server.sport.domain.Quarter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,9 +31,10 @@ public class Record extends BaseEntity<Record> {
     @Column(name = "score", nullable = false)
     private int score;
 
-    @Column(name = "scored_quarter", nullable = false)
-    private String scoredQuarter;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "scored_quarter_id")
+    private Quarter scoredQuarter;
 
     @Column(name = "scored_at", nullable = false)
-    private LocalDateTime scoredAt;
+    private Integer scoredAt;
 }
