@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record GameResponseDto(
+        Long id,
         LocalDateTime startTime,
         String gameQuarter,
         String gameName,
@@ -15,6 +16,7 @@ public record GameResponseDto(
 ) {
     public GameResponseDto(final Game game, final List<GameTeam> gameTeams, final Sport sport) {
         this(
+                game.getId(),
                 game.getStartTime(),
                 game.getGameQuarter(),
                 game.getName(),
