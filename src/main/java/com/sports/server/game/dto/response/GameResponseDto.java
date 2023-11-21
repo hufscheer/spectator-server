@@ -1,22 +1,43 @@
 package com.sports.server.game.dto.response;
 
 import com.sports.server.game.domain.Game;
+import com.sports.server.game.domain.GameTeam;
+import com.sports.server.sport.domain.Sport;
+import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
-public class GameResponseDto {
-    private Long id;
+public record GameResponseDto(
+        LocalDateTime startTime,
+        String gameQuarter,
+        String gameName,
+        List<TeamResponse> gameTeams,
+        String sportsName
+) {
+    public GameResponseDto(final Game game, final List<GameTeam> gameTeams, final Sport sport) {
+        this(
+                game.getStartTime(),
+                game.getGameQuarter(),
+                game.getName(),
+                gameTeams.stream()
+                        .map(TeamResponse::new)
+                        .toList(),
+                sport.getName()
+        );
+    }
 
-    private List<GameTeamDto> teams;
-
-    private String gameQuarter;
-
-    public GameResponseDto(Game game) {
-        this.id = game.getId();
-        this.teams = game.getTeams().stream().map(GameTeamDto::new).toList();
-        this.gameQuarter = game.getGameQuarter();
+    public record TeamResponse(
+            Long gameTeamId,
+            String gameTeamName,
+            String logoImageUrl,
+            Integer score
+    ) {
+        public TeamResponse(GameTeam gameTeam) {
+            this(
+                    gameTeam.getId(),
+                    gameTeam.getTeam().getName(),
+                    gameTeam.getTeam().getLogoImageUrl(),
+                    gameTeam.getScore()
+            );
+        }
     }
 }
