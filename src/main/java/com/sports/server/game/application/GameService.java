@@ -7,11 +7,11 @@ import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamRepository;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
+import com.sports.server.league.domain.League;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +28,11 @@ public class GameService {
         return new GameDetailResponse(game, teams);
     }
 
-    public List<GameResponseDto> getAllGames() {
-        return gameRepository.findAll().stream().map(GameResponseDto::new)
+    public List<GameResponseDto> getAllGamesWithLeague(final Long leagueId) {
+        League league = entityUtils.getEntity(leagueId, League.class);
+        List<Game> games = gameRepository.findAllByLeague(league);
+        return games.stream()
+                .map(game -> new GameResponseDto(game, gameTeamRepository.findAllByGameWithTeam(game), game.getSport()))
                 .toList();
     }
 }
