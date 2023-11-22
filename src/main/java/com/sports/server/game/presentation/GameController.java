@@ -16,41 +16,47 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/games")
 public class GameController {
 
     private final GameService gameService;
     private final GameTeamService gameTeamService;
     private final GameTeamPlayerService gameTeamPlayerService;
 
-    @GetMapping("/games/{gameId}")
+    @GetMapping("/{gameId}")
     public ResponseEntity<GameDetailResponse> getGameDetail(@PathVariable final Long gameId) {
         return ResponseEntity.ok(gameService.getGameDetail(gameId));
     }
 
-    @GetMapping("/leagues/{leagueId}/games")
-    public ResponseEntity<List<GameResponseDto>> getAllGamesWithLeague(@PathVariable final Long leagueId) {
-        return ResponseEntity.ok(gameService.getAllGamesWithLeague(leagueId));
+    @GetMapping
+    public ResponseEntity<List<GameResponseDto>> getAllGames(
+            @RequestParam(value = "league_id", required = false) final Long leagueId,
+            @RequestParam("state") final String state,
+            @RequestParam(value = "sport_id", required = false) List<Long> sportIds) {
+        return ResponseEntity.ok(gameService.getAllGames(leagueId, state, sportIds));
     }
 
-    @GetMapping("/games/{gameId}/cheer")
+    @GetMapping("/{gameId}/cheer")
     public ResponseEntity<List<GameTeamCheerResponseDto>> getCheerCountOfGameTeams(
             @PathVariable final Long gameId
     ) {
         return ResponseEntity.ok(gameTeamService.getCheerCountOfGameTeams(gameId));
     }
 
-    @PostMapping("/games/{gameId}/cheer")
+    @PostMapping("/{gameId}/cheer")
     public ResponseEntity<List<GameTeamCheerResponseDto>> updateCheerCount(@PathVariable final Long gameId,
                                                                            @RequestBody @Valid GameTeamCheerRequestDto cheerRequestDto) {
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/games/{gameId}/lineup")
+    @GetMapping("/{gameId}/lineup")
     public ResponseEntity<List<GameLineupResponse>> getGameLineup(@PathVariable final Long gameId) {
         return ResponseEntity.ok(gameTeamPlayerService.getLineup(gameId));
     }
