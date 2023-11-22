@@ -1,8 +1,9 @@
 package com.sports.server.game.dto.response;
 
+import static java.util.Comparator.comparingLong;
+
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public record GameDetailResponse(
                 game.getGameQuarter(),
                 game.getName(),
                 gameTeams.stream()
+                        .sorted(comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
                         .toList()
         );
