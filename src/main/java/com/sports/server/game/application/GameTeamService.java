@@ -1,5 +1,7 @@
 package com.sports.server.game.application;
 
+import static java.util.Comparator.comparingLong;
+
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.game.domain.Game;
@@ -8,12 +10,11 @@ import com.sports.server.game.domain.GameTeamRepository;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
 import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.game.exception.GameErrorMessages;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class GameTeamService {
     public List<GameTeamCheerResponseDto> getCheerCountOfGameTeams(final Long gameId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
         return gameTeamRepository.findAllByGame(game).stream()
+                .sorted(comparingLong(GameTeam::getId))
                 .map(GameTeamCheerResponseDto::new)
                 .toList();
     }
