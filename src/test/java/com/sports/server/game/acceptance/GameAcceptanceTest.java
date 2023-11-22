@@ -61,14 +61,14 @@ class GameAcceptanceTest extends AcceptanceTest {
     @Test
     void 리그의_경기를_전체_조회한다() {
 
-        // given
-        Long leagueId = 1L;
-
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given()
+                .queryParam("state", "SCHEDULED")
+                .queryParam("league_id", 1L)
+                .log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("leagues/{leagueId}/games", leagueId)
+                .get("/games")
                 .then().log().all()
                 .extract();
 
