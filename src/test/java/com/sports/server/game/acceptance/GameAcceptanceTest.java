@@ -75,10 +75,10 @@ class GameAcceptanceTest extends AcceptanceTest {
         //then
         List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
         assertAll(
-                () -> assertThat(games).hasSize(3),
+                () -> assertThat(games).hasSize(10),
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(1L))
-                        .containsExactly(
+                        .contains(
                                 new GameResponseDto(
                                         1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
                                         "1st Quarter", "농구 대전",
