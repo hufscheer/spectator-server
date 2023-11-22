@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameDynamicRepository;
 import com.sports.server.game.domain.GameState;
+import com.sports.server.game.dto.request.PageRequestDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,17 +19,19 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
 
     @Override
     public List<Game> findAllByLeagueAndStateAndSports(final Long leagueId, final GameState state,
-                                                       final List<Long> sportIds) {
+                                                       final List<Long> sportIds, final PageRequestDto pageRequestDto) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
         return jpaQueryFactory
                 .selectFrom(game)
                 .where(booleanBuilder
+                        .and(() -> game.id.lt(pageRequestDto.cursor()))
                         .and(() -> game.league.id.eq(leagueId))
                         .and(() -> game.state.eq(state))
                         .and(() -> game.sport.id.in(sportIds))
                         .build()
                 ).orderBy(game.startTime.asc())
                 .orderBy(game.id.asc())
+                .limit(pageRequestDto.size())
                 .fetch();
     }
 }

@@ -4,6 +4,7 @@ import com.sports.server.game.application.GameService;
 import com.sports.server.game.application.GameTeamPlayerService;
 import com.sports.server.game.application.GameTeamService;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameLineupResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
@@ -13,6 +14,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,8 +40,9 @@ public class GameController {
     public ResponseEntity<List<GameResponseDto>> getAllGames(
             @RequestParam(value = "league_id", required = false) final Long leagueId,
             @RequestParam("state") final String state,
-            @RequestParam(value = "sport_id", required = false) List<Long> sportIds) {
-        return ResponseEntity.ok(gameService.getAllGames(leagueId, state, sportIds));
+            @RequestParam(value = "sport_id", required = false) List<Long> sportIds,
+            @ModelAttribute PageRequestDto pageRequest) {
+        return ResponseEntity.ok(gameService.getAllGames(leagueId, state, sportIds, pageRequest));
     }
 
     @GetMapping("/{gameId}/cheer")

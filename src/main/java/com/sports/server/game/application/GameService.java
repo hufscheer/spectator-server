@@ -9,6 +9,7 @@ import com.sports.server.game.domain.GameRepository;
 import com.sports.server.game.domain.GameState;
 import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamRepository;
+import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
 import java.util.List;
@@ -33,10 +34,11 @@ public class GameService {
     }
 
     public List<GameResponseDto> getAllGames(final Long leagueId, final String stateValue,
-                                             final List<Long> sportIds) {
+                                             final List<Long> sportIds, final PageRequestDto pageRequest) {
         GameState state = GameState.findGameStateWithValue(stateValue);
 
-        List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(leagueId, state, sportIds);
+        List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(leagueId, state, sportIds,
+                pageRequest);
 
         return games.stream()
                 .map(game -> new GameResponseDto(game,
