@@ -75,7 +75,7 @@ class GameAcceptanceTest extends AcceptanceTest {
         //then
         List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
         assertAll(
-                () -> assertThat(games).hasSize(2),
+                () -> assertThat(games).hasSize(3),
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(1L))
                         .containsExactly(
