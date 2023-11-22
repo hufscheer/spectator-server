@@ -13,6 +13,11 @@ INSERT INTO games (sport_id, administrator_id, league_id, name, start_time, vide
                    state)
 VALUES (1, 3, 2, '루미큐브 대회', '2023-11-14T18:45:00', 'ghi789', '2023-11-14T19:00:00', '3rd Quarter', 'SCHEDULED');
 
+-- 농구 대전과 시간이 같은 경우
+INSERT INTO games (sport_id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
+                   state)
+VALUES (1, 3, 1, '루미큐브 대회', '2023-11-12T10:00:00', 'ghi789', '2023-11-12T10:15:00', '3rd Quarter', 'SCHEDULED');
+
 -- 팀
 INSERT INTO teams (name, logo_image_url, administrator_id, organization_id, league_id)
 VALUES ('팀 A', 'http://example.com/logo_a.png', 1, 1, 1);
