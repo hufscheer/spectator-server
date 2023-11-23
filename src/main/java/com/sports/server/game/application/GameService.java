@@ -9,6 +9,7 @@ import com.sports.server.game.domain.GameRepository;
 import com.sports.server.game.domain.GameState;
 import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamRepository;
+import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
@@ -33,11 +34,12 @@ public class GameService {
         return new GameDetailResponse(game, teams);
     }
 
-    public List<GameResponseDto> getAllGames(final Long leagueId, final String stateValue,
-                                             final List<Long> sportIds, final PageRequestDto pageRequest) {
-        GameState state = GameState.findGameStateWithValue(stateValue);
+    public List<GameResponseDto> getAllGames(
+            final GamesQueryRequestDto queryRequestDto, final PageRequestDto pageRequest) {
+        GameState state = GameState.findGameStateWithValue(queryRequestDto.stateValue());
 
-        List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(leagueId, state, sportIds,
+        List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(queryRequestDto.leagueId(), state,
+                queryRequestDto.sportIds(),
                 pageRequest);
 
         return games.stream()

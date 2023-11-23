@@ -4,6 +4,7 @@ import com.sports.server.game.application.GameService;
 import com.sports.server.game.application.GameTeamPlayerService;
 import com.sports.server.game.application.GameTeamService;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameLineupResponse;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,11 +38,9 @@ public class GameController {
 
     @GetMapping
     public ResponseEntity<List<GameResponseDto>> getAllGames(
-            @RequestParam(value = "league_id", required = false) final Long leagueId,
-            @RequestParam("state") final String state,
-            @RequestParam(value = "sport_id", required = false) List<Long> sportIds,
+            @ModelAttribute GamesQueryRequestDto queryRequestDto,
             @ModelAttribute PageRequestDto pageRequest) {
-        return ResponseEntity.ok(gameService.getAllGames(leagueId, state, sportIds, pageRequest));
+        return ResponseEntity.ok(gameService.getAllGames(queryRequestDto, pageRequest));
     }
 
     @GetMapping("/{gameId}/cheer")
