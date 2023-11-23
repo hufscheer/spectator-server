@@ -23,6 +23,14 @@ public class DynamicBooleanBuilder {
         return this;
     }
 
+    public DynamicBooleanBuilder or(Supplier<BooleanExpression> expressionSupplier) {
+        try {
+            booleanBuilder.or(expressionSupplier.get());
+        } catch (IllegalArgumentException | NullPointerException ignored) {
+        }
+        return this;
+    }
+
     public BooleanBuilder build() {
         return booleanBuilder;
     }
