@@ -36,10 +36,11 @@ public class GameService {
 
     public List<GameResponseDto> getAllGames(
             final GamesQueryRequestDto queryRequestDto, final PageRequestDto pageRequest) {
-        GameState state = GameState.findGameStateWithValue(queryRequestDto.stateValue());
 
-        List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(queryRequestDto.leagueId(), state,
-                queryRequestDto.sportIds(),
+        GameState state = GameState.findGameStateWithValue(queryRequestDto.getStateValue());
+
+        List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(queryRequestDto.getLeagueId(), state,
+                queryRequestDto.getSportIds(),
                 pageRequest);
 
         return games.stream()
