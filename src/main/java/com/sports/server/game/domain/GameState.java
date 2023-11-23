@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum GameState {
     PLAYING, FINISHED, SCHEDULED;
 
-    public static GameState findGameStateWithValue(final String value) {
+    public static GameState of(final String value) {
         return Arrays.stream(GameState.values())
                 .filter(state -> state.name().equalsIgnoreCase(value))
                 .findFirst().orElseThrow(
