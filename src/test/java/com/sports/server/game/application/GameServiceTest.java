@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.support.ServiceTest;
@@ -25,16 +26,18 @@ public class GameServiceTest extends ServiceTest {
     private final PageRequestDto pageRequestDto = new PageRequestDto(null, size);
     private final List<Long> sportIds = List.of(1L, 2L);
     private final String stateValue = "SCHEDULED";
+    private final GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, stateValue, sportIds);
 
     @Test
     void 존재하지_않는_게임_상태를_조회할_때_예외가_발생한다() {
 
         //given
         String invalidStateValue = "INVALID";
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, invalidStateValue, sportIds);
 
         // when
         assertThrows(CustomException.class,
-                () -> gameService.getAllGames(validLeagueId, invalidStateValue, sportIds, pageRequestDto));
+                () -> gameService.getAllGames(queryRequestDto, pageRequestDto));
 
     }
 
@@ -45,7 +48,7 @@ public class GameServiceTest extends ServiceTest {
         List<Long> sportIds = List.of(1L);
 
         //when
-        List<GameResponseDto> games = gameService.getAllGames(validLeagueId, stateValue, sportIds, pageRequestDto);
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
         LocalDateTime startTimeOfFirstGame = games.get(0).startTime();
@@ -63,7 +66,7 @@ public class GameServiceTest extends ServiceTest {
         List<Long> sportIds = List.of(1L);
 
         //when
-        List<GameResponseDto> games = gameService.getAllGames(validLeagueId, stateValue, sportIds, pageRequestDto);
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
         GameResponseDto firstGame = games.get(0);
@@ -84,8 +87,11 @@ public class GameServiceTest extends ServiceTest {
     @Test
     void 스포츠_아이디가_쿼리_스트링으로_조회되지_않는_경우_전체가_반환된다() {
 
+        //given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, stateValue, null);
+
         //when
-        List<GameResponseDto> games = gameService.getAllGames(validLeagueId, stateValue, null, pageRequestDto);
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
         Assertions.assertEquals(
@@ -96,8 +102,11 @@ public class GameServiceTest extends ServiceTest {
     @Test
     void 리그_아이디가_쿼리_스트링으로_조회되지_않는_경우_전체가_반환된다() {
 
+        //given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
+
         //when
-        List<GameResponseDto> games = gameService.getAllGames(null, stateValue, null, pageRequestDto);
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
         Assertions.assertEquals(
@@ -109,8 +118,11 @@ public class GameServiceTest extends ServiceTest {
     @Test
     void 하나의_경기에서_팀이_아이디_순으로_반환된다() {
 
+        //given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
+
         //when
-        List<GameResponseDto> games = gameService.getAllGames(null, stateValue, null, pageRequestDto);
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
         Assertions.assertTrue(
@@ -126,10 +138,11 @@ public class GameServiceTest extends ServiceTest {
         void 세개만_조회한다() {
 
             // given
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
             PageRequestDto pageRequestDto = new PageRequestDto(null, 3);
 
             //when
-            List<GameResponseDto> games = gameService.getAllGames(null, stateValue, null, pageRequestDto);
+            List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
             //then
             Assertions.assertEquals(
@@ -143,10 +156,11 @@ public class GameServiceTest extends ServiceTest {
         void 기본적으로_10개를_조회한다() {
 
             // given
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
             PageRequestDto pageRequestDto = new PageRequestDto(null, null);
 
             //when
-            List<GameResponseDto> games = gameService.getAllGames(null, stateValue, null, pageRequestDto);
+            List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
             //then
             Assertions.assertEquals(

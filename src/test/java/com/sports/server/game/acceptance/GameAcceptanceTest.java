@@ -63,7 +63,7 @@ class GameAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
-                .queryParam("state", "SCHEDULED")
+                .queryParam("status", "SCHEDULED")
                 .queryParam("league_id", 1L)
                 .log().all()
                 .when()
