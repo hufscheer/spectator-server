@@ -21,17 +21,32 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
     public List<Game> findAllByLeagueAndStateAndSports(final Long leagueId, final GameState state,
                                                        final List<Long> sportIds, final PageRequestDto pageRequestDto) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
+        Game lastGame = findLastGame(pageRequestDto.cursor());
+
         return jpaQueryFactory
                 .selectFrom(game)
                 .where(booleanBuilder
-                        .and(() -> game.id.lt(pageRequestDto.cursor()))
+                        .and(
+                                () -> game.startTime.eq(lastGame.getStartTime())
+                                        .and(game.id.gt(pageRequestDto.cursor()))
+                        )
+                        .or(() -> game.startTime.after(lastGame.getStartTime()))
                         .and(() -> game.league.id.eq(leagueId))
                         .and(() -> game.state.eq(state))
                         .and(() -> game.sport.id.in(sportIds))
                         .build()
-                ).orderBy(game.startTime.asc())
+                )
+                .orderBy(game.startTime.asc())
                 .orderBy(game.id.asc())
                 .limit(pageRequestDto.size())
                 .fetch();
     }
+
+    private Game findLastGame(final Long cursor) {
+        return jpaQueryFactory
+                .selectFrom(game)
+                .where(game.id.eq(cursor))
+                .fetchFirst();
+    }
+
 }
