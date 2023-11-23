@@ -1,25 +1,24 @@
 package com.sports.server.game.dto.request;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestParam;
+import lombok.Getter;
 
-public record GamesQueryRequestDto(
-        @RequestParam("league_id")
-        Long leagueId,
-        @RequestParam("state")
-        String stateValue,
-        @RequestParam("sport_id")
-        List<Long> sportIds
-) {
+@Getter
+public class GamesQueryRequestDto {
+
     private static final String DEFAULT_STATE_VALUE = "PLAYING";
 
-    @Override
-    public Long leagueId() {
-        return leagueId;
+    private Long leagueId;
+    private String stateValue;
+    private List<Long> sportIds;
+
+    public GamesQueryRequestDto(Long league_id, String status, List<Long> sport_id) {
+        this.leagueId = league_id;
+        this.stateValue = status;
+        this.sportIds = sport_id;
     }
 
-    @Override
-    public String stateValue() {
+    public String getStateValue() {
         if (stateValue == null) {
             return DEFAULT_STATE_VALUE;
         }
@@ -27,8 +26,4 @@ public record GamesQueryRequestDto(
         return stateValue;
     }
 
-    @Override
-    public List<Long> sportIds() {
-        return sportIds;
-    }
 }
