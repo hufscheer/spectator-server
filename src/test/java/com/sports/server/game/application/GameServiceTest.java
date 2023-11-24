@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -131,6 +132,7 @@ public class GameServiceTest extends ServiceTest {
 
     }
 
+    @Nested
     @DisplayName("경기들을 페이징을 이용해서 조회할 때")
     class PagingTest {
 
@@ -139,7 +141,7 @@ public class GameServiceTest extends ServiceTest {
 
             // given
             GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
-            PageRequestDto pageRequestDto = new PageRequestDto(null, 3);
+            PageRequestDto pageRequestDto = new PageRequestDto(0L, 3);
 
             //when
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
@@ -157,7 +159,7 @@ public class GameServiceTest extends ServiceTest {
 
             // given
             GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
-            PageRequestDto pageRequestDto = new PageRequestDto(null, null);
+            PageRequestDto pageRequestDto = new PageRequestDto(0L, null);
 
             //when
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
