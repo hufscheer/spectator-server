@@ -23,7 +23,7 @@ public class GameServiceTest extends ServiceTest {
     GameService gameService;
     private final Long validLeagueId = 1L;
     private final int size = 5;
-    private final PageRequestDto pageRequestDto = new PageRequestDto(null, size);
+    private final PageRequestDto pageRequestDto = new PageRequestDto(0L, size);
     private final List<Long> sportIds = List.of(1L, 2L);
     private final String stateValue = "SCHEDULED";
     private final GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, stateValue, sportIds);

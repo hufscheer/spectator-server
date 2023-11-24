@@ -97,6 +97,10 @@ INSERT INTO game_teams (game_id, team_id, cheer_count, score)
 VALUES (3, 1, 1, 0),
        (3, 3, 1, 0);
 
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (5, 2, 1, 1), -- 팀 A의 정보
+       (5, 3, 2, 2);
+
 INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted)
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false);
 

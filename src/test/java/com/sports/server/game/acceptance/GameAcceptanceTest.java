@@ -65,6 +65,7 @@ class GameAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .queryParam("status", "SCHEDULED")
                 .queryParam("league_id", 1L)
+                .queryParam("cursor", 1L)
                 .log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -77,16 +78,16 @@ class GameAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(games).hasSize(10),
                 () -> assertThat(games)
-                        .filteredOn(game -> game.id().equals(1L))
-                        .contains(
+                        .filteredOn(game -> game.id().equals(5L))
+                        .containsExactly(
                                 new GameResponseDto(
-                                        1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
+                                        5L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
                                         "1st Quarter", "농구 대전",
                                         List.of(new GameResponseDto.TeamResponse(
-                                                        1L, "팀 A", "http://example.com/logo_a.png", 1
+                                                        7L, "팀 B", "http://example.com/logo_b.png", 1
                                                 ),
                                                 new GameResponseDto.TeamResponse(
-                                                        2L, "팀 B", "http://example.com/logo_b.png", 2)),
+                                                        8L, "팀 C", "http://example.com/logo_c.png", 2)),
                                         "농구"
                                 )
                         ),
