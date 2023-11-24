@@ -98,8 +98,40 @@ VALUES (3, 1, 1, 0),
        (3, 3, 1, 0);
 
 INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (4, 2, 1, 1), -- 팀 A의 정보
+       (4, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
 VALUES (5, 2, 1, 1), -- 팀 A의 정보
        (5, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (6, 2, 1, 1), -- 팀 A의 정보
+       (6, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (7, 2, 1, 1), -- 팀 A의 정보
+       (7, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (8, 2, 1, 1), -- 팀 A의 정보
+       (8, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (9, 2, 1, 1), -- 팀 A의 정보
+       (9, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (10, 2, 1, 1), -- 팀 A의 정보
+       (10, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (11, 2, 1, 1), -- 팀 A의 정보
+       (11, 3, 2, 2);
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (12, 2, 1, 1), -- 팀 A의 정보
+       (12, 3, 2, 2);
 
 INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted)
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false);
