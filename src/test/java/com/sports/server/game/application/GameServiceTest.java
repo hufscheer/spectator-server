@@ -8,7 +8,6 @@ import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.support.ServiceTest;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -44,20 +43,37 @@ public class GameServiceTest extends ServiceTest {
 
     @Test
     void 날짜순으로_경기들이_반환된다() {
-
-        //given
-        List<Long> sportIds = List.of(1L);
-
         //when
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
-        LocalDateTime startTimeOfFirstGame = games.get(0).startTime();
-        LocalDateTime startTimeOfSecondGame = games.get(1).startTime();
+        assertTrue(isSortedByDate(games));
+    }
 
-        assertTrue(startTimeOfFirstGame.isEqual(startTimeOfSecondGame) || startTimeOfFirstGame
-                .isBefore(startTimeOfSecondGame));
+    private boolean isSortedByDate(final List<GameResponseDto> games) {
+        for (int i = 0; i < games.size() - 1; i++) {
+            GameResponseDto firstGame = games.get(i);
+            GameResponseDto secondGame = games.get(i + 1);
 
+            if (firstGame.startTime().isAfter(secondGame.startTime())) {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    private boolean isSortedById(final List<GameResponseDto> games) {
+        for (int i = 0; i < games.size() - 1; i++) {
+            GameResponseDto firstGame = games.get(i);
+            GameResponseDto secondGame = games.get(i + 1);
+
+            if (firstGame.startTime().equals(secondGame.startTime()) && firstGame.id() > secondGame.id()) {
+                return false;
+            }
+
+        }
+        return true;
     }
 
     @Test
@@ -70,19 +86,7 @@ public class GameServiceTest extends ServiceTest {
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
-        GameResponseDto firstGame = games.get(0);
-        GameResponseDto secondGame = games.get(1);
-
-        if (firstGame.startTime().equals(secondGame.startTime())) {
-            assertTrue(
-                    firstGame.id() < secondGame.id()
-            );
-        } else {
-            assertTrue(
-                    firstGame.startTime().isBefore(secondGame.startTime())
-            );
-        }
-
+        assertTrue(isSortedById(games));
     }
 
     @Test
@@ -126,7 +130,7 @@ public class GameServiceTest extends ServiceTest {
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
-        Assertions.assertTrue(
+        assertTrue(
                 games.get(0).gameTeams().get(0).gameTeamId() < games.get(0).gameTeams().get(1).gameTeamId()
         );
 
