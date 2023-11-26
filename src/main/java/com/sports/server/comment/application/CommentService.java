@@ -1,18 +1,23 @@
 package com.sports.server.comment.application;
 
-import static com.sports.server.comment.exception.CommentErrorMessages.COMMENT_CONTAINS_BAD_WORD;
-
 import com.sports.server.comment.domain.Comment;
+import com.sports.server.comment.domain.CommentDynamicRepository;
 import com.sports.server.comment.domain.CommentRepository;
 import com.sports.server.comment.domain.LanguageFilter;
 import com.sports.server.comment.dto.request.CommentRequestDto;
-import com.sports.server.comment.dto.response.CommentResponseDto;
+import com.sports.server.comment.dto.response.CommentResponse;
+import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.CustomException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.sports.server.comment.exception.CommentErrorMessages.COMMENT_CONTAINS_BAD_WORD;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentDynamicRepository commentDynamicRepository;
     private final LanguageFilter languageFilter;
 
     @Transactional
@@ -35,10 +41,14 @@ public class CommentService {
         }
     }
 
-    public List<CommentResponseDto> getAllCommentsWithGameId(final Long gameId) {
-        return commentRepository.getAllByGameOrderByCreatedAtDesc(gameId)
+    public List<CommentResponse> getCommentsByGameId(final Long gameId, final PageRequestDto pageRequest) {
+        List<CommentResponse> responses = commentDynamicRepository.findByGameIdOrderByStartTime(
+                        gameId, pageRequest.cursor(), pageRequest.size()
+                )
                 .stream()
-                .map(CommentResponseDto::new)
-                .toList();
+                .map(CommentResponse::new)
+                .collect(Collectors.toList());
+        Collections.reverse(responses);
+        return responses;
     }
 }

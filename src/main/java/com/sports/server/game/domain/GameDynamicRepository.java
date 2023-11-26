@@ -1,6 +1,6 @@
 package com.sports.server.game.domain;
 
-import com.sports.server.game.dto.request.PageRequestDto;
+import com.sports.server.common.dto.PageRequestDto;
 import java.util.List;
 
 public interface GameDynamicRepository {

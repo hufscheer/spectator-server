@@ -1,4 +1,4 @@
-package com.sports.server.game.dto.request;
+package com.sports.server.common.dto;
 
 public record PageRequestDto(
         Long cursor,
