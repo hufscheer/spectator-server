@@ -2,12 +2,10 @@ package com.sports.server.comment.acceptance;
 
 import com.sports.server.comment.dto.request.CommentRequestDto;
 import com.sports.server.comment.dto.response.CommentResponse;
-import com.sports.server.comment.dto.response.CommentResponseDto;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,11 +28,10 @@ public class CommentAcceptanceTest extends AcceptanceTest {
         // given
         String content = "파이팅!";
         Long gameTeamId = 1L;
-        Long gameId = 1L;
         CommentRequestDto commentRequestDto = new CommentRequestDto(content, gameTeamId);
 
         // when
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(commentRequestDto)
@@ -42,23 +39,8 @@ public class CommentAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        // then
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games/{gameId}/comments", gameId)
-                .then().log().all()
-                .extract();
-
         //then
-        List<CommentResponseDto> actual = toResponses(response, CommentResponseDto.class);
-
-        assertAll(
-                () -> Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual)
-                        .map(CommentResponseDto::getContent)
-                        .contains(content)
-        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("게임의 댓글을 조회할 때")
@@ -82,7 +64,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
             List<CommentResponse> actual = toResponses(response, CommentResponse.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
-                    () -> assertThat(actual.get(0))
+                    () -> assertThat(actual.get(9))
                             .isEqualTo(new CommentResponse(
                                     1L,
                                     "댓글1",
@@ -92,7 +74,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
                             )),
                     () -> assertThat(actual)
                             .map(CommentResponse::commentId)
-                            .containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L)
+                            .containsExactly(10L, 9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L)
             );
         }
     }

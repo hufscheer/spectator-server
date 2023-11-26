@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameDynamicRepository;
 import com.sports.server.game.domain.GameState;
-import com.sports.server.game.dto.request.PageRequestDto;
+import com.sports.server.common.dto.PageRequestDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

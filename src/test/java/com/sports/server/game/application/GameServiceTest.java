@@ -1,21 +1,22 @@
 package com.sports.server.game.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.game.dto.request.GamesQueryRequestDto;
-import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.support.ServiceTest;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Sql(scripts = "/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -27,7 +28,6 @@ public class GameServiceTest extends ServiceTest {
     private final PageRequestDto pageRequestDto = new PageRequestDto(null, size);
     private final List<Long> sportIds = List.of(1L, 2L);
     private final String stateValue = "SCHEDULED";
-    private final GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, stateValue, sportIds);
 
     @Test
     void 존재하지_않는_게임_상태를_조회할_때_예외가_발생한다() {

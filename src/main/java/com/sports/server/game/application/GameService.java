@@ -1,9 +1,9 @@
 package com.sports.server.game.application;
 
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.game.domain.*;
 import com.sports.server.game.dto.request.GamesQueryRequestDto;
-import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.game.dto.response.VideoResponse;
@@ -21,7 +21,6 @@ import static java.util.stream.Collectors.groupingBy;
 @Transactional(readOnly = true)
 public class GameService {
 
-    private final GameRepository gameRepository;
     private final GameTeamRepository gameTeamRepository;
     private final GameDynamicRepository gameDynamicRepository;
     private final EntityUtils entityUtils;
