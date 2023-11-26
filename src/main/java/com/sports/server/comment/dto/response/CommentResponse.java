@@ -14,10 +14,17 @@ public record CommentResponse(
     public CommentResponse(Comment comment) {
         this(
                 comment.getId(),
-                comment.getContent(),
+                checkCommentBlocked(comment),
                 comment.getGameTeamId(),
                 comment.getCreatedAt(),
                 comment.isBlocked()
         );
+    }
+
+    private static String checkCommentBlocked(Comment comment) {
+        if (comment.isBlocked()) {
+            return null;
+        }
+        return comment.getContent();
     }
 }
