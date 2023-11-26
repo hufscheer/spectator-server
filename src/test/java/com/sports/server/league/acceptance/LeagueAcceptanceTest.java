@@ -34,6 +34,9 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
+                        .map(LeagueResponse::leagueId)
+                        .containsExactly(3L, 2L, 1L),
+                () -> assertThat(actual)
                         .map(LeagueResponse::name)
                         .containsExactly("롤 대회", "농구대잔치", "삼건물 대회")
         );

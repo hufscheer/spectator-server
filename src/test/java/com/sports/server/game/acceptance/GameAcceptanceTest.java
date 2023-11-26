@@ -41,6 +41,7 @@ class GameAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(game.gameName()).isEqualTo("농구 대전"),
                 () -> assertThat(game.gameQuarter()).isEqualTo("1st Quarter"),
                 () -> assertThat(game.videoId()).isEqualTo("abc123"),
+                () -> assertThat(game.sportName()).isEqualTo("농구"),
                 () -> assertThat(game.startTime()).isEqualTo(
                         LocalDateTime.of(2023, 11, 12, 10, 0, 0)
                 ),
