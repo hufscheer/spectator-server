@@ -4,10 +4,7 @@ import com.sports.server.game.application.GameService;
 import com.sports.server.game.application.GameTeamPlayerService;
 import com.sports.server.game.application.GameTeamService;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
-import com.sports.server.game.dto.response.GameDetailResponse;
-import com.sports.server.game.dto.response.GameLineupResponse;
-import com.sports.server.game.dto.response.GameResponseDto;
-import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
+import com.sports.server.game.dto.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +24,11 @@ public class GameController {
     @GetMapping("/{gameId}")
     public ResponseEntity<GameDetailResponse> getGameDetail(@PathVariable final Long gameId) {
         return ResponseEntity.ok(gameService.getGameDetail(gameId));
+    }
+
+    @GetMapping("{gameId}/video")
+    public ResponseEntity<VideoResponse> getVideo(@PathVariable final Long gameId) {
+        return ResponseEntity.ok(gameService.getVideo(gameId));
     }
 
     @GetMapping
