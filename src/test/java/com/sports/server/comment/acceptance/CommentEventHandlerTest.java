@@ -1,0 +1,73 @@
+package com.sports.server.comment.acceptance;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import com.sports.server.comment.application.CommentService;
+import com.sports.server.comment.dto.request.CommentRequestDto;
+import com.sports.server.comment.dto.response.CommentResponseDto;
+import com.sports.server.support.AcceptanceTest;
+import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
+
+@Sql(scripts = "/comment-fixture.sql")
+class CommentEventHandlerTest extends AcceptanceTest {
+
+    private String URL;
+
+    private final CompletableFuture<CommentResponseDto> completableFuture = new CompletableFuture<>();
+
+    @Autowired
+    private CommentService commentService;
+
+    @BeforeEach
+    public void setup() {
+        URL = "ws://localhost:" + port + "/ws";
+    }
+
+    @Test
+    public void testCreateGameEndpoint() throws Exception {
+        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
+        ObjectMapper objectMapper = messageConverter.getObjectMapper();
+        objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
+        stompClient.setMessageConverter(messageConverter);
+
+        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
+                })
+                .get(1, SECONDS);
+
+        stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
+
+        commentService.register(new CommentRequestDto("댓글입니다.", 1L));
+
+        CommentResponseDto actual = completableFuture.get(10, SECONDS);
+        assertThat(actual.content()).isEqualTo("댓글입니다.");
+    }
+
+    private class CommentStompFrameHandler implements StompFrameHandler {
+        @Override
+        public Type getPayloadType(StompHeaders stompHeaders) {
+            return CommentResponseDto.class;
+        }
+
+        @Override
+        public void handleFrame(StompHeaders stompHeaders, Object o) {
+            completableFuture.complete((CommentResponseDto) o);
+        }
+    }
+}
