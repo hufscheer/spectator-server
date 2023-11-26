@@ -2,16 +2,14 @@ package com.sports.server.comment.presentation;
 
 import com.sports.server.comment.application.CommentService;
 import com.sports.server.comment.dto.request.CommentRequestDto;
-import com.sports.server.comment.dto.response.CommentResponseDto;
+import com.sports.server.comment.dto.response.CommentResponse;
+import com.sports.server.common.dto.PageRequestDto;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +24,9 @@ public class CommentController {
     }
 
     @GetMapping("games/{gameId}/comments")
-    public ResponseEntity<List<CommentResponseDto>> getAllComments(@PathVariable final Long gameId) {
-        return ResponseEntity.ok(commentService.getAllCommentsWithGameId(gameId));
+    public ResponseEntity<List<CommentResponse>> getAllComments(@PathVariable final Long gameId,
+                                                                @ModelAttribute final PageRequestDto pageRequest) {
+
+        return ResponseEntity.ok(commentService.getCommentsByGameId(gameId, pageRequest));
     }
 }
