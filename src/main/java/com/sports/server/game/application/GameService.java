@@ -1,6 +1,6 @@
 package com.sports.server.game.application;
 
-import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.groupingBy;
 
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.game.domain.Game;
@@ -14,6 +14,7 @@ import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +44,18 @@ public class GameService {
                 queryRequestDto.getSportIds(),
                 pageRequest);
 
-        return games.stream()
-                .map(game -> new GameResponseDto(game,
-                        gameTeamRepository.findAllByGameWithTeam(game).stream()
-                                .sorted(comparingLong(GameTeam::getId)).toList(),
-                        game.getSport()))
+        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIds(
+                games.stream()
+                        .map(Game::getId)
+                        .toList()
+        );
+
+        Map<Game, List<GameTeam>> groupedByGame = gameTeams.stream()
+                .collect(groupingBy(GameTeam::getGame));
+
+        return groupedByGame.keySet()
+                .stream()
+                .map(game -> new GameResponseDto(game, groupedByGame.get(game), game.getSport()))
                 .toList();
     }
 }
