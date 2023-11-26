@@ -4,6 +4,8 @@ import com.sports.server.game.application.GameService;
 import com.sports.server.game.application.GameTeamPlayerService;
 import com.sports.server.game.application.GameTeamService;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.game.dto.request.GamesQueryRequestDto;
+import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +34,10 @@ public class GameController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GameResponseDto>> getAllGames() {
-        return ResponseEntity.ok(gameService.getAllGames());
+    public ResponseEntity<List<GameResponseDto>> getAllGames(
+            @ModelAttribute GamesQueryRequestDto queryRequestDto,
+            @ModelAttribute PageRequestDto pageRequest) {
+        return ResponseEntity.ok(gameService.getAllGames(queryRequestDto, pageRequest));
     }
 
     @GetMapping("/{gameId}/cheer")
