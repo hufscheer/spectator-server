@@ -84,10 +84,10 @@ class GameAcceptanceTest extends AcceptanceTest {
                                         5L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
                                         "1st Quarter", "농구 대전",
                                         List.of(new GameResponseDto.TeamResponse(
-                                                        7L, "팀 B", "http://example.com/logo_b.png", 1
+                                                        9L, "팀 B", "http://example.com/logo_b.png", 1
                                                 ),
                                                 new GameResponseDto.TeamResponse(
-                                                        8L, "팀 C", "http://example.com/logo_c.png", 2)),
+                                                        10L, "팀 C", "http://example.com/logo_c.png", 2)),
                                         "농구"
                                 )
                         ),
