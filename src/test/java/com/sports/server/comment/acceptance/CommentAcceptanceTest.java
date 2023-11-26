@@ -24,7 +24,6 @@ public class CommentAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 새로운_댓글이_저장된다() {
-
         // given
         String content = "파이팅!";
         Long gameTeamId = 1L;
