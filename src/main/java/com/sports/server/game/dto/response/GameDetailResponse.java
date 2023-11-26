@@ -11,6 +11,7 @@ public record GameDetailResponse(
         String videoId,
         String gameQuarter,
         String gameName,
+        String sportName,
         List<TeamResponse> gameTeams
 ) {
 
@@ -20,6 +21,7 @@ public record GameDetailResponse(
                 game.getVideoId(),
                 game.getGameQuarter(),
                 game.getName(),
+                game.getSport().getName(),
                 gameTeams.stream()
                         .map(TeamResponse::new)
                         .toList()
