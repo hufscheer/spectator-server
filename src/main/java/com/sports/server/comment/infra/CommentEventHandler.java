@@ -2,7 +2,7 @@ package com.sports.server.comment.infra;
 
 import com.sports.server.comment.domain.Comment;
 import com.sports.server.comment.domain.CommentEvent;
-import com.sports.server.comment.dto.response.CommentResponseDto;
+import com.sports.server.comment.dto.response.CommentResponse;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.game.domain.GameTeam;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,8 @@ public class CommentEventHandler {
 
         messagingTemplate.convertAndSend(
                 DESTINATION + gameId,
-                new CommentResponseDto(comment)
+                new CommentResponse(comment)
         );
 
     }
-
 }

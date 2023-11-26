@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.sports.server.comment.application.CommentService;
 import com.sports.server.comment.dto.request.CommentRequestDto;
-import com.sports.server.comment.dto.response.CommentResponseDto;
+import com.sports.server.comment.dto.response.CommentResponse;
 import com.sports.server.support.AcceptanceTest;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +29,7 @@ class CommentEventHandlerTest extends AcceptanceTest {
 
     private String URL;
 
-    private final CompletableFuture<CommentResponseDto> completableFuture = new CompletableFuture<>();
+    private final CompletableFuture<CommentResponse> completableFuture = new CompletableFuture<>();
 
     @Autowired
     private CommentService commentService;
@@ -41,33 +41,34 @@ class CommentEventHandlerTest extends AcceptanceTest {
 
     @Test
     public void testCreateGameEndpoint() throws Exception {
+        //given
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
         ObjectMapper objectMapper = messageConverter.getObjectMapper();
         objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
         stompClient.setMessageConverter(messageConverter);
-
-        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
-                })
+        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {})
                 .get(1, SECONDS);
 
         stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
 
+        //when
         commentService.register(new CommentRequestDto("댓글입니다.", 1L));
 
-        CommentResponseDto actual = completableFuture.get(10, SECONDS);
+        //then
+        CommentResponse actual = completableFuture.get(10, SECONDS);
         assertThat(actual.content()).isEqualTo("댓글입니다.");
     }
 
     private class CommentStompFrameHandler implements StompFrameHandler {
         @Override
         public Type getPayloadType(StompHeaders stompHeaders) {
-            return CommentResponseDto.class;
+            return CommentResponse.class;
         }
 
         @Override
         public void handleFrame(StompHeaders stompHeaders, Object o) {
-            completableFuture.complete((CommentResponseDto) o);
+            completableFuture.complete((CommentResponse) o);
         }
     }
 }
