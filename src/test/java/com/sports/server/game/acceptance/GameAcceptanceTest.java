@@ -18,7 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql(scripts = "/game-fixture.sql")
 class GameAcceptanceTest extends AcceptanceTest {
 
-    final int lastPkOfFixture = 13;
+    final int lastPkOfFixtureFromFirstLeague = 13;
     final int defaultSizeOfData = 10;
 
     @Test
@@ -121,7 +121,7 @@ class GameAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .queryParam("status", "SCHEDULED")
                 .queryParam("league_id", 1L)
-                .queryParam("size", lastPkOfFixture)
+                .queryParam("size", lastPkOfFixtureFromFirstLeague)
                 .queryParam("sport_id", 1L)
                 .queryParam("sport_id", 2L)
                 .log().all()
@@ -133,7 +133,7 @@ class GameAcceptanceTest extends AcceptanceTest {
 
         // then
         List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
-        assertThat(games).hasSize(lastPkOfFixture);
+        assertThat(games).hasSize(lastPkOfFixtureFromFirstLeague);
 
     }
 }
