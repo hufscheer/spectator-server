@@ -15,6 +15,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class CommentEventHandler {
 
+    private static final String DESTINATION = "/topic/games/";
+
     private final EntityUtils entityUtils;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -27,7 +29,7 @@ public class CommentEventHandler {
         Long gameId = gameTeam.getGame().getId();
 
         messagingTemplate.convertAndSend(
-                "/topic/games/" + gameId,
+                DESTINATION + gameId,
                 new CommentResponseDto(comment)
         );
 
