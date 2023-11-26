@@ -53,8 +53,7 @@ public class GameService {
         Map<Game, List<GameTeam>> groupedByGame = gameTeams.stream()
                 .collect(groupingBy(GameTeam::getGame));
 
-        return groupedByGame.keySet()
-                .stream()
+        return games.stream()
                 .map(game -> new GameResponseDto(game, groupedByGame.get(game), game.getSport()))
                 .toList();
     }
