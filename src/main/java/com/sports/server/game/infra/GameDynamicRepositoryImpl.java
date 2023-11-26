@@ -8,6 +8,7 @@ import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameDynamicRepository;
 import com.sports.server.game.domain.GameState;
 import com.sports.server.game.dto.request.PageRequestDto;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -22,31 +23,31 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
     public List<Game> findAllByLeagueAndStateAndSports(final Long leagueId, final GameState state,
                                                        final List<Long> sportIds, final PageRequestDto pageRequestDto) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-        Game lastGame = findLastGame(pageRequestDto.cursor());
+        LocalDateTime lastStartTime = findLastStartTime(pageRequestDto.cursor());
 
         return jpaQueryFactory
                 .selectFrom(game)
                 .join(game.sport, sport).fetchJoin()
                 .where(booleanBuilder
-                        .and(
-                                () -> game.startTime.eq(lastGame.getStartTime())
-                                        .and(game.id.gt(pageRequestDto.cursor()))
-                        )
-                        .or(() -> game.startTime.after(lastGame.getStartTime()))
+                        .and(() -> game.startTime.goe(lastStartTime)
+                                .and(game.id.gt(pageRequestDto.cursor())))
                         .and(() -> game.league.id.eq(leagueId))
                         .and(() -> game.state.eq(state))
                         .and(() -> game.sport.id.in(sportIds))
                         .build()
                 )
-                .orderBy(game.startTime.asc())
-                .orderBy(game.id.asc())
+                .orderBy(game.startTime.asc(), game.id.asc())
                 .limit(pageRequestDto.size())
                 .fetch();
     }
 
-    private Game findLastGame(final Long cursor) {
+    private LocalDateTime findLastStartTime(final Long cursor) {
+        if (cursor == null) {
+            return null;
+        }
         return jpaQueryFactory
-                .selectFrom(game)
+                .select(game.startTime)
+                .from(game)
                 .where(game.id.eq(cursor))
                 .fetchFirst();
     }
