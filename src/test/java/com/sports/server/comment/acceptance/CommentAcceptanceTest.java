@@ -51,7 +51,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
-                        .map(CommentResponseDto::getContent)
+                        .map(CommentResponseDto::content)
                         .contains(content)
         );
     }
