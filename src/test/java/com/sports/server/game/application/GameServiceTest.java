@@ -1,7 +1,7 @@
 package com.sports.server.game.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.game.dto.request.GamesQueryRequestDto;
@@ -9,6 +9,7 @@ import com.sports.server.game.dto.request.PageRequestDto;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.support.ServiceTest;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,7 +24,7 @@ public class GameServiceTest extends ServiceTest {
     GameService gameService;
     private final Long validLeagueId = 1L;
     private final int size = 5;
-    private final PageRequestDto pageRequestDto = new PageRequestDto(0L, size);
+    private final PageRequestDto pageRequestDto = new PageRequestDto(null, size);
     private final List<Long> sportIds = List.of(1L, 2L);
     private final String stateValue = "SCHEDULED";
     private final GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, stateValue, sportIds);
@@ -43,50 +44,38 @@ public class GameServiceTest extends ServiceTest {
 
     @Test
     void 날짜순으로_경기들이_반환된다() {
+
+        //given
+        PageRequestDto pageRequestDto = new PageRequestDto(null, 5);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L));
+
         //when
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
-        //then
-        assertTrue(isSortedByDate(games));
-    }
+        // then
+        assertThat(games).isNotNull();
+        assertThat(games).hasSize(5);
 
-    private boolean isSortedByDate(final List<GameResponseDto> games) {
-        for (int i = 0; i < games.size() - 1; i++) {
-            GameResponseDto firstGame = games.get(i);
-            GameResponseDto secondGame = games.get(i + 1);
-
-            if (firstGame.startTime().isAfter(secondGame.startTime())) {
-                return false;
-            }
-
-        }
-        return true;
-    }
-
-    private boolean isSortedById(final List<GameResponseDto> games) {
-        for (int i = 0; i < games.size() - 1; i++) {
-            GameResponseDto firstGame = games.get(i);
-            GameResponseDto secondGame = games.get(i + 1);
-
-            if (firstGame.startTime().equals(secondGame.startTime()) && firstGame.id() > secondGame.id()) {
-                return false;
-            }
-
-        }
-        return true;
+        assertThat(games).extracting(GameResponseDto::id)
+                .containsExactly(1L, 2L, 3L, 4L, 6L);
     }
 
     @Test
-    void 날짜가_같은_경우_경기의_pk순으로_경기들이_반환된다() {
+    void 시작_날짜가_같은_경우_pk순으로_경기가_반환된다() {
 
         //given
-        List<Long> sportIds = List.of(1L);
+        PageRequestDto pageRequestDto = new PageRequestDto(2L, 5);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L));
 
         //when
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
-        //then
-        assertTrue(isSortedById(games));
+        // then
+        assertThat(games).isNotNull();
+        assertThat(games).hasSize(5);
+
+        assertThat(games).extracting(GameResponseDto::id)
+                .containsExactly(3L, 4L, 6L, 7L, 5L);
     }
 
     @Test
@@ -121,6 +110,23 @@ public class GameServiceTest extends ServiceTest {
     }
 
     @Test
+    void 스포츠_아이디가_여러개인_경우_스포츠에_해당하는_전체_경기가_반환된다() {
+
+        //given
+        PageRequestDto pageRequestDto = new PageRequestDto(1L, 15);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L, 2L));
+
+        //when
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
+
+        //then
+        assertThat(games).isNotNull();
+
+        assertThat(games).extracting(GameResponseDto::id)
+                .containsExactly(2L, 3L, 4L, 6L, 7L, 5L, 8L, 9L, 10L, 11L, 12L, 13L);
+    }
+
+    @Test
     void 하나의_경기에서_팀이_아이디_순으로_반환된다() {
 
         //given
@@ -130,9 +136,15 @@ public class GameServiceTest extends ServiceTest {
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
-        assertTrue(
-                games.get(0).gameTeams().get(0).gameTeamId() < games.get(0).gameTeams().get(1).gameTeamId()
-        );
+        for (GameResponseDto game : games) {
+            List<GameResponseDto.TeamResponse> gameTeams = game.gameTeams();
+
+            List<Long> teamIds = gameTeams.stream()
+                    .map(GameResponseDto.TeamResponse::gameTeamId)
+                    .collect(Collectors.toList());
+
+            assertThat(teamIds).isSorted();
+        }
 
     }
 
@@ -145,7 +157,7 @@ public class GameServiceTest extends ServiceTest {
 
             // given
             GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
-            PageRequestDto pageRequestDto = new PageRequestDto(0L, 3);
+            PageRequestDto pageRequestDto = new PageRequestDto(1L, 3);
 
             //when
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
@@ -163,7 +175,7 @@ public class GameServiceTest extends ServiceTest {
 
             // given
             GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
-            PageRequestDto pageRequestDto = new PageRequestDto(0L, null);
+            PageRequestDto pageRequestDto = new PageRequestDto(1L, null);
 
             //when
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
@@ -174,7 +186,6 @@ public class GameServiceTest extends ServiceTest {
             );
 
         }
-
 
     }
 
