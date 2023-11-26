@@ -18,6 +18,8 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql(scripts = "/game-fixture.sql")
 class GameAcceptanceTest extends AcceptanceTest {
 
+    final int lastPkOfFixture = 13;
+
     @Test
     void 게임을_상세_조회한다() {
         // given
@@ -65,7 +67,6 @@ class GameAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .queryParam("status", "SCHEDULED")
                 .queryParam("league_id", 1L)
-                .queryParam("cursor", 1L)
                 .log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -76,18 +77,18 @@ class GameAcceptanceTest extends AcceptanceTest {
         //then
         List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
         assertAll(
-                () -> assertThat(games).hasSize(10),
+                () -> assertThat(games).hasSize(6),
                 () -> assertThat(games)
-                        .filteredOn(game -> game.id().equals(5L))
+                        .filteredOn(game -> game.id().equals(1L))
                         .containsExactly(
                                 new GameResponseDto(
-                                        5L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
+                                        1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
                                         "1st Quarter", "농구 대전",
                                         List.of(new GameResponseDto.TeamResponse(
-                                                        9L, "팀 B", "http://example.com/logo_b.png", 1
+                                                        1L, "팀 A", "http://example.com/logo_a.png", 1
                                                 ),
                                                 new GameResponseDto.TeamResponse(
-                                                        10L, "팀 C", "http://example.com/logo_c.png", 2)),
+                                                        2L, "팀 B", "http://example.com/logo_b.png", 2)),
                                         "농구"
                                 )
                         ),
@@ -95,8 +96,8 @@ class GameAcceptanceTest extends AcceptanceTest {
                         .filteredOn(game -> game.id().equals(2L))
                         .containsExactly(
                                 new GameResponseDto(
-                                        2L, LocalDateTime.of(2023, 11, 13, 14, 30, 0),
-                                        "2nd Quarter", "롤 챔피언스",
+                                        2L, LocalDateTime.of(2023, 11, 12, 10, 10, 0),
+                                        "1st Quarter", "두번째로 빠른 경기",
                                         List.of(new GameResponseDto.TeamResponse(
                                                         3L, "팀 B", "http://example.com/logo_b.png", 0),
                                                 new GameResponseDto.TeamResponse(
@@ -109,6 +110,29 @@ class GameAcceptanceTest extends AcceptanceTest {
 
                         )
         );
+
+    }
+
+    @Test
+    void 스포츠_아이디가_여러개일_경우_해당하는_모든_경기를_반환한다() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .queryParam("status", "SCHEDULED")
+                .queryParam("league_id", 1L)
+                .queryParam("size", lastPkOfFixture)
+                .queryParam("sport_id", 1L)
+                .queryParam("sport_id", 2L)
+                .log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/games")
+                .then().log().all()
+                .extract();
+
+        // then
+        List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
+        assertThat(games).hasSize(lastPkOfFixture);
 
     }
 }
