@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 class GameAcceptanceTest extends AcceptanceTest {
 
     final int lastPkOfFixture = 13;
+    final int defaultSizeOfData = 10;
 
     @Test
     void 게임을_상세_조회한다() {
@@ -77,7 +78,7 @@ class GameAcceptanceTest extends AcceptanceTest {
         //then
         List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
         assertAll(
-                () -> assertThat(games).hasSize(6),
+                () -> assertThat(games).hasSize(defaultSizeOfData),
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(1L))
                         .containsExactly(
