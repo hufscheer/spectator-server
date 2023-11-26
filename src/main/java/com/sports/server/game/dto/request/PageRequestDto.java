@@ -1,10 +1,6 @@
 package com.sports.server.game.dto.request;
 
-import lombok.NonNull;
-
 public record PageRequestDto(
-
-        @NonNull
         Long cursor,
         Integer size
 ) {
