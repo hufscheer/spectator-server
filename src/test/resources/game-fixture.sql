@@ -1,8 +1,5 @@
 SET foreign_key_checks = 0;
 
--- 스포츠
-INSERT INTO sports (id, name) VALUES (2, '농구');
-
 -- 경기
 INSERT INTO games (id, sport_id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
                    game_quarter,
