@@ -1,6 +1,7 @@
 package com.sports.server.game.infra;
 
 import static com.sports.server.game.domain.QGame.game;
+import static com.sports.server.sport.domain.QSport.sport;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.game.domain.Game;
@@ -25,6 +26,7 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
 
         return jpaQueryFactory
                 .selectFrom(game)
+                .join(game.sport, sport).fetchJoin()
                 .where(booleanBuilder
                         .and(
                                 () -> game.startTime.eq(lastGame.getStartTime())
