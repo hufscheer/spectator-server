@@ -148,6 +148,21 @@ public class GameServiceTest extends ServiceTest {
 
     }
 
+    @Test
+    void 조회한_경기상태에_해당하는_경기만_반환한다() {
+
+        //given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", null);
+
+        //when
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
+
+        //then
+        assertThat(games).extracting(GameResponseDto::id)
+                .containsExactly(14L, 15L);
+
+    }
+
     @Nested
     @DisplayName("경기들을 페이징을 이용해서 조회할 때")
     class PagingTest {
