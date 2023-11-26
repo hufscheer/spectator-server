@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.sports.server.comment.domain.QComment.comment;
+import static com.sports.server.game.domain.QGameTeam.gameTeam;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,6 +23,8 @@ public class CommentDynamicRepositoryImpl implements CommentDynamicRepository {
     public List<Comment> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
         return queryFactory.selectFrom(comment)
+                .join(gameTeam).on(comment.gameTeamId.eq(gameTeam.id))
+                .where(gameTeam.game.id.eq(gameId))
                 .where(booleanBuilder
                         .and(() -> comment.createdAt.goe(getCursorCreatedAt(cursor)))
                         .and(() -> comment.id.gt(cursor))

@@ -1,5 +1,7 @@
 SET foreign_key_checks = 0;
 
+
+-- 농구 게임 (game_id = 1) 댓글 픽스처
 INSERT INTO games (sport_id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
                    state)
 VALUES (2, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED');
@@ -24,5 +26,19 @@ VALUES (1, '2023-01-01 12:30:00', '댓글1', false, 1),
        (12, '2023-01-02 15:45:35', '댓글12', false, 1),
        (13, '2023-01-02 16:00:00', '댓글13', false, 1),
        (14, '2023-01-02 16:00:00', '블락된 댓글', true, 1);
+
+
+-- 축구 댓글 픽스처 (game_id=2) (game_id=1로 조회할 때 나오면 안되는 데이터)
+INSERT INTO games (sport_id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
+                   state)
+VALUES (1, 1, 1, '축구 대전', '2023-11-10T10:00:00', 'abc321', '2023-11-15T10:15:00', '전반전', 'SCHEDULED');
+
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+VALUES (2, 1, 1, 0),
+       (2, 2, 1, 0);
+
+INSERT INTO `comments` (id, `created_at`, `content`, `is_blocked`, `game_team_id`)
+VALUES (15, '2023-01-01 12:30:00', '댓글15', false, 3),
+       (16, '2023-01-01 12:30:00', '댓글16', false, 4);
 
 SET foreign_key_checks = 1;
