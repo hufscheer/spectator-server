@@ -77,6 +77,109 @@ public class CommentAcceptanceTest extends AcceptanceTest {
                             .containsExactly(10L, 9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L)
             );
         }
+
+        @Test
+        void 커서가_있으면_커서_다음부터_10개가_조회된다() {
+            // given
+            Long gameId = 1L;
+            Long cursor = 4L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .queryParam("cursor", cursor)
+                    .get("/games/{gameId}/comments", gameId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            assertAll(
+                    () -> assertThat(actual).hasSize(10),
+
+                    () -> assertThat(actual)
+                            .map(CommentResponse::commentId)
+                            .containsExactly(14L, 13L, 12L, 11L, 10L, 9L, 8L, 7L, 6L, 5L)
+            );
+        }
+
+        @Test
+        void 사이즈만큼_조회된다() {
+            // given
+            Long gameId = 1L;
+            int size = 5;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .queryParam("size", size)
+                    .get("/games/{gameId}/comments", gameId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            assertAll(
+                    () -> assertThat(actual).hasSize(size),
+
+                    () -> assertThat(actual)
+                            .map(CommentResponse::commentId)
+                            .containsExactly(5L, 4L, 3L, 2L, 1L)
+            );
+        }
+
+        @Test
+        void 커서_다음부터_사이즈만큼_조회된다() {
+            // given
+            Long gameId = 1L;
+            int size = 5;
+            Long cursor = 8L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .queryParam("size", size)
+                    .queryParam("cursor", cursor)
+                    .get("/games/{gameId}/comments", gameId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            assertAll(
+                    () -> assertThat(actual).hasSize(size),
+
+                    () -> assertThat(actual)
+                            .map(CommentResponse::commentId)
+                            .containsExactly(13L, 12L, 11L, 10L, 9L)
+            );
+        }
+
+        @Test
+        void 블락된_댓글은_null을_표시한다() {
+            // given
+            Long gameId = 1L;
+            Long cursor = 10L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .queryParam("cursor", cursor)
+                    .get("/games/{gameId}/comments", gameId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            assertThat(actual)
+                    .filteredOn(CommentResponse::isBlocked)
+                    .map(CommentResponse::content)
+                    .containsOnlyNulls();
+        }
     }
 
 }
