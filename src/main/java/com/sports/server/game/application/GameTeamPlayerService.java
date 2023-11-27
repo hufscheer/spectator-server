@@ -6,11 +6,9 @@ import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamPlayer;
 import com.sports.server.game.domain.GameTeamPlayerRepository;
 import com.sports.server.game.dto.response.GameLineupResponse;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +25,13 @@ public class GameTeamPlayerService {
                 .stream()
                 .collect(groupingBy(GameTeamPlayer::getGameTeam));
 
-        return IntStream.range(0, groupByTeam.size())
-                .boxed()
-                .sorted(Comparator.comparingLong(i -> new ArrayList<>(groupByTeam.keySet()).get(i).getId()))
-                .map(i -> {
-                    GameTeam gameTeam = new ArrayList<>(groupByTeam.keySet()).get(i);
-                    List<GameTeamPlayer> players = groupByTeam.get(gameTeam);
-                    return new GameLineupResponse(gameTeam, players, i + 1);
-                })
+        List<GameTeam> gameTeams = groupByTeam.keySet()
+                .stream()
+                .sorted(Comparator.comparingLong(GameTeam::getId)).toList();
+
+        return gameTeams.stream()
+                .map(gameTeam -> new GameLineupResponse(gameTeam, groupByTeam.get(gameTeam),
+                        gameTeams.indexOf(gameTeam)+1))
                 .toList();
     }
-
 }
