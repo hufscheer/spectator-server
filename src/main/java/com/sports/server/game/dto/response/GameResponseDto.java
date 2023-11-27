@@ -4,7 +4,10 @@ import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
 import com.sports.server.sport.domain.Sport;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public record GameResponseDto(
         Long id,
@@ -20,9 +23,11 @@ public record GameResponseDto(
                 game.getStartTime(),
                 game.getGameQuarter(),
                 game.getName(),
-                gameTeams.stream()
-                        .map(TeamResponse::new)
-                        .toList(),
+                IntStream.range(0, gameTeams.size())
+                        .boxed()
+                        .sorted(Comparator.comparingLong(i -> gameTeams.get(i).getId()))
+                        .map(i -> new GameResponseDto.TeamResponse(gameTeams.get(i), i + 1))
+                        .collect(Collectors.toList()),
                 sport.getName()
         );
     }
@@ -31,14 +36,15 @@ public record GameResponseDto(
             Long gameTeamId,
             String gameTeamName,
             String logoImageUrl,
-            Integer score
+            Integer score,
+            int order
     ) {
-        public TeamResponse(GameTeam gameTeam) {
+        public TeamResponse(GameTeam gameTeam, int order) {
             this(
                     gameTeam.getId(),
                     gameTeam.getTeam().getName(),
                     gameTeam.getTeam().getLogoImageUrl(),
-                    gameTeam.getScore()
+                    gameTeam.getScore(), order
             );
         }
     }
