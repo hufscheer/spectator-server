@@ -63,17 +63,17 @@ public class CommentAcceptanceTest extends AcceptanceTest {
             List<CommentResponse> actual = toResponses(response, CommentResponse.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
-                    () -> assertThat(actual.get(9))
+                    () -> assertThat(actual.get(0))
                             .isEqualTo(new CommentResponse(
+                                    5L,
+                                    "댓글5",
                                     1L,
-                                    "댓글1",
-                                    1L,
-                                    LocalDateTime.of(2023, 1, 1, 12, 30, 0),
+                                    LocalDateTime.of(2023, 1, 2, 14, 55, 0),
                                     false
                             )),
                     () -> assertThat(actual)
                             .map(CommentResponse::commentId)
-                            .containsExactly(10L, 9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L)
+                            .containsExactly(5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L)
             );
         }
 
@@ -81,7 +81,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
         void 커서가_있으면_커서_다음부터_10개가_조회된다() {
             // given
             Long gameId = 1L;
-            Long cursor = 4L;
+            Long cursor = 12L;
 
             // when
             ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -99,7 +99,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
 
                     () -> assertThat(actual)
                             .map(CommentResponse::commentId)
-                            .containsExactly(14L, 13L, 12L, 11L, 10L, 9L, 8L, 7L, 6L, 5L)
+                            .containsExactly(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L)
             );
         }
 
@@ -125,7 +125,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
 
                     () -> assertThat(actual)
                             .map(CommentResponse::commentId)
-                            .containsExactly(5L, 4L, 3L, 2L, 1L)
+                            .containsExactly(10L, 11L, 12L, 13L, 14L)
             );
         }
 
@@ -153,7 +153,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
 
                     () -> assertThat(actual)
                             .map(CommentResponse::commentId)
-                            .containsExactly(13L, 12L, 11L, 10L, 9L)
+                            .containsExactly(3L, 4L, 5L, 6L, 7L)
             );
         }
 
@@ -161,13 +161,11 @@ public class CommentAcceptanceTest extends AcceptanceTest {
         void 블락된_댓글은_null을_표시한다() {
             // given
             Long gameId = 1L;
-            Long cursor = 10L;
 
             // when
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .when()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .queryParam("cursor", cursor)
                     .get("/games/{gameId}/comments", gameId)
                     .then().log().all()
                     .extract();
