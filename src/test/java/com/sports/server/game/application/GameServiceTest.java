@@ -179,7 +179,8 @@ public class GameServiceTest extends ServiceTest {
 
         for (List<TeamResponse> teamResponses : teamResponsesOfGames) {
 
-            teamResponses.sort(Comparator.comparingLong(TeamResponse::gameTeamId));
+            assertThat(teamResponses).isSortedAccordingTo(
+                    Comparator.comparingLong(TeamResponse::gameTeamId));
 
             for (int i = 0; i < teamResponses.size(); i++) {
                 assertEquals(i + 1, teamResponses.get(i).order());
