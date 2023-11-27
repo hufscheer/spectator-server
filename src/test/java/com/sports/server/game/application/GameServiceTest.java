@@ -1,22 +1,23 @@
 package com.sports.server.game.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.response.GameResponseDto;
+import com.sports.server.game.dto.response.GameResponseDto.TeamResponse;
 import com.sports.server.support.ServiceTest;
-import org.junit.jupiter.api.Assertions;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Sql(scripts = "/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -88,7 +89,7 @@ public class GameServiceTest extends ServiceTest {
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
-        Assertions.assertEquals(
+        assertEquals(
                 games.size(), size
         );
     }
@@ -103,7 +104,7 @@ public class GameServiceTest extends ServiceTest {
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         //then
-        Assertions.assertEquals(
+        assertEquals(
                 games.size(), size
         );
 
@@ -163,6 +164,29 @@ public class GameServiceTest extends ServiceTest {
 
     }
 
+    @Test
+    void 경기에_참여한_팀들의_순서가_알맞게_반환된다() {
+
+        //given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", null);
+
+        //when
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
+
+        // then
+        List<List<TeamResponse>> teamResponsesOfGames = games.stream()
+                .map(GameResponseDto::gameTeams).toList();
+
+        for (List<TeamResponse> teamResponses : teamResponsesOfGames) {
+
+            teamResponses.sort(Comparator.comparingLong(TeamResponse::gameTeamId));
+
+            for (int i = 0; i < teamResponses.size(); i++) {
+                assertEquals(i + 1, teamResponses.get(i).order());
+            }
+        }
+    }
+
     @Nested
     @DisplayName("경기들을 페이징을 이용해서 조회할 때")
     class PagingTest {
@@ -178,7 +202,7 @@ public class GameServiceTest extends ServiceTest {
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
             //then
-            Assertions.assertEquals(
+            assertEquals(
                     games.size(), 3
             );
 
@@ -196,7 +220,7 @@ public class GameServiceTest extends ServiceTest {
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
             //then
-            Assertions.assertEquals(
+            assertEquals(
                     games.size(), 10
             );
 
