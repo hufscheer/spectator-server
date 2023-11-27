@@ -26,11 +26,11 @@ public class CommentDynamicRepositoryImpl implements CommentDynamicRepository {
                 .join(gameTeam).on(comment.gameTeamId.eq(gameTeam.id))
                 .where(gameTeam.game.id.eq(gameId))
                 .where(booleanBuilder
-                        .and(() -> comment.createdAt.goe(getCursorCreatedAt(cursor)))
-                        .and(() -> comment.id.gt(cursor))
+                        .and(() -> comment.createdAt.loe(getCursorCreatedAt(cursor)))
+                        .and(() -> comment.id.lt(cursor))
                         .build()
                 )
-                .orderBy(comment.createdAt.asc(), comment.id.asc())
+                .orderBy(comment.createdAt.desc(), comment.id.desc())
                 .limit(size)
                 .fetch();
     }
