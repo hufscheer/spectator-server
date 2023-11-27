@@ -10,6 +10,7 @@ import com.sports.server.game.domain.GameTeamRepository;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
 import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.game.exception.GameErrorMessages;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,11 +27,17 @@ public class GameTeamService {
 
     public List<GameTeamCheerResponseDto> getCheerCountOfGameTeams(final Long gameId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+
+        List<GameTeam> sortedGameTeams = gameTeamRepository.findAllByGame(game).stream()
+                .sorted(Comparator.comparingLong(GameTeam::getId))
+                .toList();
+
         return gameTeamRepository.findAllByGame(game).stream()
                 .sorted(comparingLong(GameTeam::getId))
-                .map(GameTeamCheerResponseDto::new)
+                .map(gameTeam -> new GameTeamCheerResponseDto(gameTeam, sortedGameTeams.indexOf(gameTeam) + 1))
                 .toList();
     }
+
 
     @Transactional
     public void updateCheerCount(final Long gameId, final GameTeamCheerRequestDto cheerRequestDto) {
