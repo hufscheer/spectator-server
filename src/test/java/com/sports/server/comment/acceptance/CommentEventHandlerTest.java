@@ -13,6 +13,7 @@ import com.sports.server.support.AcceptanceTest;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -47,7 +48,8 @@ class CommentEventHandlerTest extends AcceptanceTest {
         ObjectMapper objectMapper = messageConverter.getObjectMapper();
         objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
         stompClient.setMessageConverter(messageConverter);
-        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {})
+        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
+                })
                 .get(1, SECONDS);
 
         stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
@@ -58,6 +60,29 @@ class CommentEventHandlerTest extends AcceptanceTest {
         //then
         CommentResponse actual = completableFuture.get(10, SECONDS);
         assertThat(actual.content()).isEqualTo("댓글입니다.");
+    }
+
+    @Test
+    @DisplayName("댓글의 응답 형태에 알맞은 order 를 포함하고 있는지 확인한다")
+    public void isResponseContainsExactOrder() throws Exception {
+        //given
+        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
+        ObjectMapper objectMapper = messageConverter.getObjectMapper();
+        objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
+        stompClient.setMessageConverter(messageConverter);
+        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
+                })
+                .get(1, SECONDS);
+
+        stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
+
+        //when
+        commentService.register(new CommentRequestDto("댓글입니다.", 2L));
+
+        //then
+        CommentResponse actual = completableFuture.get(10, SECONDS);
+        assertThat(actual.order()).isEqualTo(2);
     }
 
     private class CommentStompFrameHandler implements StompFrameHandler {
