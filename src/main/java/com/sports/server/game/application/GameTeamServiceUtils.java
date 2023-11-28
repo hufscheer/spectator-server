@@ -19,12 +19,20 @@ public class GameTeamServiceUtils {
     private final GameTeamRepository gameTeamRepository;
 
     public int calculateOrderOfGameTeam(final Game game, final Long gameTeamId) {
-        List<GameTeam> gameTeams = gameTeamRepository.findAllByGame(game);
-
-        gameTeams.sort(Comparator.comparing(GameTeam::getId));
+        List<GameTeam> gameTeams = gameTeamRepository.findAllByGame(game).stream()
+                .sorted(Comparator.comparingLong(GameTeam::getId))
+                .toList();
 
         return IntStream.range(0, gameTeams.size())
                 .filter(i -> gameTeams.get(i).getId().equals(gameTeamId))
                 .findFirst().orElseThrow(CustomException::new) + 1;
+    }
+
+    public int calculateOrderOfGameTeam(final Game game, final GameTeam gameTeam) {
+        List<GameTeam> gameTeams = gameTeamRepository.findAllByGame(game).stream()
+                .sorted(Comparator.comparingLong(GameTeam::getId))
+                .toList();
+
+        return gameTeams.indexOf(gameTeam) + 1;
     }
 }
