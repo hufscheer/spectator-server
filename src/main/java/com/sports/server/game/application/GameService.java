@@ -1,20 +1,24 @@
 package com.sports.server.game.application;
 
+import static java.util.stream.Collectors.groupingBy;
+
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
-import com.sports.server.game.domain.*;
+import com.sports.server.game.domain.Game;
+import com.sports.server.game.domain.GameDynamicRepository;
+import com.sports.server.game.domain.GameState;
+import com.sports.server.game.domain.GameTeam;
+import com.sports.server.game.domain.GameTeamRepository;
 import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.response.GameDetailResponse;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.game.dto.response.VideoResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +54,8 @@ public class GameService {
                 .collect(groupingBy(GameTeam::getGame));
 
         return games.stream()
-                .map(game -> new GameResponseDto(game, groupedByGame.get(game), game.getSport()))
+                .map(game -> new GameResponseDto(game, groupedByGame.getOrDefault(game, new ArrayList<>()),
+                        game.getSport()))
                 .toList();
     }
 

@@ -6,6 +6,7 @@ import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamPlayer;
 import com.sports.server.game.domain.GameTeamPlayerRepository;
 import com.sports.server.game.dto.response.GameLineupResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class GameTeamPlayerService {
         List<GameTeam> gameTeams = groupByTeam.keySet().stream().toList();
 
         return gameTeams.stream()
-                .map(gameTeam -> new GameLineupResponse(gameTeam, groupByTeam.get(gameTeam),
+                .map(gameTeam -> new GameLineupResponse(gameTeam, groupByTeam.getOrDefault(gameTeam, new ArrayList<>()),
                         gameTeamServiceUtils.calculateOrderOfGameTeam(gameTeams, gameTeam)))
                 .toList();
     }
