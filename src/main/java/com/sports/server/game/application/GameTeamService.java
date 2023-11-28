@@ -22,15 +22,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameTeamService {
 
     private final GameTeamRepository gameTeamRepository;
+    private final GameTeamServiceUtils gameTeamServiceUtils;
     private final EntityUtils entityUtils;
 
     public List<GameTeamCheerResponseDto> getCheerCountOfGameTeams(final Long gameId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+
         return gameTeamRepository.findAllByGame(game).stream()
                 .sorted(comparingLong(GameTeam::getId))
-                .map(GameTeamCheerResponseDto::new)
+                .map(gameTeam -> new GameTeamCheerResponseDto(gameTeam,
+                        gameTeamServiceUtils.calculateOrderOfGameTeam(game, gameTeam)))
                 .toList();
     }
+
 
     @Transactional
     public void updateCheerCount(final Long gameId, final GameTeamCheerRequestDto cheerRequestDto) {

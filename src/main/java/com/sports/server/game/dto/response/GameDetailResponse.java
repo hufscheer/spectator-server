@@ -1,11 +1,12 @@
 package com.sports.server.game.dto.response;
 
-import static java.util.Comparator.comparingLong;
-
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameTeam;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public record GameDetailResponse(
         LocalDateTime startTime,
@@ -23,10 +24,11 @@ public record GameDetailResponse(
                 game.getGameQuarter(),
                 game.getName(),
                 game.getSport().getName(),
-                gameTeams.stream()
-                        .sorted(comparingLong(GameTeam::getId))
-                        .map(TeamResponse::new)
-                        .toList()
+                IntStream.range(0, gameTeams.size())
+                        .boxed()
+                        .sorted(Comparator.comparingLong(i -> gameTeams.get(i).getId()))
+                        .map(i -> new TeamResponse(gameTeams.get(i), i + 1))
+                        .collect(Collectors.toList())
         );
     }
 
@@ -34,14 +36,16 @@ public record GameDetailResponse(
             Long gameTeamId,
             String gameTeamName,
             String logoImageUrl,
-            Integer score
+            Integer score,
+            int order
     ) {
-        public TeamResponse(GameTeam gameTeam) {
+        public TeamResponse(GameTeam gameTeam, int order) {
             this(
                     gameTeam.getId(),
                     gameTeam.getTeam().getName(),
                     gameTeam.getTeam().getLogoImageUrl(),
-                    gameTeam.getScore()
+                    gameTeam.getScore(),
+                    order
             );
         }
     }

@@ -1,5 +1,7 @@
 package com.sports.server.comment.application;
 
+import static com.sports.server.comment.exception.CommentErrorMessages.COMMENT_CONTAINS_BAD_WORD;
+
 import com.sports.server.comment.domain.Comment;
 import com.sports.server.comment.domain.CommentDynamicRepository;
 import com.sports.server.comment.domain.CommentRepository;
@@ -8,16 +10,13 @@ import com.sports.server.comment.dto.request.CommentRequestDto;
 import com.sports.server.comment.dto.response.CommentResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.CustomException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.sports.server.comment.exception.CommentErrorMessages.COMMENT_CONTAINS_BAD_WORD;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +41,29 @@ public class CommentService {
     }
 
     public List<CommentResponse> getCommentsByGameId(final Long gameId, final PageRequestDto pageRequest) {
-        List<CommentResponse> responses = commentDynamicRepository.findByGameIdOrderByStartTime(
-                        gameId, pageRequest.cursor(), pageRequest.size()
-                )
-                .stream()
-                .map(CommentResponse::new)
+        List<Comment> comments = commentDynamicRepository.findByGameIdOrderByStartTime(
+                gameId, pageRequest.cursor(), pageRequest.size()
+        );
+
+        List<Long> gameTeamIds = getOrderedGameTeamIds(comments);
+
+        List<CommentResponse> responses = comments.stream()
+                .map(comment -> {
+                    return new CommentResponse(comment, getOrderOfGameTeamId(comment.getGameTeamId(), gameTeamIds));
+                })
                 .collect(Collectors.toList());
+
         Collections.reverse(responses);
         return responses;
     }
+
+    private int getOrderOfGameTeamId(final Long gameTeamId, final List<Long> gameTeamIds) {
+        return gameTeamIds.indexOf(gameTeamId) + 1;
+    }
+
+    private List<Long> getOrderedGameTeamIds(final List<Comment> comments) {
+        return comments.stream()
+                .map(Comment::getGameTeamId).collect(Collectors.toSet()).stream().sorted().toList();
+    }
+
 }

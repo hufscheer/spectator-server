@@ -1,18 +1,21 @@
 package com.sports.server.game.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.game.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.support.ServiceTest;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
-
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 
 @Sql(scripts = "/game-fixture.sql")
 public class GameTeamServiceTest extends ServiceTest {
@@ -68,4 +71,26 @@ public class GameTeamServiceTest extends ServiceTest {
         int cheerCount = gameTeamService.getCheerCountOfGameTeams(2L).get(0).cheerCount();
         assertEquals(cheerCount, 100 + 1);
     }
+
+    @Test
+    void 경기에_참여하는_팀의_순서가_알맞게_반환된다() {
+
+        //given
+        Long gameId = 1L;
+
+        //when
+        List<GameTeamCheerResponseDto> cheerCountOfGameTeams = gameTeamService.getCheerCountOfGameTeams(gameId);
+
+        // then
+        assertThat(cheerCountOfGameTeams).isSortedAccordingTo(
+                Comparator.comparingLong(GameTeamCheerResponseDto::gameTeamId));
+
+        int expectedOrder = 1;
+        for (GameTeamCheerResponseDto responseDto : cheerCountOfGameTeams) {
+            assertThat(responseDto.order()).isEqualTo(expectedOrder);
+            expectedOrder++;
+        }
+    }
+
 }
+

@@ -1,7 +1,6 @@
 package com.sports.server.comment.dto.response;
 
 import com.sports.server.comment.domain.Comment;
-
 import java.time.LocalDateTime;
 
 public record CommentResponse(
@@ -9,15 +8,17 @@ public record CommentResponse(
         String content,
         Long gameTeamId,
         LocalDateTime createdAt,
-        Boolean isBlocked
+        Boolean isBlocked,
+        int order
 ) {
-    public CommentResponse(Comment comment) {
+    public CommentResponse(Comment comment, final int order) {
         this(
                 comment.getId(),
                 checkCommentBlocked(comment),
                 comment.getGameTeamId(),
                 comment.getCreatedAt(),
-                comment.isBlocked()
+                comment.isBlocked(),
+                order
         );
     }
 
