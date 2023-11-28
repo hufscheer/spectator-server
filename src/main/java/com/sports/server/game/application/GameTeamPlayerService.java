@@ -6,7 +6,6 @@ import com.sports.server.game.domain.GameTeam;
 import com.sports.server.game.domain.GameTeamPlayer;
 import com.sports.server.game.domain.GameTeamPlayerRepository;
 import com.sports.server.game.dto.response.GameLineupResponse;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -19,19 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameTeamPlayerService {
 
     private final GameTeamPlayerRepository gameTeamPlayerRepository;
+    private final GameTeamServiceUtils gameTeamServiceUtils;
 
     public List<GameLineupResponse> getLineup(final Long gameId) {
         Map<GameTeam, List<GameTeamPlayer>> groupByTeam = gameTeamPlayerRepository.findPlayersByGameId(gameId)
                 .stream()
                 .collect(groupingBy(GameTeamPlayer::getGameTeam));
 
-        List<GameTeam> gameTeams = groupByTeam.keySet()
-                .stream()
-                .sorted(Comparator.comparingLong(GameTeam::getId)).toList();
+        List<GameTeam> gameTeams = groupByTeam.keySet().stream().toList();
 
         return gameTeams.stream()
                 .map(gameTeam -> new GameLineupResponse(gameTeam, groupByTeam.get(gameTeam),
-                        gameTeams.indexOf(gameTeam)+1))
+                        gameTeamServiceUtils.calculateOrderOfGameTeam(gameTeams, gameTeam)))
                 .toList();
     }
 }

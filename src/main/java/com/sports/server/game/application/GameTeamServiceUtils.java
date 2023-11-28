@@ -35,4 +35,12 @@ public class GameTeamServiceUtils {
 
         return gameTeams.indexOf(gameTeam) + 1;
     }
+
+    public int calculateOrderOfGameTeam(final List<GameTeam> gameTeams, final GameTeam gameTeam) {
+        List<GameTeam> sortedGameTeams = gameTeams.stream()
+                .sorted(Comparator.comparingLong(GameTeam::getId)).toList();
+
+        return sortedGameTeams.indexOf(gameTeam) + 1;
+
+    }
 }
