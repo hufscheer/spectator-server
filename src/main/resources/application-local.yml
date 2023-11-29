@@ -12,3 +12,4 @@ spring:
         show_sql: true
 
 report-check-origin: fake-origin.com
+cors-allow-origins: http://localhost:3000
