@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     private static final String ALLOWED_METHODS = "*";
     private static final String FRONTEND_LOCALHOST = "http://localhost:3000";
     private static final String FRONTEND_SERVER = "https://hufstreaming.site";
-    private static final String FRONTEND_SERVER_TMP = "https://hufstreaming-client.vercel.app";
+    private static final String FRONTEND_SERVER_TMP = "https://hufchichi-client.vercel.app";
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
