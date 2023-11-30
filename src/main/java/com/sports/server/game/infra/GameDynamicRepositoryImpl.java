@@ -4,10 +4,10 @@ import static com.sports.server.game.domain.QGame.game;
 import static com.sports.server.sport.domain.QSport.sport;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameDynamicRepository;
 import com.sports.server.game.domain.GameState;
-import com.sports.server.common.dto.PageRequestDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
                 .join(game.sport, sport).fetchJoin()
                 .where(booleanBuilder
                         .and(() -> game.startTime.goe(lastStartTime)
-                                .and(game.id.gt(pageRequestDto.cursor())))
+                                .and(game.id.ne(pageRequestDto.cursor())))
                         .and(() -> game.league.id.eq(leagueId))
                         .and(() -> game.state.eq(state))
                         .and(() -> game.sport.id.in(sportIds))
