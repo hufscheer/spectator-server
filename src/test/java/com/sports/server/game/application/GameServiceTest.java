@@ -80,6 +80,26 @@ public class GameServiceTest extends ServiceTest {
     }
 
     @Test
+    void 커서를_이용해서_조회하는_경우_경기_시작_시간이_빠른_경기가_아이디가_커서보다_큰_경기보다_먼저_반환된다() {
+
+        //given
+        int size = 5;
+        PageRequestDto pageRequestDto = new PageRequestDto(null, size);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L));
+        GameResponseDto gameResponseDto = gameService.getAllGames(queryRequestDto, pageRequestDto).get(size - 1);
+        Long cursor = gameResponseDto.id();
+
+        //when
+        pageRequestDto = new PageRequestDto(cursor, size);
+        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
+
+        // then
+        assertThat(games).extracting(GameResponseDto::id)
+                .containsExactly(7L, 5L, 8L, 9L, 10L);
+
+    }
+
+    @Test
     void 스포츠_아이디가_쿼리_스트링으로_조회되지_않는_경우_전체가_반환된다() {
 
         //given
