@@ -3,6 +3,7 @@ package com.sports.server.game.infra;
 import static com.sports.server.game.domain.QGame.game;
 import static com.sports.server.sport.domain.QSport.sport;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.game.domain.Game;
@@ -23,21 +24,25 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
     public List<Game> findAllByLeagueAndStateAndSports(final Long leagueId, final GameState state,
                                                        final List<Long> sportIds, final PageRequestDto pageRequestDto) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-        LocalDateTime lastStartTime = findLastStartTime(pageRequestDto.cursor());
 
-        return jpaQueryFactory
+        JPAQuery<Game> gameJPAQuery = jpaQueryFactory
                 .selectFrom(game)
                 .join(game.sport, sport).fetchJoin()
                 .where(booleanBuilder
-                        .and(() -> game.startTime.goe(lastStartTime)
-                                .and(game.id.ne(pageRequestDto.cursor())))
                         .and(() -> game.league.id.eq(leagueId))
                         .and(() -> game.state.eq(state))
                         .and(() -> game.sport.id.in(sportIds))
                         .build()
-                )
+                );
+
+        if (state.equals(GameState.FINISHED)) {
+            return gameJPAQuery
+                    .orderBy(game.startTime.desc(), game.id.asc())
+                    .fetch();
+        }
+
+        return gameJPAQuery
                 .orderBy(game.startTime.asc(), game.id.asc())
-                .limit(pageRequestDto.size())
                 .fetch();
     }
 

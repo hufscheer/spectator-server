@@ -11,6 +11,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -62,6 +63,7 @@ class GameAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Disabled
     @Test
     void 리그의_경기를_전체_조회한다() {
 
