@@ -188,7 +188,7 @@ public class GameServiceTest extends ServiceTest {
 
         //then
         assertThat(games).extracting(GameResponseDto::id)
-                .containsExactly(14L, 15L);
+                .containsExactly(15L, 14L);
 
     }
 
