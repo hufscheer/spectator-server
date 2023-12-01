@@ -6,6 +6,7 @@ import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto.TeamResponse;
 import com.sports.server.support.ServiceTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -85,16 +86,13 @@ public class GameServiceTest extends ServiceTest {
     
     @Test
     void 커서를_이용해서_조회하는_경우_경기_시작_시간이_빠른_경기가_아이디가_커서보다_큰_경기보다_먼저_반환된다() {
-
         //given
         int size = 5;
-        PageRequestDto pageRequestDto = new PageRequestDto(null, size);
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L));
         GameResponseDto gameResponseDto = gameService.getAllGames(queryRequestDto, pageRequestDto).get(size - 1);
-        Long cursor = gameResponseDto.id();
+        PageRequestDto pageRequestDto = new PageRequestDto(gameResponseDto.id(), size);
 
         //when
-        pageRequestDto = new PageRequestDto(cursor, size);
         List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
         // then
@@ -178,7 +176,7 @@ public class GameServiceTest extends ServiceTest {
 
     
     @Test
-    void 조회한_경기상태에_해당하는_경기만_반환한다() {
+    void FINISHED_상태는_시간_역순으로_조회한다() {
 
         //given
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", null);
@@ -232,11 +230,9 @@ public class GameServiceTest extends ServiceTest {
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
             //then
-            assertEquals(
-                    games.size(), 3
-            );
-
-
+            assertThat(games)
+                    .map(GameResponseDto::id)
+                    .containsExactly(2L, 3L, 4L);
         }
 
         
@@ -251,12 +247,40 @@ public class GameServiceTest extends ServiceTest {
             List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
 
             //then
-            assertEquals(
-                    games.size(), 10
-            );
+            assertThat(games)
+                    .map(GameResponseDto::id)
+                    .containsExactly(2L, 3L, 4L, 6L, 7L, 5L, 8L, 9L, 10L, 11L);
 
         }
 
+        @Test
+        void 커서_이후를_조회한다() {
+            // given
+            int size = 7;
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null);
+
+            //when
+            List<GameResponseDto> firstPage = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(null, size)
+            );
+            Long cursor = firstPage.get(size - 1).id();
+            List<GameResponseDto> secondPage = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(cursor, size)
+            );
+
+            //then
+            Assertions.assertAll(
+                    () -> assertThat(firstPage)
+                            .map(GameResponseDto::id)
+                            .containsExactly(1L, 2L, 3L, 4L, 6L, 7L, 5L),
+                    () -> assertThat(secondPage)
+                            .map(GameResponseDto::id)
+                            .containsExactly(8L, 9L, 10L, 11L, 12L, 13L)
+            );
+
+        }
     }
 
 
