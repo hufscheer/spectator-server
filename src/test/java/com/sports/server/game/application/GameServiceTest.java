@@ -6,7 +6,6 @@ import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import com.sports.server.game.dto.response.GameResponseDto;
 import com.sports.server.game.dto.response.GameResponseDto.TeamResponse;
 import com.sports.server.support.ServiceTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,8 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Sql(scripts = "/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -139,7 +137,7 @@ public class GameServiceTest extends ServiceTest {
     void 스포츠_아이디가_여러개인_경우_스포츠에_해당하는_전체_경기가_반환된다() {
 
         //given
-        PageRequestDto pageRequestDto = new PageRequestDto(1L, 15);
+        PageRequestDto pageRequestDto = new PageRequestDto(1L, 12);
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L, 2L));
 
         //when
@@ -171,22 +169,6 @@ public class GameServiceTest extends ServiceTest {
 
             assertThat(teamIds).isSorted();
         }
-
-    }
-
-    
-    @Test
-    void FINISHED_상태는_시간_역순으로_조회한다() {
-
-        //given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", null);
-
-        //when
-        List<GameResponseDto> games = gameService.getAllGames(queryRequestDto, pageRequestDto);
-
-        //then
-        assertThat(games).extracting(GameResponseDto::id)
-                .containsExactly(15L, 14L);
 
     }
 
@@ -271,17 +253,95 @@ public class GameServiceTest extends ServiceTest {
             );
 
             //then
-            Assertions.assertAll(
+            assertAll(
                     () -> assertThat(firstPage)
                             .map(GameResponseDto::id)
                             .containsExactly(1L, 2L, 3L, 4L, 6L, 7L, 5L),
                     () -> assertThat(secondPage)
                             .map(GameResponseDto::id)
-                            .containsExactly(8L, 9L, 10L, 11L, 12L, 13L)
+                            .containsExactly(8L, 9L, 10L, 11L, 12L, 13L, 19L)
             );
 
         }
+
+        @Test
+        void game_id가_start_time과_순서가_불일치해도_커서페이징이_잘_수행된다_SCHEDULED() {
+            // given
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, stateValue, null);
+
+            //when
+            List<GameResponseDto> after15 = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(15L, null)
+            );
+            List<GameResponseDto> after19 = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(19L, null)
+            );
+            List<GameResponseDto> after18 = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(18L, null)
+            );
+            List<GameResponseDto> after16 = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(16L, null)
+            );
+
+            //then
+            assertAll(
+                    () -> assertThat(after15)
+                            .map(GameResponseDto::id)
+                            .containsExactly(19L, 18L, 16L, 17L),
+                    () -> assertThat(after19)
+                            .map(GameResponseDto::id)
+                            .containsExactly(18L, 16L, 17L),
+                    () -> assertThat(after18)
+                            .map(GameResponseDto::id)
+                            .containsExactly(16L, 17L),
+                    () -> assertThat(after16)
+                            .map(GameResponseDto::id)
+                            .containsExactly(17L)
+            );
+        }
+
+        @Test
+        void game_id가_start_time과_순서가_불일치해도_커서페이징이_잘_수행된다_FINISHED() {
+            // given
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "FINISHED", null);
+
+            //when
+            List<GameResponseDto> firstPage = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(null, 4)
+            );
+            List<GameResponseDto> after21 = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(21L, 3)
+            );
+            List<GameResponseDto> after20 = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(20L, 2)
+            );
+            List<GameResponseDto> after22 = gameService.getAllGames(
+                    queryRequestDto,
+                    new PageRequestDto(22L, 1)
+            );
+
+            //then
+            assertAll(
+                    () -> assertThat(firstPage)
+                            .map(GameResponseDto::id)
+                            .containsExactly(21L, 20L, 22L, 23L),
+                    () -> assertThat(after21)
+                            .map(GameResponseDto::id)
+                            .containsExactly(20L, 22L, 23L),
+                    () -> assertThat(after20)
+                            .map(GameResponseDto::id)
+                            .containsExactly(22L, 23L),
+                    () -> assertThat(after22)
+                            .map(GameResponseDto::id)
+                            .containsExactly(23L)
+            );
+        }
     }
-
-
 }
