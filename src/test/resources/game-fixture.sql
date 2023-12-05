@@ -1,4 +1,5 @@
-SET foreign_key_checks = 0;
+SET
+foreign_key_checks = 0;
 
 -- 경기
 INSERT INTO games (id, sport_id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
@@ -28,7 +29,26 @@ VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-1
        (14, 2, 1, 1, '열네번쨰로 빠른 경기', '2023-11-12T20:10:00', 'abc123', '2023-11-12T14:15:00', '1st Quarter',
         'FINISHED'),
        (15, 2, 1, 1, '열다섯번째로 빠른 경기', '2023-11-12T21:10:00', 'abc123', '2023-11-12T14:15:00', '1st Quarter',
+        'FINISHED'),
+
+       (19, 1, 1, 1, '12월 중 첫번째 빠른 경기', '2023-12-03T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
+        'SCHEDULED'),
+       (18, 1, 1, 1, '12월 중 두번째 빠른 경기', '2023-12-04T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
+        'SCHEDULED'),
+       (16, 1, 1, 1, '12월 중 세번째 빠른 경기', '2023-12-05T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
+        'SCHEDULED'),
+       (17, 1, 1, 1, '12월 중 네번째 빠른 경기', '2023-12-05T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
+        'SCHEDULED'),
+
+       (23, 1, 1, 1, '12월 중 첫번째 빠른 경기', '2023-12-03T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
+        'FINISHED'),
+       (22, 1, 1, 1, '12월 중 두번째 빠른 경기', '2023-12-04T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
+        'FINISHED'),
+       (20, 1, 1, 1, '12월 중 세번째 빠른 경기', '2023-12-05T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
+        'FINISHED'),
+       (21, 1, 1, 1, '12월 중 네번째 빠른 경기', '2023-12-05T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
         'FINISHED');
+
 
 -- 팀
 INSERT
@@ -115,4 +135,5 @@ INSERT
 INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted)
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false);
 
-SET foreign_key_checks = 1;
+SET
+foreign_key_checks = 1;

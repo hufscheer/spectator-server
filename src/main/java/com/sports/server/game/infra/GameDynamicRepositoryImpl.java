@@ -1,60 +1,35 @@
 package com.sports.server.game.infra;
 
-import static com.sports.server.game.domain.QGame.game;
-import static com.sports.server.sport.domain.QSport.sport;
-
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.game.domain.Game;
 import com.sports.server.game.domain.GameDynamicRepository;
-import com.sports.server.game.domain.GameState;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.sports.server.game.dto.request.GamesQueryRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+import static com.sports.server.game.domain.QGame.game;
+import static com.sports.server.sport.domain.QSport.sport;
 
 @Repository
 @RequiredArgsConstructor
 public class GameDynamicRepositoryImpl implements GameDynamicRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final GamesQueryConditionMapper conditionMapper;
 
     @Override
-    public List<Game> findAllByLeagueAndStateAndSports(final Long leagueId, final GameState state,
-                                                       final List<Long> sportIds, final PageRequestDto pageRequestDto) {
-        DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-
-        JPAQuery<Game> gameJPAQuery = jpaQueryFactory
+    public List<Game> findAllByLeagueAndStateAndSports(final GamesQueryRequestDto gameQueryRequestDto,
+                                                       final PageRequestDto pageRequestDto) {
+        return jpaQueryFactory
                 .selectFrom(game)
                 .join(game.sport, sport).fetchJoin()
-                .where(booleanBuilder
-                        .and(() -> game.league.id.eq(leagueId))
-                        .and(() -> game.state.eq(state))
-                        .and(() -> game.sport.id.in(sportIds))
-                        .build()
-                );
-
-        if (state.equals(GameState.FINISHED)) {
-            return gameJPAQuery
-                    .orderBy(game.startTime.desc(), game.id.asc())
-                    .fetch();
-        }
-
-        return gameJPAQuery
-                .orderBy(game.startTime.asc(), game.id.asc())
+                .where(conditionMapper.mapBooleanCondition(gameQueryRequestDto, pageRequestDto))
+                .orderBy(conditionMapper.mapOrderCondition(gameQueryRequestDto))
+                .limit(pageRequestDto.size())
                 .fetch();
-    }
-
-    private LocalDateTime findLastStartTime(final Long cursor) {
-        if (cursor == null) {
-            return null;
-        }
-        return jpaQueryFactory
-                .select(game.startTime)
-                .from(game)
-                .where(game.id.eq(cursor))
-                .fetchFirst();
     }
 
 }
