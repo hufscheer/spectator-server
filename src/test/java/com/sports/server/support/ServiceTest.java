@@ -1,6 +1,6 @@
 package com.sports.server.support;
 
-import com.sports.server.report.infrastructure.ReportCheckClient;
+import com.sports.server.command.report.infrastructure.ReportCheckClient;
 import com.sports.server.support.config.AsyncTestConfig;
 import com.sports.server.support.isolation.DatabaseIsolation;
 import org.junit.jupiter.api.BeforeEach;
