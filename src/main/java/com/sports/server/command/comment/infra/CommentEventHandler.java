@@ -4,7 +4,7 @@ import com.sports.server.command.comment.domain.Comment;
 import com.sports.server.command.comment.domain.CommentEvent;
 import com.sports.server.command.comment.dto.response.CommentResponse;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.command.game.application.GameTeamServiceUtils;
+import com.sports.server.query.application.GameTeamServiceUtils;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import lombok.RequiredArgsConstructor;

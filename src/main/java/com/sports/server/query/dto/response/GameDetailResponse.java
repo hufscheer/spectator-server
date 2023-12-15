@@ -1,4 +1,4 @@
-package com.sports.server.command.game.dto.response;
+package com.sports.server.query.dto.response;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;

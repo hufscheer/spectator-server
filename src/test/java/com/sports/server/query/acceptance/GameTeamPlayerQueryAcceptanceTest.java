@@ -1,6 +1,6 @@
-package com.sports.server.command.game.acceptance;
+package com.sports.server.query.acceptance;
 
-import com.sports.server.command.game.dto.response.GameLineupResponse;
+import com.sports.server.query.dto.response.GameLineupResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 @Sql(scripts = "/game-fixture.sql")
-public class GameTeamPlayerAcceptanceTest extends AcceptanceTest {
+public class GameTeamPlayerQueryAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 경기_라인업을_조회한다() {

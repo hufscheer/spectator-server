@@ -1,7 +1,7 @@
-package com.sports.server.command.game.acceptance;
+package com.sports.server.query.acceptance;
 
-import com.sports.server.command.game.dto.response.GameDetailResponse;
-import com.sports.server.command.game.dto.response.GameResponseDto;
+import com.sports.server.query.dto.response.GameDetailResponse;
+import com.sports.server.query.dto.response.GameResponseDto;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -17,10 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/game-fixture.sql")
-class GameAcceptanceTest extends AcceptanceTest {
+public class GameQueryAcceptanceTest extends AcceptanceTest {
 
-    final int lastPkOfFixtureFromFirstLeague = 13;
-    final int defaultSizeOfData = 10;
+    private final int defaultSizeOfData = 10;
 
     @Test
     void 게임을_상세_조회한다() {
@@ -120,6 +119,7 @@ class GameAcceptanceTest extends AcceptanceTest {
     void 스포츠_아이디가_여러개일_경우_해당하는_모든_경기를_반환한다() {
 
         // when
+        int lastPkOfFixtureFromFirstLeague = 13;
         ExtractableResponse<Response> response = RestAssured.given()
                 .queryParam("status", "SCHEDULED")
                 .queryParam("league_id", 1L)

@@ -1,11 +1,11 @@
-package com.sports.server.command.game.infra;
+package com.sports.server.query.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.common.dto.PageRequestDto;
-import com.sports.server.command.game.dto.request.GamesQueryRequestDto;
+import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,15 +1,15 @@
-package com.sports.server.command.game.application;
+package com.sports.server.query.application;
 
-import com.sports.server.command.game.dto.response.GameDetailResponse;
-import com.sports.server.command.game.dto.response.VideoResponse;
+import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameTeam;
+import com.sports.server.query.dto.request.GamesQueryRequestDto;
+import com.sports.server.query.dto.response.GameDetailResponse;
+import com.sports.server.query.dto.response.GameResponseDto;
+import com.sports.server.query.dto.response.VideoResponse;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
-import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.game.domain.GameDynamicRepository;
-import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.domain.GameTeamRepository;
-import com.sports.server.command.game.dto.request.GamesQueryRequestDto;
-import com.sports.server.command.game.dto.response.GameResponseDto;
+import com.sports.server.query.repository.GameDynamicRepository;
+import com.sports.server.query.repository.GameTeamQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +23,15 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class GameService {
+public class GameQueryService {
 
-    private final GameTeamRepository gameTeamRepository;
+    private final GameTeamQueryRepository gameTeamQueryRepository;
     private final GameDynamicRepository gameDynamicRepository;
     private final EntityUtils entityUtils;
 
     public GameDetailResponse getGameDetail(final Long gameId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
-        List<GameTeam> teams = gameTeamRepository.findAllByGameWithTeam(game);
+        List<GameTeam> teams = gameTeamQueryRepository.findAllByGameWithTeam(game);
         return new GameDetailResponse(game, teams);
     }
 
@@ -39,7 +39,7 @@ public class GameService {
                                              final PageRequestDto pageRequest) {
 
         List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(queryRequestDto, pageRequest);
-        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIds(
+        List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameIds(
                 games.stream()
                         .map(Game::getId)
                         .toList()

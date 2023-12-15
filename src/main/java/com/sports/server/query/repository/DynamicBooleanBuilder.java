@@ -1,4 +1,4 @@
-package com.sports.server.command.game.infra;
+package com.sports.server.query.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;

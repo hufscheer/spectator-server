@@ -1,12 +1,14 @@
-package com.sports.server.command.game.application;
+package com.sports.server.query.application;
 
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.domain.GameTeamRepository;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import com.sports.server.query.repository.GameTeamQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GameTeamServiceUtils {
 
-    private final GameTeamRepository gameTeamRepository;
+    private final GameTeamQueryRepository gameTeamQueryRepository;
 
     public int calculateOrderOfGameTeam(final Game game, final Long gameTeamId) {
         List<GameTeam> gameTeams = findSortedGameTeamsByGame(game);
@@ -41,7 +43,7 @@ public class GameTeamServiceUtils {
     }
 
     private List<GameTeam> findSortedGameTeamsByGame(Game game) {
-        return sortGameTeams(gameTeamRepository.findAllByGame(game));
+        return sortGameTeams(gameTeamQueryRepository.findAllByGame(game));
     }
 
     private int getOrderOfTeam(GameTeam gameTeam, List<GameTeam> gameTeams) {

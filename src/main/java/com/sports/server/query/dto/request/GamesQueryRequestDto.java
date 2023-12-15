@@ -1,4 +1,4 @@
-package com.sports.server.command.game.dto.request;
+package com.sports.server.query.dto.request;
 
 import java.util.List;
 import lombok.Getter;

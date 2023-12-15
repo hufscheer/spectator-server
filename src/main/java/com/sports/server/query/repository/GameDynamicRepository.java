@@ -1,6 +1,7 @@
-package com.sports.server.command.game.domain;
+package com.sports.server.query.repository;
 
-import com.sports.server.command.game.dto.request.GamesQueryRequestDto;
+import com.sports.server.command.game.domain.Game;
+import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import com.sports.server.common.dto.PageRequestDto;
 
 import java.util.List;

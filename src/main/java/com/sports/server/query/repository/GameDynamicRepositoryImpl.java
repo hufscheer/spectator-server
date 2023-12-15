@@ -1,9 +1,8 @@
-package com.sports.server.command.game.infra;
+package com.sports.server.query.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.game.domain.GameDynamicRepository;
-import com.sports.server.command.game.dto.request.GamesQueryRequestDto;
+import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import com.sports.server.common.dto.PageRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

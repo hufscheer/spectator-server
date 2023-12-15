@@ -1,43 +1,26 @@
 package com.sports.server.command.game.application;
 
-import static java.util.Comparator.comparingLong;
-
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.game.dto.request.GameTeamCheerRequestDto;
-import com.sports.server.command.game.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
-
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class GameTeamService {
 
     private final GameTeamRepository gameTeamRepository;
-    private final GameTeamServiceUtils gameTeamServiceUtils;
     private final EntityUtils entityUtils;
 
-    public List<GameTeamCheerResponseDto> getCheerCountOfGameTeams(final Long gameId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
 
-        return gameTeamRepository.findAllByGame(game).stream()
-                .sorted(comparingLong(GameTeam::getId))
-                .map(gameTeam -> new GameTeamCheerResponseDto(gameTeam,
-                        gameTeamServiceUtils.calculateOrderOfGameTeam(game, gameTeam)))
-                .toList();
-    }
-
-
-    @Transactional
     public void updateCheerCount(final Long gameId, final GameTeamCheerRequestDto cheerRequestDto) {
         Game game = entityUtils.getEntity(gameId, Game.class);
         GameTeam gameTeam = entityUtils.getEntity(cheerRequestDto.gameTeamId(), GameTeam.class);
