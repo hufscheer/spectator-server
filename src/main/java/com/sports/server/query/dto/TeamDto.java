@@ -1,4 +1,4 @@
-package com.sports.server.command.team.dto;
+package com.sports.server.query.dto;
 
 import com.sports.server.command.team.domain.Team;
 import lombok.Getter;

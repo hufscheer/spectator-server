@@ -1,7 +1,7 @@
-package com.sports.server.command.team.presentation;
+package com.sports.server.query.presentation;
 
-import com.sports.server.command.team.application.TeamService;
-import com.sports.server.command.team.dto.TeamDto;
+import com.sports.server.query.application.TeamQueryService;
+import com.sports.server.query.dto.TeamDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +13,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/teams")
-public class TeamController {
+public class TeamQueryController {
 
-    private final TeamService teamService;
+    private final TeamQueryService teamQueryService;
 
     @GetMapping
     public ResponseEntity<List<TeamDto>> getAllTeams() {
-        return ResponseEntity.ok(teamService.findAllTeams());
+        return ResponseEntity.ok(teamQueryService.findAllTeams());
     }
 }

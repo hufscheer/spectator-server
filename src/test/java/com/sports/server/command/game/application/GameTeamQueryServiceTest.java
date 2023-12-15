@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Sql(scripts = "/game-fixture.sql")
-public class GameTeamServiceTest extends ServiceTest {
+public class GameTeamQueryServiceTest extends ServiceTest {
 
     @Autowired
     private GameTeamService gameTeamService;
