@@ -1,25 +1,16 @@
 package com.sports.server.command.comment.application;
 
 import com.sports.server.command.comment.dto.request.CommentRequestDto;
-import com.sports.server.command.comment.dto.response.CommentResponse;
-import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Sql(scripts = "/comment-fixture.sql")
+
 public class CommentServiceTest extends ServiceTest {
 
     @Autowired
@@ -33,9 +24,7 @@ public class CommentServiceTest extends ServiceTest {
         CommentRequestDto commentRequestDto = new CommentRequestDto(content, 1L);
 
         //when & then
-        assertThrows(CustomException.class, () -> {
-            commentService.register(commentRequestDto);
-        });
+        assertThrows(CustomException.class, () -> commentService.register(commentRequestDto));
 
     }
 
@@ -49,26 +38,6 @@ public class CommentServiceTest extends ServiceTest {
         //when & then
         assertThatCode(() -> commentService.register(commentRequestDto))
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    void 댓글_조회시_경기에_참여하는_팀의_아이디_순서대로_정수가_반환된다() {
-
-        //given
-        Long gameId = 1L;
-        PageRequestDto pageRequestDto = new PageRequestDto(null, 14);
-
-        // when
-        List<CommentResponse> commentsByGameId = commentService.getCommentsByGameId(gameId, pageRequestDto);
-
-        // then
-        Map<Long, Integer> orderOfGameTeams = new HashMap<>();
-        orderOfGameTeams.put(1L, 1);
-        orderOfGameTeams.put(2L, 2);
-
-        for (CommentResponse commentResponse : commentsByGameId) {
-            assertEquals((int) orderOfGameTeams.get(commentResponse.gameTeamId()), commentResponse.order());
-        }
     }
 
 }

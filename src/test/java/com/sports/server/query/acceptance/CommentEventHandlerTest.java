@@ -1,4 +1,4 @@
-package com.sports.server.command.comment.acceptance;
+package com.sports.server.query.acceptance;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.sports.server.command.comment.application.CommentService;
 import com.sports.server.command.comment.dto.request.CommentRequestDto;
-import com.sports.server.command.comment.dto.response.CommentResponse;
+import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.support.AcceptanceTest;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;

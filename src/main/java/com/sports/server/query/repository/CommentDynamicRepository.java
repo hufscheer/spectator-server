@@ -1,4 +1,6 @@
-package com.sports.server.command.comment.domain;
+package com.sports.server.query.repository;
+
+import com.sports.server.command.comment.domain.Comment;
 
 import java.util.List;
 

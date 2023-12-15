@@ -1,8 +1,8 @@
-package com.sports.server.command.comment.infra;
+package com.sports.server.query.presentation;
 
 import com.sports.server.command.comment.domain.Comment;
 import com.sports.server.command.comment.domain.CommentEvent;
-import com.sports.server.command.comment.dto.response.CommentResponse;
+import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.application.GameTeamServiceUtils;
 import com.sports.server.command.game.domain.Game;
@@ -18,8 +18,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class CommentEventHandler {
 
     private static final String DESTINATION = "/topic/games/";
-    private final GameTeamServiceUtils gameTeamServiceUtils;
 
+    private final GameTeamServiceUtils gameTeamServiceUtils;
     private final EntityUtils entityUtils;
     private final SimpMessagingTemplate messagingTemplate;
 

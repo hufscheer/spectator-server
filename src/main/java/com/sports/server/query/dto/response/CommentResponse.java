@@ -1,4 +1,4 @@
-package com.sports.server.command.comment.dto.response;
+package com.sports.server.query.dto.response;
 
 import com.sports.server.command.comment.domain.Comment;
 

@@ -1,9 +1,7 @@
-package com.sports.server.command.comment.infra;
+package com.sports.server.query.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.comment.domain.Comment;
-import com.sports.server.command.comment.domain.CommentDynamicRepository;
-import com.sports.server.query.repository.DynamicBooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
