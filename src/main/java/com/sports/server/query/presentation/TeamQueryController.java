@@ -1,7 +1,7 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.query.application.TeamQueryService;
-import com.sports.server.query.dto.TeamDto;
+import com.sports.server.query.dto.response.TeamDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

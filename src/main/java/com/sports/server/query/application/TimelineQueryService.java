@@ -1,8 +1,8 @@
-package com.sports.server.command.record.application;
+package com.sports.server.query.application;
 
 import com.sports.server.command.record.domain.Record;
-import com.sports.server.command.record.domain.RecordRepository;
-import com.sports.server.command.record.dto.response.TimelineResponse;
+import com.sports.server.query.repository.RecordQueryRepository;
+import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.command.sport.domain.Quarter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,12 +17,12 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class TimelineService {
+public class TimelineQueryService {
 
-    private final RecordRepository recordRepository;
+    private final RecordQueryRepository recordQueryRepository;
 
     public List<TimelineResponse> getTimeline(final Long gameId) {
-        List<Record> records = recordRepository.findByGameIdOrderByQuarterAndScoredAtDesc(gameId);
+        List<Record> records = recordQueryRepository.findByGameIdOrderByQuarterAndScoredAtDesc(gameId);
         Map<Quarter, List<Record>> groupedByQuarter = records.stream()
                 .collect(groupingBy(Record::getScoredQuarter));
         return groupedByQuarter.keySet()

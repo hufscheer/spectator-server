@@ -1,12 +1,13 @@
-package com.sports.server.command.record.domain;
+package com.sports.server.query.repository;
 
+import com.sports.server.command.record.domain.Record;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface RecordRepository extends Repository<Record, Long> {
+public interface RecordQueryRepository extends Repository<Record, Long> {
 
     @Query("select r from Record r " +
             "join fetch r.game " +

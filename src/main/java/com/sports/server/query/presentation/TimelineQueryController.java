@@ -1,7 +1,7 @@
-package com.sports.server.command.record.presentation;
+package com.sports.server.query.presentation;
 
-import com.sports.server.command.record.application.TimelineService;
-import com.sports.server.command.record.dto.response.TimelineResponse;
+import com.sports.server.query.application.TimelineQueryService;
+import com.sports.server.query.dto.response.TimelineResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class TimelineController {
+public class TimelineQueryController {
 
-    private final TimelineService timelineService;
+    private final TimelineQueryService timelineQueryService;
 
     @GetMapping("/games/{gameId}/timeline")
     public ResponseEntity<List<TimelineResponse>> getTimeline(@PathVariable final Long gameId) {
-        return ResponseEntity.ok(timelineService.getTimeline(gameId));
+        return ResponseEntity.ok(timelineQueryService.getTimeline(gameId));
     }
 }

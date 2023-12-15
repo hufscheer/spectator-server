@@ -1,4 +1,4 @@
-package com.sports.server.command.record.dto.response;
+package com.sports.server.query.dto.response;
 
 import com.sports.server.command.record.domain.Record;
 import com.sports.server.command.sport.domain.Quarter;

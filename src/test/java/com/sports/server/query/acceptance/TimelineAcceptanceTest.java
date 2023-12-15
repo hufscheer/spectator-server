@@ -1,6 +1,6 @@
-package com.sports.server.command.record.acceptance;
+package com.sports.server.query.acceptance;
 
-import com.sports.server.command.record.dto.response.TimelineResponse;
+import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
