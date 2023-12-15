@@ -1,8 +1,8 @@
-package com.sports.server.command.league.acceptance;
+package com.sports.server.query.acceptance;
 
-import com.sports.server.command.league.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.support.AcceptanceTest;
-import com.sports.server.command.league.dto.response.LeagueResponse;
+import com.sports.server.query.dto.response.LeagueResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/league-fixture.sql")
-public class LeagueAcceptanceTest extends AcceptanceTest {
+public class LeagueQueryAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 삭제되지_않은_모든_리그를_조회한다() {

@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/record-fixture.sql")
-public class TimelineAcceptanceTest extends AcceptanceTest {
+public class TimelineQueryAcceptanceTest extends AcceptanceTest {
 
     private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_3QUARTER = List.of(
             new TimelineResponse.RecordResponse(39, "선수5", "팀 A", 3),
