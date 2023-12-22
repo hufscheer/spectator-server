@@ -2,7 +2,7 @@ package com.sports.server.command.game.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sports.server.command.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
 import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;

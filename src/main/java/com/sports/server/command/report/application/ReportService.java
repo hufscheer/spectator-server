@@ -2,7 +2,7 @@ package com.sports.server.command.report.application;
 
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportRepository;
-import com.sports.server.command.report.dto.request.ReportRequest;
+import com.sports.server.command.report.dto.ReportRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

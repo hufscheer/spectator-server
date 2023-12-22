@@ -3,7 +3,7 @@ package com.sports.server.command.game.application;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
-import com.sports.server.command.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;

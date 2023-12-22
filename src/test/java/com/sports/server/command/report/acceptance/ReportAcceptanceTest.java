@@ -1,6 +1,6 @@
 package com.sports.server.command.report.acceptance;
 
-import com.sports.server.command.report.dto.request.ReportRequest;
+import com.sports.server.command.report.dto.ReportRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

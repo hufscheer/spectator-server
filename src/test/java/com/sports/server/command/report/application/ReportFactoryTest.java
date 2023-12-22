@@ -1,7 +1,7 @@
 package com.sports.server.command.report.application;
 
 import com.sports.server.command.report.domain.Report;
-import com.sports.server.command.report.dto.request.ReportRequest;
+import com.sports.server.command.report.dto.ReportRequest;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

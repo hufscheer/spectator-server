@@ -2,7 +2,7 @@ package com.sports.server.command.report.application;
 
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportRepository;
-import com.sports.server.command.report.dto.request.ReportRequest;
+import com.sports.server.command.report.dto.ReportRequest;
 import com.sports.server.command.comment.domain.Comment;
 import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;

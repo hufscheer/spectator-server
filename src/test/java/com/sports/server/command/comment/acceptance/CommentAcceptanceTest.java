@@ -1,6 +1,6 @@
 package com.sports.server.command.comment.acceptance;
 
-import com.sports.server.command.comment.dto.request.CommentRequestDto;
+import com.sports.server.command.comment.dto.CommentRequestDto;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

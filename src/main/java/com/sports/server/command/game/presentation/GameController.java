@@ -1,7 +1,7 @@
 package com.sports.server.command.game.presentation;
 
 import com.sports.server.command.game.application.GameTeamService;
-import com.sports.server.command.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

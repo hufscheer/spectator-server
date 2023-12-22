@@ -1,7 +1,7 @@
 package com.sports.server.command.comment.presentation;
 
 import com.sports.server.command.comment.application.CommentService;
-import com.sports.server.command.comment.dto.request.CommentRequestDto;
+import com.sports.server.command.comment.dto.CommentRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

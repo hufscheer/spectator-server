@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.sports.server.command.comment.application.CommentService;
-import com.sports.server.command.comment.dto.request.CommentRequestDto;
+import com.sports.server.command.comment.dto.CommentRequestDto;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.support.AcceptanceTest;
 import java.lang.reflect.Type;

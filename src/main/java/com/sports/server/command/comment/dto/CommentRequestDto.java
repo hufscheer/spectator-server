@@ -1,4 +1,4 @@
-package com.sports.server.command.comment.dto.request;
+package com.sports.server.command.comment.dto;
 
 import lombok.NonNull;
 

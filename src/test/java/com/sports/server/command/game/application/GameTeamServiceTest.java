@@ -1,7 +1,7 @@
 package com.sports.server.command.game.application;
 
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.dto.request.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.GameTeamFixtureRepository;

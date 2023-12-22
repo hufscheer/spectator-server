@@ -3,7 +3,7 @@ package com.sports.server.command.comment.application;
 import com.sports.server.command.comment.domain.Comment;
 import com.sports.server.command.comment.domain.CommentRepository;
 import com.sports.server.command.comment.domain.LanguageFilter;
-import com.sports.server.command.comment.dto.request.CommentRequestDto;
+import com.sports.server.command.comment.dto.CommentRequestDto;
 import com.sports.server.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

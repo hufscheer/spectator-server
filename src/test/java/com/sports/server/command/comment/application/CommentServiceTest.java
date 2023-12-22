@@ -1,6 +1,6 @@
 package com.sports.server.command.comment.application;
 
-import com.sports.server.command.comment.dto.request.CommentRequestDto;
+import com.sports.server.command.comment.dto.CommentRequestDto;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.params.ParameterizedTest;
