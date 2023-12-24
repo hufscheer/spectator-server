@@ -1,5 +1,6 @@
 package com.sports.server.common.config;
 
+import com.sports.server.common.log.MDCTaskDecorator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -17,12 +18,13 @@ public class AsyncConfig {
     private static final String CUSTOM_THREAD_NAME_PREFIX = "ASYNC_THREAD-";
 
     @Bean(name = "asyncThreadPool")
-    public Executor asyncThreadPool() {
+    public Executor asyncThreadPool(MDCTaskDecorator mdcTaskDecorator) {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(CORE_POOL_SIZE);
         taskExecutor.setMaxPoolSize(MAX_POOL_SIZE);
         taskExecutor.setQueueCapacity(QUEUE_CAPACITY);
         taskExecutor.setThreadNamePrefix(CUSTOM_THREAD_NAME_PREFIX);
+        taskExecutor.setTaskDecorator(mdcTaskDecorator);
         taskExecutor.initialize();
         return taskExecutor;
     }
