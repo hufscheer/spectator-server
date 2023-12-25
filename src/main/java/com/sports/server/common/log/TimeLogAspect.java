@@ -1,37 +1,26 @@
 package com.sports.server.common.log;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 @Aspect
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class TimeLogAspect {
+
+    private final TimeLogTemplate timeLogTemplate;
 
     @Around("com.sports.server.common.log.TimeLogPointCut.timeLogPointCut()")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
-        StopWatch stopWatch = new StopWatch();
-        return proceedWithTimeCheck(joinPoint, stopWatch);
-    }
-
-    private Object proceedWithTimeCheck(ProceedingJoinPoint joinPoint, StopWatch stopWatch) throws Throwable {
-        stopWatch.start();
-        Object result;
-        try {
-            result = joinPoint.proceed();
-            return result;
-        } finally {
-            logTime(joinPoint, stopWatch);
-        }
-    }
-
-    private void logTime(ProceedingJoinPoint joinPoint, StopWatch stopWatch) {
-        stopWatch.stop();
-        log.info("{} 실행 시간 : {}ms", generateTargetName(joinPoint), stopWatch.getTotalTimeMillis());
+        return timeLogTemplate.execute(
+                joinPoint::proceed,
+                generateTargetName(joinPoint)
+        );
     }
 
     private String generateTargetName(ProceedingJoinPoint joinPoint) {
