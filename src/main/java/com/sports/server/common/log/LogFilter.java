@@ -40,7 +40,9 @@ public class LogFilter implements Filter {
     private String generateMessage(HttpServletRequest req) {
         Map<String, String[]> parameterMap = req.getParameterMap();
         StringBuilder message = new StringBuilder();
-        message.append("REQUEST URI : ")
+        message.append("[REQUEST] ")
+                .append(req.getMethod())
+                .append(" ")
                 .append(req.getRequestURI())
                 .append("?");
         for (String key : parameterMap.keySet()) {
