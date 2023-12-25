@@ -8,14 +8,28 @@ import org.springframework.util.StopWatch;
 @Component
 public class TimeLogTemplate {
 
-    public <V> V execute(ThrowableCallable<V> callable, String target) throws Throwable {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
+    public <V> V executeWithResult(ThrowableCallable<V> callable, String target) throws Throwable {
+        StopWatch stopWatch = getStartedWatch();
         try {
             return callable.call();
         } finally {
             logTime(target, stopWatch);
         }
+    }
+
+    public void execute(ThrowableRunnable runnable, String target) throws Throwable {
+        StopWatch stopWatch = getStartedWatch();
+        try {
+            runnable.run();
+        } finally {
+            logTime(target, stopWatch);
+        }
+    }
+
+    private StopWatch getStartedWatch() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        return stopWatch;
     }
 
     private void logTime(String target, StopWatch stopWatch) {

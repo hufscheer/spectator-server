@@ -17,7 +17,7 @@ public class TimeLogAspect {
 
     @Around("com.sports.server.common.log.TimeLogPointCut.timeLogPointCut()")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
-        return timeLogTemplate.execute(
+        return timeLogTemplate.executeWithResult(
                 joinPoint::proceed,
                 generateTargetName(joinPoint)
         );
