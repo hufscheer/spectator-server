@@ -2,7 +2,7 @@ name: spring server cd
 
 on:
   push:
-    branches: ["main"]
+    branches: ["infra/#90-logging"]
 
 jobs:
   deploy:
