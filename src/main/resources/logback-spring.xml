@@ -3,9 +3,9 @@
 <configuration>
     <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
     <property name="CONSOLE_LOG_PATTERN"
-              value="[%X{CORRELATION_ID:-NO CORRELATION ID}] [%d{yyyy-MM-dd HH:mm:ss}] %thread %-5level [%C.%M:%L] %n >>> %msg%n%n"/>
+              value="%magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss}]) %green(%thread) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n : %msg%n"/>
     <property name="FILE_LOG_PATTERN"
-              value=">>> %msg %n [%X{CORRELATION_ID:-NO CORRELATION ID}] [%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) %n%n"/>
+              value=": %msg %n %magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss}]) %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n"/>
 
     <springProfile name="!prod">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
