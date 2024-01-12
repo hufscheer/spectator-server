@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Sql(scripts = "/game-fixture.sql")
-class GameTeamServiceTest extends ServiceTest {
+class GameLeagueTeamServiceTest extends ServiceTest {
 
     @Autowired
     private GameTeamService gameTeamService;

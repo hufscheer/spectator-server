@@ -16,7 +16,7 @@ public record LineupPlayerResponse(
     public LineupPlayerResponse(GameTeam gameTeam, List<LineupPlayer> lineupPlayers, int order) {
         this(
                 gameTeam.getId(),
-                gameTeam.getTeam().getName(),
+                gameTeam.getLeagueTeam().getName(),
                 lineupPlayers.stream()
                         .map(PlayerResponse::new)
                         .toList(),

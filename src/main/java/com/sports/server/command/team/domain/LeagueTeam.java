@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "teams")
+@Table(name = "league_teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team extends BaseEntity<Team> {
+public class LeagueTeam extends BaseEntity<LeagueTeam> {
 
     @Column(name = "name", nullable = false)
     private String name;

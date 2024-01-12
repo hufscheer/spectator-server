@@ -18,7 +18,7 @@ class ReportTest {
     class CreateTest {
 
         @Test
-        void 댓글로_생성한다() {
+        void 응원톡으로_생성한다() {
             // given
             CheerTalk cheerTalk = new CheerTalk("신고해봐", 1L);
 
@@ -30,7 +30,7 @@ class ReportTest {
         }
 
         @Test
-        void 블락된_댓글로_생성할_수_없다() {
+        void 블락된_응원톡으로_생성할_수_없다() {
             // given
             CheerTalk cheerTalk = mock(CheerTalk.class);
             given(cheerTalk.isBlocked()).willReturn(true);
@@ -38,7 +38,7 @@ class ReportTest {
             // when then
             assertThatThrownBy(() -> new Report(cheerTalk))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage("이미 블락된 댓글은 신고할 수 없습니다.");
+                    .hasMessage("이미 블락된 응원톡은 신고할 수 없습니다.");
         }
     }
 }

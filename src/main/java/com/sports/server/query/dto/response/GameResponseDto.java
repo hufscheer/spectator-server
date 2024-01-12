@@ -43,8 +43,8 @@ public record GameResponseDto(
         public TeamResponse(GameTeam gameTeam, int order) {
             this(
                     gameTeam.getId(),
-                    gameTeam.getTeam().getName(),
-                    gameTeam.getTeam().getLogoImageUrl(),
+                    gameTeam.getLeagueTeam().getName(),
+                    gameTeam.getLeagueTeam().getLogoImageUrl(),
                     gameTeam.getScore(), order
             );
         }

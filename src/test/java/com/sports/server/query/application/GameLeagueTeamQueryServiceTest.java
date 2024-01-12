@@ -12,7 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(scripts = "/game-fixture.sql")
-class GameTeamQueryServiceTest extends ServiceTest {
+class GameLeagueTeamQueryServiceTest extends ServiceTest {
 
     @Autowired
     private GameTeamQueryService gameTeamQueryService;

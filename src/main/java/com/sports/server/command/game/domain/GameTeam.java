@@ -1,6 +1,6 @@
 package com.sports.server.command.game.domain;
 
-import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.LeagueTeam;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,7 +19,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
-    private Team team;
+    private LeagueTeam leagueTeam;
 
     @Column(name = "cheer_count", nullable = false)
     private int cheerCount;

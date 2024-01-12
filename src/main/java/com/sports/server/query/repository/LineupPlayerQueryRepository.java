@@ -12,7 +12,7 @@ public interface LineupPlayerQueryRepository extends Repository<LineupPlayer, Lo
 
     @Query("select lp from LineupPlayer lp " +
             "join fetch lp.gameTeam gt " +
-            "join fetch gt.team " +
+            "join fetch gt.leagueTeam " +
             "where gt.game.id = :gameId")
     List<LineupPlayer> findPlayersByGameId(@Param("gameId") final Long gameId);
 }

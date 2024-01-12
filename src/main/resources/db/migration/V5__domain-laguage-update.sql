@@ -11,3 +11,6 @@ ALTER TABLE members CHANGE is_administrator is_manager BIT(1);
 -- lineup_players
 ALTER TABLE game_team_players RENAME TO lineup_players;
 ALTER TABLE records CHANGE game_team_player_id lineup_player_id BIGINT;
+
+-- team -> leagueTeam
+ALTER TABLE teams RENAME TO league_teams;

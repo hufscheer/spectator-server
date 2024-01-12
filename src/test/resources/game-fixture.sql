@@ -52,13 +52,13 @@ VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-1
 
 -- 팀
 INSERT
-INTO teams (name, logo_image_url, manager_id, organization_id, league_id)
+INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 A', 'http://example.com/logo_a.png', 1, 1, 1);
 
-INSERT INTO teams (name, logo_image_url, manager_id, organization_id, league_id)
+INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 B', 'http://example.com/logo_b.png', 2, 1, 1);
 
-INSERT INTO teams (name, logo_image_url, manager_id, organization_id, league_id)
+INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 C', 'http://example.com/logo_c.png', 3, 2, 2);
 
 -- 스포츠

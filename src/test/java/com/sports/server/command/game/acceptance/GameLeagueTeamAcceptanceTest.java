@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql(scripts = "/game-fixture.sql")
-public class GameTeamAcceptanceTest extends AcceptanceTest {
+public class GameLeagueTeamAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 경기에_참여하는_팀을_응원한다() {

@@ -14,7 +14,7 @@ public class TeamPlayer extends BaseEntity<TeamPlayer> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
-    private Team team;
+    private LeagueTeam leagueTeam;
 
     @Column(name = "name", nullable = false)
     private String name;
