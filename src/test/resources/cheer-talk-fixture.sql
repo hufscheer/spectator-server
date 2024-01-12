@@ -6,7 +6,7 @@ INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_
                    state)
 VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED');
 
-INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
 VALUES (1, 1, 1, 0), -- 팀 A의 정보
        (1, 2, 1, 0);
 
@@ -33,7 +33,7 @@ INSERT INTO games (sport_id, manager_id, league_id, name, start_time, video_id, 
                    state)
 VALUES (1, 1, 1, '축구 대전', '2023-11-10T10:00:00', 'abc321', '2023-11-15T10:15:00', '전반전', 'SCHEDULED');
 
-INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
 VALUES (2, 1, 1, 0),
        (2, 2, 1, 0);
 

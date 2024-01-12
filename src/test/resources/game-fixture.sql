@@ -85,7 +85,7 @@ VALUES (6, 2, '선수6', '센터'),
 
 -- 농구 대전 (game_id = 1) A팀 vs B팀
 -- User
-INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
 VALUES (1, 1, 1, 1),
        (1, 2, 2, 2),
 

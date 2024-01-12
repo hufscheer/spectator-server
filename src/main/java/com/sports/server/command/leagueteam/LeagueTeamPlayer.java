@@ -1,4 +1,4 @@
-package com.sports.server.command.team.domain;
+package com.sports.server.command.leagueteam;
 
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
