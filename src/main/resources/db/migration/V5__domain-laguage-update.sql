@@ -6,6 +6,7 @@ ALTER TABLE reports CHANGE comment_id cheer_talk_id BIGINT;
 ALTER TABLE games CHANGE administrator_id manager_id BIGINT;
 ALTER TABLE teams CHANGE administrator_id manager_id BIGINT;
 ALTER TABLE leagues CHANGE administrator_id manager_id BIGINT;
+ALTER TABLE members CHANGE is_administrator is_manager BIT(1);
 
 -- lineup_players
 ALTER TABLE game_team_players RENAME TO lineup_players;
