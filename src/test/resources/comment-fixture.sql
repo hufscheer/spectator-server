@@ -11,7 +11,7 @@ VALUES (1, 1, 1, 0), -- 팀 A의 정보
        (1, 2, 1, 0);
 
 -- Comment 테이블에 데이터를 넣는 INSERT 쿼리
-INSERT INTO `cheerTalks` (id, `created_at`, `content`, `is_blocked`, `game_team_id`)
+INSERT INTO `cheer_talks` (id, `created_at`, `content`, `is_blocked`, `game_team_id`)
 VALUES (1, '2023-01-01 12:30:00', '댓글1', false, 1),
        (2, '2023-01-02 12:45:00', '댓글2', false, 2),
        (3, '2023-01-02 12:45:05', '댓글3', false, 2),
@@ -37,7 +37,7 @@ INSERT INTO game_teams (game_id, team_id, cheer_count, score)
 VALUES (2, 1, 1, 0),
        (2, 2, 1, 0);
 
-INSERT INTO `cheerTalks` (id, `created_at`, `content`, `is_blocked`, `game_team_id`)
+INSERT INTO `cheer_talks` (id, `created_at`, `content`, `is_blocked`, `game_team_id`)
 VALUES (15, '2023-01-01 12:30:00', '댓글15', false, 3),
        (16, '2023-01-01 12:30:00', '댓글16', false, 4);
 

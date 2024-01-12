@@ -51,7 +51,7 @@ class ReportServiceTest extends ServiceTest {
             // when then
             assertThatThrownBy(() -> reportService.report(request))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage("Comment을(를) 찾을 수 없습니다");
+                    .hasMessage("CheerTalk을(를) 찾을 수 없습니다");
         }
 
         @Test

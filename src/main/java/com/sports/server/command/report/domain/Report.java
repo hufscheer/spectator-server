@@ -23,7 +23,7 @@ import org.springframework.http.HttpStatus;
 public class Report extends BaseEntity<Report> {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", unique = true)
+    @JoinColumn(name = "cheer_talk_id", unique = true)
     private CheerTalk cheerTalk;
 
     @Column(name = "reported_at", nullable = false)
