@@ -2,7 +2,7 @@ SET
 foreign_key_checks = 0;
 
 -- 경기
-INSERT INTO games (id, sport_id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
+INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at,
                    game_quarter,
                    state)
 VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED'),
@@ -52,13 +52,13 @@ VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-1
 
 -- 팀
 INSERT
-INTO teams (name, logo_image_url, administrator_id, organization_id, league_id)
+INTO teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 A', 'http://example.com/logo_a.png', 1, 1, 1);
 
-INSERT INTO teams (name, logo_image_url, administrator_id, organization_id, league_id)
+INSERT INTO teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 B', 'http://example.com/logo_b.png', 2, 1, 1);
 
-INSERT INTO teams (name, logo_image_url, administrator_id, organization_id, league_id)
+INSERT INTO teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 C', 'http://example.com/logo_c.png', 3, 2, 2);
 
 -- 스포츠
@@ -132,7 +132,7 @@ VALUES (1, 1, 1, 1),
        (15, 3, 2, 2);
 
 INSERT
-INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted)
+INTO leagues (id, manager_id, organization_id, name, start_at, end_at, is_deleted)
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false);
 
 SET

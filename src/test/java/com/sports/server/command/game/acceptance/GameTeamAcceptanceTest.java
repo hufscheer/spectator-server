@@ -2,7 +2,7 @@ package com.sports.server.command.game.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -23,7 +23,7 @@ public class GameTeamAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         Long gameTeamId = 1L;
         int cheerCountBeforePost = 1;
-        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto(gameTeamId, 1);
+        CheerCountUpdateRequest cheerRequestDto = new CheerCountUpdateRequest(gameTeamId, 1);
 
         // when
         RestAssured.given().log().all()

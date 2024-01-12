@@ -1,6 +1,6 @@
 package com.sports.server.command.game.dto;
 
-public record GameTeamCheerRequestDto(
+public record CheerCountUpdateRequest(
         Long gameTeamId,
         int cheerCount
 ) {

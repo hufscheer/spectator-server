@@ -22,8 +22,8 @@ public class Team extends BaseEntity<Team> {
     private String logoImageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "administrator_id")
-    private Member administrator;
+    @JoinColumn(name = "manager_id")
+    private Member manager;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")

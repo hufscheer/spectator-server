@@ -1,7 +1,7 @@
 package com.sports.server.command.game.application;
 
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.GameTeamFixtureRepository;
@@ -31,7 +31,7 @@ class GameTeamServiceTest extends ServiceTest {
         //given
         Long gameId = 1L;
         Long gameTeamId = 3L;
-        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto(gameTeamId, 1);
+        CheerCountUpdateRequest cheerRequestDto = new CheerCountUpdateRequest(gameTeamId, 1);
 
         //when&then
         assertThrows(CustomException.class, () -> gameTeamService.updateCheerCount(gameId, cheerRequestDto));
@@ -44,7 +44,7 @@ class GameTeamServiceTest extends ServiceTest {
         //given
         Long gameId = 1L;
         Long gameTeamId = 10000L;
-        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto(gameTeamId, 1);
+        CheerCountUpdateRequest cheerRequestDto = new CheerCountUpdateRequest(gameTeamId, 1);
 
         //when&then
         assertThrows(CustomException.class, () -> gameTeamService.updateCheerCount(gameId, cheerRequestDto));
@@ -58,7 +58,7 @@ class GameTeamServiceTest extends ServiceTest {
         CountDownLatch latch = new CountDownLatch(100);
 
         long gameTeamId = 3L;
-        GameTeamCheerRequestDto cheerRequestDto = new GameTeamCheerRequestDto(gameTeamId, 1);
+        CheerCountUpdateRequest cheerRequestDto = new CheerCountUpdateRequest(gameTeamId, 1);
 
         // when
         for (int i = 0; i < 100; i++) {

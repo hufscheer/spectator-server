@@ -3,7 +3,7 @@ package com.sports.server.command.game.application;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
-import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
@@ -21,11 +21,11 @@ public class GameTeamService {
     private final EntityUtils entityUtils;
 
 
-    public void updateCheerCount(final Long gameId, final GameTeamCheerRequestDto cheerRequestDto) {
+    public void updateCheerCount(final Long gameId, final CheerCountUpdateRequest cheerCountUpdateRequest) {
         Game game = entityUtils.getEntity(gameId, Game.class);
-        GameTeam gameTeam = entityUtils.getEntity(cheerRequestDto.gameTeamId(), GameTeam.class);
+        GameTeam gameTeam = entityUtils.getEntity(cheerCountUpdateRequest.gameTeamId(), GameTeam.class);
         validateGameTeam(gameTeam, game);
-        gameTeamRepository.updateCheerCount(cheerRequestDto.gameTeamId(), cheerRequestDto.cheerCount());
+        gameTeamRepository.updateCheerCount(cheerCountUpdateRequest.gameTeamId(), cheerCountUpdateRequest.cheerCount());
     }
 
     private void validateGameTeam(final GameTeam gameTeam, final Game game) {
