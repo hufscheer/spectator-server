@@ -1,7 +1,7 @@
 package com.sports.server.query.application;
 
 import com.sports.server.command.comment.domain.CheerTalk;
-import com.sports.server.query.repository.CommentDynamicRepository;
+import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CommentQueryService {
+public class CheerTalkQueryService {
 
-    private final CommentDynamicRepository commentDynamicRepository;
+    private final CheerTalkDynamicRepository cheerTalkDynamicRepository;
 
     public List<CommentResponse> getCommentsByGameId(final Long gameId, final PageRequestDto pageRequest) {
-        List<CheerTalk> cheerTalks = commentDynamicRepository.findByGameIdOrderByStartTime(
+        List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
                 gameId, pageRequest.cursor(), pageRequest.size()
         );
 

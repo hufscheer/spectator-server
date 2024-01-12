@@ -17,10 +17,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Sql(scripts = "/comment-fixture.sql")
+@Sql(scripts = "/cheer-talk-fixture.sql")
 class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("게임의 댓글을 조회할 때")
+    @DisplayName("게임의 응원톡을 조회할 때")
     @Nested
     class GetCommentsTest {
 
@@ -33,7 +33,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .when()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .get("/games/{gameId}/comments", gameId)
+                    .get("/games/{gameId}/cheer-talks", gameId)
                     .then().log().all()
                     .extract();
 
@@ -44,7 +44,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     () -> assertThat(actual.get(0))
                             .isEqualTo(new CommentResponse(
                                     5L,
-                                    "댓글5",
+                                    "응원톡5",
                                     1L,
                                     LocalDateTime.of(2023, 1, 2, 14, 55, 0),
                                     false, 1
@@ -66,7 +66,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .when()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .queryParam("cursor", cursor)
-                    .get("/games/{gameId}/comments", gameId)
+                    .get("/games/{gameId}/cheer-talks", gameId)
                     .then().log().all()
                     .extract();
 
@@ -92,7 +92,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .when()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .queryParam("size", size)
-                    .get("/games/{gameId}/comments", gameId)
+                    .get("/games/{gameId}/cheer-talks", gameId)
                     .then().log().all()
                     .extract();
 
@@ -120,7 +120,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .queryParam("size", size)
                     .queryParam("cursor", cursor)
-                    .get("/games/{gameId}/comments", gameId)
+                    .get("/games/{gameId}/cheer-talks", gameId)
                     .then().log().all()
                     .extract();
 
@@ -136,7 +136,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 블락된_댓글은_null을_표시한다() {
+        void 블락된_응원톡은_null을_표시한다() {
             // given
             Long gameId = 1L;
 
@@ -144,7 +144,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .when()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .get("/games/{gameId}/comments", gameId)
+                    .get("/games/{gameId}/cheer-talks", gameId)
                     .then().log().all()
                     .extract();
 

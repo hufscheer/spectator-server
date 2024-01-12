@@ -13,11 +13,11 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Sql(scripts = "/comment-fixture.sql")
+@Sql(scripts = "/cheer-talk-fixture.sql")
 class CheerTalkQueryServiceTest extends ServiceTest {
 
     @Autowired
-    private CommentQueryService commentQueryService;
+    private CheerTalkQueryService cheerTalkQueryService;
 
     @Test
     void 댓글_조회시_경기에_참여하는_팀의_아이디_순서대로_정수가_반환된다() {
@@ -26,7 +26,7 @@ class CheerTalkQueryServiceTest extends ServiceTest {
         PageRequestDto pageRequestDto = new PageRequestDto(null, 14);
 
         // when
-        List<CommentResponse> commentsByGameId = commentQueryService.getCommentsByGameId(gameId, pageRequestDto);
+        List<CommentResponse> commentsByGameId = cheerTalkQueryService.getCommentsByGameId(gameId, pageRequestDto);
 
         // then
         Map<Long, Integer> orderOfGameTeams = new HashMap<>();

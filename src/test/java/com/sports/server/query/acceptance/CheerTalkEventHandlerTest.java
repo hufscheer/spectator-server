@@ -3,12 +3,11 @@ package com.sports.server.query.acceptance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import com.sports.server.command.comment.application.CommentService;
-import com.sports.server.command.comment.dto.CommentRequestDto;
+import com.sports.server.command.comment.application.CheerTalkService;
+import com.sports.server.command.comment.dto.CheerTalkRequest;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.support.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -26,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql(scripts = "/comment-fixture.sql")
+@Sql(scripts = "/cheer-talk-fixture.sql")
 class CheerTalkEventHandlerTest extends AcceptanceTest {
 
     private String URL;
@@ -34,7 +33,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
     private final CompletableFuture<CommentResponse> completableFuture = new CompletableFuture<>();
 
     @Autowired
-    private CommentService commentService;
+    private CheerTalkService cheerTalkService;
 
     @BeforeEach
     public void setup() {
@@ -42,7 +41,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
     }
 
     @Test
-    public void testCreateGameEndpoint() throws Exception {
+    void 응원톡을_작성하면_소켓_응답을_받는다() throws Exception {
         //given
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
@@ -56,16 +55,15 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
 
         //when
-        commentService.register(new CommentRequestDto("댓글입니다.", 1L));
+        cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 1L));
 
         //then
         CommentResponse actual = completableFuture.get(10, SECONDS);
-        assertThat(actual.content()).isEqualTo("댓글입니다.");
+        assertThat(actual.content()).isEqualTo("응원톡입니다.");
     }
 
     @Test
-    @DisplayName("댓글의 응답 형태에 알맞은 order 를 포함하고 있는지 확인한다")
-    public void isResponseContainsExactOrder() throws Exception {
+    void 응원톡의_응답_형태에_알맞은_order를_포함하고_있는지_확인한다() throws Exception {
         //given
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
@@ -79,7 +77,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
 
         //when
-        commentService.register(new CommentRequestDto("댓글입니다.", 2L));
+        cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 2L));
 
         //then
         CommentResponse actual = completableFuture.get(10, SECONDS);

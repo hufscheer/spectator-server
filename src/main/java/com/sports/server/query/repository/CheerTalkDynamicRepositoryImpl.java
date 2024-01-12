@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class CommentDynamicRepositoryImpl implements CommentDynamicRepository {
+public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepository {
 
     private final JPAQueryFactory queryFactory;
 

@@ -2,7 +2,7 @@ package com.sports.server.command.comment.dto;
 
 import lombok.NonNull;
 
-public record CommentRequestDto(
+public record CheerTalkRequest(
         @NonNull String content,
         @NonNull Long gameTeamId
 ) {

@@ -1,7 +1,7 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.command.comment.domain.CheerTalk;
-import com.sports.server.command.comment.domain.CommentEvent;
+import com.sports.server.command.comment.domain.CheerTalkCreateEvent;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.application.GameTeamServiceUtils;
@@ -15,7 +15,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
-public class CommentEventHandler {
+public class CheerTalkEventHandler {
 
     private static final String DESTINATION = "/topic/games/";
 
@@ -25,7 +25,7 @@ public class CommentEventHandler {
 
     @TransactionalEventListener
     @Async("asyncThreadPool")
-    public void handle(CommentEvent event) {
+    public void handle(CheerTalkCreateEvent event) {
 
         CheerTalk cheerTalk = event.cheerTalk();
         GameTeam gameTeam = entityUtils.getEntity(cheerTalk.getGameTeamId(), GameTeam.class);
