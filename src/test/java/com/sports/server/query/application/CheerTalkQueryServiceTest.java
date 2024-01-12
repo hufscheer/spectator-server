@@ -14,7 +14,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Sql(scripts = "/comment-fixture.sql")
-class CommentQueryServiceTest extends ServiceTest {
+class CheerTalkQueryServiceTest extends ServiceTest {
 
     @Autowired
     private CommentQueryService commentQueryService;

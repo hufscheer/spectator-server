@@ -26,7 +26,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 @Sql(scripts = "/comment-fixture.sql")
-class CommentEventHandlerTest extends AcceptanceTest {
+class CheerTalkEventHandlerTest extends AcceptanceTest {
 
     private String URL;
 

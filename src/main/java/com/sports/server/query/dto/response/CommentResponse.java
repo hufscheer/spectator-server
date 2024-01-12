@@ -1,6 +1,6 @@
 package com.sports.server.query.dto.response;
 
-import com.sports.server.command.comment.domain.Comment;
+import com.sports.server.command.comment.domain.CheerTalk;
 
 import java.time.LocalDateTime;
 
@@ -12,21 +12,21 @@ public record CommentResponse(
         Boolean isBlocked,
         int order
 ) {
-    public CommentResponse(Comment comment, final int order) {
+    public CommentResponse(CheerTalk cheerTalk, final int order) {
         this(
-                comment.getId(),
-                checkCommentBlocked(comment),
-                comment.getGameTeamId(),
-                comment.getCreatedAt(),
-                comment.isBlocked(),
+                cheerTalk.getId(),
+                checkCommentBlocked(cheerTalk),
+                cheerTalk.getGameTeamId(),
+                cheerTalk.getCreatedAt(),
+                cheerTalk.isBlocked(),
                 order
         );
     }
 
-    private static String checkCommentBlocked(Comment comment) {
-        if (comment.isBlocked()) {
+    private static String checkCommentBlocked(CheerTalk cheerTalk) {
+        if (cheerTalk.isBlocked()) {
             return null;
         }
-        return comment.getContent();
+        return cheerTalk.getContent();
     }
 }

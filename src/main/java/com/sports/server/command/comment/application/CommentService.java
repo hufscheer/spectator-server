@@ -1,6 +1,8 @@
 package com.sports.server.command.comment.application;
 
-import com.sports.server.command.comment.domain.Comment;
+import static com.sports.server.command.comment.exception.CommentErrorMessages.COMMENT_CONTAINS_BAD_WORD;
+
+import com.sports.server.command.comment.domain.CheerTalk;
 import com.sports.server.command.comment.domain.CommentRepository;
 import com.sports.server.command.comment.domain.LanguageFilter;
 import com.sports.server.command.comment.dto.CommentRequestDto;
@@ -9,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.sports.server.command.comment.exception.CommentErrorMessages.COMMENT_CONTAINS_BAD_WORD;
 
 @Service
 @Transactional
@@ -22,8 +22,8 @@ public class CommentService {
 
     public void register(final CommentRequestDto commentRequestDto) {
         validateContent(commentRequestDto.content());
-        Comment comment = new Comment(commentRequestDto.content(), commentRequestDto.gameTeamId());
-        commentRepository.save(comment);
+        CheerTalk cheerTalk = new CheerTalk(commentRequestDto.content(), commentRequestDto.gameTeamId());
+        commentRepository.save(cheerTalk);
     }
 
     private void validateContent(final String content) {

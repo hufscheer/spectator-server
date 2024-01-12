@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "comments")
+@Table(name = "cheer_talks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment extends BaseEntity<Comment> {
+public class CheerTalk extends BaseEntity<CheerTalk> {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -31,7 +31,7 @@ public class Comment extends BaseEntity<Comment> {
         return isBlocked;
     }
 
-    public Comment(final String content, final Long gameTeamId) {
+    public CheerTalk(final String content, final Long gameTeamId) {
         this.createdAt = LocalDateTime.now();
         this.content = content;
         this.isBlocked = false;

@@ -1,15 +1,14 @@
 package com.sports.server.query.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sports.server.command.comment.domain.Comment;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import static com.sports.server.command.comment.domain.QCheerTalk.cheerTalk;
+import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sports.server.command.comment.domain.CheerTalk;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.sports.server.command.comment.domain.QComment.comment;
-import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,17 +17,17 @@ public class CommentDynamicRepositoryImpl implements CommentDynamicRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Comment> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size) {
+    public List<CheerTalk> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-        return queryFactory.selectFrom(comment)
-                .join(gameTeam).on(comment.gameTeamId.eq(gameTeam.id))
+        return queryFactory.selectFrom(cheerTalk)
+                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
                 .where(gameTeam.game.id.eq(gameId))
                 .where(booleanBuilder
-                        .and(() -> comment.createdAt.loe(getCursorCreatedAt(cursor)))
-                        .and(() -> comment.id.lt(cursor))
+                        .and(() -> cheerTalk.createdAt.loe(getCursorCreatedAt(cursor)))
+                        .and(() -> cheerTalk.id.lt(cursor))
                         .build()
                 )
-                .orderBy(comment.createdAt.desc(), comment.id.desc())
+                .orderBy(cheerTalk.createdAt.desc(), cheerTalk.id.desc())
                 .limit(size)
                 .fetch();
     }
@@ -38,9 +37,9 @@ public class CommentDynamicRepositoryImpl implements CommentDynamicRepository {
             return null;
         }
         return queryFactory
-                .select(comment.createdAt)
-                .from(comment)
-                .where(comment.id.eq(cursor))
+                .select(cheerTalk.createdAt)
+                .from(cheerTalk)
+                .where(cheerTalk.id.eq(cursor))
                 .fetchFirst();
     }
 }

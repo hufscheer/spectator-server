@@ -1,6 +1,6 @@
 package com.sports.server.query.application;
 
-import com.sports.server.command.comment.domain.Comment;
+import com.sports.server.command.comment.domain.CheerTalk;
 import com.sports.server.query.repository.CommentDynamicRepository;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.dto.PageRequestDto;
@@ -20,13 +20,13 @@ public class CommentQueryService {
     private final CommentDynamicRepository commentDynamicRepository;
 
     public List<CommentResponse> getCommentsByGameId(final Long gameId, final PageRequestDto pageRequest) {
-        List<Comment> comments = commentDynamicRepository.findByGameIdOrderByStartTime(
+        List<CheerTalk> cheerTalks = commentDynamicRepository.findByGameIdOrderByStartTime(
                 gameId, pageRequest.cursor(), pageRequest.size()
         );
 
-        List<Long> gameTeamIds = getOrderedGameTeamIds(comments);
+        List<Long> gameTeamIds = getOrderedGameTeamIds(cheerTalks);
 
-        List<CommentResponse> responses = comments.stream()
+        List<CommentResponse> responses = cheerTalks.stream()
                 .map(comment -> new CommentResponse(
                         comment,
                         getOrderOfGameTeamId(comment.getGameTeamId(), gameTeamIds)
@@ -37,9 +37,9 @@ public class CommentQueryService {
         return responses;
     }
 
-    private List<Long> getOrderedGameTeamIds(final List<Comment> comments) {
-        return comments.stream()
-                .map(Comment::getGameTeamId)
+    private List<Long> getOrderedGameTeamIds(final List<CheerTalk> cheerTalks) {
+        return cheerTalks.stream()
+                .map(CheerTalk::getGameTeamId)
                 .collect(Collectors.toSet())
                 .stream()
                 .sorted()

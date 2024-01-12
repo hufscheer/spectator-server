@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/comment-fixture.sql")
-class CommentQueryAcceptanceTest extends AcceptanceTest {
+class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("게임의 댓글을 조회할 때")
     @Nested

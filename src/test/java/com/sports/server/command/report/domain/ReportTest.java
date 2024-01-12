@@ -1,6 +1,6 @@
 package com.sports.server.command.report.domain;
 
-import com.sports.server.command.comment.domain.Comment;
+import com.sports.server.command.comment.domain.CheerTalk;
 import com.sports.server.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,10 +20,10 @@ class ReportTest {
         @Test
         void 댓글로_생성한다() {
             // given
-            Comment comment = new Comment("신고해봐", 1L);
+            CheerTalk cheerTalk = new CheerTalk("신고해봐", 1L);
 
             // when
-            Report report = new Report(comment);
+            Report report = new Report(cheerTalk);
 
             // then
             assertThat(report).isNotNull();
@@ -32,11 +32,11 @@ class ReportTest {
         @Test
         void 블락된_댓글로_생성할_수_없다() {
             // given
-            Comment comment = mock(Comment.class);
-            given(comment.isBlocked()).willReturn(true);
+            CheerTalk cheerTalk = mock(CheerTalk.class);
+            given(cheerTalk.isBlocked()).willReturn(true);
 
             // when then
-            assertThatThrownBy(() -> new Report(comment))
+            assertThatThrownBy(() -> new Report(cheerTalk))
                     .isInstanceOf(CustomException.class)
                     .hasMessage("이미 블락된 댓글은 신고할 수 없습니다.");
         }

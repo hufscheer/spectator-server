@@ -1,5 +1,7 @@
 package com.sports.server.command.comment.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.sports.server.command.comment.dto.CommentRequestDto;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -9,9 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class CommentAcceptanceTest extends AcceptanceTest {
+public class CheerTalkAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 새로운_댓글이_저장된다() {

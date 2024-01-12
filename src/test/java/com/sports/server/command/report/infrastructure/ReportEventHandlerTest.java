@@ -1,6 +1,6 @@
 package com.sports.server.command.report.infrastructure;
 
-import com.sports.server.command.comment.domain.Comment;
+import com.sports.server.command.comment.domain.CheerTalk;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportEvent;
 import com.sports.server.support.ServiceTest;
@@ -35,10 +35,10 @@ class ReportEventHandlerTest extends ServiceTest {
         @BeforeEach
         void init() {
             report = mock(Report.class);
-            Comment comment = mock(Comment.class);
-            given(report.getComment()).willReturn(comment);
-            given(comment.getContent()).willReturn(COMMENT_CONTENT);
-            given(comment.getId()).willReturn(COMMENT_ID);
+            CheerTalk cheerTalk = mock(CheerTalk.class);
+            given(report.getCheerTalk()).willReturn(cheerTalk);
+            given(cheerTalk.getContent()).willReturn(COMMENT_CONTENT);
+            given(cheerTalk.getId()).willReturn(COMMENT_ID);
             given(report.getId()).willReturn(REPORT_ID);
         }
 

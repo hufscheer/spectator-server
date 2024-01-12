@@ -1,6 +1,6 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.command.comment.domain.Comment;
+import com.sports.server.command.comment.domain.CheerTalk;
 import com.sports.server.command.comment.domain.CommentEvent;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.application.EntityUtils;
@@ -27,14 +27,14 @@ public class CommentEventHandler {
     @Async("asyncThreadPool")
     public void handle(CommentEvent event) {
 
-        Comment comment = event.comment();
-        GameTeam gameTeam = entityUtils.getEntity(comment.getGameTeamId(), GameTeam.class);
+        CheerTalk cheerTalk = event.cheerTalk();
+        GameTeam gameTeam = entityUtils.getEntity(cheerTalk.getGameTeamId(), GameTeam.class);
         Game game = gameTeam.getGame();
 
         messagingTemplate.convertAndSend(
                 DESTINATION + game.getId(),
-                new CommentResponse(comment,
-                        gameTeamServiceUtils.calculateOrderOfGameTeam(game, comment.getGameTeamId()))
+                new CommentResponse(cheerTalk,
+                        gameTeamServiceUtils.calculateOrderOfGameTeam(game, cheerTalk.getGameTeamId()))
         );
 
     }

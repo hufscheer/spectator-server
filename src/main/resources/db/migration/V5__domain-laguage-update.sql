@@ -1,0 +1,1 @@
+ALTER TABLE comments RENAME cheer_talks;

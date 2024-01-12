@@ -1,9 +1,9 @@
 package com.sports.server.command.report.infrastructure;
 
+import com.sports.server.command.comment.domain.CheerTalk;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportEvent;
 import com.sports.server.command.report.exception.ReportErrorMessage;
-import com.sports.server.command.comment.domain.Comment;
 import com.sports.server.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,9 +28,9 @@ public class ReportEventHandler {
     }
 
     private void checkReport(Report report) {
-        Comment comment = report.getComment();
+        CheerTalk cheerTalk = report.getCheerTalk();
         ReportCheckRequest request = new ReportCheckRequest(
-                comment.getContent(), comment.getId(), report.getId()
+                cheerTalk.getContent(), cheerTalk.getId(), report.getId()
         );
         ResponseEntity<Void> response = reportCheckClient.check(request);
         validateResponse(response);

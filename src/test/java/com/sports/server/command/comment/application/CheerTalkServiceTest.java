@@ -11,7 +11,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class CommentServiceTest extends ServiceTest {
+public class CheerTalkServiceTest extends ServiceTest {
 
     @Autowired
     private CommentService commentService;
