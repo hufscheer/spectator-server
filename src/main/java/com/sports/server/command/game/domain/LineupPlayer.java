@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "game_team_players")
+@Table(name = "lineup_players")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GameTeamPlayer extends BaseEntity<GameTeamPlayer> {
+public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_team_id")

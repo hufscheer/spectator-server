@@ -1,10 +1,11 @@
 package com.sports.server.query.dto.response;
 
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.domain.GameTeamPlayer;
+import com.sports.server.command.game.domain.LineupPlayer;
+
 import java.util.List;
 
-public record GameLineupResponse(
+public record LineupPlayerResponse(
         Long gameTeamId,
         String teamName,
         List<PlayerResponse> gameTeamPlayers,
@@ -12,11 +13,11 @@ public record GameLineupResponse(
 
 ) {
 
-    public GameLineupResponse(GameTeam gameTeam, List<GameTeamPlayer> gameTeamPlayers, int order) {
+    public LineupPlayerResponse(GameTeam gameTeam, List<LineupPlayer> lineupPlayers, int order) {
         this(
                 gameTeam.getId(),
                 gameTeam.getTeam().getName(),
-                gameTeamPlayers.stream()
+                lineupPlayers.stream()
                         .map(PlayerResponse::new)
                         .toList(),
                 order
@@ -27,7 +28,7 @@ public record GameLineupResponse(
             String playerName,
             String description
     ) {
-        public PlayerResponse(GameTeamPlayer player) {
+        public PlayerResponse(LineupPlayer player) {
             this(player.getName(), player.getDescription());
         }
     }

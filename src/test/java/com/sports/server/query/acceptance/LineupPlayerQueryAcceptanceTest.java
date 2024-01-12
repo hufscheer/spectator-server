@@ -1,6 +1,6 @@
 package com.sports.server.query.acceptance;
 
-import com.sports.server.query.dto.response.GameLineupResponse;
+import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 @Sql(scripts = "/game-fixture.sql")
-public class GameTeamPlayerQueryAcceptanceTest extends AcceptanceTest {
+public class LineupPlayerQueryAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 경기_라인업을_조회한다() {
@@ -35,12 +35,12 @@ public class GameTeamPlayerQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<GameLineupResponse> actual = toResponses(response, GameLineupResponse.class);
-        GameLineupResponse teamA = actual.stream()
+        List<LineupPlayerResponse> actual = toResponses(response, LineupPlayerResponse.class);
+        LineupPlayerResponse teamA = actual.stream()
                 .filter(lineup -> lineup.gameTeamId().equals(gameTeamAId))
                 .toList()
                 .get(0);
-        GameLineupResponse teamB = actual.stream()
+        LineupPlayerResponse teamB = actual.stream()
                 .filter(lineup -> lineup.gameTeamId().equals(gameTeamBId))
                 .toList()
                 .get(0);
@@ -48,23 +48,23 @@ public class GameTeamPlayerQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual).hasSize(2),
                 () -> assertThat(actual)
-                        .map(GameLineupResponse::gameTeamId)
+                        .map(LineupPlayerResponse::gameTeamId)
                         .containsExactly(gameTeamAId, gameTeamBId),
 
                 () -> assertThat(teamA.teamName()).isEqualTo("팀 A"),
                 () -> assertThat(teamA.gameTeamPlayers())
-                        .map(GameLineupResponse.PlayerResponse::playerName)
+                        .map(LineupPlayerResponse.PlayerResponse::playerName)
                         .containsExactly("선수1", "선수2", "선수3", "선수4", "선수5"),
                 () -> assertThat(teamA.gameTeamPlayers())
-                        .map(GameLineupResponse.PlayerResponse::description)
+                        .map(LineupPlayerResponse.PlayerResponse::description)
                         .containsExactly("센터", "파워 포워드", "슈팅 가드", "포인트 가드", "스몰 포워드"),
 
                 () -> assertThat(teamB.teamName()).isEqualTo("팀 B"),
                 () -> assertThat(teamB.gameTeamPlayers())
-                        .map(GameLineupResponse.PlayerResponse::playerName)
+                        .map(LineupPlayerResponse.PlayerResponse::playerName)
                         .containsExactly("선수6", "선수7", "선수8", "선수9", "선수10"),
                 () -> assertThat(teamB.gameTeamPlayers())
-                        .map(GameLineupResponse.PlayerResponse::description)
+                        .map(LineupPlayerResponse.PlayerResponse::description)
                         .containsExactly("센터", "파워 포워드", "슈팅 가드", "포인트 가드", "스몰 포워드")
         );
     }

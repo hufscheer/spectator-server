@@ -1,9 +1,9 @@
 package com.sports.server.command.record.domain;
 
+import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.domain.GameTeamPlayer;
 import com.sports.server.command.sport.domain.Quarter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -25,8 +25,8 @@ public class Record extends BaseEntity<Record> {
     private GameTeam gameTeam;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_team_player_id")
-    private GameTeamPlayer gameTeamPlayer;
+    @JoinColumn(name = "lineup_player_id")
+    private LineupPlayer lineupPlayer;
 
     @Column(name = "score", nullable = false)
     private int score;

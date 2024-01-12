@@ -67,7 +67,7 @@ VALUES (1, '농구'),
        (2, '루미큐브');
 
 -- 농구 대전(game_id = 1) A팀 선수
-INSERT INTO game_team_players (id, game_team_id, name, description)
+INSERT INTO lineup_players (id, game_team_id, name, description)
 VALUES (1, 1, '선수1', '센터'),
        (2, 1, '선수2', '파워 포워드'),
        (3, 1, '선수3', '슈팅 가드'),
@@ -76,7 +76,7 @@ VALUES (1, 1, '선수1', '센터'),
 
 
 -- 농구 대전(game_id = 1) B팀 선수
-INSERT INTO game_team_players (id, game_team_id, name, description)
+INSERT INTO lineup_players (id, game_team_id, name, description)
 VALUES (6, 2, '선수6', '센터'),
        (7, 2, '선수7', '파워 포워드'),
        (8, 2, '선수8', '슈팅 가드'),

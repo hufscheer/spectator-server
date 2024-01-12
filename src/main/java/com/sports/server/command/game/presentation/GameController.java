@@ -16,7 +16,7 @@ public class GameController {
 
     @PostMapping("/{gameId}/cheer")
     public ResponseEntity<Void> updateCheerCount(@PathVariable final Long gameId,
-                                                                           @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto) {
+                                                 @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto) {
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
         return ResponseEntity.ok().build();
     }
