@@ -1,6 +1,6 @@
 package com.sports.server.command.report.domain;
 
-import static com.sports.server.command.report.exception.ReportErrorMessage.INVALID_REPORT_BLOCKED_COMMENT;
+import static com.sports.server.command.report.exception.ReportErrorMessage.INVALID_REPORT_BLOCKED_CHEER_TALK;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.common.domain.BaseEntity;
@@ -47,7 +47,7 @@ public class Report extends BaseEntity<Report> {
 
     private void validateBlockedCheerTalk(CheerTalk cheerTalk) {
         if (cheerTalk.isBlocked()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_REPORT_BLOCKED_COMMENT);
+            throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_REPORT_BLOCKED_CHEER_TALK);
         }
     }
 

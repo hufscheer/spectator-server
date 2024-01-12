@@ -18,7 +18,7 @@ public class ReportFactory {
     private final EntityUtils entityUtils;
 
     public Report create(ReportRequest request) {
-        CheerTalk cheerTalk = entityUtils.getEntity(request.commentId(), CheerTalk.class);
+        CheerTalk cheerTalk = entityUtils.getEntity(request.cheerTalkId(), CheerTalk.class);
         return reportRepository.findByCheerTalk(cheerTalk)
                 .orElse(new Report(cheerTalk));
     }
