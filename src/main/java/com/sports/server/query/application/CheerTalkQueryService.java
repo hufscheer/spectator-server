@@ -1,6 +1,6 @@
 package com.sports.server.query.application;
 
-import com.sports.server.command.comment.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.dto.PageRequestDto;

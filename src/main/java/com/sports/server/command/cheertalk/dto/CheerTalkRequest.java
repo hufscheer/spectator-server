@@ -1,4 +1,4 @@
-package com.sports.server.command.comment.dto;
+package com.sports.server.command.cheertalk.dto;
 
 import lombok.NonNull;
 

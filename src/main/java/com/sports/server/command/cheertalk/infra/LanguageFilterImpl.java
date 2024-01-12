@@ -1,6 +1,6 @@
-package com.sports.server.command.comment.infra;
+package com.sports.server.command.cheertalk.infra;
 
-import com.sports.server.command.comment.domain.LanguageFilter;
+import com.sports.server.command.cheertalk.domain.LanguageFilter;
 import com.vane.badwordfiltering.BadWordFiltering;
 import org.springframework.stereotype.Component;
 

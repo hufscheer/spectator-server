@@ -1,8 +1,8 @@
-package com.sports.server.command.comment.acceptance;
+package com.sports.server.command.cheertalk.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sports.server.command.comment.dto.CheerTalkRequest;
+import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

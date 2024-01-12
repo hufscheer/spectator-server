@@ -1,7 +1,7 @@
-package com.sports.server.command.comment.presentation;
+package com.sports.server.command.cheertalk.presentation;
 
-import com.sports.server.command.comment.application.CheerTalkService;
-import com.sports.server.command.comment.dto.CheerTalkRequest;
+import com.sports.server.command.cheertalk.application.CheerTalkService;
+import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

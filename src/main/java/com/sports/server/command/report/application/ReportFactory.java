@@ -1,6 +1,6 @@
 package com.sports.server.command.report.application;
 
-import com.sports.server.command.comment.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportRepository;
 import com.sports.server.command.report.dto.ReportRequest;

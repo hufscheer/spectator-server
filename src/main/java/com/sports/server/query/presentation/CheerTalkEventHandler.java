@@ -1,7 +1,7 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.command.comment.domain.CheerTalk;
-import com.sports.server.command.comment.domain.CheerTalkCreateEvent;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
 import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.application.GameTeamServiceUtils;

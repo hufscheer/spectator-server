@@ -1,6 +1,6 @@
-package com.sports.server.command.comment.application;
+package com.sports.server.command.cheertalk.application;
 
-import com.sports.server.command.comment.dto.CheerTalkRequest;
+import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.params.ParameterizedTest;

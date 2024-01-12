@@ -1,10 +1,10 @@
 package com.sports.server.query.repository;
 
-import static com.sports.server.command.comment.domain.QCheerTalk.cheerTalk;
+import static com.sports.server.command.cheertalk.domain.QCheerTalk.cheerTalk;
 import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sports.server.command.comment.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

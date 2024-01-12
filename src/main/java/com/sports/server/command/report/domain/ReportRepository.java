@@ -1,6 +1,6 @@
 package com.sports.server.command.report.domain;
 
-import com.sports.server.command.comment.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 import java.util.Optional;
 import org.springframework.data.repository.Repository;
 

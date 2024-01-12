@@ -1,6 +1,6 @@
 package com.sports.server.query.dto.response;
 
-import com.sports.server.command.comment.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 
 import java.time.LocalDateTime;
 

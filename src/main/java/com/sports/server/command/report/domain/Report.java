@@ -2,7 +2,7 @@ package com.sports.server.command.report.domain;
 
 import static com.sports.server.command.report.exception.ReportErrorMessage.INVALID_REPORT_BLOCKED_COMMENT;
 
-import com.sports.server.command.comment.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.Column;

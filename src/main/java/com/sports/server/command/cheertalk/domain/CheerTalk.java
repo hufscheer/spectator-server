@@ -1,4 +1,4 @@
-package com.sports.server.command.comment.domain;
+package com.sports.server.command.cheertalk.domain;
 
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.Column;
