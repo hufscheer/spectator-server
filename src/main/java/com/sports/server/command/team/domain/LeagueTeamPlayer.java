@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "team_players")
+@Table(name = "league_team_players")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TeamPlayer extends BaseEntity<TeamPlayer> {
+public class LeagueTeamPlayer extends BaseEntity<LeagueTeamPlayer> {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "league_team_id", nullable = false)
     private LeagueTeam leagueTeam;
 
     @Column(name = "name", nullable = false)

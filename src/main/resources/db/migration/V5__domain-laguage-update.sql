@@ -14,3 +14,7 @@ ALTER TABLE records CHANGE game_team_player_id lineup_player_id BIGINT;
 
 -- team -> leagueTeam
 ALTER TABLE teams RENAME TO league_teams;
+
+-- team_player -> league_team_player
+ALTER TABLE team_players RENAME TO league_team_players;
+ALTER TABLE league_team_players CHANGE team_id league_team_id BIGINT;
