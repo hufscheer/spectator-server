@@ -1,7 +1,7 @@
 package com.sports.server.command.game.presentation;
 
 import com.sports.server.command.game.application.GameTeamService;
-import com.sports.server.command.game.dto.GameTeamCheerRequestDto;
+import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class GameController {
 
     @PostMapping("/{gameId}/cheer")
     public ResponseEntity<Void> updateCheerCount(@PathVariable final Long gameId,
-                                                                           @RequestBody @Valid GameTeamCheerRequestDto cheerRequestDto) {
+                                                 @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto) {
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
         return ResponseEntity.ok().build();
     }

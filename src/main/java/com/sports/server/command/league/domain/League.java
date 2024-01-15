@@ -3,13 +3,17 @@ package com.sports.server.command.league.domain;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "leagues")
@@ -19,8 +23,8 @@ import java.time.LocalDateTime;
 public class League extends BaseEntity<League> {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "administrator_id")
-    private Member administrator;
+    @JoinColumn(name = "manager_id")
+    private Member manager;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")

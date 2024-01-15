@@ -24,8 +24,8 @@ public class Game extends BaseEntity<Game> {
     private Sport sport;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "administrator_id")
-    private Member administrator;
+    @JoinColumn(name = "manager_id")
+    private Member manager;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id")

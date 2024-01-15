@@ -1,13 +1,12 @@
 package com.sports.server.command.report.domain;
 
-import com.sports.server.command.comment.domain.Comment;
-import org.springframework.data.repository.Repository;
-
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 import java.util.Optional;
+import org.springframework.data.repository.Repository;
 
 public interface ReportRepository extends Repository<Report, Long> {
 
     void save(Report report);
 
-    Optional<Report> findByComment(Comment comment);
+    Optional<Report> findByCheerTalk(CheerTalk cheerTalk);
 }

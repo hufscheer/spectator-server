@@ -2,7 +2,7 @@ SET
 foreign_key_checks = 0;
 
 -- 경기
-INSERT INTO games (id, sport_id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
+INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at,
                    game_quarter,
                    state)
 VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED'),
@@ -52,13 +52,13 @@ VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-1
 
 -- 팀
 INSERT
-INTO teams (name, logo_image_url, administrator_id, organization_id, league_id)
+INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 A', 'http://example.com/logo_a.png', 1, 1, 1);
 
-INSERT INTO teams (name, logo_image_url, administrator_id, organization_id, league_id)
+INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 B', 'http://example.com/logo_b.png', 2, 1, 1);
 
-INSERT INTO teams (name, logo_image_url, administrator_id, organization_id, league_id)
+INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 C', 'http://example.com/logo_c.png', 3, 2, 2);
 
 -- 스포츠
@@ -67,7 +67,7 @@ VALUES (1, '농구'),
        (2, '루미큐브');
 
 -- 농구 대전(game_id = 1) A팀 선수
-INSERT INTO game_team_players (id, game_team_id, name, description)
+INSERT INTO lineup_players (id, game_team_id, name, description)
 VALUES (1, 1, '선수1', '센터'),
        (2, 1, '선수2', '파워 포워드'),
        (3, 1, '선수3', '슈팅 가드'),
@@ -76,7 +76,7 @@ VALUES (1, 1, '선수1', '센터'),
 
 
 -- 농구 대전(game_id = 1) B팀 선수
-INSERT INTO game_team_players (id, game_team_id, name, description)
+INSERT INTO lineup_players (id, game_team_id, name, description)
 VALUES (6, 2, '선수6', '센터'),
        (7, 2, '선수7', '파워 포워드'),
        (8, 2, '선수8', '슈팅 가드'),
@@ -85,7 +85,7 @@ VALUES (6, 2, '선수6', '센터'),
 
 -- 농구 대전 (game_id = 1) A팀 vs B팀
 -- User
-INSERT INTO game_teams (game_id, team_id, cheer_count, score)
+INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
 VALUES (1, 1, 1, 1),
        (1, 2, 2, 2),
 
@@ -132,7 +132,7 @@ VALUES (1, 1, 1, 1),
        (15, 3, 2, 2);
 
 INSERT
-INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted)
+INTO leagues (id, manager_id, organization_id, name, start_at, end_at, is_deleted)
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false);
 
 SET

@@ -3,7 +3,7 @@ package com.sports.server.query.presentation;
 import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.GameQueryService;
-import com.sports.server.query.application.GameTeamPlayerQueryService;
+import com.sports.server.query.application.LineupPlayerQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
 import com.sports.server.query.dto.response.*;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class GameQueryController {
 
     private final GameQueryService gameQueryService;
     private final GameTeamQueryService gameTeamQueryService;
-    private final GameTeamPlayerQueryService gameTeamPlayerQueryService;
+    private final LineupPlayerQueryService lineupPlayerQueryService;
 
     @GetMapping("/{gameId}")
     public ResponseEntity<GameDetailResponse> getGameDetail(@PathVariable final Long gameId) {
@@ -46,7 +46,7 @@ public class GameQueryController {
     }
 
     @GetMapping("/{gameId}/lineup")
-    public ResponseEntity<List<GameLineupResponse>> getGameLineup(@PathVariable final Long gameId) {
-        return ResponseEntity.ok(gameTeamPlayerQueryService.getLineup(gameId));
+    public ResponseEntity<List<LineupPlayerResponse>> getGameLineup(@PathVariable final Long gameId) {
+        return ResponseEntity.ok(lineupPlayerQueryService.getLineup(gameId));
     }
 }

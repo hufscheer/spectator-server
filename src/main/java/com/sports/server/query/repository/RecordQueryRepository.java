@@ -12,8 +12,8 @@ public interface RecordQueryRepository extends Repository<Record, Long> {
     @Query("select r from Record r " +
             "join fetch r.game " +
             "join fetch r.gameTeam rgt " +
-            "join fetch rgt.team " +
-            "join fetch r.gameTeamPlayer " +
+            "join fetch rgt.leagueTeam " +
+            "join fetch r.lineupPlayer " +
             "join fetch r.scoredQuarter rq " +
             "where r.game.id = :gameId " +
             "order by rq.id desc, r.scoredAt desc")

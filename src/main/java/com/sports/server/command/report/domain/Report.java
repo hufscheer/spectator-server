@@ -1,15 +1,21 @@
 package com.sports.server.command.report.domain;
 
-import com.sports.server.command.comment.domain.Comment;
+import static com.sports.server.command.report.exception.ReportErrorMessage.INVALID_REPORT_BLOCKED_CHEER_TALK;
+
+import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-
-import java.time.LocalDateTime;
-
-import static com.sports.server.command.report.exception.ReportErrorMessage.INVALID_REPORT_BLOCKED_COMMENT;
 
 @Entity
 @Table(name = "reports")
@@ -17,8 +23,8 @@ import static com.sports.server.command.report.exception.ReportErrorMessage.INVA
 public class Report extends BaseEntity<Report> {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", unique = true)
-    private Comment comment;
+    @JoinColumn(name = "cheer_talk_id", unique = true)
+    private CheerTalk cheerTalk;
 
     @Column(name = "reported_at", nullable = false)
     private LocalDateTime reportedAt;
@@ -31,17 +37,17 @@ public class Report extends BaseEntity<Report> {
         registerEvent(new ReportEvent(this));
     }
 
-    public Report(Comment comment) {
-        validateBlockedComment(comment);
-        this.comment = comment;
+    public Report(CheerTalk cheerTalk) {
+        validateBlockedCheerTalk(cheerTalk);
+        this.cheerTalk = cheerTalk;
         this.reportedAt = LocalDateTime.now();
         this.state = ReportState.UNCHECKED;
         registerEvent(new ReportEvent(this));
     }
 
-    private void validateBlockedComment(Comment comment) {
-        if (comment.isBlocked()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_REPORT_BLOCKED_COMMENT);
+    private void validateBlockedCheerTalk(CheerTalk cheerTalk) {
+        if (cheerTalk.isBlocked()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_REPORT_BLOCKED_CHEER_TALK);
         }
     }
 
