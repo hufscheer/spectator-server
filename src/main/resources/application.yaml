@@ -29,6 +29,13 @@ spring:
 spring:
   config:
     activate:
+      on-profile: ci
+    import: application-ci.yml
+
+---
+spring:
+  config:
+    activate:
       on-profile: prod
     import:
       - classpath:be-config/application-prod.yml
