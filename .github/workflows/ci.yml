@@ -5,7 +5,7 @@ on:
       - '**'
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: 저장소 Checkout
