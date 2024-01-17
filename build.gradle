@@ -51,6 +51,11 @@ dependencies {
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+    // TestContainer
+    testImplementation "org.testcontainers:testcontainers:1.19.3"
+    testImplementation "org.testcontainers:junit-jupiter:1.19.3"
+    testImplementation "org.testcontainers:mysql:1.19.3"
 }
 
 tasks.named('test') {
