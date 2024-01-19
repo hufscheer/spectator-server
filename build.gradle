@@ -89,6 +89,10 @@ tasks.register('copyDocument', Copy) { // 8
     into file("src/main/resources/static/docs")
 }
 
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
 bootJar {
     dependsOn copyDocument
 }

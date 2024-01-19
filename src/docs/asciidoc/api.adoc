@@ -1,0 +1,11 @@
+= 훕치치 관객 서버 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+= 응원톡 API
+== 응원톡 저장
+operation::cheer-talk-controller-test/응원톡을_저장한다[snippets='http-request,request-fields,http-response']
