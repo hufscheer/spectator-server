@@ -2,11 +2,11 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.GameResponseDto;
+import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.query.dto.response.VideoResponse;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -15,11 +15,10 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class GameQueryControllerTest extends DocumentationTest {
@@ -107,7 +106,7 @@ class GameQueryControllerTest extends DocumentationTest {
                 .willReturn(responses);
 
         // when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/games")
+        ResultActions result = mockMvc.perform(get("/games")
                 .queryParam("league_id", "1")
                 .queryParam("status", "PLAYING")
                 .queryParam("sport_id", "1")
@@ -138,6 +137,35 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("게임팀의 이미지 URL"),
                                 fieldWithPath("[].gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("[].gameTeams[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
+                        )
+                ));
+    }
+
+    @Test
+    void 응원_횟수를_조회한다() throws Exception {
+        // given
+        Long gameId = 1L;
+        given(gameTeamQueryService.getCheerCountOfGameTeams(gameId))
+                .willReturn(List.of(
+                        new GameTeamCheerResponseDto(1L, 100, 1),
+                        new GameTeamCheerResponseDto(2L, 150, 2)
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/cheer", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(RESULT_HANDLER.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
+                                fieldWithPath("[].cheerCount").type(JsonFieldType.NUMBER).description("응원 횟수"),
+                                fieldWithPath("[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
                         )
                 ));
     }
