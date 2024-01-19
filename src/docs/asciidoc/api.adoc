@@ -17,3 +17,6 @@ operation::game-query-controller-test/게임을_상세_조회한다[snippets='ht
 
 == 게임 영상 조회
 operation::game-query-controller-test/게임_영상_id를_조회한다[snippets='http-request,http-response,response-fields']
+
+== 게임 목록 조회
+operation::game-query-controller-test/게임_목록을_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
