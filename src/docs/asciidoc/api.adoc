@@ -9,3 +9,8 @@
 = 응원톡 API
 == 응원톡 저장
 operation::cheer-talk-controller-test/응원톡을_저장한다[snippets='http-request,request-fields,http-response']
+
+= 게임 API
+
+== 게임 상세 조회
+operation::game-query-controller-test/게임을_상세_조회한다[snippets='http-request,http-response,response-fields']

@@ -6,6 +6,9 @@ import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
+import com.sports.server.query.application.GameQueryService;
+import com.sports.server.query.application.GameTeamQueryService;
+import com.sports.server.query.application.LineupPlayerQueryService;
 import com.sports.server.query.presentation.CheerTalkQueryController;
 import com.sports.server.query.presentation.GameQueryController;
 import com.sports.server.query.presentation.LeagueQueryController;
@@ -28,7 +31,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 //        GameController.class,
 //        ReportController.class,
 //        CheerTalkQueryController.class,
-//        GameQueryController.class,
+        GameQueryController.class,
 //        LeagueQueryController.class,
 //        TimelineQueryController.class
 })
@@ -59,4 +62,13 @@ public class DocumentationTest {
 
     @MockBean
     protected CheerTalkService cheerTalkService;
+
+    @MockBean
+    protected GameQueryService gameQueryService;
+
+    @MockBean
+    protected GameTeamQueryService gameTeamQueryService;
+
+    @MockBean
+    protected LineupPlayerQueryService lineupPlayerQueryService;
 }
