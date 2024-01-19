@@ -1,9 +1,6 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.query.dto.response.GameDetailResponse;
-import com.sports.server.query.dto.response.GameResponseDto;
-import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
-import com.sports.server.query.dto.response.VideoResponse;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -172,6 +169,52 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].cheerCount").type(JsonFieldType.NUMBER).description("응원 횟수"),
                                 fieldWithPath("[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
+                        )
+                ));
+    }
+
+    @Test
+    void 라인업을_조회한다() throws Exception {
+        // given
+        Long gameId = 1L;
+        List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
+                new LineupPlayerResponse.PlayerResponse("선수A", "탑"),
+                new LineupPlayerResponse.PlayerResponse("선수B", "미드"),
+                new LineupPlayerResponse.PlayerResponse("선수C", "정글"),
+                new LineupPlayerResponse.PlayerResponse("선수D", "원딜"),
+                new LineupPlayerResponse.PlayerResponse("선수E", "서폿")
+        );
+        List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
+                new LineupPlayerResponse.PlayerResponse("선수F", "탑"),
+                new LineupPlayerResponse.PlayerResponse("선수G", "미드"),
+                new LineupPlayerResponse.PlayerResponse("선수H", "정글"),
+                new LineupPlayerResponse.PlayerResponse("선수I", "원딜"),
+                new LineupPlayerResponse.PlayerResponse("선수J", "서폿")
+        );
+
+        given(lineupPlayerQueryService.getLineup(gameId))
+                .willReturn(List.of(
+                        new LineupPlayerResponse(1L, "팀A", playersA, 1),
+                        new LineupPlayerResponse(2L, "팀B", playersB, 2)
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/lineup", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(RESULT_HANDLER.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
+                                fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
+                                fieldWithPath("[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서"),
+                                fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("[].gameTeamPlayers[]업.description").type(JsonFieldType.STRING).description("선수 설명")
                         )
                 ));
     }

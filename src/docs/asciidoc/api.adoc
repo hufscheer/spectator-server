@@ -23,3 +23,6 @@ operation::game-query-controller-test/게임_목록을_조회한다[snippets='ht
 
 == 게임 응원 횟수 조회
 operation::game-query-controller-test/응원_횟수를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+== 게임 라인업 조회
+operation::game-query-controller-test/라인업을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
