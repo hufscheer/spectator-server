@@ -48,6 +48,9 @@ class GameQueryControllerTest extends DocumentationTest {
         // then
         result.andExpect((status().isOk()))
                 .andDo(RESULT_HANDLER.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID")
+                        ),
                         responseFields(
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING).description("게임 비디오 ID"),
@@ -79,6 +82,9 @@ class GameQueryControllerTest extends DocumentationTest {
         // then
         result.andExpect((status().isOk()))
                 .andDo(RESULT_HANDLER.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID")
+                        ),
                         responseFields(
                                 fieldWithPath("videoId").type(JsonFieldType.STRING).description("게임 비디오 ID")
                         )
