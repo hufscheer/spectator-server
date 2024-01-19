@@ -14,3 +14,6 @@ operation::cheer-talk-controller-test/응원톡을_저장한다[snippets='http-r
 
 == 게임 상세 조회
 operation::game-query-controller-test/게임을_상세_조회한다[snippets='http-request,http-response,response-fields']
+
+== 게임 영상 조회
+operation::game-query-controller-test/게임_영상_id를_조회한다[snippets='http-request,http-response,response-fields']

@@ -1,6 +1,7 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.query.dto.response.GameDetailResponse;
+import com.sports.server.query.dto.response.VideoResponse;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -55,6 +56,27 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("게임팀의 이미지 URL"),
                                 fieldWithPath("gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("gameTeams[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
+                        )
+                ));
+    }
+
+    @Test
+    void 게임_영상_ID를_조회한다() throws Exception {
+        // given
+        Long gameId = 1L;
+        given(gameQueryService.getVideo(gameId))
+                .willReturn(new VideoResponse("videoId"));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/video", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(RESULT_HANDLER.document(
+                        responseFields(
+                                fieldWithPath("videoId").type(JsonFieldType.STRING).description("게임 비디오 ID")
                         )
                 ));
     }
