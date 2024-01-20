@@ -446,14 +446,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel0">
-<li><a href="#_응원톡_api">응원톡 API</a>
 <ul class="sectlevel1">
+<li><a href="#_응원톡_api">응원톡 API</a>
+<ul class="sectlevel2">
 <li><a href="#_응원톡_저장">응원톡 저장</a></li>
 </ul>
 </li>
 <li><a href="#_게임_api">게임 API</a>
-<ul class="sectlevel1">
+<ul class="sectlevel2">
 <li><a href="#_게임_상세_조회">게임 상세 조회</a></li>
 <li><a href="#_게임_영상_조회">게임 영상 조회</a></li>
 <li><a href="#_게임_목록_조회">게임 목록 조회</a></li>
@@ -465,12 +465,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
-<h1 id="_응원톡_api" class="sect0"><a class="link" href="#_응원톡_api">응원톡 API</a></h1>
 <div class="sect1">
-<h2 id="_응원톡_저장"><a class="link" href="#_응원톡_저장">응원톡 저장</a></h2>
+<h2 id="_응원톡_api"><a class="link" href="#_응원톡_api">응원톡 API</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_응원톡_저장_http_request"><a class="link" href="#_응원톡_저장_http_request">HTTP request</a></h3>
+<h3 id="_응원톡_저장"><a class="link" href="#_응원톡_저장">응원톡 저장</a></h3>
+<div class="sect3">
+<h4 id="_응원톡_저장_http_request"><a class="link" href="#_응원톡_저장_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /cheer-talks HTTP/1.1
@@ -485,8 +486,8 @@ Host: localhost:8080
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_응원톡_저장_request_fields"><a class="link" href="#_응원톡_저장_request_fields">Request fields</a></h3>
+<div class="sect3">
+<h4 id="_응원톡_저장_request_fields"><a class="link" href="#_응원톡_저장_request_fields">Request fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -514,8 +515,8 @@ Host: localhost:8080
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_응원톡_저장_http_response"><a class="link" href="#_응원톡_저장_http_response">HTTP response</a></h3>
+<div class="sect3">
+<h4 id="_응원톡_저장_http_response"><a class="link" href="#_응원톡_저장_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -527,12 +528,14 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 </div>
-<h1 id="_게임_api" class="sect0"><a class="link" href="#_게임_api">게임 API</a></h1>
+</div>
 <div class="sect1">
-<h2 id="_게임_상세_조회"><a class="link" href="#_게임_상세_조회">게임 상세 조회</a></h2>
+<h2 id="_게임_api"><a class="link" href="#_게임_api">게임 API</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_게임_상세_조회_http_request"><a class="link" href="#_게임_상세_조회_http_request">HTTP request</a></h3>
+<h3 id="_게임_상세_조회"><a class="link" href="#_게임_상세_조회">게임 상세 조회</a></h3>
+<div class="sect3">
+<h4 id="_게임_상세_조회_http_request"><a class="link" href="#_게임_상세_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1 HTTP/1.1
@@ -541,8 +544,8 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_상세_조회_path_parameters"><a class="link" href="#_게임_상세_조회_path_parameters">Path parameters</a></h3>
+<div class="sect3">
+<h4 id="_게임_상세_조회_path_parameters"><a class="link" href="#_게임_상세_조회_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. /games/{gameId}</caption>
 <colgroup>
@@ -563,8 +566,8 @@ Host: localhost:8080</code></pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_게임_상세_조회_http_response"><a class="link" href="#_게임_상세_조회_http_response">HTTP response</a></h3>
+<div class="sect3">
+<h4 id="_게임_상세_조회_http_response"><a class="link" href="#_게임_상세_조회_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -597,8 +600,8 @@ Content-Length: 414
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_상세_조회_response_fields"><a class="link" href="#_게임_상세_조회_response_fields">Response fields</a></h3>
+<div class="sect3">
+<h4 id="_게임_상세_조회_response_fields"><a class="link" href="#_게임_상세_조회_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -672,12 +675,10 @@ Content-Length: 414
 </table>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_게임_영상_조회"><a class="link" href="#_게임_영상_조회">게임 영상 조회</a></h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_게임_영상_조회_http_request"><a class="link" href="#_게임_영상_조회_http_request">HTTP request</a></h3>
+<h3 id="_게임_영상_조회"><a class="link" href="#_게임_영상_조회">게임 영상 조회</a></h3>
+<div class="sect3">
+<h4 id="_게임_영상_조회_http_request"><a class="link" href="#_게임_영상_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/video HTTP/1.1
@@ -686,8 +687,8 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_영상_조회_path_parameters"><a class="link" href="#_게임_영상_조회_path_parameters">Path parameters</a></h3>
+<div class="sect3">
+<h4 id="_게임_영상_조회_path_parameters"><a class="link" href="#_게임_영상_조회_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. /games/{gameId}/video</caption>
 <colgroup>
@@ -708,8 +709,8 @@ Host: localhost:8080</code></pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_게임_영상_조회_http_response"><a class="link" href="#_게임_영상_조회_http_response">HTTP response</a></h3>
+<div class="sect3">
+<h4 id="_게임_영상_조회_http_response"><a class="link" href="#_게임_영상_조회_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -725,8 +726,8 @@ Content-Length: 27
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_영상_조회_response_fields"><a class="link" href="#_게임_영상_조회_response_fields">Response fields</a></h3>
+<div class="sect3">
+<h4 id="_게임_영상_조회_response_fields"><a class="link" href="#_게임_영상_조회_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -750,12 +751,10 @@ Content-Length: 27
 </table>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_게임_목록_조회"><a class="link" href="#_게임_목록_조회">게임 목록 조회</a></h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_게임_목록_조회_http_request"><a class="link" href="#_게임_목록_조회_http_request">HTTP request</a></h3>
+<h3 id="_게임_목록_조회"><a class="link" href="#_게임_목록_조회">게임 목록 조회</a></h3>
+<div class="sect3">
+<h4 id="_게임_목록_조회_http_request"><a class="link" href="#_게임_목록_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games?league_id=1&amp;status=PLAYING&amp;sport_id=1&amp;sport_id=2&amp;cursor=12&amp;size=10 HTTP/1.1
@@ -764,8 +763,8 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_목록_조회_query_parameters"><a class="link" href="#_게임_목록_조회_query_parameters">Query parameters</a></h3>
+<div class="sect3">
+<h4 id="_게임_목록_조회_query_parameters"><a class="link" href="#_게임_목록_조회_query_parameters">Query parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -801,8 +800,8 @@ Host: localhost:8080</code></pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_게임_목록_조회_http_response"><a class="link" href="#_게임_목록_조회_http_response">HTTP response</a></h3>
+<div class="sect3">
+<h4 id="_게임_목록_조회_http_response"><a class="link" href="#_게임_목록_조회_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -854,8 +853,8 @@ Content-Length: 813
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_목록_조회_response_fields"><a class="link" href="#_게임_목록_조회_response_fields">Response fields</a></h3>
+<div class="sect3">
+<h4 id="_게임_목록_조회_response_fields"><a class="link" href="#_게임_목록_조회_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -924,12 +923,10 @@ Content-Length: 813
 </table>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_게임_응원_횟수_조회"><a class="link" href="#_게임_응원_횟수_조회">게임 응원 횟수 조회</a></h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_게임_응원_횟수_조회_http_request"><a class="link" href="#_게임_응원_횟수_조회_http_request">HTTP request</a></h3>
+<h3 id="_게임_응원_횟수_조회"><a class="link" href="#_게임_응원_횟수_조회">게임 응원 횟수 조회</a></h3>
+<div class="sect3">
+<h4 id="_게임_응원_횟수_조회_http_request"><a class="link" href="#_게임_응원_횟수_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/cheer HTTP/1.1
@@ -938,8 +935,8 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_응원_횟수_조회_path_parameters"><a class="link" href="#_게임_응원_횟수_조회_path_parameters">Path parameters</a></h3>
+<div class="sect3">
+<h4 id="_게임_응원_횟수_조회_path_parameters"><a class="link" href="#_게임_응원_횟수_조회_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. /games/{gameId}/cheer</caption>
 <colgroup>
@@ -960,8 +957,8 @@ Host: localhost:8080</code></pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_게임_응원_횟수_조회_http_response"><a class="link" href="#_게임_응원_횟수_조회_http_response">HTTP response</a></h3>
+<div class="sect3">
+<h4 id="_게임_응원_횟수_조회_http_response"><a class="link" href="#_게임_응원_횟수_조회_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -983,8 +980,8 @@ Content-Length: 124
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_응원_횟수_조회_response_fields"><a class="link" href="#_게임_응원_횟수_조회_response_fields">Response fields</a></h3>
+<div class="sect3">
+<h4 id="_게임_응원_횟수_조회_response_fields"><a class="link" href="#_게임_응원_횟수_조회_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1018,12 +1015,10 @@ Content-Length: 124
 </table>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_게임_라인업_조회"><a class="link" href="#_게임_라인업_조회">게임 라인업 조회</a></h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_게임_라인업_조회_http_request"><a class="link" href="#_게임_라인업_조회_http_request">HTTP request</a></h3>
+<h3 id="_게임_라인업_조회"><a class="link" href="#_게임_라인업_조회">게임 라인업 조회</a></h3>
+<div class="sect3">
+<h4 id="_게임_라인업_조회_http_request"><a class="link" href="#_게임_라인업_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/lineup HTTP/1.1
@@ -1032,8 +1027,8 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_라인업_조회_path_parameters"><a class="link" href="#_게임_라인업_조회_path_parameters">Path parameters</a></h3>
+<div class="sect3">
+<h4 id="_게임_라인업_조회_path_parameters"><a class="link" href="#_게임_라인업_조회_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. /games/{gameId}/lineup</caption>
 <colgroup>
@@ -1054,8 +1049,8 @@ Host: localhost:8080</code></pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_게임_라인업_조회_http_response"><a class="link" href="#_게임_라인업_조회_http_response">HTTP response</a></h3>
+<div class="sect3">
+<h4 id="_게임_라인업_조회_http_response"><a class="link" href="#_게임_라인업_조회_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1109,8 +1104,8 @@ Content-Length: 832
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_게임_라인업_조회_response_fields"><a class="link" href="#_게임_라인업_조회_response_fields">Response fields</a></h3>
+<div class="sect3">
+<h4 id="_게임_라인업_조회_response_fields"><a class="link" href="#_게임_라인업_조회_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1156,10 +1151,11 @@ Content-Length: 832
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-01-20 00:21:01 +0900
+Last updated 2024-01-20 15:23:41 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
