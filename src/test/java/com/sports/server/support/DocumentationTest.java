@@ -19,9 +19,11 @@ import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
 import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.application.LineupPlayerQueryService;
+import com.sports.server.query.application.TimelineQueryService;
 import com.sports.server.query.presentation.CheerTalkQueryController;
 import com.sports.server.query.presentation.GameQueryController;
 import com.sports.server.query.presentation.LeagueQueryController;
+import com.sports.server.query.presentation.TimelineQueryController;
 import com.sports.server.support.config.RestDocsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -39,7 +41,7 @@ import org.springframework.test.web.servlet.MockMvc;
         CheerTalkQueryController.class,
         GameQueryController.class,
         LeagueQueryController.class,
-//        TimelineQueryController.class
+        TimelineQueryController.class
 })
 @Import({
         TimeLogTemplate.class,
@@ -89,4 +91,7 @@ public class DocumentationTest {
 
     @MockBean
     protected LeagueQueryService leagueQueryService;
+
+    @MockBean
+    protected TimelineQueryService timelineQueryService;
 }
