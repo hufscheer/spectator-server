@@ -12,6 +12,10 @@
 
 operation::cheer-talk-controller-test/응원톡을_저장한다[snippets='http-request,request-fields,http-response']
 
+=== 응원톡 조회
+
+operation::cheer-talk-query-controller-test/응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+
 == 게임 API
 
 === 게임 상세 조회

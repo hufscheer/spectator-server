@@ -14,9 +14,11 @@ import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
+import com.sports.server.query.application.CheerTalkQueryService;
 import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
 import com.sports.server.query.application.LineupPlayerQueryService;
+import com.sports.server.query.presentation.CheerTalkQueryController;
 import com.sports.server.query.presentation.GameQueryController;
 import com.sports.server.support.config.RestDocsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
         CheerTalkController.class,
         GameController.class,
         ReportController.class,
-//        CheerTalkQueryController.class,
+        CheerTalkQueryController.class,
         GameQueryController.class,
 //        LeagueQueryController.class,
 //        TimelineQueryController.class
@@ -79,4 +81,7 @@ public class DocumentationTest {
 
     @MockBean
     protected ReportService reportService;
+
+    @MockBean
+    protected CheerTalkQueryService cheerTalkQueryService;
 }
