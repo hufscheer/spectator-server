@@ -50,7 +50,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     false, 1
                             )),
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L)
             );
         }
@@ -76,7 +76,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     () -> assertThat(actual).hasSize(10),
 
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L)
             );
         }
@@ -102,7 +102,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     () -> assertThat(actual).hasSize(size),
 
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(10L, 11L, 12L, 13L, 14L)
             );
         }
@@ -130,7 +130,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     () -> assertThat(actual).hasSize(size),
 
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(3L, 4L, 5L, 6L, 7L)
             );
         }
