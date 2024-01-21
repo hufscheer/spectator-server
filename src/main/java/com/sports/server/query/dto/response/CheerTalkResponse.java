@@ -4,7 +4,7 @@ import com.sports.server.command.cheertalk.domain.CheerTalk;
 
 import java.time.LocalDateTime;
 
-public record CommentResponse(
+public record CheerTalkResponse(
         Long commentId,
         String content,
         Long gameTeamId,
@@ -12,7 +12,7 @@ public record CommentResponse(
         Boolean isBlocked,
         int order
 ) {
-    public CommentResponse(CheerTalk cheerTalk, final int order) {
+    public CheerTalkResponse(CheerTalk cheerTalk, final int order) {
         this(
                 cheerTalk.getId(),
                 checkCommentBlocked(cheerTalk),

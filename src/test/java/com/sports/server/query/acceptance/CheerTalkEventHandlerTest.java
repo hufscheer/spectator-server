@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
-import com.sports.server.query.dto.response.CommentResponse;
+import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
 
     private String URL;
 
-    private final CompletableFuture<CommentResponse> completableFuture = new CompletableFuture<>();
+    private final CompletableFuture<CheerTalkResponse> completableFuture = new CompletableFuture<>();
 
     @Autowired
     private CheerTalkService cheerTalkService;
@@ -58,7 +58,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 1L));
 
         //then
-        CommentResponse actual = completableFuture.get(10, SECONDS);
+        CheerTalkResponse actual = completableFuture.get(10, SECONDS);
         assertThat(actual.content()).isEqualTo("응원톡입니다.");
     }
 
@@ -80,19 +80,19 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 2L));
 
         //then
-        CommentResponse actual = completableFuture.get(10, SECONDS);
+        CheerTalkResponse actual = completableFuture.get(10, SECONDS);
         assertThat(actual.order()).isEqualTo(2);
     }
 
     private class CommentStompFrameHandler implements StompFrameHandler {
         @Override
         public Type getPayloadType(StompHeaders stompHeaders) {
-            return CommentResponse.class;
+            return CheerTalkResponse.class;
         }
 
         @Override
         public void handleFrame(StompHeaders stompHeaders, Object o) {
-            completableFuture.complete((CommentResponse) o);
+            completableFuture.complete((CheerTalkResponse) o);
         }
     }
 }
