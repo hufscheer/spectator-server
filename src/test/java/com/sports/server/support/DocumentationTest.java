@@ -11,6 +11,8 @@ import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.presentation.GameController;
+import com.sports.server.command.report.application.ReportService;
+import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
 import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
@@ -29,7 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {
         CheerTalkController.class,
         GameController.class,
-//        ReportController.class,
+        ReportController.class,
 //        CheerTalkQueryController.class,
         GameQueryController.class,
 //        LeagueQueryController.class,
@@ -74,4 +76,7 @@ public class DocumentationTest {
 
     @MockBean
     protected GameTeamService gameTeamService;
+
+    @MockBean
+    protected ReportService reportService;
 }

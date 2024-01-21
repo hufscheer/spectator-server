@@ -39,3 +39,9 @@ operation::game-query-controller-test/라인업을_조회한다[snippets='http-r
 === 응원 횟수 업데이트
 
 operation::game-controller-test/응원_횟수를_업데이트한다[snippets='http-request,request-fields,http-response']
+
+== 신고 API
+
+=== 응원톡 신고
+
+operation::report-controller-test/응원톡을_신고한다[snippets='http-request,request-fields,http-response']
