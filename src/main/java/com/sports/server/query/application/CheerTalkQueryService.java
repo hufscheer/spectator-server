@@ -1,16 +1,15 @@
 package com.sports.server.query.application;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
-import com.sports.server.query.repository.CheerTalkDynamicRepository;
-import com.sports.server.query.dto.response.CommentResponse;
 import com.sports.server.common.dto.PageRequestDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.sports.server.query.dto.response.CheerTalkResponse;
+import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,17 +18,17 @@ public class CheerTalkQueryService {
 
     private final CheerTalkDynamicRepository cheerTalkDynamicRepository;
 
-    public List<CommentResponse> getCommentsByGameId(final Long gameId, final PageRequestDto pageRequest) {
+    public List<CheerTalkResponse> getCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
         List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
                 gameId, pageRequest.cursor(), pageRequest.size()
         );
 
         List<Long> gameTeamIds = getOrderedGameTeamIds(cheerTalks);
 
-        List<CommentResponse> responses = cheerTalks.stream()
-                .map(comment -> new CommentResponse(
-                        comment,
-                        getOrderOfGameTeamId(comment.getGameTeamId(), gameTeamIds)
+        List<CheerTalkResponse> responses = cheerTalks.stream()
+                .map(cheerTalk -> new CheerTalkResponse(
+                        cheerTalk,
+                        getOrderOfGameTeamId(cheerTalk.getGameTeamId(), gameTeamIds)
                 ))
                 .collect(Collectors.toList());
 

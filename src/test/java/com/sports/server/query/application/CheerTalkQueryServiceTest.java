@@ -1,6 +1,6 @@
 package com.sports.server.query.application;
 
-import com.sports.server.query.dto.response.CommentResponse;
+import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.Test;
@@ -26,15 +26,15 @@ class CheerTalkQueryServiceTest extends ServiceTest {
         PageRequestDto pageRequestDto = new PageRequestDto(null, 14);
 
         // when
-        List<CommentResponse> commentsByGameId = cheerTalkQueryService.getCommentsByGameId(gameId, pageRequestDto);
+        List<CheerTalkResponse> commentsByGameId = cheerTalkQueryService.getCheerTalksByGameId(gameId, pageRequestDto);
 
         // then
         Map<Long, Integer> orderOfGameTeams = new HashMap<>();
         orderOfGameTeams.put(1L, 1);
         orderOfGameTeams.put(2L, 2);
 
-        for (CommentResponse commentResponse : commentsByGameId) {
-            assertEquals((int) orderOfGameTeams.get(commentResponse.gameTeamId()), commentResponse.order());
+        for (CheerTalkResponse cheerTalkResponse : commentsByGameId) {
+            assertEquals((int) orderOfGameTeams.get(cheerTalkResponse.gameTeamId()), cheerTalkResponse.order());
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.sports.server.query.acceptance;
 
-import com.sports.server.query.dto.response.CommentResponse;
+import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -38,11 +38,11 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
                     () -> assertThat(actual.get(0))
-                            .isEqualTo(new CommentResponse(
+                            .isEqualTo(new CheerTalkResponse(
                                     5L,
                                     "응원톡5",
                                     1L,
@@ -50,7 +50,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     false, 1
                             )),
                     () -> assertThat(actual)
-                            .map(CommentResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L)
             );
         }
@@ -71,12 +71,12 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
 
                     () -> assertThat(actual)
-                            .map(CommentResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L)
             );
         }
@@ -97,12 +97,12 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
             assertAll(
                     () -> assertThat(actual).hasSize(size),
 
                     () -> assertThat(actual)
-                            .map(CommentResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(10L, 11L, 12L, 13L, 14L)
             );
         }
@@ -125,12 +125,12 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
             assertAll(
                     () -> assertThat(actual).hasSize(size),
 
                     () -> assertThat(actual)
-                            .map(CommentResponse::commentId)
+                            .map(CheerTalkResponse::cheerTalkId)
                             .containsExactly(3L, 4L, 5L, 6L, 7L)
             );
         }
@@ -149,10 +149,10 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CommentResponse> actual = toResponses(response, CommentResponse.class);
+            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
             assertThat(actual)
-                    .filteredOn(CommentResponse::isBlocked)
-                    .map(CommentResponse::content)
+                    .filteredOn(CheerTalkResponse::isBlocked)
+                    .map(CheerTalkResponse::content)
                     .containsOnlyNulls();
         }
     }

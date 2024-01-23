@@ -17,9 +17,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Import(AsyncTestConfig.class)
 @DatabaseIsolation
+@Import(AsyncTestConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
     @LocalServerPort
@@ -29,7 +29,8 @@ public class AcceptanceTest {
     protected ReportCheckClient reportCheckClient;
 
     @BeforeEach
-    void setUp() {
+    void setUp(
+    ) {
         RestAssured.port = port;
 
         given(reportCheckClient.check(any()))

@@ -2,7 +2,7 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
-import com.sports.server.query.dto.response.CommentResponse;
+import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.application.GameTeamServiceUtils;
 import com.sports.server.command.game.domain.Game;
@@ -33,7 +33,7 @@ public class CheerTalkEventHandler {
 
         messagingTemplate.convertAndSend(
                 DESTINATION + game.getId(),
-                new CommentResponse(cheerTalk,
+                new CheerTalkResponse(cheerTalk,
                         gameTeamServiceUtils.calculateOrderOfGameTeam(game, cheerTalk.getGameTeamId()))
         );
 
