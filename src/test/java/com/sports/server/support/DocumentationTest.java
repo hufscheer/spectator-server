@@ -24,7 +24,6 @@ import com.sports.server.query.presentation.CheerTalkQueryController;
 import com.sports.server.query.presentation.GameQueryController;
 import com.sports.server.query.presentation.LeagueQueryController;
 import com.sports.server.query.presentation.TimelineQueryController;
-import com.sports.server.support.config.RestDocsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -44,8 +43,7 @@ import org.springframework.test.web.servlet.MockMvc;
         TimelineQueryController.class
 })
 @Import({
-        TimeLogTemplate.class,
-        RestDocsConfig.class
+        TimeLogTemplate.class
 })
 @AutoConfigureRestDocs
 public class DocumentationTest {
