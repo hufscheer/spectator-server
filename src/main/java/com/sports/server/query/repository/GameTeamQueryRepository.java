@@ -18,5 +18,5 @@ public interface GameTeamQueryRepository extends Repository<GameTeam, Long> {
     @Query("select gt from GameTeam gt "
             + "join fetch gt.leagueTeam "
             + "where gt.game.id in :gameIds")
-    List<GameTeam> findAllByGameIds(final List<Long> gameIds);
+    List<GameTeam> findAllByGameIds(@Param("gameIds") final List<Long> gameIds);
 }
