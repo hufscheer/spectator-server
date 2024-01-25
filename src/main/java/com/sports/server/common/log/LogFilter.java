@@ -25,9 +25,13 @@ public class LogFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
         HttpServletRequest req = (HttpServletRequest) request;
-        String requestUri = generateMessage(req);
-        log.info(requestUri);
         try {
+            if (isActuatorRequest(req)) {
+                chain.doFilter(request, response);
+                return;
+            }
+            String requestUri = generateMessage(req);
+            log.info(requestUri);
             timeLogTemplate.execute(
                     () -> chain.doFilter(request, response),
                     requestUri
@@ -35,6 +39,10 @@ public class LogFilter implements Filter {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isActuatorRequest(HttpServletRequest req) {
+        return req.getRequestURI().contains("actuator");
     }
 
     private String generateMessage(HttpServletRequest req) {
