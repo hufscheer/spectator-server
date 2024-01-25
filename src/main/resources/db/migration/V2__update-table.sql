@@ -1,4 +1,4 @@
---  -> game_teams 외래키 제약 제거
+-- comments -> game_teams 외래키 제약 제거
 ALTER TABLE comments DROP FOREIGN KEY FK_COMMENTS_ON_GAME_TEAM;
 
 -- comments.game_team_id에 인덱스 추가
