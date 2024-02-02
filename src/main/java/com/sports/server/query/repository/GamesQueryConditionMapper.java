@@ -9,7 +9,7 @@ import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 import static com.sports.server.command.game.domain.QGame.game;
 
@@ -17,37 +17,41 @@ import static com.sports.server.command.game.domain.QGame.game;
 @RequiredArgsConstructor
 public class GamesQueryConditionMapper {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final OrderSpecifier<?>[] FINISHED_ORDER = {game.startTime.desc(), game.id.desc()};
+    private static final OrderSpecifier<?>[] NOT_FINISHED_ORDER = {game.startTime.asc(), game.id.asc()};
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public OrderSpecifier<?> mapOrderCondition(GamesQueryRequestDto request) {
+    public OrderSpecifier<?>[] mapOrderCondition(GamesQueryRequestDto request) {
         GameState state = GameState.from(request.getStateValue());
         if (state == GameState.FINISHED) {
-            return game.startTime.stringValue().concat(game.id.stringValue()).desc();
+            return FINISHED_ORDER;
         }
-        return game.startTime.stringValue().concat(game.id.stringValue()).asc();
+        return NOT_FINISHED_ORDER;
     }
 
     public BooleanBuilder mapBooleanCondition(GamesQueryRequestDto gamesQueryRequestDto,
                                               PageRequestDto pageRequestDto) {
         GameState state = GameState.from(gamesQueryRequestDto.getStateValue());
-        String cursor = getCursorValue(pageRequestDto.cursor());
+        Long cursor = pageRequestDto.cursor();
+        LocalDateTime cursorStartTime = getCursorStartTime(cursor);
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state))
                 .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()));
         if (state == GameState.FINISHED) {
             return booleanBuilder
-                    .and(() -> game.startTime.stringValue().concat(game.id.stringValue()).lt(cursor))
+                    .and(() -> game.startTime.eq(cursorStartTime).and(game.id.lt(cursor))
+                            .or(game.startTime.lt(cursorStartTime)))
                     .build();
         }
         return booleanBuilder
-                .and(() -> game.startTime.stringValue().concat(game.id.stringValue()).gt(cursor))
+                .and(() -> game.startTime.eq(cursorStartTime).and(game.id.gt(cursor))
+                        .or(game.startTime.gt(cursorStartTime)))
                 .build();
     }
 
-    private String getCursorValue(Long cursor) {
+    private LocalDateTime getCursorStartTime(Long cursor) {
         if (cursor == null) {
             return null;
         }
@@ -55,7 +59,6 @@ public class GamesQueryConditionMapper {
                 .select(game.startTime)
                 .from(game)
                 .where(game.id.eq(cursor))
-                .fetchFirst()
-                .format(FORMATTER) + cursor;
+                .fetchOne();
     }
 }
