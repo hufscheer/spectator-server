@@ -70,4 +70,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(EXPECTED_RECORDS_2QUARTER),
                 () -> assertThat(groupByQuarter.get("1쿼터"))
                         .map(TimelineResponse::records)
-                        .containsEx
+                        .containsExactly(EXPECTED_RECORDS_1QUARTER)
+        );
+    }
+}

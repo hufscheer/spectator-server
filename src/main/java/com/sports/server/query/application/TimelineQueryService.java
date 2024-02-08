@@ -31,3 +31,4 @@ public class TimelineQueryService {
                 .map(quarter -> new TimelineResponse(quarter, groupedByQuarter.get(quarter)))
                 .toList();
     }
+}
