@@ -10,17 +10,17 @@ ALTER TABLE records
 CREATE TABLE score_records
 (
     id               BIGINT AUTO_INCREMENT NOT NULL,
-    record_id        BIGINT                NULL,
-    lineup_player_id BIGINT                NULL,
+    record_id        BIGINT                NOT NULL,
+    lineup_player_id BIGINT                NOT NULL,
     score            INT                   NOT NULL
 );
 
 CREATE TABLE replacement_records
 (
     id                        BIGINT AUTO_INCREMENT NOT NULL,
-    record_id                 BIGINT                NULL,
-    origin_lineup_player_id   BIGINT                NULL,
-    replaced_lineup_player_id BIGINT                NULL
+    record_id                 BIGINT                NOT NULL,
+    origin_lineup_player_id   BIGINT                NOT NULL,
+    replaced_lineup_player_id BIGINT                NOT NULL
 );
 
 ALTER TABLE league_team_players
