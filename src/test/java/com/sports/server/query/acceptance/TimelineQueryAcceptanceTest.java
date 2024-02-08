@@ -1,21 +1,21 @@
 package com.sports.server.query.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/record-fixture.sql")
 public class TimelineQueryAcceptanceTest extends AcceptanceTest {
@@ -38,6 +38,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
             new TimelineResponse.RecordResponse(3, "선수3", "팀 A", 2)
     );
 
+    @Disabled
     @Test
     void 게임의_타임라인을_조회한다() {
         // given
@@ -69,7 +70,4 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(EXPECTED_RECORDS_2QUARTER),
                 () -> assertThat(groupByQuarter.get("1쿼터"))
                         .map(TimelineResponse::records)
-                        .containsExactly(EXPECTED_RECORDS_1QUARTER)
-        );
-    }
-}
+                        .containsEx

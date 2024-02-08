@@ -27,11 +27,10 @@ public record TimelineResponse(
     ) {
         public RecordResponse(Record record) {
             this(
-                    record.getScoredAt(),
+                    record.getRecordedAt(),
                     record.getLineupPlayer().getName(),
                     record.getGameTeam().getLeagueTeam().getName(),
                     record.getScore()
             );
         }
     }
-}
