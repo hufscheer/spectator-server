@@ -46,6 +46,6 @@ public class Record extends BaseEntity<Record> {
     private Integer recordedAt;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "record_type", nullable = false)
+    @Column(name = "record_type")
     private RecordType recordType;
 }
