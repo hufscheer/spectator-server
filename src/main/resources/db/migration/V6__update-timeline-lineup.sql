@@ -48,3 +48,9 @@ ALTER TABLE lineup_players
 
 ALTER TABLE lineup_players
     ADD COLUMN is_captain BOOLEAN;
+
+ALTER TABLE records
+    DROP COLUMN lineup_player_id;
+
+ALTER TABLE records
+    DROP COLUMN score;
