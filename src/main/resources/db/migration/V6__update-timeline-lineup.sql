@@ -50,6 +50,9 @@ ALTER TABLE lineup_players
     ADD COLUMN is_captain BOOLEAN;
 
 ALTER TABLE records
+    DROP CONSTRAINT FK_RECORDS_ON_GAME_TEAM_PLAYER;
+
+ALTER TABLE records
     DROP COLUMN lineup_player_id;
 
 ALTER TABLE records
