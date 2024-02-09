@@ -21,21 +21,21 @@ import org.springframework.test.context.jdbc.Sql;
 public class TimelineQueryAcceptanceTest extends AcceptanceTest {
 
     private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_3QUARTER = List.of(
-            new TimelineResponse.RecordResponse(39, "선수5", "팀 A", 3),
-            new TimelineResponse.RecordResponse(25, "선수9", "팀 B", 2),
-            new TimelineResponse.RecordResponse(1, "선수4", "팀 A", 3)
+            new TimelineResponse.RecordResponse(39),
+            new TimelineResponse.RecordResponse(25),
+            new TimelineResponse.RecordResponse(1)
     );
 
     private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_2QUARTER = List.of(
-            new TimelineResponse.RecordResponse(30, "선수5", "팀 A", 3),
-            new TimelineResponse.RecordResponse(20, "선수10", "팀 B", 2),
-            new TimelineResponse.RecordResponse(5, "선수1", "팀 A", 2)
+            new TimelineResponse.RecordResponse(30),
+            new TimelineResponse.RecordResponse(20),
+            new TimelineResponse.RecordResponse(5)
     );
 
     private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_1QUARTER = List.of(
-            new TimelineResponse.RecordResponse(14, "선수2", "팀 A", 3),
-            new TimelineResponse.RecordResponse(10, "선수6", "팀 B", 2),
-            new TimelineResponse.RecordResponse(3, "선수3", "팀 A", 2)
+            new TimelineResponse.RecordResponse(14),
+            new TimelineResponse.RecordResponse(10),
+            new TimelineResponse.RecordResponse(3)
     );
 
     @Disabled
