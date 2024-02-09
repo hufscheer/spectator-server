@@ -2,7 +2,6 @@ package com.sports.server.query.dto.response;
 
 import com.sports.server.command.record.domain.Record;
 import com.sports.server.command.sport.domain.Quarter;
-
 import java.util.List;
 
 public record TimelineResponse(
@@ -20,17 +19,10 @@ public record TimelineResponse(
     }
 
     public record RecordResponse(
-            Integer scoredAt,
-            String playerName,
-            String teamName,
-            Integer score
-    ) {
+            Integer recordedAt) {
         public RecordResponse(Record record) {
             this(
-                    record.getRecordedAt(),
-                    record.getLineupPlayer().getName(),
-                    record.getGameTeam().getLeagueTeam().getName(),
-                    record.getScore()
+                    record.getRecordedAt()
             );
         }
     }
