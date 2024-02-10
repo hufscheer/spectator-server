@@ -42,17 +42,17 @@ VALUES (6, 2, '선수6', '센터'),
        (10, 2, '선수10', '스몰 포워드');
 
 -- 1쿼터 경기 기록 추가
-INSERT INTO records (game_id, game_team_id, lineup_player_id, score, scored_quarter_id, scored_at)
+INSERT INTO records (game_id, game_team_id, lineup_player_id, score, recorded_quarter_id, recorded_at)
 VALUES (1, 1, 3, 2, 1, 3), -- 선수 3의 2득점
        (1, 2, 6, 2, 1, 10), -- 선수 6의 2득점
        (1, 1, 2, 3, 1, 14); -- 선수 2의 3득점
 -- 2쿼터 경기 기록 추가
-INSERT INTO records (game_id, game_team_id, lineup_player_id, score, scored_quarter_id, scored_at)
+INSERT INTO records (game_id, game_team_id, lineup_player_id, score, recorded_quarter_id, recorded_at)
 VALUES (1, 1, 1, 2, 2, 5), -- 선수 1의 2득점
        (1, 2, 10, 2, 2, 20), -- 선수 10의 2득점
        (1, 1, 5, 3, 2, 30); -- 선수 5의 3득점
 -- 3쿼터 경기 기록 추가
-INSERT INTO records (game_id, game_team_id, lineup_player_id, score, scored_quarter_id, scored_at)
+INSERT INTO records (game_id, game_team_id, lineup_player_id, score, recorded_quarter_id, recorded_at)
 VALUES (1, 1, 4, 3, 3, 1), -- 선수 4의 3득점
        (1, 2, 9, 2, 3, 25), -- 선수 9의 2득점
        (1, 1, 5, 3, 3, 39); -- 선수 5의 3득점

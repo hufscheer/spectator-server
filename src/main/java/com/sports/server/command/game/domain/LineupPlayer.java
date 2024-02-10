@@ -1,7 +1,12 @@
 package com.sports.server.command.game.domain;
 
 import com.sports.server.common.domain.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +26,10 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     @Column(name = "description", nullable = true)
     private String description;
+
+    @Column(name = "number", nullable = true)
+    private int number;
+
+    @Column(name = "is_captain", nullable = false)
+    private boolean isCaptain;
 }

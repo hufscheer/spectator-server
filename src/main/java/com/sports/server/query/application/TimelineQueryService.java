@@ -24,7 +24,7 @@ public class TimelineQueryService {
     public List<TimelineResponse> getTimeline(final Long gameId) {
         List<Record> records = recordQueryRepository.findByGameIdOrderByQuarterAndScoredAtDesc(gameId);
         Map<Quarter, List<Record>> groupedByQuarter = records.stream()
-                .collect(groupingBy(Record::getScoredQuarter));
+                .collect(groupingBy(Record::getRecordedQuarter));
         return groupedByQuarter.keySet()
                 .stream()
                 .sorted(Comparator.comparingLong(Quarter::getId).reversed())

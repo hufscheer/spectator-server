@@ -1,11 +1,17 @@
 package com.sports.server.command.record.domain;
 
-import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.sport.domain.Quarter;
-import jakarta.persistence.*;
+import com.sports.server.common.domain.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,16 +31,13 @@ public class Record extends BaseEntity<Record> {
     private GameTeam gameTeam;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lineup_player_id")
-    private LineupPlayer lineupPlayer;
+    @JoinColumn(name = "recorded_quarter_id")
+    private Quarter recordedQuarter;
 
-    @Column(name = "score", nullable = false)
-    private int score;
+    @Column(name = "recorded_at", nullable = false)
+    private Integer recordedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scored_quarter_id")
-    private Quarter scoredQuarter;
-
-    @Column(name = "scored_at", nullable = false)
-    private Integer scoredAt;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "record_type")
+    private RecordType recordType;
 }
