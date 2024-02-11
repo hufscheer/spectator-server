@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/sports" )
 public class SportQueryController {
 
-    private SportQueryService sportQueryService;
+    private final SportQueryService sportQueryService;
 
     @GetMapping
     public ResponseEntity<List<SportResponse>> findAll() {
