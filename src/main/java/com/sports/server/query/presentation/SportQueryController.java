@@ -5,16 +5,18 @@ import com.sports.server.query.dto.response.SportResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/sports")
+@RequestMapping("/sports" )
 public class SportQueryController {
 
     private SportQueryService sportQueryService;
 
+    @GetMapping
     public ResponseEntity<List<SportResponse>> findAll() {
         return ResponseEntity.ok(sportQueryService.findAll());
     }
