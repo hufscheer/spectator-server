@@ -19,10 +19,12 @@ import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
 import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.application.LineupPlayerQueryService;
+import com.sports.server.query.application.SportQueryService;
 import com.sports.server.query.application.TimelineQueryService;
 import com.sports.server.query.presentation.CheerTalkQueryController;
 import com.sports.server.query.presentation.GameQueryController;
 import com.sports.server.query.presentation.LeagueQueryController;
+import com.sports.server.query.presentation.SportQueryController;
 import com.sports.server.query.presentation.TimelineQueryController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -40,7 +42,8 @@ import org.springframework.test.web.servlet.MockMvc;
         CheerTalkQueryController.class,
         GameQueryController.class,
         LeagueQueryController.class,
-        TimelineQueryController.class
+        TimelineQueryController.class,
+        SportQueryController.class
 })
 @Import({
         TimeLogTemplate.class
@@ -49,8 +52,8 @@ import org.springframework.test.web.servlet.MockMvc;
 public class DocumentationTest {
 
     private static final OperationRequestPreprocessor HOST_INFO = preprocessRequest(modifyUris()
-            .scheme("https")
-            .host("www.api.hufstreaming.site")
+            .scheme("https" )
+            .host("www.api.hufstreaming.site" )
             .removePort(), prettyPrint()
     );
 
@@ -92,4 +95,7 @@ public class DocumentationTest {
 
     @MockBean
     protected TimelineQueryService timelineQueryService;
+
+    @MockBean
+    protected SportQueryService sportQueryService;
 }
