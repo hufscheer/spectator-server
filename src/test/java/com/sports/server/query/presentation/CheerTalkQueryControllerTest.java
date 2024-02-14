@@ -51,7 +51,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
         );
 
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("cursor").description("마지막 응원톡의 ID"),
                                 parameterWithName("size").description("조회하고자 하는 응원톡의 개수")

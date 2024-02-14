@@ -44,7 +44,7 @@ class GameQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID")
                         ),
@@ -78,7 +78,7 @@ class GameQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID")
                         ),
@@ -121,7 +121,7 @@ class GameQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("league_id").description("대회의 ID"),
                                 parameterWithName("status").description("게임의 상태"),
@@ -161,7 +161,7 @@ class GameQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID")
                         ),
@@ -205,7 +205,7 @@ class GameQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID")
                         ),

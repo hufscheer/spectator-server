@@ -28,7 +28,7 @@ public class ReportControllerTest extends DocumentationTest {
 
         //then
         result.andExpect((status().isNoContent()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         requestFields(
                                 fieldWithPath("cheerTalkId").type(JsonFieldType.NUMBER).description("신고하는 응원톡의 ID")
                         )

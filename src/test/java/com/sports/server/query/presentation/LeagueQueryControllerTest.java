@@ -38,7 +38,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름")
@@ -67,7 +67,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID")
                         ),

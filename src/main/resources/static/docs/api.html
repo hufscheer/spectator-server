@@ -475,12 +475,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_리그_api">리그 API</a>
 <ul class="sectlevel2">
 <li><a href="#_리그_전체_조회">리그 전체 조회</a></li>
-<li><a href="#_리그에_해당하는_스포츠_종목_조회">리그에 해당하는 스포츠 종목 조회</a></li>
+<li><a href="#_리그에_해당하는_스포츠_전체_조회">리그에 해당하는 스포츠 전체 조회</a></li>
 </ul>
 </li>
 <li><a href="#_타임라인_api">타임라인 API</a>
 <ul class="sectlevel2">
 <li><a href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></li>
+</ul>
+</li>
+<li><a href="#_스포츠_api">스포츠 API</a>
+<ul class="sectlevel2">
+<li><a href="#_스포츠_전체_조회">스포츠 전체 조회</a></li>
 </ul>
 </li>
 </ul>
@@ -499,7 +504,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /cheer-talks HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Content-Length: 53
-Host: localhost:8080
+Host: www.api.hufstreaming.site
 
 {
   "content" : "응원해요~",
@@ -557,7 +562,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/cheer-talks?cursor=1&amp;size=2 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
@@ -700,7 +705,7 @@ Content-Length: 303
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
@@ -843,7 +848,7 @@ Content-Length: 414
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/video HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
@@ -919,7 +924,7 @@ Content-Length: 27
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games?league_id=1&amp;status=PLAYING&amp;sport_id=1&amp;sport_id=2&amp;cursor=12&amp;size=10 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
@@ -1091,7 +1096,7 @@ Content-Length: 813
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/cheer HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
@@ -1183,7 +1188,7 @@ Content-Length: 124
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/lineup HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
@@ -1323,7 +1328,7 @@ Content-Length: 832
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/cheer HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Content-Length: 42
-Host: localhost:8080
+Host: www.api.hufstreaming.site
 
 {
   "gameTeamId" : 1,
@@ -1387,7 +1392,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /reports HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Content-Length: 23
-Host: localhost:8080
+Host: www.api.hufstreaming.site
 
 {
   "cheerTalkId" : 1
@@ -1444,7 +1449,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
@@ -1500,19 +1505,19 @@ Content-Length: 108
 </div>
 </div>
 <div class="sect2">
-<h3 id="_리그에_해당하는_스포츠_종목_조회"><a class="link" href="#_리그에_해당하는_스포츠_종목_조회">리그에 해당하는 스포츠 종목 조회</a></h3>
+<h3 id="_리그에_해당하는_스포츠_전체_조회"><a class="link" href="#_리그에_해당하는_스포츠_전체_조회">리그에 해당하는 스포츠 전체 조회</a></h3>
 <div class="sect3">
-<h4 id="_리그에_해당하는_스포츠_종목_조회_http_request"><a class="link" href="#_리그에_해당하는_스포츠_종목_조회_http_request">HTTP request</a></h4>
+<h4 id="_리그에_해당하는_스포츠_전체_조회_http_request"><a class="link" href="#_리그에_해당하는_스포츠_전체_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/1/sports HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_리그에_해당하는_스포츠_종목_조회_path_parameters"><a class="link" href="#_리그에_해당하는_스포츠_종목_조회_path_parameters">Path parameters</a></h4>
+<h4 id="_리그에_해당하는_스포츠_전체_조회_path_parameters"><a class="link" href="#_리그에_해당하는_스포츠_전체_조회_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. /leagues/{leagueId}/sports</caption>
 <colgroup>
@@ -1534,7 +1539,7 @@ Host: localhost:8080</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_리그에_해당하는_스포츠_종목_조회_http_response"><a class="link" href="#_리그에_해당하는_스포츠_종목_조회_http_response">HTTP response</a></h4>
+<h4 id="_리그에_해당하는_스포츠_전체_조회_http_response"><a class="link" href="#_리그에_해당하는_스포츠_전체_조회_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1555,7 +1560,7 @@ Content-Length: 86
 </div>
 </div>
 <div class="sect3">
-<h4 id="_리그에_해당하는_스포츠_종목_조회_response_fields"><a class="link" href="#_리그에_해당하는_스포츠_종목_조회_response_fields">Response fields</a></h4>
+<h4 id="_리그에_해당하는_스포츠_전체_조회_response_fields"><a class="link" href="#_리그에_해당하는_스포츠_전체_조회_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1591,40 +1596,27 @@ Content-Length: 86
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_게임의_타임라인_조회"><a class="link" href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_스포츠_api"><a class="link" href="#_스포츠_api">스포츠 API</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_스포츠_전체_조회"><a class="link" href="#_스포츠_전체_조회">스포츠 전체 조회</a></h3>
 <div class="sect3">
-<h4 id="_게임의_타임라인_조회_http_request"><a class="link" href="#_게임의_타임라인_조회_http_request">HTTP request</a></h4>
+<h4 id="_스포츠_전체_조회_http_request"><a class="link" href="#_스포츠_전체_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games/1/timeline HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /sports HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Host: localhost:8080</code></pre>
+Host: www.api.hufstreaming.site</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_게임의_타임라인_조회_path_parameters"><a class="link" href="#_게임의_타임라인_조회_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/timeline</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_게임의_타임라인_조회_http_response"><a class="link" href="#_게임의_타임라인_조회_http_response">HTTP response</a></h4>
+<h4 id="_스포츠_전체_조회_http_response"><a class="link" href="#_스포츠_전체_조회_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1632,40 +1624,20 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 540
+Content-Length: 82
 
 [ {
-  "gameQuarter" : "쿼터1",
-  "records" : [ {
-    "scoredAt" : 25,
-    "playerName" : "선수이름",
-    "teamName" : "팀이름",
-    "score" : 1
-  }, {
-    "scoredAt" : 30,
-    "playerName" : "선수이름",
-    "teamName" : "팀이름",
-    "score" : 1
-  } ]
+  "id" : 1,
+  "name" : "농구"
 }, {
-  "gameQuarter" : "쿼터2",
-  "records" : [ {
-    "scoredAt" : 25,
-    "playerName" : "선수이름",
-    "teamName" : "팀이름",
-    "score" : 1
-  }, {
-    "scoredAt" : 30,
-    "playerName" : "선수이름",
-    "teamName" : "팀이름",
-    "score" : 1
-  } ]
+  "id" : 2,
+  "name" : "루미큐브"
 } ]</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_게임의_타임라인_조회_response_fields"><a class="link" href="#_게임의_타임라인_조회_response_fields">Response fields</a></h4>
+<h4 id="_스포츠_전체_조회_response_fields"><a class="link" href="#_스포츠_전체_조회_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1681,29 +1653,14 @@ Content-Length: 540
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameQuarter</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터의 이름</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoredAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].id</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">득점한 시간</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">종목의 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].playerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].name</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">득점한 선수의 이름</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].teamName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">팀 이름</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].score</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">득점한 점수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">종목의 이름</p></td>
 </tr>
 </tbody>
 </table>
@@ -1715,7 +1672,7 @@ Content-Length: 540
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-01-23 18:44:36 +0900
+Last updated 2024-02-14 18:59:40 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

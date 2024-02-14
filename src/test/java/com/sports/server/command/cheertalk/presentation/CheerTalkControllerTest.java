@@ -27,7 +27,7 @@ class CheerTalkControllerTest extends DocumentationTest {
         );
 
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         requestFields(
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("응원톡의 내용"),
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("응원하는 게임팀")

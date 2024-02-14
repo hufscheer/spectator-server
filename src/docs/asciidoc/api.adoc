@@ -56,10 +56,18 @@ operation::report-controller-test/응원톡을_신고한다[snippets='http-reque
 
 operation::league-query-controller-test/리그_전체를_조회한다[snippets='http-request,http-response,response-fields']
 
-=== 리그에 해당하는 스포츠 종목 조회
+=== 리그에 해당하는 스포츠 전체 조회
 
 operation::league-query-controller-test/리그의_해당하는_스포츠_전체를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 == 타임라인 API
+
 === 게임의 타임라인 조회
-operation::timeline-query-controller-test/타임라인을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+// operation::timeline-query-controller-test/타임라인을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+== 스포츠 API
+
+=== 스포츠 전체 조회
+
+operation::sport-query-controller-test/종목을_전체_조회한다[snippets='http-request,http-response,response-fields']
