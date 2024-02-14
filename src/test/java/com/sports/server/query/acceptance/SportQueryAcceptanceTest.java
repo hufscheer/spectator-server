@@ -18,7 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 public class SportQueryAcceptanceTest extends AcceptanceTest {
 
     @Test
-    void 모든_종목을_조회한다() {
+    void 모든_스포츠를_조회한다() {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

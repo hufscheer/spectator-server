@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 public class SportQueryControllerTest extends DocumentationTest {
 
     @Test
-    void 종목을_전체_조회한다() throws Exception {
+    void 스포츠를_전체_조회한다() throws Exception {
 
         // given
         List<SportResponse> responses = List.of(
@@ -37,11 +37,10 @@ public class SportQueryControllerTest extends DocumentationTest {
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
                         responseFields(
-                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("종목의 ID"),
-                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("종목의 이름")
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("스포츠의 ID"),
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("스포츠의 이름")
                         )
                 ));
 
     }
-
 }
