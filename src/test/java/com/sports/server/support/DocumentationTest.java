@@ -1,11 +1,5 @@
 package com.sports.server.support;
 
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
@@ -14,25 +8,14 @@ import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
-import com.sports.server.query.application.CheerTalkQueryService;
-import com.sports.server.query.application.GameQueryService;
-import com.sports.server.query.application.GameTeamQueryService;
-import com.sports.server.query.application.LeagueQueryService;
-import com.sports.server.query.application.LineupPlayerQueryService;
-import com.sports.server.query.application.SportQueryService;
-import com.sports.server.query.application.TimelineQueryService;
-import com.sports.server.query.presentation.CheerTalkQueryController;
-import com.sports.server.query.presentation.GameQueryController;
-import com.sports.server.query.presentation.LeagueQueryController;
-import com.sports.server.query.presentation.SportQueryController;
-import com.sports.server.query.presentation.TimelineQueryController;
+import com.sports.server.query.application.*;
+import com.sports.server.query.presentation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = {
@@ -46,22 +29,14 @@ import org.springframework.test.web.servlet.MockMvc;
         SportQueryController.class
 })
 @Import({
-        TimeLogTemplate.class
+        TimeLogTemplate.class,
+        RestDocsConfig.class
 })
 @AutoConfigureRestDocs
 public class DocumentationTest {
 
-    private static final OperationRequestPreprocessor HOST_INFO = preprocessRequest(modifyUris()
-            .scheme("https" )
-            .host("www.api.hufstreaming.site" )
-            .removePort(), prettyPrint()
-    );
-
-    protected static final RestDocumentationResultHandler RESULT_HANDLER = document(
-            "{class-name}/{method-name}",
-            HOST_INFO,
-            preprocessResponse(prettyPrint())
-    );
+    @Autowired
+    protected RestDocumentationResultHandler restDocsHandler;
 
     @Autowired
     protected MockMvc mockMvc;

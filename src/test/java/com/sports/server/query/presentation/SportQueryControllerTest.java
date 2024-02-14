@@ -35,7 +35,7 @@ public class SportQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("종목의 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("종목의 이름")

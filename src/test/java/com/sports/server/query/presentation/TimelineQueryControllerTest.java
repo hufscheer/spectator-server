@@ -49,7 +49,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
 
         // then
         result.andExpect((status().isOk()))
-                .andDo(RESULT_HANDLER.document(
+                .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID")
                         ),
