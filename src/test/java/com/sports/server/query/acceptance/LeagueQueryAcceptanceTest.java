@@ -38,8 +38,14 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(3L, 2L, 1L),
                 () -> assertThat(actual)
                         .map(LeagueResponse::name)
-                        .containsExactly("롤 대회", "농구대잔치", "삼건물 대회")
-        );
+                        .containsExactly("롤 대회", "농구대잔치", "삼건물 대회"),
+                () -> assertThat(actual)
+                        .map(LeagueResponse::maxRound)
+                        .containsExactly(8, 8, 16),
+                () -> assertThat(actual)
+                        .map(LeagueResponse::inProgressRound)
+                        .containsExactly(8, 2, 8)
+                );
     }
 
     @Test
