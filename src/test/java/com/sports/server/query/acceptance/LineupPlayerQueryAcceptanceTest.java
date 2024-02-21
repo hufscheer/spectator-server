@@ -9,7 +9,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 public class LineupPlayerQueryAcceptanceTest extends AcceptanceTest {
 
     @Test
-    @Disabled
     void 경기_라인업을_조회한다() {
         // given
         Long basketBallGameId = 1L;
@@ -59,14 +57,29 @@ public class LineupPlayerQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teamA.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::description)
                         .containsExactly("센터", "파워 포워드", "슈팅 가드", "포인트 가드", "스몰 포워드"),
-
+                () -> assertThat(teamA.gameTeamPlayers())
+                        .map(LineupPlayerResponse.PlayerResponse::number)
+                        .containsExactly(1, 2, 3, 4, 5),
+                () -> assertThat(teamA.gameTeamPlayers())
+                        .map(LineupPlayerResponse.PlayerResponse::isCaptain)
+                        .containsOnly(false),
+                () -> assertThat(teamA.order())
+                        .isEqualTo(1),
                 () -> assertThat(teamB.teamName()).isEqualTo("팀 B"),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
                         .containsExactly("선수6", "선수7", "선수8", "선수9", "선수10"),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::description)
-                        .containsExactly("센터", "파워 포워드", "슈팅 가드", "포인트 가드", "스몰 포워드")
+                        .containsExactly("센터", "파워 포워드", "슈팅 가드", "포인트 가드", "스몰 포워드"),
+                () -> assertThat(teamB.gameTeamPlayers())
+                        .map(LineupPlayerResponse.PlayerResponse::number)
+                        .containsExactly(1, 2, 3, 4, 5),
+                () -> assertThat(teamB.gameTeamPlayers())
+                        .map(LineupPlayerResponse.PlayerResponse::isCaptain)
+                        .containsOnly(false),
+                () -> assertThat(teamB.order())
+                        .isEqualTo(2)
         );
     }
 }
