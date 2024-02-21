@@ -228,7 +228,11 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING)
                                         .description("선수 이름"),
                                 fieldWithPath("[].gameTeamPlayers[].description").type(JsonFieldType.STRING)
-                                        .description("선수 설명")
+                                        .description("선수 설명"),
+                                fieldWithPath("[].gameTeamPlayers[].number").type(JsonFieldType.NUMBER)
+                                        .description("선수의 등번호"),
+                                fieldWithPath("[].gameTeamPlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
+                                        .description("선수가 주장인지에 대한 정보")
                         )
                 ));
     }
