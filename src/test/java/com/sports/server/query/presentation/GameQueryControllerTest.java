@@ -1,22 +1,27 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.query.dto.response.*;
-import com.sports.server.support.DocumentationTest;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.ResultActions;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.sports.server.query.dto.response.GameDetailResponse;
+import com.sports.server.query.dto.response.GameResponseDto;
+import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
+import com.sports.server.query.dto.response.LineupPlayerResponse;
+import com.sports.server.query.dto.response.VideoResponse;
+import com.sports.server.support.DocumentationTest;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.ResultActions;
 
 class GameQueryControllerTest extends DocumentationTest {
 
@@ -55,9 +60,12 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
                                 fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
-                                fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
-                                fieldWithPath("gameTeams[].gameTeamName").type(JsonFieldType.STRING).description("게임팀의 이름"),
-                                fieldWithPath("gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("게임팀의 이미지 URL"),
+                                fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("게임팀의 ID"),
+                                fieldWithPath("gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("게임팀의 이름"),
+                                fieldWithPath("gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("게임팀의 이미지 URL"),
                                 fieldWithPath("gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("gameTeams[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
                         )
@@ -135,10 +143,14 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("[].sportsName").type(JsonFieldType.STRING).description("종목"),
-                                fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
-                                fieldWithPath("[].gameTeams[].gameTeamName").type(JsonFieldType.STRING).description("게임팀의 이름"),
-                                fieldWithPath("[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("게임팀의 이미지 URL"),
-                                fieldWithPath("[].gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
+                                fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("게임팀의 ID"),
+                                fieldWithPath("[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("게임팀의 이름"),
+                                fieldWithPath("[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("게임팀의 이미지 URL"),
+                                fieldWithPath("[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("게임팀의 현재 점수"),
                                 fieldWithPath("[].gameTeams[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
                         )
                 ));
@@ -178,18 +190,18 @@ class GameQueryControllerTest extends DocumentationTest {
         // given
         Long gameId = 1L;
         List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
-                new LineupPlayerResponse.PlayerResponse("선수A", "탑"),
-                new LineupPlayerResponse.PlayerResponse("선수B", "미드"),
-                new LineupPlayerResponse.PlayerResponse("선수C", "정글"),
-                new LineupPlayerResponse.PlayerResponse("선수D", "원딜"),
-                new LineupPlayerResponse.PlayerResponse("선수E", "서폿")
+                new LineupPlayerResponse.PlayerResponse("선수A", "탑", 1, true),
+                new LineupPlayerResponse.PlayerResponse("선수B", "미드", 2, false),
+                new LineupPlayerResponse.PlayerResponse("선수C", "정글", 3, false),
+                new LineupPlayerResponse.PlayerResponse("선수D", "원딜", 4, false),
+                new LineupPlayerResponse.PlayerResponse("선수E", "서폿", 5, false)
         );
         List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
-                new LineupPlayerResponse.PlayerResponse("선수F", "탑"),
-                new LineupPlayerResponse.PlayerResponse("선수G", "미드"),
-                new LineupPlayerResponse.PlayerResponse("선수H", "정글"),
-                new LineupPlayerResponse.PlayerResponse("선수I", "원딜"),
-                new LineupPlayerResponse.PlayerResponse("선수J", "서폿")
+                new LineupPlayerResponse.PlayerResponse("선수F", "탑", 1, true),
+                new LineupPlayerResponse.PlayerResponse("선수G", "미드", 2, false),
+                new LineupPlayerResponse.PlayerResponse("선수H", "정글", 3, false),
+                new LineupPlayerResponse.PlayerResponse("선수I", "원딜", 4, false),
+                new LineupPlayerResponse.PlayerResponse("선수J", "서폿", 5, false)
         );
 
         given(lineupPlayerQueryService.getLineup(gameId))
@@ -213,8 +225,10 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
                                 fieldWithPath("[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서"),
-                                fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
-                                fieldWithPath("[].gameTeamPlayers[].description").type(JsonFieldType.STRING).description("선수 설명")
+                                fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING)
+                                        .description("선수 이름"),
+                                fieldWithPath("[].gameTeamPlayers[].description").type(JsonFieldType.STRING)
+                                        .description("선수 설명")
                         )
                 ));
     }
