@@ -5,10 +5,7 @@ import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,8 +17,8 @@ public class LeagueQueryController {
     private final LeagueQueryService leagueQueryService;
 
     @GetMapping
-    public ResponseEntity<List<LeagueResponse>> findAll() {
-        return ResponseEntity.ok(leagueQueryService.findAll());
+    public ResponseEntity<List<LeagueResponse>> findLeagues(@RequestParam(required = false) Integer year) {
+        return ResponseEntity.ok(leagueQueryService.findLeagues(year));
     }
 
     @GetMapping("/{leagueId}/sports")
