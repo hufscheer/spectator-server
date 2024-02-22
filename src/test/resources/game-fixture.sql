@@ -1,5 +1,5 @@
 SET
-foreign_key_checks = 0;
+    foreign_key_checks = 0;
 
 -- 경기
 INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at,
@@ -67,21 +67,21 @@ VALUES (1, '농구'),
        (2, '루미큐브');
 
 -- 농구 대전(game_id = 1) A팀 선수
-INSERT INTO lineup_players (id, game_team_id, name, description, is_captain)
-VALUES (1, 1, '선수1', '센터', false),
-       (2, 1, '선수2', '파워 포워드', false),
-       (3, 1, '선수3', '슈팅 가드', false),
-       (4, 1, '선수4', '포인트 가드', false),
-       (5, 1, '선수5', '스몰 포워드', false);
+INSERT INTO lineup_players (id, game_team_id, name, description, number, is_captain)
+VALUES (1, 1, '선수1', '센터', 1, false),
+       (2, 1, '선수2', '파워 포워드', 2, false),
+       (3, 1, '선수3', '슈팅 가드', 3, false),
+       (4, 1, '선수4', '포인트 가드', 4, false),
+       (5, 1, '선수5', '스몰 포워드', 5, false);
 
 
 -- 농구 대전(game_id = 1) B팀 선수
-INSERT INTO lineup_players (id, game_team_id, name, description, is_captain)
-VALUES (6, 2, '선수6', '센터', false),
-       (7, 2, '선수7', '파워 포워드', false),
-       (8, 2, '선수8', '슈팅 가드', false),
-       (9, 2, '선수9', '포인트 가드', false),
-       (10, 2, '선수10', '스몰 포워드', false);
+INSERT INTO lineup_players (id, game_team_id, name, description, number, is_captain)
+VALUES (6, 2, '선수6', '센터', 1, false),
+       (7, 2, '선수7', '파워 포워드', 2, false),
+       (8, 2, '선수8', '슈팅 가드', 3, false),
+       (9, 2, '선수9', '포인트 가드', 4, false),
+       (10, 2, '선수10', '스몰 포워드', 5, false);
 
 -- 농구 대전 (game_id = 1) A팀 vs B팀
 -- User
@@ -136,4 +136,4 @@ INTO leagues (id, manager_id, organization_id, name, start_at, end_at, is_delete
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false);
 
 SET
-foreign_key_checks = 1;
+    foreign_key_checks = 1;

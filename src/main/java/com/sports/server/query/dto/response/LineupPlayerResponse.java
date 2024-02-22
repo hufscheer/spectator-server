@@ -2,7 +2,6 @@ package com.sports.server.query.dto.response;
 
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
-
 import java.util.List;
 
 public record LineupPlayerResponse(
@@ -26,10 +25,12 @@ public record LineupPlayerResponse(
 
     public record PlayerResponse(
             String playerName,
-            String description
+            String description,
+            int number,
+            boolean isCaptain
     ) {
         public PlayerResponse(LineupPlayer player) {
-            this(player.getName(), player.getDescription());
+            this(player.getName(), player.getDescription(), player.getNumber(), player.isCaptain());
         }
     }
 }

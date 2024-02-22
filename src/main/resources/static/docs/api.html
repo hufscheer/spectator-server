@@ -1223,26 +1223,36 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 832
+Content-Length: 1260
 
 [ {
   "gameTeamId" : 1,
   "teamName" : "팀A",
   "gameTeamPlayers" : [ {
     "playerName" : "선수A",
-    "description" : "탑"
+    "description" : "탑",
+    "number" : 1,
+    "isCaptain" : true
   }, {
     "playerName" : "선수B",
-    "description" : "미드"
+    "description" : "미드",
+    "number" : 2,
+    "isCaptain" : false
   }, {
     "playerName" : "선수C",
-    "description" : "정글"
+    "description" : "정글",
+    "number" : 3,
+    "isCaptain" : false
   }, {
     "playerName" : "선수D",
-    "description" : "원딜"
+    "description" : "원딜",
+    "number" : 4,
+    "isCaptain" : false
   }, {
     "playerName" : "선수E",
-    "description" : "서폿"
+    "description" : "서폿",
+    "number" : 5,
+    "isCaptain" : false
   } ],
   "order" : 1
 }, {
@@ -1250,19 +1260,29 @@ Content-Length: 832
   "teamName" : "팀B",
   "gameTeamPlayers" : [ {
     "playerName" : "선수F",
-    "description" : "탑"
+    "description" : "탑",
+    "number" : 1,
+    "isCaptain" : true
   }, {
     "playerName" : "선수G",
-    "description" : "미드"
+    "description" : "미드",
+    "number" : 2,
+    "isCaptain" : false
   }, {
     "playerName" : "선수H",
-    "description" : "정글"
+    "description" : "정글",
+    "number" : 3,
+    "isCaptain" : false
   }, {
     "playerName" : "선수I",
-    "description" : "원딜"
+    "description" : "원딜",
+    "number" : 4,
+    "isCaptain" : false
   }, {
     "playerName" : "선수J",
-    "description" : "서폿"
+    "description" : "서폿",
+    "number" : 5,
+    "isCaptain" : false
   } ],
   "order" : 2
 } ]</code></pre>
@@ -1309,6 +1329,16 @@ Content-Length: 832
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].description</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수 설명</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선수의 등번호</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].isCaptain</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선수가 주장인지에 대한 정보</p></td>
 </tr>
 </tbody>
 </table>
