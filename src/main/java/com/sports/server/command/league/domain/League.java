@@ -39,6 +39,12 @@ public class League extends BaseEntity<League> {
     @Column(name = "end_at", nullable = false)
     private LocalDateTime endAt;
 
+    @Column(name = "max_round")
+    private Integer maxRound;
+
+    @Column(name = "in_progress_round")
+    private Integer inProgressRound;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 }

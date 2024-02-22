@@ -4,14 +4,15 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.support.DocumentationTest;
+
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -24,24 +25,31 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // given
         List<LeagueResponse> responses = List.of(
-                new LeagueResponse(1L, "리그 첫번쨰"),
-                new LeagueResponse(2L, "리그 두번째")
+                new LeagueResponse(1L, "리그 첫번쨰", 16, 4),
+                new LeagueResponse(2L, "리그 두번째", 32, 32)
         );
 
-        given(leagueQueryService.findAll())
+        int year = 2024;
+        given(leagueQueryService.findLeagues(year))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues")
+                .queryParam("year", String.valueOf(year))
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
         // then
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("year").description("리그의 연도")
+                        ),
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
-                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름")
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
+                                fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
+                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER).description("현재 진행 중인 라운드")
                         )
                 ));
     }

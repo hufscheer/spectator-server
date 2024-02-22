@@ -1,4 +1,4 @@
-name: CI Build
+name: CI TEST
 on:
   pull_request:
     branches:
@@ -17,4 +17,4 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: 빌드
-        run: SPRING_PROFILES_ACTIVE=ci ./gradlew build
+        run: SPRING_PROFILES_ACTIVE=ci ./gradlew test
