@@ -35,17 +35,38 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
                         .map(LeagueResponse::leagueId)
-                        .containsExactly(3L, 2L, 1L),
+                        .containsExactly(3L, 2L, 1L, 7L, 6L, 5L),
                 () -> assertThat(actual)
                         .map(LeagueResponse::name)
-                        .containsExactly("롤 대회", "농구대잔치", "삼건물 대회"),
+                        .containsExactly("롤 대회", "농구대잔치", "삼건물 대회", "롤 대회", "농구대잔치", "삼건물 대회"),
                 () -> assertThat(actual)
                         .map(LeagueResponse::maxRound)
-                        .containsExactly(8, 8, 16),
+                        .containsExactly(8, 8, 16, 8, 8, 16),
                 () -> assertThat(actual)
                         .map(LeagueResponse::inProgressRound)
-                        .containsExactly(8, 2, 8)
+                        .containsExactly(8, 2, 8, 8, 2, 8)
                 );
+    }
+
+    @Test
+    void 특정_연도의_리그를_조회한다() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("year", 2022)
+                .get("/leagues")
+                .then().log().all()
+                .extract();
+
+        // then
+        List<LeagueResponse> actual = toResponses(response, LeagueResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual)
+                        .map(LeagueResponse::leagueId)
+                        .containsExactly(7L, 6L, 5L)
+        );
     }
 
     @Test

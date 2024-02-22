@@ -20,7 +20,7 @@ public class LeagueQueryDynamicRepositoryImpl implements LeagueQueryDynamicRepos
         return queryFactory
                 .selectFrom(league)
                 .where(DynamicBooleanBuilder.builder()
-                        .and(() -> league.startAt.dayOfYear().eq(year))
+                        .and(() -> league.startAt.year().eq(year))
                         .build())
                 .orderBy(league.startAt.desc(), league.endAt.desc())
                 .fetch();
