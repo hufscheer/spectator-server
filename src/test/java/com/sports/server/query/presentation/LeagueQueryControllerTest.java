@@ -25,8 +25,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // given
         List<LeagueResponse> responses = List.of(
-                new LeagueResponse(1L, "리그 첫번쨰", 16, 4),
-                new LeagueResponse(2L, "리그 두번째", 32, 32)
+                new LeagueResponse(1L, "리그 첫번쨰", 16, 4, false),
+                new LeagueResponse(2L, "리그 두번째", 32, 32, true)
         );
 
         int year = 2024;
@@ -49,7 +49,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
-                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER).description("현재 진행 중인 라운드")
+                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER).description("현재 진행 중인 라운드"),
+                                fieldWithPath("[].isInProgress").type(JsonFieldType.BOOLEAN).description("현재 진행 중인지 여부")
                         )
                 ));
     }
