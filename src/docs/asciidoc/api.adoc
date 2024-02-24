@@ -60,6 +60,10 @@ operation::league-query-controller-test/리그_전체를_조회한다[snippets='
 
 operation::league-query-controller-test/리그의_해당하는_스포츠_전체를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 리그에 해당하는 리그팀 전체 조회
+
+operation::league-query-controller-test/리그의_모든_리그팀을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
 == 타임라인 API
 
 === 게임의 타임라인 조회
