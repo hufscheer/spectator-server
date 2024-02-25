@@ -41,7 +41,6 @@ public class RecordMapper {
         int score = scoreRecord.getScore();
         LeagueTeam team = record.getGameTeam().getLeagueTeam();
 
-        List<ScoreRecordResponse.Snapshot> histories = toHistoryResponses(snapshot);
         return new RecordResponse(
                 record.getRecordedQuarter(),
                 record.getRecordType().name(),
@@ -49,20 +48,20 @@ public class RecordMapper {
                 scoreRecord.getLineupPlayer().getName(),
                 team.getName(),
                 team.getLogoImageUrl(),
-                new ScoreRecordResponse(score, histories),
+                new ScoreRecordResponse(score, toSnapshotResponses(snapshot)),
                 null
         );
     }
 
-    private List<ScoreRecordResponse.Snapshot> toHistoryResponses(ScoreSnapshot snapshot) {
+    private List<ScoreRecordResponse.Snapshot> toSnapshotResponses(ScoreSnapshot snapshot) {
         return snapshot.getTeamsOrderById()
                 .stream()
-                .map(gameTeam -> toHistoryResponse(snapshot, gameTeam))
+                .map(gameTeam -> toSnapshotResponse(snapshot, gameTeam))
                 .toList();
     }
 
-    private ScoreRecordResponse.Snapshot toHistoryResponse(ScoreSnapshot snapshot,
-                                                           GameTeam gameTeam) {
+    private ScoreRecordResponse.Snapshot toSnapshotResponse(ScoreSnapshot snapshot,
+                                                            GameTeam gameTeam) {
         LeagueTeam leagueTeam = gameTeam.getLeagueTeam();
         return new ScoreRecordResponse.Snapshot(
                 leagueTeam.getName(),

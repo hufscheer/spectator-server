@@ -17,14 +17,14 @@ public class ScoreHistory {
     private final Map<ScoreRecord, ScoreSnapshot> snapshots;
 
     public static ScoreHistory of(List<ScoreRecord> scoreRecords, List<GameTeam> gameTeams) {
-        Map<ScoreRecord, ScoreSnapshot> values = new HashMap<>();
+        Map<ScoreRecord, ScoreSnapshot> snapshots = new HashMap<>();
         Map<GameTeam, Integer> scores = initializeScores(gameTeams);
         for (ScoreRecord record : scoreRecords) {
             applyScore(scores, record);
             ScoreSnapshot snapshot = generateSnapshot(scores, gameTeams);
-            values.put(record, snapshot);
+            snapshots.put(record, snapshot);
         }
-        return new ScoreHistory(values);
+        return new ScoreHistory(snapshots);
     }
 
     private static Map<GameTeam, Integer> initializeScores(List<GameTeam> gameTeams) {
@@ -39,7 +39,7 @@ public class ScoreHistory {
     }
 
     private static ScoreSnapshot generateSnapshot(Map<GameTeam, Integer> scores,
-                                                           List<GameTeam> gameTeams) {
+                                                  List<GameTeam> gameTeams) {
         Map<GameTeam, Integer> snapshot = new HashMap<>();
         gameTeams.forEach(team -> snapshot.put(team, scores.get(team)));
         return new ScoreSnapshot(snapshot);
