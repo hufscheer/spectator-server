@@ -5,7 +5,7 @@ import com.sports.server.command.leagueteam.LeagueTeam;
 import com.sports.server.command.record.domain.Record;
 import com.sports.server.command.record.domain.ReplacementRecord;
 import com.sports.server.command.record.domain.ScoreRecord;
-import com.sports.server.query.application.ScoreSnapshot;
+import com.sports.server.query.application.timeline.ScoreSnapshot;
 import com.sports.server.query.dto.response.RecordResponse;
 import com.sports.server.query.dto.response.ReplacementRecordResponse;
 import com.sports.server.query.dto.response.ScoreRecordResponse;
@@ -40,7 +40,6 @@ public class RecordMapper {
         Record record = scoreRecord.getRecord();
         int score = scoreRecord.getScore();
         LeagueTeam team = record.getGameTeam().getLeagueTeam();
-
         return new RecordResponse(
                 record.getRecordedQuarter(),
                 record.getRecordType().name(),

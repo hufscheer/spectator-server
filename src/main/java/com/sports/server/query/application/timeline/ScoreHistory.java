@@ -1,4 +1,4 @@
-package com.sports.server.query.application;
+package com.sports.server.query.application.timeline;
 
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.record.domain.ScoreRecord;
