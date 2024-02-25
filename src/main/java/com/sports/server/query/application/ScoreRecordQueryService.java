@@ -10,11 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -28,26 +28,47 @@ public class ScoreRecordQueryService implements RecordQueryService {
     @Override
     public List<RecordResponse> findByGameId(Long gameId) {
         List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameWithTeam(gameId);
-        Map<GameTeam, Integer> scores = gameTeams.stream()
-                .collect(toMap(gameTeam -> gameTeam, gameTeam -> 0));
-
         List<ScoreRecord> scoreRecords = scoreRecordQueryRepository.findByGameId(gameId);
+        return mapToResponses(scoreRecords, gameTeams);
+    }
 
-        List<RecordResponse> responses = new ArrayList<>();
-        for (ScoreRecord scoreRecord : scoreRecords) {
-            GameTeam gameTeam = scoreRecord.getRecord().getGameTeam();
-            int score = scoreRecord.getScore();
-            scores.put(gameTeam, scores.get(gameTeam) + score);
-            List<ScoreRecordResponse.History> histories = gameTeams.stream()
-                    .map(team -> new ScoreRecordResponse.History(
-                            team.getLeagueTeam().getName(),
-                            team.getLeagueTeam().getLogoImageUrl(),
-                            scores.get(team)))
-                    .toList();
-            ScoreRecordResponse scoreRecordResponse = new ScoreRecordResponse(score, histories);
-            responses.add(RecordResponse.from(scoreRecord, scoreRecordResponse));
-        }
+    private List<RecordResponse> mapToResponses(List<ScoreRecord> scoreRecords,
+                                                List<GameTeam> gameTeams) {
+        Map<GameTeam, Integer> scores = initializeScores(gameTeams);
+        List<RecordResponse> responses = scoreRecords.stream()
+                .map(record -> mapToResponse(gameTeams, scores, record))
+                .collect(toList());
         Collections.reverse(responses);
         return responses;
+    }
+
+    private Map<GameTeam, Integer> initializeScores(List<GameTeam> gameTeams) {
+        return gameTeams.stream()
+                .collect(toMap(gameTeam -> gameTeam, gameTeam -> 0));
+    }
+
+    private RecordResponse mapToResponse(List<GameTeam> gameTeams,
+                                         Map<GameTeam, Integer> scores,
+                                         ScoreRecord scoreRecord) {
+        GameTeam gameTeam = scoreRecord.getRecord().getGameTeam();
+        int score = scoreRecord.getScore();
+
+        scores.put(gameTeam, scores.get(gameTeam) + score);
+
+        List<ScoreRecordResponse.History> histories = generateHistories(scores, gameTeams);
+        return RecordResponse.from(
+                scoreRecord,
+                new ScoreRecordResponse(score, histories)
+        );
+    }
+
+    private List<ScoreRecordResponse.History> generateHistories(Map<GameTeam, Integer> scores,
+                                                                List<GameTeam> gameTeams) {
+        return gameTeams.stream()
+                .map(team -> new ScoreRecordResponse.History(
+                        team.getLeagueTeam().getName(),
+                        team.getLeagueTeam().getLogoImageUrl(),
+                        scores.get(team)))
+                .toList();
     }
 }
