@@ -2,13 +2,14 @@ package com.sports.server.query.application;
 
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.query.repository.LeagueQueryRepository;
 import com.sports.server.query.repository.LeagueSportQueryRepository;
+import com.sports.server.query.repository.LeagueTeamQueryRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -17,6 +18,7 @@ public class LeagueQueryService {
 
     private final LeagueQueryRepository leagueQueryRepository;
     private final LeagueSportQueryRepository leagueSportQueryRepository;
+    private final LeagueTeamQueryRepository leagueTeamQueryRepository;
 
     public List<LeagueResponse> findLeagues(Integer year) {
         return leagueQueryRepository.findByYear(year)
@@ -29,6 +31,13 @@ public class LeagueQueryService {
         return leagueSportQueryRepository.findByLeagueId(leagueId)
                 .stream()
                 .map(LeagueSportResponse::new)
+                .toList();
+    }
+
+    public List<LeagueTeamResponse> findTeamsByLeague(Long leagueId) {
+        return leagueTeamQueryRepository.findByLeagueId(leagueId)
+                .stream()
+                .map(LeagueTeamResponse::new)
                 .toList();
     }
 }
