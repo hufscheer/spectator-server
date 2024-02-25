@@ -1,44 +1,38 @@
 package com.sports.server.query.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
+import com.sports.server.query.dto.response.RecordResponse;
+import com.sports.server.query.dto.response.ReplacementRecordResponse;
+import com.sports.server.query.dto.response.ScoreRecordResponse;
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 @Sql(scripts = "/record-fixture.sql")
 public class TimelineQueryAcceptanceTest extends AcceptanceTest {
 
-    private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_3QUARTER = List.of(
-            new TimelineResponse.RecordResponse(39),
-            new TimelineResponse.RecordResponse(25),
-            new TimelineResponse.RecordResponse(1)
-    );
 
-    private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_2QUARTER = List.of(
-            new TimelineResponse.RecordResponse(30),
-            new TimelineResponse.RecordResponse(20),
-            new TimelineResponse.RecordResponse(5)
-    );
+    private static final String QUARTER1 = "1쿼터";
+    private static final String QUARTER2 = "2쿼터";
 
-    private static final List<TimelineResponse.RecordResponse> EXPECTED_RECORDS_1QUARTER = List.of(
-            new TimelineResponse.RecordResponse(14),
-            new TimelineResponse.RecordResponse(10),
-            new TimelineResponse.RecordResponse(3)
-    );
+    private static final String TEAM_A = "팀A";
+    public static final String TEAM_A_IMAGE_URL = "http://example.com/logo_a.png";
+    private static final String TEAM_B = "팀B";
+    public static final String TEAM_B_IMAGE_URL = "http://example.com/logo_b.png";
 
-    @Disabled
+    private static final String SCORE_TYPE = "SCORE";
+    private static final String REPLACEMENT_TYPE = "REPLACEMENT";
+
     @Test
     void 게임의_타임라인을_조회한다() {
         // given
@@ -54,23 +48,62 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
 
         // then
         List<TimelineResponse> actual = toResponses(response, TimelineResponse.class);
-        Map<String, List<TimelineResponse>> groupByQuarter = actual.stream()
-                .collect(Collectors.groupingBy(TimelineResponse::gameQuarter));
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual)
-                        .map(TimelineResponse::gameQuarter)
-                        .containsExactly("3쿼터", "2쿼터", "1쿼터"),
-
-                () -> assertThat(groupByQuarter.get("3쿼터"))
-                        .map(TimelineResponse::records)
-                        .containsExactly(EXPECTED_RECORDS_3QUARTER),
-                () -> assertThat(groupByQuarter.get("2쿼터"))
-                        .map(TimelineResponse::records)
-                        .containsExactly(EXPECTED_RECORDS_2QUARTER),
-                () -> assertThat(groupByQuarter.get("1쿼터"))
-                        .map(TimelineResponse::records)
-                        .containsExactly(EXPECTED_RECORDS_1QUARTER)
+                () -> assertThat(actual).isEqualTo(List.of(
+                        new TimelineResponse(
+                                QUARTER2, List.of(
+                                new RecordResponse(
+                                        null, SCORE_TYPE,
+                                        13,
+                                        "선수10",
+                                        TEAM_B,
+                                        TEAM_B_IMAGE_URL,
+                                        new ScoreRecordResponse(3, List.of(
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_B, TEAM_B_IMAGE_URL, 3)
+                                        )),
+                                        null
+                                ),
+                                new RecordResponse(
+                                        null, REPLACEMENT_TYPE,
+                                        10,
+                                        "선수2",
+                                        TEAM_A,
+                                        TEAM_A_IMAGE_URL,
+                                        null,
+                                        new ReplacementRecordResponse("선수3")
+                                )
+                        )),
+                        new TimelineResponse(
+                                QUARTER1, List.of(
+                                new RecordResponse(
+                                        null, REPLACEMENT_TYPE,
+                                        4,
+                                        "선수6",
+                                        TEAM_B,
+                                        TEAM_B_IMAGE_URL,
+                                        null,
+                                        new ReplacementRecordResponse("선수7")
+                                ),
+                                new RecordResponse(
+                                        null, SCORE_TYPE,
+                                        2,
+                                        "선수2",
+                                        TEAM_A,
+                                        TEAM_A_IMAGE_URL,
+                                        new ScoreRecordResponse(2, List.of(
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                        )),
+                                        null
+                                )
+                        ))
+                ))
         );
     }
 }

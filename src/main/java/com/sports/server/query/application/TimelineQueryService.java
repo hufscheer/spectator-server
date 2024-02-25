@@ -28,6 +28,7 @@ public class TimelineQueryService {
         records.addAll(scoreRecordQueryService.findByGameId(gameId));
 
         Map<Quarter, List<RecordResponse>> groupedByQuarter = records.stream()
+                .sorted(Comparator.comparingInt(RecordResponse::recordedAt).reversed())
                 .collect(groupingBy(RecordResponse::quarter));
         return groupedByQuarter.keySet()
                 .stream()
