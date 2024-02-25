@@ -11,12 +11,11 @@ public interface ScoreRecordQueryRepository extends Repository<ScoreRecord, Long
 
     @Query("select sr from ScoreRecord sr " +
             "join fetch sr.record r " +
-            "join fetch r.game g " +
             "join fetch r.gameTeam gt " +
             "join fetch gt.leagueTeam lt " +
             "join fetch r.recordedQuarter rq " +
             "join fetch sr.lineupPlayer srp " +
-            "where g.id = :gameId " +
+            "where r.game.id = :gameId " +
             "order by r.recordedAt asc")
     List<ScoreRecord> findByGameId(@Param("gameId") Long gameId);
 }
