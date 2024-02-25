@@ -20,11 +20,12 @@ import static java.util.stream.Collectors.toMap;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ScoreRecordQueryService {
+public class ScoreRecordQueryService implements RecordQueryService {
 
     private final ScoreRecordQueryRepository scoreRecordQueryRepository;
     private final GameTeamQueryRepository gameTeamQueryRepository;
 
+    @Override
     public List<RecordResponse> findByGameId(Long gameId) {
         List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameWithTeam(gameId);
         Map<GameTeam, Integer> scores = gameTeams.stream()

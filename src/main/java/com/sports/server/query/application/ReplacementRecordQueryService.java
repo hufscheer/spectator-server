@@ -11,10 +11,11 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ReplacementRecordQueryService {
+public class ReplacementRecordQueryService implements RecordQueryService {
 
     private final ReplacementRecordQueryRepository replacementRecordQueryRepository;
 
+    @Override
     public List<RecordResponse> findByGameId(Long gameId) {
         return replacementRecordQueryRepository.findByGameId(gameId)
                 .stream()

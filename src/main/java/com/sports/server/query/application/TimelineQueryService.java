@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 
 @Service
@@ -19,22 +19,24 @@ import static java.util.stream.Collectors.groupingBy;
 @RequiredArgsConstructor
 public class TimelineQueryService {
 
-    private final ReplacementRecordQueryService replacementRecordQueryService;
-    private final ScoreRecordQueryService scoreRecordQueryService;
+    private final List<RecordQueryService> recordQueryServices;
 
     public List<TimelineResponse> getTimeline(final Long gameId) {
-        List<RecordResponse> records = new ArrayList<>();
-        records.addAll(replacementRecordQueryService.findByGameId(gameId));
-        records.addAll(scoreRecordQueryService.findByGameId(gameId));
-
-        Map<Quarter, List<RecordResponse>> groupedByQuarter = records.stream()
-                .sorted(Comparator.comparingInt(RecordResponse::recordedAt).reversed())
-                .collect(groupingBy(RecordResponse::quarter));
-        return groupedByQuarter.keySet()
+        Map<Quarter, List<RecordResponse>> records = getRecordsGroupByQuarter(gameId);
+        return records.keySet()
                 .stream()
-                .sorted(Comparator.comparingLong(Quarter::getId).reversed())
-                .map(quarter -> new TimelineResponse(quarter.getName(), groupedByQuarter.get(quarter)))
-                .toList();
+                .sorted(comparingLong(Quarter::getId).reversed())
+                .map(quarter -> new TimelineResponse(
+                        quarter.getName(),
+                        records.get(quarter)
+                )).toList();
 
+    }
+
+    private Map<Quarter, List<RecordResponse>> getRecordsGroupByQuarter(Long gameId) {
+        return recordQueryServices.stream()
+                .flatMap(recordQueryService -> recordQueryService.findByGameId(gameId).stream())
+                .sorted(comparingInt(RecordResponse::recordedAt).reversed())
+                .collect(groupingBy(RecordResponse::quarter));
     }
 }
