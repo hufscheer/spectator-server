@@ -19,11 +19,11 @@ public class ScoreHistory {
     public static ScoreHistory of(List<ScoreRecord> scoreRecords, List<GameTeam> gameTeams) {
         Map<ScoreRecord, ScoreSnapshot> snapshots = new HashMap<>();
         Map<GameTeam, Integer> scores = initializeScores(gameTeams);
-        for (ScoreRecord record : scoreRecords) {
+        scoreRecords.forEach(record -> {
             applyScore(scores, record);
             ScoreSnapshot snapshot = generateSnapshot(scores, gameTeams);
             snapshots.put(record, snapshot);
-        }
+        });
         return new ScoreHistory(snapshots);
     }
 
