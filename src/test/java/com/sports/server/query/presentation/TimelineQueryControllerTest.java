@@ -1,6 +1,18 @@
 package com.sports.server.query.presentation;
 
-import static org.mockito.BDDMockito.given;
+import com.sports.server.query.dto.response.RecordResponse;
+import com.sports.server.query.dto.response.ReplacementRecordResponse;
+import com.sports.server.query.dto.response.ScoreRecordResponse;
+import com.sports.server.query.dto.response.TimelineResponse;
+import com.sports.server.support.DocumentationTest;
+import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.List;
+
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -8,39 +20,57 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.query.dto.response.TimelineResponse;
-import com.sports.server.query.dto.response.TimelineResponse.RecordResponse;
-import com.sports.server.support.DocumentationTest;
-import java.util.List;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.ResultActions;
-
 public class TimelineQueryControllerTest extends DocumentationTest {
 
-    @Test
-    @Disabled
-    void 타임라인을_조회한다() throws Exception {
+    private static final String QUARTER2 = "2쿼터";
 
+    private static final String TEAM_A = "팀A";
+    public static final String TEAM_A_IMAGE_URL = "http://example.com/logo_a.png";
+    private static final String TEAM_B = "팀B";
+    public static final String TEAM_B_IMAGE_URL = "http://example.com/logo_b.png";
+
+    private static final String SCORE_TYPE = "SCORE";
+    private static final String REPLACEMENT_TYPE = "REPLACEMENT";
+
+
+    @Test
+    void 타임라인을_조회한다() throws Exception {
         // given
         Long gameId = 1L;
-
-        List<TimelineResponse> responses = List.of(
-                new TimelineResponse("쿼터1", List.of(
-                        new RecordResponse(25),
-                        new RecordResponse(30)
-                )),
-                new TimelineResponse("쿼터2", List.of(
-                        new RecordResponse(25),
-                        new RecordResponse(30)
-                ))
-
-        );
-
-        given(timelineQueryService.getTimeline(gameId))
-                .willReturn(responses);
+        BDDMockito.given(timelineQueryService.getTimeline(gameId))
+                .willReturn(List.of(
+                        new TimelineResponse(
+                                QUARTER2, List.of(
+                                new RecordResponse(
+                                        null, SCORE_TYPE,
+                                        13,
+                                        "선수10",
+                                        TEAM_B,
+                                        TEAM_B_IMAGE_URL,
+                                        new ScoreRecordResponse(3, List.of(
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_B, TEAM_B_IMAGE_URL, 3)
+                                        )),
+                                        new ReplacementRecordResponse("선수3")
+                                ),
+                                new RecordResponse(
+                                        null, REPLACEMENT_TYPE,
+                                        10,
+                                        "선수2",
+                                        TEAM_A,
+                                        TEAM_A_IMAGE_URL,
+                                        new ScoreRecordResponse(2, List.of(
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                new ScoreRecordResponse.History(
+                                                        TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                        )),
+                                        new ReplacementRecordResponse("선수3")
+                                )
+                        ))
+                ));
 
         // when
         ResultActions result = mockMvc.perform(get("/games/{gameId}/timeline", gameId)
@@ -55,11 +85,20 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("쿼터의 이름"),
-                                fieldWithPath("[].records[].scoredAt").type(JsonFieldType.NUMBER).description("득점한 시간"),
-                                fieldWithPath("[].records[].playerName").type(JsonFieldType.STRING)
-                                        .description("득점한 선수의 이름"),
-                                fieldWithPath("[].records[].teamName").type(JsonFieldType.STRING).description("팀 이름"),
-                                fieldWithPath("[].records[].score").type(JsonFieldType.NUMBER).description("득점한 점수")
+                                fieldWithPath("[].records[].type").type(JsonFieldType.STRING).description("기록의 타입"),
+                                fieldWithPath("[].records[].recordedAt").type(JsonFieldType.NUMBER).description("기록된 시간"),
+                                fieldWithPath("[].records[].playerName").type(JsonFieldType.STRING).description("기록의 대상 선수 이름"),
+                                fieldWithPath("[].records[].teamName").type(JsonFieldType.STRING).description("기록의 대상 팀 이름"),
+                                fieldWithPath("[].records[].teamImageUrl").type(JsonFieldType.STRING).description("기록의 대상 팀 이미지"),
+                                fieldWithPath("[].records[].score.point").type(JsonFieldType.NUMBER).description("SCORE 타입일 때 득점한 점수"),
+                                fieldWithPath("[].records[].score.histories[].teamName").type(JsonFieldType.STRING)
+                                        .description("SCORE 타입일 때 점수 히스토리에 표시할 팀 이름"),
+                                fieldWithPath("[].records[].score.histories[].teamImageUrl").type(JsonFieldType.STRING)
+                                        .description("SCORE 타입일 때 점수 히스토리에 표시할 팀 이미지"),
+                                fieldWithPath("[].records[].score.histories[].score").type(JsonFieldType.NUMBER)
+                                        .description("SCORE 타입일 때 점수 히스토리에 표시할 점수"),
+                                fieldWithPath("[].records[].replacement.replacedPlayerName").type(JsonFieldType.STRING)
+                                        .description("REPLACEMENT 타입일 때 교체되어 IN 되는 선수")
                         )
                 ));
 
