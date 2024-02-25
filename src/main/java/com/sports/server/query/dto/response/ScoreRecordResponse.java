@@ -4,10 +4,10 @@ import java.util.List;
 
 public record ScoreRecordResponse(
         Integer point,
-        List<History> histories
+        List<Snapshot> snapshot
 ) {
 
-    public record History(
+    public record Snapshot(
             String teamName,
             String teamImageUrl,
             Integer score

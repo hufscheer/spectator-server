@@ -60,9 +60,9 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
                                         new ScoreRecordResponse(3, List.of(
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
                                         )),
                                         null
@@ -95,9 +95,9 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
                                         new ScoreRecordResponse(2, List.of(
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
                                         )),
                                         null

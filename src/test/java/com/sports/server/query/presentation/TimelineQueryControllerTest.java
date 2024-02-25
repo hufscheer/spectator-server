@@ -48,9 +48,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
                                         new ScoreRecordResponse(3, List.of(
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
                                         )),
                                         new ReplacementRecordResponse("선수3")
@@ -62,9 +62,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
                                         new ScoreRecordResponse(2, List.of(
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
-                                                new ScoreRecordResponse.History(
+                                                new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
                                         )),
                                         new ReplacementRecordResponse("선수3")
@@ -91,12 +91,12 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].teamName").type(JsonFieldType.STRING).description("기록의 대상 팀 이름"),
                                 fieldWithPath("[].records[].teamImageUrl").type(JsonFieldType.STRING).description("기록의 대상 팀 이미지"),
                                 fieldWithPath("[].records[].score.point").type(JsonFieldType.NUMBER).description("SCORE 타입일 때 득점한 점수"),
-                                fieldWithPath("[].records[].score.histories[].teamName").type(JsonFieldType.STRING)
-                                        .description("SCORE 타입일 때 점수 히스토리에 표시할 팀 이름"),
-                                fieldWithPath("[].records[].score.histories[].teamImageUrl").type(JsonFieldType.STRING)
-                                        .description("SCORE 타입일 때 점수 히스토리에 표시할 팀 이미지"),
-                                fieldWithPath("[].records[].score.histories[].score").type(JsonFieldType.NUMBER)
-                                        .description("SCORE 타입일 때 점수 히스토리에 표시할 점수"),
+                                fieldWithPath("[].records[].score.snapshot[].teamName").type(JsonFieldType.STRING)
+                                        .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이름"),
+                                fieldWithPath("[].records[].score.snapshot[].teamImageUrl").type(JsonFieldType.STRING)
+                                        .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이미지"),
+                                fieldWithPath("[].records[].score.snapshot[].score").type(JsonFieldType.NUMBER)
+                                        .description("SCORE 타입일 때 점수 스냅샷에 표시할 점수"),
                                 fieldWithPath("[].records[].replacement.replacedPlayerName").type(JsonFieldType.STRING)
                                         .description("REPLACEMENT 타입일 때 교체되어 IN 되는 선수")
                         )
