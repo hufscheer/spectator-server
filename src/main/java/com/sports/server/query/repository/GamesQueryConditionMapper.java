@@ -1,17 +1,16 @@
 package com.sports.server.query.repository;
 
+import static com.sports.server.command.game.domain.QGame.game;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.request.GamesQueryRequestDto;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-
-import static com.sports.server.command.game.domain.QGame.game;
 
 @Component
 @RequiredArgsConstructor
@@ -38,13 +37,10 @@ public class GamesQueryConditionMapper {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state))
-                .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()));
-        if (state == GameState.FINISHED) {
-            return booleanBuilder
-                    .and(() -> game.startTime.eq(cursorStartTime).and(game.id.lt(cursor))
-                            .or(game.startTime.lt(cursorStartTime)))
-                    .build();
-        }
+                .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()))
+                .and(() -> game.id.in(
+                        gameTeamDynamicRepository.findAllGameTeamIdsByLeagueTeam(
+                                gamesQueryRequestDto.getLeagueTeamIds())));
         return booleanBuilder
                 .and(() -> game.startTime.eq(cursorStartTime).and(game.id.gt(cursor))
                         .or(game.startTime.gt(cursorStartTime)))
