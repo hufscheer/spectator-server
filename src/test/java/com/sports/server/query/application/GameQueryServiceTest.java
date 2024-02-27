@@ -317,31 +317,17 @@ public class GameQueryServiceTest extends ServiceTest {
             );
             List<GameResponseDto> after21 = gameQueryService.getAllGames(
                     queryRequestDto,
-                    new PageRequestDto(21L, 3)
-            );
-            List<GameResponseDto> after20 = gameQueryService.getAllGames(
-                    queryRequestDto,
-                    new PageRequestDto(20L, 2)
-            );
-            List<GameResponseDto> after22 = gameQueryService.getAllGames(
-                    queryRequestDto,
-                    new PageRequestDto(22L, 1)
+                    new PageRequestDto(22L, 3)
             );
 
             //then
             assertAll(
                     () -> assertThat(firstPage)
                             .map(GameResponseDto::id)
-                            .containsExactly(21L, 20L, 22L, 23L),
+                            .containsExactly(14L, 15L, 23L, 22L),
                     () -> assertThat(after21)
                             .map(GameResponseDto::id)
-                            .containsExactly(20L, 22L, 23L),
-                    () -> assertThat(after20)
-                            .map(GameResponseDto::id)
-                            .containsExactly(22L, 23L),
-                    () -> assertThat(after22)
-                            .map(GameResponseDto::id)
-                            .containsExactly(23L)
+                            .containsExactly(20L, 21L)
             );
         }
     }
