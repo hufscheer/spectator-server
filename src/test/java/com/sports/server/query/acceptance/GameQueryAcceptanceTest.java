@@ -68,7 +68,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
-                .queryParam("status", "SCHEDULED")
+                .queryParam("state", "SCHEDULED")
                 .queryParam("league_id", 1L)
                 .log().all()
                 .when()
@@ -122,7 +122,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
         // when
         int lastPkOfFixtureFromFirstLeague = 13;
         ExtractableResponse<Response> response = RestAssured.given()
-                .queryParam("status", "SCHEDULED")
+                .queryParam("state", "SCHEDULED")
                 .queryParam("league_id", 1L)
                 .queryParam("size", lastPkOfFixtureFromFirstLeague)
                 .queryParam("sport_id", 1L)
