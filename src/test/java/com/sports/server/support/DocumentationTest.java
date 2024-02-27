@@ -9,6 +9,7 @@ import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
 import com.sports.server.query.application.*;
+import com.sports.server.query.application.timeline.TimelineQueryService;
 import com.sports.server.query.presentation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
