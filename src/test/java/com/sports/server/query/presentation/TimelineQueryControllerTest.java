@@ -90,14 +90,14 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].playerName").type(JsonFieldType.STRING).description("기록의 대상 선수 이름"),
                                 fieldWithPath("[].records[].teamName").type(JsonFieldType.STRING).description("기록의 대상 팀 이름"),
                                 fieldWithPath("[].records[].teamImageUrl").type(JsonFieldType.STRING).description("기록의 대상 팀 이미지"),
-                                fieldWithPath("[].records[].score.point").type(JsonFieldType.NUMBER).description("SCORE 타입일 때 득점한 점수"),
-                                fieldWithPath("[].records[].score.snapshot[].teamName").type(JsonFieldType.STRING)
+                                fieldWithPath("[].records[].scoreRecord.score").type(JsonFieldType.NUMBER).description("SCORE 타입일 때 득점한 점수"),
+                                fieldWithPath("[].records[].scoreRecord.snapshot[].teamName").type(JsonFieldType.STRING)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이름"),
-                                fieldWithPath("[].records[].score.snapshot[].teamImageUrl").type(JsonFieldType.STRING)
+                                fieldWithPath("[].records[].scoreRecord.snapshot[].teamImageUrl").type(JsonFieldType.STRING)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이미지"),
-                                fieldWithPath("[].records[].score.snapshot[].score").type(JsonFieldType.NUMBER)
+                                fieldWithPath("[].records[].scoreRecord.snapshot[].score").type(JsonFieldType.NUMBER)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 점수"),
-                                fieldWithPath("[].records[].replacement.replacedPlayerName").type(JsonFieldType.STRING)
+                                fieldWithPath("[].records[].replacementRecord.replacedPlayerName").type(JsonFieldType.STRING)
                                         .description("REPLACEMENT 타입일 때 교체되어 IN 되는 선수")
                         )
                 ));

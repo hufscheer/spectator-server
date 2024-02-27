@@ -1795,7 +1795,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1116
+Content-Length: 1140
 
 [ {
   "gameQuarter" : "2쿼터",
@@ -1805,8 +1805,8 @@ Content-Length: 1116
     "playerName" : "선수10",
     "teamName" : "팀B",
     "teamImageUrl" : "http://example.com/logo_b.png",
-    "score" : {
-      "point" : 3,
+    "scoreRecord" : {
+      "score" : 3,
       "snapshot" : [ {
         "teamName" : "팀A",
         "teamImageUrl" : "http://example.com/logo_a.png",
@@ -1817,7 +1817,7 @@ Content-Length: 1116
         "score" : 3
       } ]
     },
-    "replacement" : {
+    "replacementRecord" : {
       "replacedPlayerName" : "선수3"
     }
   }, {
@@ -1826,8 +1826,8 @@ Content-Length: 1116
     "playerName" : "선수2",
     "teamName" : "팀A",
     "teamImageUrl" : "http://example.com/logo_a.png",
-    "score" : {
-      "point" : 2,
+    "scoreRecord" : {
+      "score" : 2,
       "snapshot" : [ {
         "teamName" : "팀A",
         "teamImageUrl" : "http://example.com/logo_a.png",
@@ -1838,7 +1838,7 @@ Content-Length: 1116
         "score" : 0
       } ]
     },
-    "replacement" : {
+    "replacementRecord" : {
       "replacedPlayerName" : "선수3"
     }
   } ]
@@ -1893,27 +1893,27 @@ Content-Length: 1116
 <td class="tableblock halign-left valign-top"><p class="tableblock">기록의 대상 팀 이미지</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].score.point</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoreRecord.score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입일 때 득점한 점수</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].score.snapshot[].teamName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoreRecord.snapshot[].teamName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입일 때 점수 스냅샷에 표시할 팀 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].score.snapshot[].teamImageUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoreRecord.snapshot[].teamImageUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입일 때 점수 스냅샷에 표시할 팀 이미지</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].score.snapshot[].score</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoreRecord.snapshot[].score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입일 때 점수 스냅샷에 표시할 점수</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].replacement.replacedPlayerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].replacementRecord.replacedPlayerName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">REPLACEMENT 타입일 때 교체되어 IN 되는 선수</p></td>
 </tr>

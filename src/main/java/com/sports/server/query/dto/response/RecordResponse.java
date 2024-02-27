@@ -14,8 +14,8 @@ public record RecordResponse(
         String playerName,
         String teamName,
         String teamImageUrl,
-        ScoreRecordResponse score,
-        ReplacementRecordResponse replacement
+        ScoreRecordResponse scoreRecord,
+        ReplacementRecordResponse replacementRecord
 ) {
 
     public static RecordResponse from(ScoreRecord scoreRecord, ScoreRecordResponse scoreRecordResponse) {
