@@ -12,9 +12,9 @@ public class GamesQueryRequestDto {
     private String stateValue;
     private List<Long> sportIds;
 
-    public GamesQueryRequestDto(Long league_id, String status, List<Long> sport_id) {
+    public GamesQueryRequestDto(Long league_id, String state, List<Long> sport_id) {
         this.leagueId = league_id;
-        this.stateValue = status;
+        this.stateValue = state;
         this.sportIds = sport_id;
     }
 
