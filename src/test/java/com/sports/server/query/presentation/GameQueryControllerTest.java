@@ -119,7 +119,7 @@ class GameQueryControllerTest extends DocumentationTest {
         // when
         ResultActions result = mockMvc.perform(get("/games")
                 .queryParam("league_id", "1")
-                .queryParam("status", "PLAYING")
+                .queryParam("state", "PLAYING")
                 .queryParam("sport_id", "1")
                 .queryParam("sport_id", "2")
                 .queryParam("cursor", String.valueOf(12))
@@ -132,7 +132,7 @@ class GameQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("league_id").description("대회의 ID"),
-                                parameterWithName("status").description("게임의 상태"),
+                                parameterWithName("state").description("게임의 상태"),
                                 parameterWithName("sport_id").description("게임의 종목"),
                                 parameterWithName("cursor").description("페이징 커서"),
                                 parameterWithName("size").description("페이징 사이즈")
