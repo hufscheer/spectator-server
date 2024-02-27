@@ -20,6 +20,7 @@ public class GamesQueryConditionMapper {
     private static final OrderSpecifier<?>[] NOT_FINISHED_ORDER = {game.startTime.asc(), game.id.asc()};
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final GameTeamDynamicRepository gameTeamDynamicRepository;
 
     public OrderSpecifier<?>[] mapOrderCondition(GamesQueryRequestDto request) {
         GameState state = GameState.from(request.getStateValue());
@@ -37,7 +38,9 @@ public class GamesQueryConditionMapper {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state))
-                .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()));
+                .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()))
+                .and(() -> game.id.in(
+                        gameTeamDynamicRepository.findAllByLeagueTeamIds(gamesQueryRequestDto.getLeagueTeamIds())));
 
         return booleanBuilder
                 .and(() -> game.startTime.eq(cursorStartTime).and(game.id.gt(cursor))
