@@ -38,7 +38,8 @@ public class GamesQueryConditionMapper {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state))
-                .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()));
+                .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()))
+                .and(() -> game.round.in(gamesQueryRequestDto.getRound()));
 
         if (gamesQueryRequestDto.getLeagueTeamIds() != null) {
             booleanBuilder.and(
