@@ -39,14 +39,11 @@ public class GamesQueryConditionMapper {
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state))
                 .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()))
-                .and(() -> game.round.in(gamesQueryRequestDto.getRound()));
-
-        if (gamesQueryRequestDto.getLeagueTeamIds() != null) {
-            booleanBuilder.and(
-                    () -> game.id.in(
-                            gameTeamDynamicRepository.findAllByLeagueTeamIds(gamesQueryRequestDto.getLeagueTeamIds())));
-        }
-
+                .and(() -> game.round.in(gamesQueryRequestDto.getRound()))
+                .and(
+                        () -> game.id.in(
+                                gameTeamDynamicRepository.findAllByLeagueTeamIds(
+                                        gamesQueryRequestDto.getLeagueTeamIds())));
         return booleanBuilder
                 .and(() -> game.startTime.eq(cursorStartTime).and(game.id.gt(cursor))
                         .or(game.startTime.gt(cursorStartTime)))
