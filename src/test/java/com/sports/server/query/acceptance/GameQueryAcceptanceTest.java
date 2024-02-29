@@ -70,6 +70,9 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .queryParam("state", "SCHEDULED")
                 .queryParam("league_id", 1L)
+                .queryParam("round", 4)
+                .queryParam("league_team_id", 1L)
+                .queryParam("league_team_id", 2L)
                 .log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -80,7 +83,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
         //then
         List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
         assertAll(
-                () -> assertThat(games).hasSize(defaultSizeOfData),
+                () -> assertThat(games).hasSize(9),
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(1L))
                         .containsExactly(
