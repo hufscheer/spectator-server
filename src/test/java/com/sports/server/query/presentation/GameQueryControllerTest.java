@@ -122,6 +122,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 .queryParam("state", "PLAYING")
                 .queryParam("sport_id", "1")
                 .queryParam("sport_id", "2")
+                .queryParam("round", "4")
+                .queryParam("league_team_id", "1")
                 .queryParam("cursor", String.valueOf(12))
                 .queryParam("size", String.valueOf(10))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -135,7 +137,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                 parameterWithName("state").description("게임의 상태"),
                                 parameterWithName("sport_id").description("게임의 종목"),
                                 parameterWithName("cursor").description("페이징 커서"),
-                                parameterWithName("size").description("페이징 사이즈")
+                                parameterWithName("size").description("페이징 사이즈"),
+                                parameterWithName("league_team_id").description("리그팀의 ID"),
+                                parameterWithName("round").description("라운드")
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게임의 ID"),
