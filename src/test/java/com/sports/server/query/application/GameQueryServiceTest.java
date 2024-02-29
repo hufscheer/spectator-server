@@ -368,4 +368,30 @@ public class GameQueryServiceTest extends ServiceTest {
                         .containsExactly(6L, 7L, 5L, 8L)
         );
     }
+
+    @Test
+    void round로_게임을_조회한다() {
+        // given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, null, 8);
+
+        //when
+        List<GameResponseDto> firstPage = gameQueryService.getAllGames(
+                queryRequestDto,
+                new PageRequestDto(null, 4)
+        );
+        List<GameResponseDto> secondPage = gameQueryService.getAllGames(
+                queryRequestDto,
+                new PageRequestDto(19L, null)
+        );
+
+        //then
+        assertAll(
+                () -> assertThat(firstPage)
+                        .map(GameResponseDto::id)
+                        .containsExactly(10L, 11L, 12L, 13L),
+                () -> assertThat(secondPage)
+                        .map(GameResponseDto::id)
+                        .containsExactly(18L, 16L, 17L)
+        );
+    }
 }
