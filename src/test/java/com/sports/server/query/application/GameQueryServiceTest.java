@@ -31,6 +31,7 @@ public class GameQueryServiceTest extends ServiceTest {
     private final List<Long> sportIds = List.of(1L, 2L);
     private final String stateValue = "SCHEDULED";
     private final List<Long> leagueTeamIds = List.of(1L, 2L);
+    private final Integer round = 4;
 
     @Test
     void 존재하지_않는_게임_상태를_조회할_때_예외가_발생한다() {
@@ -340,5 +341,31 @@ public class GameQueryServiceTest extends ServiceTest {
                             .containsExactly(20L, 21L)
             );
         }
+    }
+
+    @Test
+    void league_team_id로_게임을_조회한다() {
+        // given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, leagueTeamIds, null);
+
+        //when
+        List<GameResponseDto> firstPage = gameQueryService.getAllGames(
+                queryRequestDto,
+                new PageRequestDto(null, 4)
+        );
+        List<GameResponseDto> secondPage = gameQueryService.getAllGames(
+                queryRequestDto,
+                new PageRequestDto(4L, 4)
+        );
+
+        //then
+        assertAll(
+                () -> assertThat(firstPage)
+                        .map(GameResponseDto::id)
+                        .containsExactly(1L, 2L, 3L, 4L),
+                () -> assertThat(secondPage)
+                        .map(GameResponseDto::id)
+                        .containsExactly(6L, 7L, 5L, 8L)
+        );
     }
 }
