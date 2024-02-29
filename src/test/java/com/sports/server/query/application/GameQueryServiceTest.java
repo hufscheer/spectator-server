@@ -48,7 +48,7 @@ public class GameQueryServiceTest extends ServiceTest {
 
 
     @Test
-    void 날짜순으로_경기들이_반환된다() {
+    void 날짜순으로_게임들이_반환된다() {
 
         //given
         PageRequestDto pageRequestDto = new PageRequestDto(null, 5);
@@ -68,7 +68,7 @@ public class GameQueryServiceTest extends ServiceTest {
 
 
     @Test
-    void 시작_날짜가_같은_경우_pk순으로_경기가_반환된다() {
+    void 시작_날짜가_같은_경우_pk순으로_게임이_반환된다() {
 
         //given
         PageRequestDto pageRequestDto = new PageRequestDto(2L, 5);
@@ -88,7 +88,7 @@ public class GameQueryServiceTest extends ServiceTest {
 
 
     @Test
-    void 커서를_이용해서_조회하는_경우_경기_시작_시간이_빠른_경기가_아이디가_커서보다_큰_경기보다_먼저_반환된다() {
+    void 커서를_이용해서_조회하는_경우_게임_시작_시간이_빠른_게임이_아이디가_커서보다_큰_게임보다_먼저_반환된다() {
         //given
         int size = 5;
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L), leagueTeamIds,
@@ -141,7 +141,7 @@ public class GameQueryServiceTest extends ServiceTest {
 
 
     @Test
-    void 스포츠_아이디가_여러개인_경우_스포츠에_해당하는_전체_경기가_반환된다() {
+    void 스포츠_아이디가_여러개인_경우_스포츠에_해당하는_전체_게임이_반환된다() {
 
         //given
         PageRequestDto pageRequestDto = new PageRequestDto(1L, 12);
@@ -159,7 +159,7 @@ public class GameQueryServiceTest extends ServiceTest {
     }
 
     @Test
-    void 하나의_경기에서_팀이_아이디_순으로_반환된다() {
+    void 하나의_게임에서_팀이_아이디_순으로_반환된다() {
 
         //given
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null, leagueTeamIds, null);
@@ -181,7 +181,7 @@ public class GameQueryServiceTest extends ServiceTest {
     }
 
     @Test
-    void 경기에_참여한_팀들의_순서가_알맞게_반환된다() {
+    void 게임에_참여한_팀들의_순서가_알맞게_반환된다() {
 
         //given
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", null, leagueTeamIds, null);
@@ -205,7 +205,7 @@ public class GameQueryServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("경기들을 페이징을 이용해서 조회할 때")
+    @DisplayName("게임들을 페이징을 이용해서 조회할 때")
     class PagingTest {
 
 
