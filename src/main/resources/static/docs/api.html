@@ -923,7 +923,7 @@ Content-Length: 27
 <h4 id="_게임_목록_조회_http_request"><a class="link" href="#_게임_목록_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games?league_id=1&amp;status=PLAYING&amp;sport_id=1&amp;sport_id=2&amp;cursor=12&amp;size=10 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games?league_id=1&amp;state=PLAYING&amp;sport_id=1&amp;sport_id=2&amp;round=4&amp;league_team_id=1&amp;cursor=12&amp;size=10 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -948,7 +948,7 @@ Host: www.api.hufstreaming.site</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">대회의 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>status</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>state</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임의 상태</p></td>
 </tr>
 <tr>
@@ -962,6 +962,14 @@ Host: www.api.hufstreaming.site</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">페이징 사이즈</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>league_team_id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그팀의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">라운드</p></td>
 </tr>
 </tbody>
 </table>
@@ -1953,7 +1961,7 @@ Content-Length: 1140
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-02-26 00:13:51 +0900
+Last updated 2024-02-28 21:38:25 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

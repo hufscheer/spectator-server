@@ -1,17 +1,24 @@
 package com.sports.server.command.game.domain;
 
+import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
-import com.sports.server.command.league.domain.League;
 import com.sports.server.common.domain.BaseEntity;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -52,4 +59,7 @@ public class Game extends BaseEntity<Game> {
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private GameState state;
+
+    @Column(name = "round", nullable = false)
+    private Integer round;
 }
