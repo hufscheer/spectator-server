@@ -7,19 +7,17 @@ import java.util.List;
 public record LineupPlayerResponse(
         Long gameTeamId,
         String teamName,
-        List<PlayerResponse> gameTeamPlayers,
-        int order
+        List<PlayerResponse> gameTeamPlayers
 
 ) {
 
-    public LineupPlayerResponse(GameTeam gameTeam, List<LineupPlayer> lineupPlayers, int order) {
+    public LineupPlayerResponse(GameTeam gameTeam, List<LineupPlayer> lineupPlayers) {
         this(
                 gameTeam.getId(),
                 gameTeam.getLeagueTeam().getName(),
                 lineupPlayers.stream()
                         .map(PlayerResponse::new)
-                        .toList(),
-                order
+                        .toList()
         );
     }
 
