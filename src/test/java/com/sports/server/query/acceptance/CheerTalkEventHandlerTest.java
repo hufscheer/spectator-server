@@ -1,5 +1,8 @@
 package com.sports.server.query.acceptance;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -7,6 +10,8 @@ import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.AcceptanceTest;
+import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +23,6 @@ import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
-
-import java.lang.reflect.Type;
-import java.util.concurrent.CompletableFuture;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(scripts = "/cheer-talk-fixture.sql")
 class CheerTalkEventHandlerTest extends AcceptanceTest {
@@ -60,28 +59,6 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         //then
         CheerTalkResponse actual = completableFuture.get(10, SECONDS);
         assertThat(actual.content()).isEqualTo("응원톡입니다.");
-    }
-
-    @Test
-    void 응원톡의_응답_형태에_알맞은_order를_포함하고_있는지_확인한다() throws Exception {
-        //given
-        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
-        ObjectMapper objectMapper = messageConverter.getObjectMapper();
-        objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
-        stompClient.setMessageConverter(messageConverter);
-        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
-                })
-                .get(1, SECONDS);
-
-        stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
-
-        //when
-        cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 2L));
-
-        //then
-        CheerTalkResponse actual = completableFuture.get(10, SECONDS);
-        assertThat(actual.order()).isEqualTo(2);
     }
 
     private class CommentStompFrameHandler implements StompFrameHandler {

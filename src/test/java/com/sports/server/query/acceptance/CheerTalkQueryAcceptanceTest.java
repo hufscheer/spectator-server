@@ -1,21 +1,20 @@
 package com.sports.server.query.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/cheer-talk-fixture.sql")
 class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
@@ -47,7 +46,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     "응원톡5",
                                     1L,
                                     LocalDateTime.of(2023, 1, 2, 14, 55, 0),
-                                    false, 1
+                                    false
                             )),
                     () -> assertThat(actual)
                             .map(CheerTalkResponse::cheerTalkId)
