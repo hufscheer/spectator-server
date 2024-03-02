@@ -969,7 +969,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 813
+Content-Length: 745
 
 [ {
   "id" : 1,
@@ -980,14 +980,12 @@ Content-Length: 813
     "gameTeamId" : 1,
     "gameTeamName" : "A팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "order" : 1
+    "score" : 2
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo.com",
-    "score" : 1,
-    "order" : 2
+    "score" : 1
   } ],
   "sportsName" : "축구"
 }, {
@@ -999,14 +997,12 @@ Content-Length: 813
     "gameTeamId" : 3,
     "gameTeamName" : "C팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "order" : 1
+    "score" : 2
   }, {
     "gameTeamId" : 4,
     "gameTeamName" : "D팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "order" : 2
+    "score" : 2
   } ],
   "sportsName" : "농구"
 } ]</code></pre>
@@ -1073,11 +1069,6 @@ Content-Length: 813
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 현재 점수</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].order</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 순서</p></td>
 </tr>
 </tbody>
 </table>

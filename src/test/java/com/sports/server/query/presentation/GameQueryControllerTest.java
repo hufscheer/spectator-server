@@ -100,12 +100,12 @@ class GameQueryControllerTest extends DocumentationTest {
         // given
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         List<GameResponseDto.TeamResponse> gameTeams1 = List.of(
-                new GameResponseDto.TeamResponse(1L, "A팀", "logo.com", 2, 1),
-                new GameResponseDto.TeamResponse(2L, "B팀", "logo.com", 1, 2)
+                new GameResponseDto.TeamResponse(1L, "A팀", "logo.com", 2),
+                new GameResponseDto.TeamResponse(2L, "B팀", "logo.com", 1)
         );
         List<GameResponseDto.TeamResponse> gameTeams2 = List.of(
-                new GameResponseDto.TeamResponse(3L, "C팀", "logo.com", 2, 1),
-                new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2, 2)
+                new GameResponseDto.TeamResponse(3L, "C팀", "logo.com", 2),
+                new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2)
         );
         List<GameResponseDto> responses = List.of(
                 new GameResponseDto(1L, startTime, "전반전", "4강", gameTeams1, "축구"),
@@ -153,8 +153,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
                                         .description("게임팀의 이미지 URL"),
                                 fieldWithPath("[].gameTeams[].score").type(JsonFieldType.NUMBER)
-                                        .description("게임팀의 현재 점수"),
-                                fieldWithPath("[].gameTeams[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
+                                        .description("게임팀의 현재 점수")
                         )
                 ));
     }
