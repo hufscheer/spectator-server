@@ -207,8 +207,8 @@ class GameQueryControllerTest extends DocumentationTest {
 
         given(lineupPlayerQueryService.getLineup(gameId))
                 .willReturn(List.of(
-                        new LineupPlayerResponse(1L, "팀A", playersA, 1),
-                        new LineupPlayerResponse(2L, "팀B", playersB, 2)
+                        new LineupPlayerResponse(1L, "팀A", playersA),
+                        new LineupPlayerResponse(2L, "팀B", playersB)
                 ));
 
         // when
@@ -225,7 +225,6 @@ class GameQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
-                                fieldWithPath("[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서"),
                                 fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING)
                                         .description("선수 이름"),
                                 fieldWithPath("[].gameTeamPlayers[].description").type(JsonFieldType.STRING)
