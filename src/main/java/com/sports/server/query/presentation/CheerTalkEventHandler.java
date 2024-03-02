@@ -2,11 +2,11 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
-import com.sports.server.query.dto.response.CheerTalkResponse;
-import com.sports.server.common.application.EntityUtils;
-import com.sports.server.query.application.GameTeamServiceUtils;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
+import com.sports.server.common.application.EntityUtils;
+import com.sports.server.query.application.GameTeamServiceUtils;
+import com.sports.server.query.dto.response.CheerTalkResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -33,8 +33,7 @@ public class CheerTalkEventHandler {
 
         messagingTemplate.convertAndSend(
                 DESTINATION + game.getId(),
-                new CheerTalkResponse(cheerTalk,
-                        gameTeamServiceUtils.calculateOrderOfGameTeam(game, cheerTalk.getGameTeamId()))
+                new CheerTalkResponse(cheerTalk)
         );
 
     }

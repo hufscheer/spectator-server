@@ -8,17 +8,15 @@ public record CheerTalkResponse(
         String content,
         Long gameTeamId,
         LocalDateTime createdAt,
-        Boolean isBlocked,
-        int order
+        Boolean isBlocked
 ) {
-    public CheerTalkResponse(CheerTalk cheerTalk, final int order) {
+    public CheerTalkResponse(CheerTalk cheerTalk) {
         this(
                 cheerTalk.getId(),
                 checkCheerTalkIsBlocked(cheerTalk),
                 cheerTalk.getGameTeamId(),
                 cheerTalk.getCreatedAt(),
-                cheerTalk.isBlocked(),
-                order
+                cheerTalk.isBlocked()
         );
     }
 
