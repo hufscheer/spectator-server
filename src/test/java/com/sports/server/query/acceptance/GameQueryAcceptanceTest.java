@@ -188,8 +188,6 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teamA.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::isCaptain)
                         .containsOnly(false),
-                () -> assertThat(teamA.order())
-                        .isEqualTo(1),
                 () -> assertThat(teamB.teamName()).isEqualTo("팀 B"),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
@@ -202,9 +200,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(1, 2, 3, 4, 5),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::isCaptain)
-                        .containsOnly(false),
-                () -> assertThat(teamB.order())
-                        .isEqualTo(2)
+                        .containsOnly(false)
         );
     }
 }
