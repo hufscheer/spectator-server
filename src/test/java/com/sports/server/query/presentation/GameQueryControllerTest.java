@@ -164,8 +164,8 @@ class GameQueryControllerTest extends DocumentationTest {
         Long gameId = 1L;
         given(gameTeamQueryService.getCheerCountOfGameTeams(gameId))
                 .willReturn(List.of(
-                        new GameTeamCheerResponseDto(1L, 100, 1),
-                        new GameTeamCheerResponseDto(2L, 150, 2)
+                        new GameTeamCheerResponseDto(1L, 100),
+                        new GameTeamCheerResponseDto(2L, 150)
                 ));
 
         // when
@@ -181,8 +181,7 @@ class GameQueryControllerTest extends DocumentationTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
-                                fieldWithPath("[].cheerCount").type(JsonFieldType.NUMBER).description("응원 횟수"),
-                                fieldWithPath("[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
+                                fieldWithPath("[].cheerCount").type(JsonFieldType.NUMBER).description("응원 횟수")
                         )
                 ));
     }
