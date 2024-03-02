@@ -623,22 +623,20 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 303
+Content-Length: 273
 
 [ {
   "cheerTalkId" : 2,
   "content" : "응원해요",
   "gameTeamId" : 1,
   "createdAt" : "2024-01-21T11:46:00",
-  "isBlocked" : false,
-  "order" : 1
+  "isBlocked" : false
 }, {
   "cheerTalkId" : 3,
   "content" : "파이팅",
   "gameTeamId" : 2,
   "createdAt" : "2024-01-21T11:46:00",
-  "isBlocked" : false,
-  "order" : 2
+  "isBlocked" : false
 } ]</code></pre>
 </div>
 </div>
@@ -683,11 +681,6 @@ Content-Length: 303
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].isBlocked</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">응원톡의 블락 여부</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].order</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 순서</p></td>
 </tr>
 </tbody>
 </table>
@@ -1961,7 +1954,7 @@ Content-Length: 1140
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-02-28 21:38:25 UTC
+Last updated 2024-03-02 13:40:19 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
