@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameTeamQueryService {
 
     private final GameTeamQueryRepository gameTeamQueryRepository;
-    private final GameTeamServiceUtils gameTeamServiceUtils;
     private final EntityUtils entityUtils;
 
     public List<GameTeamCheerResponseDto> getCheerCountOfGameTeams(final Long gameId) {
