@@ -1,15 +1,14 @@
 package com.sports.server.query.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.support.ServiceTest;
+import java.util.Comparator;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.Comparator;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(scripts = "/game-fixture.sql")
 class GameLeagueTeamQueryServiceTest extends ServiceTest {
@@ -29,11 +28,5 @@ class GameLeagueTeamQueryServiceTest extends ServiceTest {
         // then
         assertThat(cheerCountOfGameTeams).isSortedAccordingTo(
                 Comparator.comparingLong(GameTeamCheerResponseDto::gameTeamId));
-
-        int expectedOrder = 1;
-        for (GameTeamCheerResponseDto responseDto : cheerCountOfGameTeams) {
-            assertThat(responseDto.order()).isEqualTo(expectedOrder);
-            expectedOrder++;
-        }
     }
 }

@@ -33,10 +33,10 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
         LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
         List<CheerTalkResponse> response = List.of(
                 new CheerTalkResponse(
-                        2L, "응원해요", 1L, createdAt, false, 1
+                        2L, "응원해요", 1L, createdAt, false
                 ),
                 new CheerTalkResponse(
-                        3L, "파이팅", 2L, createdAt, false, 2
+                        3L, "파이팅", 2L, createdAt, false
                 )
         );
 
@@ -65,8 +65,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("응원톡에 해당하는 게임팀의 ID"),
                                 fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
-                                fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
-                                fieldWithPath("[].order").type(JsonFieldType.NUMBER).description("게임팀의 순서")
+                                fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부")
                         )
                 ));
     }

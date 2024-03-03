@@ -623,22 +623,20 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 303
+Content-Length: 273
 
 [ {
   "cheerTalkId" : 2,
   "content" : "응원해요",
   "gameTeamId" : 1,
   "createdAt" : "2024-01-21T11:46:00",
-  "isBlocked" : false,
-  "order" : 1
+  "isBlocked" : false
 }, {
   "cheerTalkId" : 3,
   "content" : "파이팅",
   "gameTeamId" : 2,
   "createdAt" : "2024-01-21T11:46:00",
-  "isBlocked" : false,
-  "order" : 2
+  "isBlocked" : false
 } ]</code></pre>
 </div>
 </div>
@@ -683,11 +681,6 @@ Content-Length: 303
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].isBlocked</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">응원톡의 블락 여부</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].order</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 순서</p></td>
 </tr>
 </tbody>
 </table>
@@ -741,7 +734,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 414
+Content-Length: 380
 
 {
   "startTime" : "2024-01-19T13:00:00",
@@ -753,14 +746,12 @@ Content-Length: 414
     "gameTeamId" : 1,
     "gameTeamName" : "A팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "order" : 1
+    "score" : 2
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo.com",
-    "score" : 1,
-    "order" : 2
+    "score" : 1
   } ]
 }</code></pre>
 </div>
@@ -831,11 +822,6 @@ Content-Length: 414
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 현재 점수</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].order</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 순서</p></td>
 </tr>
 </tbody>
 </table>
@@ -983,7 +969,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 813
+Content-Length: 745
 
 [ {
   "id" : 1,
@@ -994,14 +980,12 @@ Content-Length: 813
     "gameTeamId" : 1,
     "gameTeamName" : "A팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "order" : 1
+    "score" : 2
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo.com",
-    "score" : 1,
-    "order" : 2
+    "score" : 1
   } ],
   "sportsName" : "축구"
 }, {
@@ -1013,14 +997,12 @@ Content-Length: 813
     "gameTeamId" : 3,
     "gameTeamName" : "C팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "order" : 1
+    "score" : 2
   }, {
     "gameTeamId" : 4,
     "gameTeamName" : "D팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "order" : 2
+    "score" : 2
   } ],
   "sportsName" : "농구"
 } ]</code></pre>
@@ -1088,11 +1070,6 @@ Content-Length: 813
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 현재 점수</p></td>
 </tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].order</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 순서</p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -1140,16 +1117,14 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 124
+Content-Length: 94
 
 [ {
   "gameTeamId" : 1,
-  "cheerCount" : 100,
-  "order" : 1
+  "cheerCount" : 100
 }, {
   "gameTeamId" : 2,
-  "cheerCount" : 150,
-  "order" : 2
+  "cheerCount" : 150
 } ]</code></pre>
 </div>
 </div>
@@ -1179,11 +1154,6 @@ Content-Length: 124
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].cheerCount</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">응원 횟수</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].order</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 순서</p></td>
 </tr>
 </tbody>
 </table>
@@ -1232,7 +1202,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1260
+Content-Length: 1230
 
 [ {
   "gameTeamId" : 1,
@@ -1262,8 +1232,7 @@ Content-Length: 1260
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false
-  } ],
-  "order" : 1
+  } ]
 }, {
   "gameTeamId" : 2,
   "teamName" : "팀B",
@@ -1292,8 +1261,7 @@ Content-Length: 1260
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false
-  } ],
-  "order" : 2
+  } ]
 } ]</code></pre>
 </div>
 </div>
@@ -1323,11 +1291,6 @@ Content-Length: 1260
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].teamName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀 이름</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].order</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 순서</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].playerName</code></p></td>
@@ -1961,7 +1924,7 @@ Content-Length: 1140
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-02-28 21:38:25 UTC
+Last updated 2024-03-02 13:40:19 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

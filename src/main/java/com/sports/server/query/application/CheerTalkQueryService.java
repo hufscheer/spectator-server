@@ -23,13 +23,8 @@ public class CheerTalkQueryService {
                 gameId, pageRequest.cursor(), pageRequest.size()
         );
 
-        List<Long> gameTeamIds = getOrderedGameTeamIds(cheerTalks);
-
         List<CheerTalkResponse> responses = cheerTalks.stream()
-                .map(cheerTalk -> new CheerTalkResponse(
-                        cheerTalk,
-                        getOrderOfGameTeamId(cheerTalk.getGameTeamId(), gameTeamIds)
-                ))
+                .map(CheerTalkResponse::new)
                 .collect(Collectors.toList());
 
         Collections.reverse(responses);
@@ -43,9 +38,5 @@ public class CheerTalkQueryService {
                 .stream()
                 .sorted()
                 .toList();
-    }
-
-    private int getOrderOfGameTeamId(final Long gameTeamId, final List<Long> gameTeamIds) {
-        return gameTeamIds.indexOf(gameTeamId) + 1;
     }
 }

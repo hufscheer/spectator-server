@@ -198,10 +198,6 @@ public class GameQueryServiceTest extends ServiceTest {
 
             assertThat(teamResponses).isSortedAccordingTo(
                     Comparator.comparingLong(TeamResponse::gameTeamId));
-
-            for (int i = 0; i < teamResponses.size(); i++) {
-                assertEquals(i + 1, teamResponses.get(i).order());
-            }
         }
     }
 
@@ -393,5 +389,28 @@ public class GameQueryServiceTest extends ServiceTest {
                         .map(GameResponseDto::id)
                         .containsExactly(18L, 16L, 17L)
         );
+    }
+
+    @Test
+    void 게임팀이_순서에_맞게_반환된다() {
+
+        // given
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, null, 8);
+
+        //when
+        List<GameResponseDto> responseDtos = gameQueryService.getAllGames(
+                queryRequestDto,
+                new PageRequestDto(null, 4)
+        );
+
+        // then
+        List<Long> gameTeamIds = responseDtos.get(0).gameTeams().stream().map(TeamResponse::gameTeamId).toList();
+        List<Long> sortedGameTeamIds = gameTeamIds.stream()
+                .sorted(Comparator.comparingLong(Long::valueOf))
+                .collect(Collectors.toList());
+        assertEquals(
+                gameTeamIds, sortedGameTeamIds
+        );
+
     }
 }

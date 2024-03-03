@@ -52,13 +52,13 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .filteredOn(team -> team.gameTeamId().equals(1L))
                         .containsExactly(new GameDetailResponse.TeamResponse(
                                 1L, "팀 A",
-                                "http://example.com/logo_a.png", 1, 1)
+                                "http://example.com/logo_a.png", 1)
                         ),
                 () -> assertThat(teams)
                         .filteredOn(team -> team.gameTeamId().equals(2L))
                         .containsExactly(new GameDetailResponse.TeamResponse(
                                 2L, "팀 B",
-                                "http://example.com/logo_b.png", 2, 2)
+                                "http://example.com/logo_b.png", 2)
                         )
         );
     }
@@ -91,10 +91,10 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                                         1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
                                         "1st Quarter", "농구 대전",
                                         List.of(new GameResponseDto.TeamResponse(
-                                                        1L, "팀 A", "http://example.com/logo_a.png", 1, 1
+                                                        1L, "팀 A", "http://example.com/logo_a.png", 1
                                                 ),
                                                 new GameResponseDto.TeamResponse(
-                                                        2L, "팀 B", "http://example.com/logo_b.png", 2, 2)),
+                                                        2L, "팀 B", "http://example.com/logo_b.png", 2)),
                                         "농구"
                                 )
                         ),
@@ -105,9 +105,9 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                                         2L, LocalDateTime.of(2023, 11, 12, 10, 10, 0),
                                         "1st Quarter", "두번째로 빠른 경기",
                                         List.of(new GameResponseDto.TeamResponse(
-                                                        3L, "팀 B", "http://example.com/logo_b.png", 0, 1),
+                                                        3L, "팀 B", "http://example.com/logo_b.png", 0),
                                                 new GameResponseDto.TeamResponse(
-                                                        4L, "팀 C", "http://example.com/logo_c.png", 0, 2)
+                                                        4L, "팀 C", "http://example.com/logo_c.png", 0)
 
                                         ),
 
@@ -188,8 +188,6 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teamA.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::isCaptain)
                         .containsOnly(false),
-                () -> assertThat(teamA.order())
-                        .isEqualTo(1),
                 () -> assertThat(teamB.teamName()).isEqualTo("팀 B"),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
@@ -202,9 +200,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(1, 2, 3, 4, 5),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::isCaptain)
-                        .containsOnly(false),
-                () -> assertThat(teamB.order())
-                        .isEqualTo(2)
+                        .containsOnly(false)
         );
     }
 }
