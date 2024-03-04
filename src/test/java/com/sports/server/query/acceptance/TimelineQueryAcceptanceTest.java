@@ -54,12 +54,13 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                         new TimelineResponse(
                                 QUARTER2, List.of(
                                 new RecordResponse(
-                                        null, SCORE_TYPE,
+                                        null, 4L, SCORE_TYPE,
                                         13,
                                         "선수10",
+                                        2L,
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
-                                        new ScoreRecordResponse(3, List.of(
+                                        new ScoreRecordResponse(2L, 3, List.of(
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
@@ -68,33 +69,36 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         null
                                 ),
                                 new RecordResponse(
-                                        null, REPLACEMENT_TYPE,
+                                        null, 3L, REPLACEMENT_TYPE,
                                         10,
                                         "선수2",
+                                        1L,
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse("선수3")
+                                        new ReplacementRecordResponse(2L,"선수3")
                                 )
                         )),
                         new TimelineResponse(
                                 QUARTER1, List.of(
                                 new RecordResponse(
-                                        null, REPLACEMENT_TYPE,
+                                        null, 2L, REPLACEMENT_TYPE,
                                         4,
                                         "선수6",
+                                        2L,
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse("선수7")
+                                        new ReplacementRecordResponse(1L,"선수7")
                                 ),
                                 new RecordResponse(
-                                        null, SCORE_TYPE,
+                                        null, 1L, SCORE_TYPE,
                                         2,
                                         "선수2",
+                                        1L,
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
-                                        new ScoreRecordResponse(2, List.of(
+                                        new ScoreRecordResponse(1L, 2, List.of(
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
