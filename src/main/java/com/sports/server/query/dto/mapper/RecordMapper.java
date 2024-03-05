@@ -23,31 +23,37 @@ public class RecordMapper {
 
     public RecordResponse toRecordResponse(ReplacementRecord replacementRecord) {
         Record record = replacementRecord.getRecord();
-        LeagueTeam team = record.getGameTeam().getLeagueTeam();
+        GameTeam gameTeam = record.getGameTeam();
+        LeagueTeam team = gameTeam.getLeagueTeam();
         return new RecordResponse(
                 record.getRecordedQuarter(),
+                record.getId(),
                 record.getRecordType().name(),
                 record.getRecordedAt(),
                 replacementRecord.getOriginLineupPlayer().getName(),
+                gameTeam.getId(),
                 team.getName(),
                 team.getLogoImageUrl(),
                 null,
-                new ReplacementRecordResponse(replacementRecord.getReplacedLineupPlayer().getName())
+                new ReplacementRecordResponse(replacementRecord.getId(), replacementRecord.getReplacedLineupPlayer().getName())
         );
     }
 
     public RecordResponse toRecordResponse(ScoreRecord scoreRecord, ScoreSnapshot snapshot) {
         Record record = scoreRecord.getRecord();
         int score = scoreRecord.getScore();
-        LeagueTeam team = record.getGameTeam().getLeagueTeam();
+        GameTeam gameTeam = record.getGameTeam();
+        LeagueTeam team = gameTeam.getLeagueTeam();
         return new RecordResponse(
                 record.getRecordedQuarter(),
+                record.getId(),
                 record.getRecordType().name(),
                 record.getRecordedAt(),
                 scoreRecord.getLineupPlayer().getName(),
+                gameTeam.getId(),
                 team.getName(),
                 team.getLogoImageUrl(),
-                new ScoreRecordResponse(score, toSnapshotResponses(snapshot)),
+                new ScoreRecordResponse(scoreRecord.getId(), score, toSnapshotResponses(snapshot)),
                 null
         );
     }

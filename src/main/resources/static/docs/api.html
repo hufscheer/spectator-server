@@ -1766,17 +1766,20 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1140
+Content-Length: 1344
 
 [ {
   "gameQuarter" : "2쿼터",
   "records" : [ {
+    "recordId" : 1,
     "type" : "SCORE",
     "recordedAt" : 13,
     "playerName" : "선수10",
+    "gameTeamId" : 1,
     "teamName" : "팀B",
     "teamImageUrl" : "http://example.com/logo_b.png",
     "scoreRecord" : {
+      "scoreRecordId" : 1,
       "score" : 3,
       "snapshot" : [ {
         "teamName" : "팀A",
@@ -1789,15 +1792,19 @@ Content-Length: 1140
       } ]
     },
     "replacementRecord" : {
+      "replacementRecordId" : 1,
       "replacedPlayerName" : "선수3"
     }
   }, {
+    "recordId" : 1,
     "type" : "REPLACEMENT",
     "recordedAt" : 10,
     "playerName" : "선수2",
+    "gameTeamId" : 1,
     "teamName" : "팀A",
     "teamImageUrl" : "http://example.com/logo_a.png",
     "scoreRecord" : {
+      "scoreRecordId" : 1,
       "score" : 2,
       "snapshot" : [ {
         "teamName" : "팀A",
@@ -1810,6 +1817,7 @@ Content-Length: 1140
       } ]
     },
     "replacementRecord" : {
+      "replacementRecordId" : 1,
       "replacedPlayerName" : "선수3"
     }
   } ]
@@ -1839,6 +1847,11 @@ Content-Length: 1140
 <td class="tableblock halign-left valign-top"><p class="tableblock">쿼터의 이름</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].recordId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기록의 ID</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].type</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">기록의 타입</p></td>
@@ -1852,6 +1865,11 @@ Content-Length: 1140
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].playerName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">기록의 대상 선수 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].gameTeamId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기록의 대상 게임 팀 ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].teamName</code></p></td>
@@ -1869,6 +1887,11 @@ Content-Length: 1140
 <td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입일 때 득점한 점수</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoreRecord.scoreRecordId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입 기록의 ID</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoreRecord.snapshot[].teamName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입일 때 점수 스냅샷에 표시할 팀 이름</p></td>
@@ -1882,6 +1905,11 @@ Content-Length: 1140
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].scoreRecord.snapshot[].score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SCORE 타입일 때 점수 스냅샷에 표시할 점수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].replacementRecord.replacementRecordId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">REPLACEMENT 타입 기록의  ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].replacementRecord.replacedPlayerName</code></p></td>
@@ -1924,7 +1952,7 @@ Content-Length: 1140
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-03-02 13:40:19 UTC
+Last updated 2024-02-27 23:30:31 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
