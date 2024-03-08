@@ -3,7 +3,7 @@
 <configuration>
     <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
     <property name="CONSOLE_LOG_PATTERN"
-              value="%magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss}]) %green(%thread) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n : %msg%n"/>
+              value="%magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss, ${logback.timezone:-Asia/Seoul}}]) %green(%thread) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n : %msg%n"/>
     <property name="FILE_LOG_PATTERN"
               value=": %msg %n %magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss}]) %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n"/>
 
