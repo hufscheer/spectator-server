@@ -969,13 +969,14 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 745
+Content-Length: 775
 
 [ {
   "id" : 1,
   "startTime" : "2024-01-19T13:00:00",
   "gameQuarter" : "전반전",
   "gameName" : "4강",
+  "round" : 4,
   "gameTeams" : [ {
     "gameTeamId" : 1,
     "gameTeamName" : "A팀",
@@ -993,6 +994,7 @@ Content-Length: 745
   "startTime" : "2024-01-19T13:00:00",
   "gameQuarter" : "1쿼터",
   "gameName" : "결승전",
+  "round" : 2,
   "gameTeams" : [ {
     "gameTeamId" : 3,
     "gameTeamName" : "C팀",
@@ -1044,6 +1046,11 @@ Content-Length: 745
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].round</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임 라운</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].sportsName</code></p></td>
