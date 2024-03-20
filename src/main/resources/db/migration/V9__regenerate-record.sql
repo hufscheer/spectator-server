@@ -1,12 +1,16 @@
+DROP TABLE IF EXISTS score_records;
+DROP TABLE IF EXISTS replacement_records;
+DROP TABLE IF EXISTS records;
+
 CREATE TABLE records
 (
-    id                  BIGINT AUTO_INCREMENT NOT NULL,
-    game_id             BIGINT                NULL,
-    game_team_id        BIGINT                NULL,
-    game_team_player_id BIGINT                NULL,
-    score               INT                   NOT NULL,
-    scored_quarter      VARCHAR(255)          NOT NULL,
-    scored_at           datetime              NOT NULL,
+    id               BIGINT AUTO_INCREMENT NOT NULL,
+    game_id          BIGINT                NULL,
+    game_team_id     BIGINT                NULL,
+    lineup_player_id BIGINT                NULL,
+    score            INT                   NOT NULL,
+    scored_quarter   VARCHAR(255)          NOT NULL,
+    scored_at        datetime              NOT NULL,
     CONSTRAINT pk_records PRIMARY KEY (id)
 );
 
@@ -15,9 +19,6 @@ ALTER TABLE records
 
 ALTER TABLE records
     ADD CONSTRAINT FK_RECORDS_ON_GAME_TEAM FOREIGN KEY (game_team_id) REFERENCES game_teams (id);
-
-ALTER TABLE records
-    ADD CONSTRAINT FK_RECORDS_ON_GAME_TEAM_PLAYER FOREIGN KEY (game_team_player_id) REFERENCES game_team_players (id);
 
 ALTER TABLE records
     DROP COLUMN scored_quarter;
@@ -29,9 +30,6 @@ ALTER TABLE records
 
 ALTER TABLE records
     ADD CONSTRAINT FK_RECORDS_ON_SCORED_QUARTER FOREIGN KEY (scored_quarter_id) REFERENCES quarters (id);
-
-ALTER TABLE records
-    CHANGE game_team_player_id lineup_player_id BIGINT;
 
 ALTER TABLE records
     RENAME COLUMN scored_quarter_id TO recorded_quarter_id;
