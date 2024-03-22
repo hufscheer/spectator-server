@@ -3,6 +3,7 @@ package com.sports.server.query.dto.response;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public record GameDetailResponse(
 
     public GameDetailResponse(Game game, List<GameTeam> gameTeams) {
         this(
-                game.getStartTime(),
+                game.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime(),
                 game.getVideoId(),
                 game.getGameQuarter(),
                 game.getName(),
