@@ -969,7 +969,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 775
+Content-Length: 823
 
 [ {
   "id" : 1,
@@ -977,6 +977,7 @@ Content-Length: 775
   "gameQuarter" : "전반전",
   "gameName" : "4강",
   "round" : 4,
+  "videoId" : "abc123",
   "gameTeams" : [ {
     "gameTeamId" : 1,
     "gameTeamName" : "A팀",
@@ -995,6 +996,7 @@ Content-Length: 775
   "gameQuarter" : "1쿼터",
   "gameName" : "결승전",
   "round" : 2,
+  "videoId" : "abc123",
   "gameTeams" : [ {
     "gameTeamId" : 3,
     "gameTeamName" : "C팀",
@@ -1050,7 +1052,12 @@ Content-Length: 775
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].round</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임 라운</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임 라운드</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].videoId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기 영상 ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].sportsName</code></p></td>
@@ -1959,7 +1966,7 @@ Content-Length: 1344
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-02-27 23:30:31 +0900
+Last updated 2024-03-23 15:31:15 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

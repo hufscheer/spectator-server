@@ -108,8 +108,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2)
         );
         List<GameResponseDto> responses = List.of(
-                new GameResponseDto(1L, startTime, "전반전", "4강", 4, gameTeams1, "축구"),
-                new GameResponseDto(2L, startTime, "1쿼터", "결승전", 2, gameTeams2, "농구")
+                new GameResponseDto(1L, startTime, "전반전", "4강", 4, "abc123", gameTeams1, "축구"),
+                new GameResponseDto(2L, startTime, "1쿼터", "결승전", 2, "abc123", gameTeams2, "농구")
         );
 
         given(gameQueryService.getAllGames(any(), any()))
@@ -145,7 +145,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
                                 fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
-                                fieldWithPath("[].round").type(JsonFieldType.NUMBER).description("게임 라운"),
+                                fieldWithPath("[].round").type(JsonFieldType.NUMBER).description("게임 라운드"),
+                                fieldWithPath("[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
                                 fieldWithPath("[].sportsName").type(JsonFieldType.STRING).description("종목"),
                                 fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
