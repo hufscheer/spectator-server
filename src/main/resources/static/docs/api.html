@@ -734,7 +734,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 380
+Content-Length: 403
 
 {
   "startTime" : "2024-01-19T13:00:00",
@@ -752,7 +752,8 @@ Content-Length: 380
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo.com",
     "score" : 1
-  } ]
+  } ],
+  "state" : "PLAYING"
 }</code></pre>
 </div>
 </div>
@@ -822,6 +823,11 @@ Content-Length: 380
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 현재 점수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>state</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임 상태</p></td>
 </tr>
 </tbody>
 </table>
@@ -1966,7 +1972,7 @@ Content-Length: 1344
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-03-23 15:31:15 UTC
+Last updated 2024-02-27 23:30:31 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
