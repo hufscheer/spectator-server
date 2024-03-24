@@ -13,6 +13,7 @@ public record GameResponseDto(
         String gameQuarter,
         String gameName,
         Integer round,
+        String videoId,
         List<TeamResponse> gameTeams,
         String sportsName
 ) {
@@ -23,6 +24,7 @@ public record GameResponseDto(
                 game.getGameQuarter(),
                 game.getName(),
                 game.getRound(),
+                game.getVideoId(),
                 gameTeams.stream()
                         .sorted(Comparator.comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
