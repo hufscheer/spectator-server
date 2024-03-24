@@ -57,7 +57,8 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(new GameDetailResponse.TeamResponse(
                                 2L, "팀 B",
                                 "http://example.com/logo_b.png", 2)
-                        )
+                        ),
+                () -> assertThat(game.state()).isEqualTo("SCHEDULED")
         );
     }
 
