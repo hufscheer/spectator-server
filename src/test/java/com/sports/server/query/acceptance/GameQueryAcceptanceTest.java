@@ -42,7 +42,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(game.videoId()).isEqualTo("abc123"),
                 () -> assertThat(game.sportName()).isEqualTo("농구"),
                 () -> assertThat(game.startTime()).isEqualTo(
-                        LocalDateTime.of(2023, 11, 12, 10, 0, 0).plusHours(9)
+                        LocalDateTime.of(2023, 11, 12, 10, 0, 0)
                 ),
 
                 () -> assertThat(teams).hasSize(2),
@@ -86,7 +86,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .filteredOn(game -> game.id().equals(1L))
                         .containsExactly(
                                 new GameResponseDto(
-                                        1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0).plusHours(9),
+                                        1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
                                         "1st Quarter", "농구 대전", 4, "abc123",
                                         List.of(new GameResponseDto.TeamResponse(
                                                         1L, "팀 A", "http://example.com/logo_a.png", 1
@@ -100,7 +100,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .filteredOn(game -> game.id().equals(2L))
                         .containsExactly(
                                 new GameResponseDto(
-                                        2L, LocalDateTime.of(2023, 11, 12, 10, 10, 0).plusHours(9),
+                                        2L, LocalDateTime.of(2023, 11, 12, 10, 10, 0),
                                         "1st Quarter", "두번째로 빠른 경기", 4, "abc123",
                                         List.of(new GameResponseDto.TeamResponse(
                                                         3L, "팀 B", "http://example.com/logo_b.png", 0),

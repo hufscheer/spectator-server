@@ -45,7 +45,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     5L,
                                     "응원톡5",
                                     1L,
-                                    LocalDateTime.of(2023, 1, 2, 14, 55, 0).plusHours(9),
+                                    LocalDateTime.of(2023, 1, 2, 14, 55, 0),
                                     false
                             )),
                     () -> assertThat(actual)
