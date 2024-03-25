@@ -1,7 +1,8 @@
 SET foreign_key_checks = 0;
 
 -- 스포츠
-INSERT INTO sports (id, name) VALUES (1, '농구');
+INSERT INTO sports (id, name)
+VALUES (1, '농구');
 -- 농구 쿼터
 INSERT INTO quarters (id, name, sports_id)
 VALUES (1, '1쿼터', 1),
@@ -23,23 +24,24 @@ VALUES ('팀A', 'http://example.com/logo_a.png', 1, 1, 1),
 -- 농구 대전 (game_id = 1) A팀 vs B팀
 INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
 VALUES (1, 1, 1, 15), -- 팀 A의 정보
-       (1, 2, 2, 10); -- 팀 B의 정보
+       (1, 2, 2, 10);
+-- 팀 B의 정보
 
 -- 농구 대전(game_id = 1) A팀(game_team_id = 1) 선수
-INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number)
-VALUES (1, 1, '선수1', '센터', true, 1),
-       (2, 1, '선수2', '파워 포워드', false, 2),
-       (3, 1, '선수3', '슈팅 가드', false, 3),
-       (4, 1, '선수4', '포인트 가드', false, 4),
-       (5, 1, '선수5', '스몰 포워드', false, 5);
+INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number, league_team_player_id)
+VALUES (1, 1, '선수1', '센터', true, 1, 1),
+       (2, 1, '선수2', '파워 포워드', false, 2, 1),
+       (3, 1, '선수3', '슈팅 가드', false, 3, 1),
+       (4, 1, '선수4', '포인트 가드', false, 4, 1),
+       (5, 1, '선수5', '스몰 포워드', false, 5, 1);
 
 -- 농구 대전(game_id = 1) B팀(game_team_id = 2) 선수
-INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number)
-VALUES (6, 2, '선수6', '센터', true, 6),
-       (7, 2, '선수7', '파워 포워드', false, 7),
-       (8, 2, '선수8', '슈팅 가드', false, 8),
-       (9, 2, '선수9', '포인트 가드', false, 9),
-       (10, 2, '선수10', '스몰 포워드', false, 10);
+INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number, league_team_player_id)
+VALUES (6, 2, '선수6', '센터', true, 6, 1),
+       (7, 2, '선수7', '파워 포워드', false, 7, 1),
+       (8, 2, '선수8', '슈팅 가드', false, 8, 1),
+       (9, 2, '선수9', '포인트 가드', false, 9, 1),
+       (10, 2, '선수10', '스몰 포워드', false, 10, 1);
 
 -- 1쿼터 경기 기록 추가
 INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
@@ -50,7 +52,8 @@ VALUES (1, 2, 2); -- A팀 선수 2의 2득점
 INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
 VALUES (2, 1, 2, 1, 4, 'REPLACEMENT');
 INSERT INTO replacement_records(record_id, origin_lineup_player_id, replaced_lineup_player_id)
-VALUES (2, 6, 7); -- B팀 6선수 OUT 7선수 IN
+VALUES (2, 6, 7);
+-- B팀 6선수 OUT 7선수 IN
 
 -- 2쿼터 경기 기록 추가
 INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
