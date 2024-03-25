@@ -3,6 +3,7 @@ package com.sports.server.query.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
@@ -10,6 +11,8 @@ import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -119,6 +122,31 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .map(LeagueTeamResponse::leagueTeamId)
                         .containsExactly(1L, 2L, 3L)
 
+        );
+    }
+
+    @Test
+    void 리그를_하나_조회한다() {
+        // given
+        Long threeBuildingCup = 1L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/{leagueId}", threeBuildingCup)
+                .then().log().all()
+                .extract();
+
+        // then
+        LeagueDetailResponse actual = toResponse(response, LeagueDetailResponse.class);
+        assertAll(
+                () -> assertThat(actual.name()).isEqualTo("삼건물 대회"),
+                () -> assertThat(actual.startAt()).isEqualTo(LocalDateTime.of(2023, 11, 9, 0, 0, 0)),
+                () -> assertThat(actual.endAt()).isEqualTo(LocalDateTime.of(2023, 11, 20, 0, 0, 0)),
+                () -> assertThat(actual.inProgressRound()).isEqualTo(8),
+                () -> assertThat(actual.maxRound()).isEqualTo(16),
+                () -> assertThat(actual.isInProgress()).isEqualTo(false)
         );
     }
 }
