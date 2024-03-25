@@ -9,10 +9,13 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.DocumentationTest;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -121,4 +124,39 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 ));
     }
 
+    @Test
+    void 리그를_하나_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+        given(leagueQueryService.findLeagueDetail(leagueId))
+                .willReturn(new LeagueDetailResponse(
+                        "삼건물대회",
+                        LocalDateTime.of(2024, 3, 25, 0, 0, 0),
+                        LocalDateTime.of(2024, 3, 26, 0, 0, 0),
+                        16,
+                        4,
+                        true
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}", leagueId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("리그 이름"),
+                                fieldWithPath("startAt").type(JsonFieldType.STRING).description("리그 시작 시간"),
+                                fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
+                                fieldWithPath("inProgressRound").type(JsonFieldType.NUMBER).description("리그의 현재 라운드"),
+                                fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("리그 총 라운드"),
+                                fieldWithPath("isInProgress").type(JsonFieldType.BOOLEAN).description("대회가 현재 진행 중인지 여햐")
+                        )
+                ));
+    }
 }
