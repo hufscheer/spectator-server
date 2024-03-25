@@ -21,6 +21,9 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @JoinColumn(name = "game_team_id")
     private GameTeam gameTeam;
 
+    @Column(name = "league_team_player_id", nullable = false)
+    private Long leagueTeamPlayerId;
+
     @Column(name = "name", nullable = false)
     private String name;
 
