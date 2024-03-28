@@ -83,7 +83,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                 QUARTER1, List.of(
                                 new RecordResponse(
                                         null, 2L, REPLACEMENT_TYPE,
-                                        4,
+                                        24,
                                         "선수6",
                                         2L,
                                         TEAM_B,
@@ -93,7 +93,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                 ),
                                 new RecordResponse(
                                         null, 1L, SCORE_TYPE,
-                                        2,
+                                        22,
                                         "선수2",
                                         1L,
                                         TEAM_A,
