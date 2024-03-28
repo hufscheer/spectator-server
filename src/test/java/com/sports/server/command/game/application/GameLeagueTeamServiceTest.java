@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 class GameLeagueTeamServiceTest extends ServiceTest {
 
     private static final int MAXIMUM_OF_TOTAL_CHEER_COUNT = 100_000_000;
+    private static final int MAXIMUM_OF_CHEER_COUNT = 500;
 
     @Autowired
     private GameTeamService gameTeamService;
@@ -89,5 +90,16 @@ class GameLeagueTeamServiceTest extends ServiceTest {
         assertThrows(CustomException.class, () -> gameTeamService.updateCheerCount(gameId, cheerRequestDto));
     }
 
-}
+    @Test
+    void 응원_횟수가_제한에_도달했을_시_예외를_반환한다() {
 
+        //given
+        Long gameId = 1L;
+        Long gameTeamId = 10000L;
+        CheerCountUpdateRequest cheerRequestDto = new CheerCountUpdateRequest(gameTeamId, MAXIMUM_OF_CHEER_COUNT);
+
+        //when&then
+        assertThrows(CustomException.class, () -> gameTeamService.updateCheerCount(gameId, cheerRequestDto));
+    }
+
+}
