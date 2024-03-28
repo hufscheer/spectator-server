@@ -1,23 +1,24 @@
 package com.sports.server.command.game.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.GameTeamFixtureRepository;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @Sql(scripts = "/game-fixture.sql")
 class GameLeagueTeamServiceTest extends ServiceTest {
+
+    private static final int MAXIMUM_OF_CHEER_COUNT = 100_000_000;
 
     @Autowired
     private GameTeamService gameTeamService;
@@ -74,6 +75,18 @@ class GameLeagueTeamServiceTest extends ServiceTest {
                 .map(GameTeam::getCheerCount)
                 .get()
                 .isEqualTo(101);
+    }
+
+    @Test
+    void 응원_횟수가_제한에_도달했을_시_예외를_반환한다() {
+
+        //given
+        Long gameId = 1L;
+        Long gameTeamId = 10000L;
+        CheerCountUpdateRequest cheerRequestDto = new CheerCountUpdateRequest(gameTeamId, MAXIMUM_OF_CHEER_COUNT);
+
+        //when&then
+        assertThrows(CustomException.class, () -> gameTeamService.updateCheerCount(gameId, cheerRequestDto));
     }
 
 }
