@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameTeam extends BaseEntity<GameTeam> {
 
-    private static final int MAXIMUM_OF_CHEER_COUNT = 100_000_000;
+    private static final int MAXIMUM_OF_TOTAL_CHEER_COUNT = 100_000_000;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -37,8 +37,8 @@ public class GameTeam extends BaseEntity<GameTeam> {
     private int score;
 
     public void validateCheerCountOfGameTeam(final int cheerCount) {
-        if (this.cheerCount + cheerCount > MAXIMUM_OF_CHEER_COUNT) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "응원 횟수가 한계에 도달했습니다.");
+        if (this.cheerCount + cheerCount > MAXIMUM_OF_TOTAL_CHEER_COUNT) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "총 응원 횟수가 한계에 도달했습니다.");
         }
     }
 
@@ -47,3 +47,6 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
 }
+
+
+
