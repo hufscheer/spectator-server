@@ -45,12 +45,12 @@ VALUES (6, 2, '선수6', '센터', true, 6, 1),
 
 -- 1쿼터 경기 기록 추가
 INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
-VALUES (1, 1, 1, 1, 2, 'SCORE');
+VALUES (1, 1, 1, 1, 22, 'SCORE');
 INSERT INTO score_records (record_id, lineup_player_id, score)
 VALUES (1, 2, 2); -- A팀 선수 2의 2득점
 
 INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
-VALUES (2, 1, 2, 1, 4, 'REPLACEMENT');
+VALUES (2, 1, 2, 1, 24, 'REPLACEMENT');
 INSERT INTO replacement_records(record_id, origin_lineup_player_id, replaced_lineup_player_id)
 VALUES (2, 6, 7);
 -- B팀 6선수 OUT 7선수 IN
