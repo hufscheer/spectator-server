@@ -24,6 +24,7 @@ public class GameTeamService {
     public void updateCheerCount(final Long gameId, final CheerCountUpdateRequest cheerCountUpdateRequest) {
         Game game = entityUtils.getEntity(gameId, Game.class);
         GameTeam gameTeam = entityUtils.getEntity(cheerCountUpdateRequest.gameTeamId(), GameTeam.class);
+        gameTeam.validateCheerCountOfGameTeam(cheerCountUpdateRequest.cheerCount());
         validateGameTeam(gameTeam, game);
         gameTeamRepository.updateCheerCount(cheerCountUpdateRequest.gameTeamId(), cheerCountUpdateRequest.cheerCount());
     }
