@@ -22,6 +22,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     private static final int MAXIMUM_OF_CHEER_COUNT = 500;
     private static final int MAXIMUM_OF_TOTAL_CHEER_COUNT = 100_000_000;
+    private static final int MINIMUM_OF_CHEER_COUNT = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -38,8 +39,8 @@ public class GameTeam extends BaseEntity<GameTeam> {
     private int score;
 
     public void validateCheerCountOfGameTeam(final int cheerCount) {
-        if (cheerCount >= MAXIMUM_OF_CHEER_COUNT) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "응원 횟수가 한계에 도달했습니다.");
+        if (cheerCount >= MAXIMUM_OF_CHEER_COUNT || cheerCount <= MINIMUM_OF_CHEER_COUNT) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 범위의 응원 요청 횟수입니다.");
         }
         if (this.cheerCount + cheerCount > MAXIMUM_OF_TOTAL_CHEER_COUNT) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "총 응원 횟수가 한계에 도달했습니다.");
