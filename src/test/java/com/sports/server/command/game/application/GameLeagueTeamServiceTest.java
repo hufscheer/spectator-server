@@ -102,4 +102,14 @@ class GameLeagueTeamServiceTest extends ServiceTest {
         assertThrows(CustomException.class, () -> gameTeamService.updateCheerCount(gameId, cheerRequestDto));
     }
 
+    @Test
+    void 응원_횟수가_음수일_경우_예외를_반환한다() {
+        //given
+        Long gameId = 1L;
+        Long gameTeamId = 10000L;
+        CheerCountUpdateRequest cheerRequestDto = new CheerCountUpdateRequest(gameTeamId, -1);
+
+        //when&then
+        assertThrows(CustomException.class, () -> gameTeamService.updateCheerCount(gameId, cheerRequestDto));
+    }
 }
