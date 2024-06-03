@@ -1,4 +1,4 @@
-package com.sports.server.query.auth;
+package com.sports.server.auth;
 
 import com.sports.server.command.member.domain.Member;
 import java.util.Collection;

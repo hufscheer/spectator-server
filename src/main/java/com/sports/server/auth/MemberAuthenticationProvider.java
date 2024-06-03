@@ -1,4 +1,4 @@
-package com.sports.server.query.auth;
+package com.sports.server.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
