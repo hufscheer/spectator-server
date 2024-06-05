@@ -117,10 +117,10 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
                         .map(LeagueTeamResponse::teamName)
-                        .containsExactly("경영 야생마", "서어 뻬데뻬", "미컴 축구생각"),
+                        .containsExactly("경영 야생마", "미컴 축구생각", "서어 뻬데뻬"),
                 () -> assertThat(actual)
                         .map(LeagueTeamResponse::leagueTeamId)
-                        .containsExactly(1L, 2L, 3L)
+                        .containsExactly(1L, 3L, 2L)
 
         );
     }
