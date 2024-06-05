@@ -2,14 +2,18 @@ package com.sports.server.command.member.domain;
 
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "members")
@@ -57,5 +61,13 @@ public class Member extends BaseEntity<Member> {
         if (!matcher.matches()) {
             // TODO: 예외 던지기
         }
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 }
