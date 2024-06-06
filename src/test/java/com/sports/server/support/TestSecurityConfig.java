@@ -13,12 +13,12 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 public class TestSecurityConfig {
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
+    SecurityFilterChain filterChainForTest(HttpSecurity http, MvcRequestMatcher.Builder mvcForTest) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(mvc.pattern("/admin/**")).authenticated()
+                        .requestMatchers(mvcForTest.pattern("/admin/**")).authenticated()
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults());
@@ -27,7 +27,7 @@ public class TestSecurityConfig {
     }
 
     @Bean
-    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+    MvcRequestMatcher.Builder mvcForTest(HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
     }
 
