@@ -8,9 +8,18 @@ import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
-import com.sports.server.query.application.*;
+import com.sports.server.query.application.CheerTalkQueryService;
+import com.sports.server.query.application.GameQueryService;
+import com.sports.server.query.application.GameTeamQueryService;
+import com.sports.server.query.application.LeagueQueryService;
+import com.sports.server.query.application.LineupPlayerQueryService;
+import com.sports.server.query.application.SportQueryService;
 import com.sports.server.query.application.timeline.TimelineQueryService;
-import com.sports.server.query.presentation.*;
+import com.sports.server.query.presentation.CheerTalkQueryController;
+import com.sports.server.query.presentation.GameQueryController;
+import com.sports.server.query.presentation.LeagueQueryController;
+import com.sports.server.query.presentation.SportQueryController;
+import com.sports.server.query.presentation.TimelineQueryController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,8 +36,10 @@ import org.springframework.test.web.servlet.MockMvc;
         GameQueryController.class,
         LeagueQueryController.class,
         TimelineQueryController.class,
-        SportQueryController.class
+        SportQueryController.class,
+        TestSecurityConfig.class
 })
+
 @Import({
         TimeLogTemplate.class,
         RestDocsConfig.class
