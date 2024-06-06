@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -147,6 +148,30 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.inProgressRound()).isEqualTo(8),
                 () -> assertThat(actual.maxRound()).isEqualTo(16),
                 () -> assertThat(actual.isInProgress()).isEqualTo(false)
+        );
+    }
+
+    @Test
+    void 리그팀의_모든_선수를_조회한다() {
+        // given
+        Long soccerishThought = 3L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .get("/leagues/teams/{leagueTeamId]/players/all", soccerishThought)
+            .then().log().all()
+            .extract();
+
+        // then
+        List<LeagueTeamPlayerResponse> actual = toResponses(response, LeagueTeamPlayerResponse.class);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actual).map(LeagueTeamPlayerResponse::name)
+                .containsExactly("가을전어이동규", "겨울붕어빵이현제", "봄동나물진승희", "여름수박고병룡"),
+            () -> assertThat(actual).map(LeagueTeamPlayerResponse::id)
+                .containsExactly(2L, 3L, 1L, 4L)
         );
     }
 }
