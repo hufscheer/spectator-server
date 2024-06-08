@@ -160,7 +160,7 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .get("/leagues/teams/{leagueTeamId]/players/all", soccerishThought)
+            .get("/leagues/teams/{leagueTeamId}/players/all", soccerishThought)
             .then().log().all()
             .extract();
 
