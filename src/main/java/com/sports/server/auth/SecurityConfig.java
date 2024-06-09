@@ -29,7 +29,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(mvc.pattern("/admin/**")).authenticated()
+                        .requestMatchers(mvc.pattern("/manager/login")).permitAll()
+                        .requestMatchers(mvc.pattern("/manager/**")).authenticated()
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
