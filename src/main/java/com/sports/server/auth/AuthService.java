@@ -18,7 +18,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public JwtResponse login(final LoginVO loginVO) {
-        Member member = memberRepository.findByEmail(loginVO.email());
+        Member member = memberRepository.findMemberByEmail(loginVO.email());
         if (member == null) {
             throw new NotFoundException("존재하지 않는 사용자입니다.");
         }
@@ -29,5 +29,4 @@ public class AuthService {
 
         return new JwtResponse(jwtTokenProvider.createAccessToken(member));
     }
-
 }
