@@ -1,9 +1,9 @@
 package com.sports.server.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,8 +23,7 @@ public class AuthController {
     @PostMapping("/login")
     public void login(@RequestBody LoginVO loginVO, HttpServletResponse response) {
         JwtResponse jwtResponse = authService.login(loginVO);
-        Cookie cookie = CookieUtil.createCookie(jwtResponse.accessToken(), COOKIE_VALID_TIME);
+        ResponseCookie cookie = CookieUtil.createCookie(jwtResponse.accessToken(), COOKIE_VALID_TIME);
         response.addHeader(COOKIE_NAME, cookie.toString());
-
     }
 }
