@@ -39,7 +39,7 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagueDetail(leagueId));
     }
 
-    @GetMapping("/teams/{leagueTeamId}/players/all")
+    @GetMapping("/teams/{leagueTeamId}/players")
     public ResponseEntity<List<LeagueTeamPlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
         return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));
     }

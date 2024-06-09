@@ -178,7 +178,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 			.willReturn(responses);
 
 		// when
-		ResultActions result = mockMvc.perform(get("/leagues/teams/{leagueTeamId}/players/all", leagueTeamId)
+		ResultActions result = mockMvc.perform(get("/leagues/teams/{leagueTeamId}/players", leagueTeamId)
 			.contentType(MediaType.APPLICATION_JSON));
 
 		// then
