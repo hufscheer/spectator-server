@@ -17,7 +17,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtResponse login(final LoginVO loginVO) {
+    public JwtResponse managerLogin(final LoginVO loginVO) {
         Member member = memberRepository.findMemberByEmail(loginVO.email());
         if (member == null) {
             throw new NotFoundException("존재하지 않는 사용자입니다.");
@@ -25,6 +25,10 @@ public class AuthService {
 
         if (!passwordEncoder.matches(loginVO.password(), member.getPassword())) {
             throw new NotFoundException("유효하지 않은 사용자입니다.");
+        }
+
+        if (!member.isManager()) {
+            throw new IllegalStateException("권한이 없습니다.");
         }
 
         return new JwtResponse(jwtTokenProvider.createAccessToken(member));

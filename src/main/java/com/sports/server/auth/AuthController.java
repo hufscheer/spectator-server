@@ -20,9 +20,9 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/login")
-    public void login(@RequestBody LoginVO loginVO, HttpServletResponse response) {
-        JwtResponse jwtResponse = authService.login(loginVO);
+    @PostMapping("/manager/login")
+    public void managerLogin(@RequestBody LoginVO loginVO, HttpServletResponse response) {
+        JwtResponse jwtResponse = authService.managerLogin(loginVO);
         ResponseCookie cookie = CookieUtil.createCookie(jwtResponse.accessToken(), COOKIE_VALID_TIME);
         response.addHeader(COOKIE_NAME, cookie.toString());
     }

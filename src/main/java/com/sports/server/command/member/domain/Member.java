@@ -63,6 +63,10 @@ public class Member extends BaseEntity<Member> {
         }
     }
 
+    public boolean isManager() {
+        return this.isManager;
+    }
+
     public String getEmail() {
         return this.email;
     }
