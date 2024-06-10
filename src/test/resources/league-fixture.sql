@@ -53,4 +53,11 @@ VALUES (2, '서어 뻬데뻬', '이미지이미지', 1, 1, 1);
 INSERT INTO league_teams (id, name, logo_image_url, manager_id, organization_id, league_id)
 VALUES (3, '미컴 축구생각', '이미지이미지', 1, 1, 1);
 
+-- 리그팀의 선수
+INSERT INTO league_team_players (id, name, description, number, league_team_id)
+    VALUES (1, '봄동나물진승희', '설명설명설명', 0, 3),
+           (2, '가을전어이동규', '설명설명설명', 2, 3),
+           (3, '겨울붕어빵이현제', '설명설명설명', 3, 3),
+           (4, '여름수박고병룡', '설명설명설명', 3, 3);
+
 SET foreign_key_checks = 1;
