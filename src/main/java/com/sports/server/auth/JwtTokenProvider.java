@@ -22,8 +22,7 @@ public class JwtTokenProvider {
     private long TOKEN_VALID_TIME;
 
     private final MemberRepository memberRepository;
-    public static final String ACCESS_TOKEN_HEADER_STRING = "Authorization"; // 여기에 HCC_SES 가 들어가야 하는건가?
-    public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String ACCESS_TOKEN_HEADER_STRING = "Authorization";
 
     public String createAccessToken(Member member) {
         Date now = new Date();
@@ -32,8 +31,7 @@ public class JwtTokenProvider {
                 .withClaim("email", member.getEmail()).sign(Algorithm.HMAC512(secretKey));
     }
 
-    public Authentication getAuthentication(final String header) {
-        String token = header.replace(TOKEN_PREFIX, "");
+    public Authentication getAuthentication(final String token) {
         String email = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token).getClaim("email").asString();
 
         if (email != null) {
