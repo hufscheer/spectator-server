@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
     public JwtResponse managerLogin(final LoginVO loginVO) {
@@ -31,6 +31,6 @@ public class AuthService {
             throw new IllegalStateException("권한이 없습니다.");
         }
 
-        return new JwtResponse(jwtTokenProvider.createAccessToken(member));
+        return new JwtResponse(jwtProvider.createAccessToken(member));
     }
 }

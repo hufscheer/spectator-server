@@ -21,7 +21,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider),
+                .addFilterBefore(new JwtAuthorizationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
