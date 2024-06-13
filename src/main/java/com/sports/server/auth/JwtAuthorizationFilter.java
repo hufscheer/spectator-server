@@ -31,5 +31,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        if (path.contains("/manager/login")) {
+            return true;
+        } else if (path.contains("/manager")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 
