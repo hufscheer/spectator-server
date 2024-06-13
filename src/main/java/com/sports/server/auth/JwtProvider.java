@@ -23,6 +23,7 @@ public class JwtProvider {
 
     private final MemberRepository memberRepository;
     public static final String ACCESS_TOKEN_HEADER_STRING = "Authorization";
+    public static final String ACCESS_TOKEN_PREFIX = "Authorization=";
 
     public String createAccessToken(Member member) {
         Date now = new Date();
@@ -44,4 +45,5 @@ public class JwtProvider {
         }
         return null;
     }
+
 }

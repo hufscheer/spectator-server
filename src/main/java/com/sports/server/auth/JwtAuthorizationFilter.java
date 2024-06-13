@@ -19,14 +19,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        Cookie cookie = CookieUtil.getCookie(request, "TEMP").orElse(null);
+        Cookie cookie = CookieUtil.getCookie(request, "HCC_SES").orElse(null);
 
         if (cookie == null) {
             chain.doFilter(request, response);
             return;
         }
 
-        Authentication authentication = jwtProvider.getAuthentication(cookie.getValue());
+        Authentication authentication = jwtProvider.getAuthentication(
+                cookie.getValue().replace(JwtProvider.ACCESS_TOKEN_PREFIX, ""));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
