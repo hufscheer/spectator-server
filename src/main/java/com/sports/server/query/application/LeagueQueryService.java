@@ -1,15 +1,14 @@
 package com.sports.server.query.application;
 
+import com.sports.server.command.league.domain.League;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
-import com.sports.server.query.repository.LeagueQueryRepository;
-import com.sports.server.query.repository.LeagueSportQueryRepository;
-import com.sports.server.query.repository.LeagueTeamPlayerQueryRepository;
-import com.sports.server.query.repository.LeagueTeamQueryRepository;
+import com.sports.server.query.repository.*;
 
 import java.util.List;
 
@@ -25,8 +24,9 @@ public class LeagueQueryService {
 
 	private final LeagueQueryRepository leagueQueryRepository;
 	private final LeagueSportQueryRepository leagueSportQueryRepository;
-	private final LeagueTeamQueryRepository leagueTeamQueryRepository;
+	private final LeagueTeamDynamicRepository leagueTeamDynamicRepository;
 	private final LeagueTeamPlayerQueryRepository leagueTeamPlayerQueryRepository;
+	private final EntityUtils entityUtils;
 
 	public List<LeagueResponse> findLeagues(Integer year) {
 		return leagueQueryRepository.findByYear(year)
@@ -42,14 +42,10 @@ public class LeagueQueryService {
 			.toList();
 	}
 
-	public List<LeagueTeamResponse> findTeamsByLeague(Long leagueId, Integer round) {
-		if (round != null) {
-			return leagueTeamQueryRepository.findByLeagueIdAndRound(leagueId, round)
-				.stream()
-				.map(LeagueTeamResponse::new)
-				.toList();
-		}
-		return leagueTeamQueryRepository.findByLeagueId(leagueId)
+	public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
+		League league = entityUtils.getEntity(leagueId, League.class);
+
+		return leagueTeamDynamicRepository.findByLeagueAndRound(league, round)
 			.stream()
 			.map(LeagueTeamResponse::new)
 			.toList();

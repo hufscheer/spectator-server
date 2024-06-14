@@ -98,7 +98,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 			new LeagueTeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2")
 		);
 
-		given(leagueQueryService.findTeamsByLeague(leagueId, null))
+		given(leagueQueryService.findTeamsByLeagueRound(leagueId, null))
 			.willReturn(responses);
 
 		// when
