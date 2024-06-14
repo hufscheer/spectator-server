@@ -42,7 +42,13 @@ public class LeagueQueryService {
 			.toList();
 	}
 
-	public List<LeagueTeamResponse> findTeamsByLeague(Long leagueId) {
+	public List<LeagueTeamResponse> findTeamsByLeague(Long leagueId, Integer round) {
+		if (round != null) {
+			return leagueTeamQueryRepository.findByLeagueIdAndRound(leagueId, round)
+				.stream()
+				.map(LeagueTeamResponse::new)
+				.toList();
+		}
 		return leagueTeamQueryRepository.findByLeagueId(leagueId)
 			.stream()
 			.map(LeagueTeamResponse::new)
