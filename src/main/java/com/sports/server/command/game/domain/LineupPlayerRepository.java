@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-public interface LineupPlayerRepository extends Repository<LineupPlayer, Integer> {
+public interface LineupPlayerRepository extends Repository<LineupPlayer, Long> {
 	@Modifying
 	@Query("Update LineupPlayer lp set lp.state = :state where lp.id in :ids")
-	void updatePlayerState(@Param("state") LineupPlayerState state, @Param("ids") List<Integer> ids);
+	void updatePlayerState(@Param("state") LineupPlayerState state, @Param("ids") List<Long> ids);
 }
