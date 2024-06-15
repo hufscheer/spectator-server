@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameTeamService;
+import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.presentation.GameController;
+import com.sports.server.command.game.presentation.LineupPlayerController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
@@ -27,7 +29,8 @@ import org.springframework.test.web.servlet.MockMvc;
         GameQueryController.class,
         LeagueQueryController.class,
         TimelineQueryController.class,
-        SportQueryController.class
+        SportQueryController.class,
+        LineupPlayerController.class,
 })
 @Import({
         TimeLogTemplate.class,
@@ -74,4 +77,7 @@ public class DocumentationTest {
 
     @MockBean
     protected SportQueryService sportQueryService;
+
+    @MockBean
+    protected LineupPlayerService lineupPlayerService;
 }
