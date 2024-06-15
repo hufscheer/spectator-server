@@ -88,7 +88,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 	}
 
 	@Test
-	void 리그의_모든_리그팀을_조회한다() throws Exception {
+	void 리그의_모든_리그팀을_라운드별로_조회한다() throws Exception {
 
 		// given
 		Long leagueId = 1L;
@@ -98,11 +98,12 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 			new LeagueTeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2")
 		);
 
-		given(leagueQueryService.findTeamsByLeagueRound(leagueId, null))
+		given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2))
 			.willReturn(responses);
 
 		// when
 		ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/teams", leagueId)
+            .queryParam("round", "2")
 			.contentType(MediaType.APPLICATION_JSON)
 		);
 
@@ -112,6 +113,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 				pathParameters(
 					parameterWithName("leagueId").description("리그의 ID")
 				),
+                queryParameters(
+                    parameterWithName("round").description("라운드")
+                ),
 				responseFields(
 					fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 팀 ID"),
 					fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("리그에 참여하는 팀의 이름"),
