@@ -3,6 +3,8 @@ package com.sports.server.command.game.domain;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -35,4 +37,8 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     @Column(name = "is_captain", nullable = false)
     private boolean isCaptain;
+
+    @Column(name = "state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private LineupPlayerState state;
 }
