@@ -1,5 +1,6 @@
-package com.sports.server.auth;
+package com.sports.server.auth.utils;
 
+import com.sports.server.auth.JwtProvider;
 import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

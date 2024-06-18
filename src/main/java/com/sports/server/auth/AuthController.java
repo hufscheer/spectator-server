@@ -1,5 +1,7 @@
 package com.sports.server.auth;
 
+import com.sports.server.auth.application.AuthService;
+import com.sports.server.auth.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
