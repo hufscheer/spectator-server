@@ -28,7 +28,7 @@ public class AuthService {
         }
 
         if (!member.isManager()) {
-            throw new IllegalStateException("권한이 없습니다.");
+            throw new UnauthorizedException("권한이 없습니다.");
         }
 
         return new JwtResponse(jwtProvider.createAccessToken(member));
