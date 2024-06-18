@@ -18,6 +18,7 @@ public class TestSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers(mvcForTest.pattern("/manager/login")).permitAll()
                         .requestMatchers(mvcForTest.pattern("/manager/**")).authenticated()
                         .anyRequest().permitAll()
                 )

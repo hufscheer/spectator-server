@@ -1,6 +1,8 @@
 package com.sports.server.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sports.server.auth.AuthController;
+import com.sports.server.auth.application.AuthService;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameTeamService;
@@ -37,12 +39,13 @@ import org.springframework.test.web.servlet.MockMvc;
         LeagueQueryController.class,
         TimelineQueryController.class,
         SportQueryController.class,
-        TestSecurityConfig.class
+        AuthController.class
 })
 
 @Import({
         TimeLogTemplate.class,
-        RestDocsConfig.class
+        RestDocsConfig.class,
+        TestSecurityConfig.class
 })
 @AutoConfigureRestDocs
 public class DocumentationTest {
@@ -85,4 +88,7 @@ public class DocumentationTest {
 
     @MockBean
     protected SportQueryService sportQueryService;
+
+    @MockBean
+    protected AuthService authService;
 }
