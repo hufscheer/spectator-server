@@ -20,15 +20,15 @@ public class AuthService {
     public JwtResponse managerLogin(final LoginVO loginVO) {
         Member member = memberRepository.findMemberByEmail(loginVO.email());
         if (member == null) {
-            throw new NotFoundException("존재하지 않는 사용자입니다.");
+            throw new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
         }
 
         if (!passwordEncoder.matches(loginVO.password(), member.getPassword())) {
-            throw new NotFoundException("유효하지 않은 사용자입니다.");
+            throw new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
         }
 
         if (!member.isManager()) {
-            throw new UnauthorizedException("권한이 없습니다.");
+            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
 
         return new JwtResponse(jwtProvider.createAccessToken(member));
