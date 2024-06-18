@@ -2,7 +2,6 @@ package com.sports.server.auth.application;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.sports.server.auth.AuthService;
 import com.sports.server.auth.LoginVO;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.common.exception.NotFoundException;
