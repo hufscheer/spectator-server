@@ -1,8 +1,13 @@
-package com.sports.server.auth;
+package com.sports.server.auth.application;
 
+import com.sports.server.auth.JwtProvider;
+import com.sports.server.auth.JwtResponse;
+import com.sports.server.auth.LoginVO;
+import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
