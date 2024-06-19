@@ -12,11 +12,15 @@ import com.sports.server.auth.dto.JwtResponse;
 import com.sports.server.auth.dto.LoginVO;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class AuthControllerTest extends DocumentationTest {
+
+    @Value("${cookie.name}")
+    public String COOKIE_NAME;
 
     @Test
     void 로그인을_한다() throws Exception {
@@ -43,7 +47,7 @@ public class AuthControllerTest extends DocumentationTest {
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                         ),
                         responseCookies(
-                                cookieWithName("HCC_SES").description("JWT 액세스 토큰이 담긴 쿠키")
+                                cookieWithName(COOKIE_NAME).description("JWT 액세스 토큰이 담긴 쿠키")
                         )
                 ));
     }
