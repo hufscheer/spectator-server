@@ -1,4 +1,4 @@
-package com.sports.server.auth;
+package com.sports.server.auth.details;
 
 import com.sports.server.command.member.domain.Member;
 import java.util.ArrayList;

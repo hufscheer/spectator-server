@@ -2,7 +2,7 @@ package com.sports.server.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.sports.server.auth.MemberDetails;
+import com.sports.server.auth.details.MemberDetails;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import java.util.Date;
