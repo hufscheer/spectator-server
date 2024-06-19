@@ -2,7 +2,7 @@ package com.sports.server.auth.application;
 
 import com.sports.server.auth.JwtProvider;
 import com.sports.server.auth.JwtResponse;
-import com.sports.server.auth.LoginVO;
+import com.sports.server.auth.dto.LoginVO;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
@@ -33,5 +33,9 @@ public class AuthService {
         }
 
         return new JwtResponse(jwtProvider.createAccessToken(member));
+    }
+
+    public void save(final String email) {
+        memberRepository.save(new Member(email, passwordEncoder.encode("1234"), true));
     }
 }

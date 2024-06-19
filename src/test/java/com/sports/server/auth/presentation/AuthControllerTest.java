@@ -9,7 +9,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.auth.JwtResponse;
-import com.sports.server.auth.LoginVO;
+import com.sports.server.auth.dto.LoginVO;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

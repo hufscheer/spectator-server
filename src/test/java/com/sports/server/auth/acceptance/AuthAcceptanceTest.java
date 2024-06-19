@@ -2,7 +2,7 @@ package com.sports.server.auth.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sports.server.auth.LoginVO;
+import com.sports.server.auth.dto.LoginVO;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
