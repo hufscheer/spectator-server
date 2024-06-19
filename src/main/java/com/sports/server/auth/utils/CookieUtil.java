@@ -1,5 +1,6 @@
 package com.sports.server.auth.utils;
 
+import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ public final class CookieUtil {
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null || cookies.length == 0) {
-            throw new UnauthorizedException("제공된 토큰이 유효하지 않습니다. 다시 인증해주세요.");
+            throw new UnauthorizedException(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION);
         }
 
         for (Cookie cookie : cookies) {
@@ -26,6 +27,6 @@ public final class CookieUtil {
                 return Optional.of(cookie);
             }
         }
-        throw new UnauthorizedException("제공된 토큰이 유효하지 않습니다. 다시 인증해주세요.");
+        throw new UnauthorizedException(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION);
     }
 }
