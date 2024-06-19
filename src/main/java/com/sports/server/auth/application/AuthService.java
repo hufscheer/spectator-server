@@ -24,11 +24,7 @@ public class AuthService {
 
     public JwtResponse managerLogin(final LoginVO loginVO) {
         Member member = memberRepository.findMemberByEmail(loginVO.email());
-        if (member == null) {
-            throw new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
-        }
-
-        if (!passwordEncoder.matches(loginVO.password(), member.getPassword())) {
+        if (member == null || !passwordEncoder.matches(loginVO.password(), member.getPassword())) {
             throw new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
         }
 
