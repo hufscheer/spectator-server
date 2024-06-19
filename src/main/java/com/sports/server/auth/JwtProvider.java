@@ -22,8 +22,6 @@ public class JwtProvider {
     private long TOKEN_VALID_TIME;
 
     private final MemberRepository memberRepository;
-    public static final String ACCESS_TOKEN_HEADER_STRING = "Authorization";
-    public static final String ACCESS_TOKEN_PREFIX = "Authorization=";
 
     public String createAccessToken(Member member) {
         Date now = new Date();
