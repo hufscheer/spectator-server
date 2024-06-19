@@ -1,6 +1,6 @@
 package com.sports.server.auth.filter;
 
-import com.sports.server.auth.JwtProvider;
+import com.sports.server.auth.jwt.JwtProvider;
 import com.sports.server.auth.utils.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

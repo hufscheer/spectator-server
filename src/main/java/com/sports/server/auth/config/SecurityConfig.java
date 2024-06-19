@@ -1,7 +1,7 @@
 package com.sports.server.auth.config;
 
 import com.sports.server.auth.filter.JwtAuthorizationFilter;
-import com.sports.server.auth.JwtProvider;
+import com.sports.server.auth.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
