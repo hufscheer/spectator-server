@@ -28,7 +28,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
 
         Authentication authentication = jwtProvider.getAuthentication(
-                cookie.getValue().replace(JwtProvider.ACCESS_TOKEN_PREFIX, ""));
+                cookie.getValue());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
