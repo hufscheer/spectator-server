@@ -4,4 +4,6 @@ import org.springframework.data.repository.Repository;
 
 public interface MemberRepository extends Repository<Member, Long> {
     Member findMemberByEmail(final String email);
+
+    void save(Member member);
 }
