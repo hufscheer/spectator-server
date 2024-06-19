@@ -1,4 +1,4 @@
-package com.sports.server.auth;
+package com.sports.server.auth.dto;
 
 public record JwtResponse(
         String accessToken

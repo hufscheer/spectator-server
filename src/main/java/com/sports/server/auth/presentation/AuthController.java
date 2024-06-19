@@ -1,9 +1,9 @@
 package com.sports.server.auth.presentation;
 
-import com.sports.server.auth.JwtResponse;
-import com.sports.server.auth.dto.LoginVO;
+import com.sports.server.auth.dto.JwtResponse;
 import com.sports.server.auth.MemberDetails;
 import com.sports.server.auth.application.AuthService;
+import com.sports.server.auth.dto.LoginVO;
 import com.sports.server.auth.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

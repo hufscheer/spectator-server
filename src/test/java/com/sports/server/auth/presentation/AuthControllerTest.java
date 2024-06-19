@@ -8,7 +8,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.auth.JwtResponse;
+import com.sports.server.auth.dto.JwtResponse;
 import com.sports.server.auth.dto.LoginVO;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
