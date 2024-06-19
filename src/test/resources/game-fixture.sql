@@ -49,7 +49,10 @@ VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-1
        (20, 1, 1, 1, '12월 중 세번째 빠른 경기', '2023-12-05T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
         'FINISHED', 4),
        (21, 1, 1, 1, '12월 중 네번째 빠른 경기', '2023-12-05T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter',
-        'FINISHED', 4);
+        'FINISHED', 4),
+
+       (24, 1, 1, 1, '결승전', '2023-12-06T10:00:00', 'abc123', '2023-12-06T10:00:00', '1st Quarter', 'SCHEDULED', 2);
+
 
 -- 팀
 INSERT
@@ -57,10 +60,16 @@ INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 A', 'http://example.com/logo_a.png', 1, 1, 1);
 
 INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
-VALUES ('팀 B', 'http://example.com/logo_b.png', 2, 1, 1);
+VALUES ('팀 B', 'http://example.com/logo_b.png', 1, 1, 1);
 
 INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
-VALUES ('팀 C', 'http://example.com/logo_c.png', 3, 2, 2);
+VALUES ('팀 C', 'http://example.com/logo_c.png', 1, 1, 1);
+
+INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
+VALUES ('팀 D', 'http://example.com/logo_c.png', 1, 1, 1);
+
+INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
+VALUES ('팀 E', 'http://example.com/logo_c.png', 3, 2, 2);
 
 -- 스포츠
 INSERT INTO sports(id, name)
@@ -130,7 +139,10 @@ VALUES (1, 1, 1, 1),
        (14, 3, 2, 2),
 
        (15, 2, 1, 1),
-       (15, 3, 2, 2);
+       (15, 3, 2, 2),
+
+       (24, 2, 10, 0), -- 결승 진출 팀 B
+       (24, 4, 10, 0); -- 결승 진출 팀 D
 
 INSERT
 INTO leagues (id, manager_id, organization_id, name, start_at, end_at, is_deleted)
