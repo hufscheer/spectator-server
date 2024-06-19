@@ -2,9 +2,13 @@ package com.sports.server.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.sports.server.auth.details.MemberDetails;
+import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
+import com.sports.server.common.exception.UnauthorizedException;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +36,15 @@ public class JwtProvider {
     }
 
     public Authentication getAuthentication(final String token) {
-        String email = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token).getClaim("email").asString();
+        String email = null;
+
+        try {
+            email = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token).getClaim("email").asString();
+        } catch (TokenExpiredException e) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.TOKEN_EXPIRED_EXCEPTION);
+        } catch (JWTVerificationException e) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION);
+        }
 
         if (email != null) {
             Member member = memberRepository.findMemberByEmail(email);
@@ -42,7 +54,7 @@ public class JwtProvider {
                         memberDetails.getAuthorities());
             }
         }
-        return null;
+        throw new UnauthorizedException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
     }
 
 }
