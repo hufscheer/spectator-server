@@ -8,12 +8,16 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql(scripts = "/member-fixture.sql")
 public class AuthAcceptanceTest extends AcceptanceTest {
+
+    @Value("${cookie.name}")
+    private String COOKIE_NAME;
 
     @Test
     void 매니저_로그인을_한다() {
@@ -52,7 +56,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        String cookieValue = response.cookie("HCC_SES");
+        String cookieValue = response.cookie(COOKIE_NAME);
         assertThat(cookieValue).isNotNull();
     }
 }
