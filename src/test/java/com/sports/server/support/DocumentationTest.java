@@ -1,7 +1,7 @@
 package com.sports.server.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sports.server.auth.AuthController;
+import com.sports.server.auth.presentation.AuthController;
 import com.sports.server.auth.application.AuthService;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
