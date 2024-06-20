@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
-@DiscriminatorValue("score")
+@DiscriminatorValue("SCORE")
 @Getter
 public class ScoreTimeline extends Timeline {
 

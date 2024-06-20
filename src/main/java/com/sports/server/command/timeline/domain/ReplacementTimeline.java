@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
-@DiscriminatorValue("replacement")
+@DiscriminatorValue("REPLACEMENT")
 @Getter
 public class ReplacementTimeline extends Timeline {
 
