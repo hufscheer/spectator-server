@@ -65,6 +65,7 @@ operation::league-query-controller-test/리그의_해당하는_스포츠_전체�
 operation::league-query-controller-test/리그의_모든_리그팀을_라운드별로_조회한다[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
 
 === 리그 상세 조회
+
 operation::league-query-controller-test/리그를_하나_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 == 타임라인 API
@@ -78,3 +79,9 @@ operation::timeline-query-controller-test/타임라인을_조회한다[snippets=
 === 스포츠 전체 조회
 
 operation::sport-query-controller-test/스포츠를_전체_조회한다[snippets='http-request,http-response,response-fields']
+
+== 로그인 API
+
+=== 사용자 로그인
+
+operation::auth-controller-test/로그인을_한다[snippets='http-request,request-fields,http-response']
