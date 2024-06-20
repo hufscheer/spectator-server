@@ -4,6 +4,7 @@ import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +30,19 @@ public class LeagueQueryController {
     }
 
     @GetMapping("/{leagueId}/teams")
-    public ResponseEntity<List<LeagueTeamResponse>> findLeagueTeamsByLeague(@PathVariable Long leagueId) {
-        return ResponseEntity.ok(leagueQueryService.findTeamsByLeague(leagueId));
+    public ResponseEntity<List<LeagueTeamResponse>> findLeagueTeamsByLeague(
+            @PathVariable Long leagueId,
+            @RequestParam(required = false) Integer round) {
+        return ResponseEntity.ok(leagueQueryService.findTeamsByLeagueRound(leagueId, round));
     }
 
     @GetMapping("/{leagueId}")
     public ResponseEntity<LeagueDetailResponse> findLeagueDetail(@PathVariable Long leagueId) {
         return ResponseEntity.ok(leagueQueryService.findLeagueDetail(leagueId));
+    }
+
+    @GetMapping("/teams/{leagueTeamId}/players")
+    public ResponseEntity<List<LeagueTeamPlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
+        return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));
     }
 }
