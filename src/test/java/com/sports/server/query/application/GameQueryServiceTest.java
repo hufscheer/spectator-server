@@ -31,7 +31,6 @@ public class GameQueryServiceTest extends ServiceTest {
     private final List<Long> sportIds = List.of(1L, 2L);
     private final String stateValue = "SCHEDULED";
     private final List<Long> leagueTeamIds = List.of(1L, 2L);
-    private final Integer round = 4;
 
     @Test
     void 존재하지_않는_게임_상태를_조회할_때_예외가_발생한다() {
@@ -299,16 +298,16 @@ public class GameQueryServiceTest extends ServiceTest {
             assertAll(
                     () -> assertThat(after15)
                             .map(GameResponseDto::id)
-                            .containsExactly(19L, 18L, 16L, 17L),
+                            .containsExactly(19L, 18L, 16L, 17L, 24L),
                     () -> assertThat(after19)
                             .map(GameResponseDto::id)
-                            .containsExactly(18L, 16L, 17L),
+                            .containsExactly(18L, 16L, 17L, 24L),
                     () -> assertThat(after18)
                             .map(GameResponseDto::id)
-                            .containsExactly(16L, 17L),
+                            .containsExactly(16L, 17L, 24L),
                     () -> assertThat(after16)
                             .map(GameResponseDto::id)
-                            .containsExactly(17L)
+                            .containsExactly(17L, 24L)
             );
         }
 
