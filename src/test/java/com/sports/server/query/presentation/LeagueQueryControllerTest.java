@@ -1,29 +1,21 @@
 package com.sports.server.query.presentation;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
-import com.sports.server.query.dto.response.LeagueDetailResponse;
-import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueSportResponse;
-import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
-import com.sports.server.query.dto.response.LeagueTeamResponse;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.support.DocumentationTest;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LeagueQueryControllerTest extends DocumentationTest {
 
@@ -96,7 +88,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 	}
 
 	@Test
-	void 리그의_모든_리그팀을_조회한다() throws Exception {
+	void 리그의_모든_리그팀을_라운드별로_조회한다() throws Exception {
 
 		// given
 		Long leagueId = 1L;
@@ -106,11 +98,12 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 			new LeagueTeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2")
 		);
 
-		given(leagueQueryService.findTeamsByLeague(leagueId))
+		given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2))
 			.willReturn(responses);
 
 		// when
 		ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/teams", leagueId)
+            .queryParam("round", "2")
 			.contentType(MediaType.APPLICATION_JSON)
 		);
 
@@ -120,6 +113,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 				pathParameters(
 					parameterWithName("leagueId").description("리그의 ID")
 				),
+                queryParameters(
+                    parameterWithName("round").description("라운드")
+                ),
 				responseFields(
 					fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 팀 ID"),
 					fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("리그에 참여하는 팀의 이름"),
