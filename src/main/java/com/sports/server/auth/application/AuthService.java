@@ -22,11 +22,10 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtResponse managerLogin(final LoginRequest loginRequest) {
-        Member member = memberRepository.findMemberByEmail(loginRequest.email());
-        if (member == null || !passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
-            throw new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
-        }
+    public JwtResponse loginByManager(final LoginRequest loginRequest) {
+        Member member = memberRepository.findMemberByEmail(loginRequest.email())
+                .filter(m -> passwordEncoder.matches(loginRequest.password(), m.getPassword()))
+                .orElseThrow(() -> new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION));
 
         if (!member.isManager()) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
