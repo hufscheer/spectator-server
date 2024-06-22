@@ -9,7 +9,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.auth.dto.JwtResponse;
-import com.sports.server.auth.dto.LoginVO;
+import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,15 +28,15 @@ public class AuthControllerTest extends DocumentationTest {
         // given
         String email = "example@example.com";
         String password = "1234";
-        LoginVO loginVO = new LoginVO(email, password);
+        LoginRequest loginRequest = new LoginRequest(email, password);
         JwtResponse jwtResponse = new JwtResponse("testAccessToken");
 
-        given(authService.managerLogin(loginVO)).willReturn(jwtResponse);
+        given(authService.managerLogin(loginRequest)).willReturn(jwtResponse);
 
         // when
         ResultActions result = mockMvc.perform(post("/manager/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginVO))
+                .content(objectMapper.writeValueAsString(loginRequest))
         );
 
         // then

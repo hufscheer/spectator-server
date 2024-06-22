@@ -2,7 +2,7 @@ package com.sports.server.auth.application;
 
 import com.sports.server.auth.jwt.JwtProvider;
 import com.sports.server.auth.dto.JwtResponse;
-import com.sports.server.auth.dto.LoginVO;
+import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
@@ -22,9 +22,9 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtResponse managerLogin(final LoginVO loginVO) {
-        Member member = memberRepository.findMemberByEmail(loginVO.email());
-        if (member == null || !passwordEncoder.matches(loginVO.password(), member.getPassword())) {
+    public JwtResponse managerLogin(final LoginRequest loginRequest) {
+        Member member = memberRepository.findMemberByEmail(loginRequest.email());
+        if (member == null || !passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
             throw new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
         }
 

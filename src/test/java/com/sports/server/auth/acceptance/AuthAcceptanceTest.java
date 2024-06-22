@@ -2,7 +2,7 @@ package com.sports.server.auth.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sports.server.auth.dto.LoginVO;
+import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -24,13 +24,13 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         // given
         String email = "john@example.com";
         String password = "1234";
-        LoginVO loginVO = new LoginVO(email, password);
+        LoginRequest loginRequest = new LoginRequest(email, password);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(loginVO)
+                .body(loginRequest)
                 .post("/manager/login")
                 .then().log().all()
                 .extract();
@@ -44,13 +44,13 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         // given
         String email = "john@example.com";
         String password = "1234";
-        LoginVO loginVO = new LoginVO(email, password);
+        LoginRequest loginRequest = new LoginRequest(email, password);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(loginVO)
+                .body(loginRequest)
                 .post("/manager/login")
                 .then().log().all()
                 .extract();

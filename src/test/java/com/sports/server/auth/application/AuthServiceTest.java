@@ -2,7 +2,7 @@ package com.sports.server.auth.application;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.sports.server.auth.dto.LoginVO;
+import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -23,11 +23,11 @@ public class AuthServiceTest extends ServiceTest {
         // given
         String email = "notexist@example.com";
         String password = "1234";
-        LoginVO loginVO = new LoginVO(email, password);
+        LoginRequest loginRequest = new LoginRequest(email, password);
 
         // when & then
         assertThatThrownBy(
-                () -> authService.managerLogin(loginVO)
+                () -> authService.managerLogin(loginRequest)
         ).isInstanceOf(NotFoundException.class)
                 .hasMessage(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION)
                 .extracting("status").isEqualTo(HttpStatus.NOT_FOUND);
@@ -39,11 +39,11 @@ public class AuthServiceTest extends ServiceTest {
         // given
         String email = "john@example.com";
         String password = "notvalidpassword";
-        LoginVO loginVO = new LoginVO(email, password);
+        LoginRequest loginRequest = new LoginRequest(email, password);
 
         // when & then
         assertThatThrownBy(
-                () -> authService.managerLogin(loginVO)
+                () -> authService.managerLogin(loginRequest)
         ).isInstanceOf(NotFoundException.class)
                 .hasMessage(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION)
                 .extracting("status").isEqualTo(HttpStatus.NOT_FOUND);
@@ -57,11 +57,11 @@ public class AuthServiceTest extends ServiceTest {
         // given
         String email = "jane@example.com";
         String password = "1234";
-        LoginVO loginVO = new LoginVO(email, password);
+        LoginRequest loginRequest = new LoginRequest(email, password);
 
         // when & then
         assertThatThrownBy(
-                () -> authService.managerLogin(loginVO)
+                () -> authService.managerLogin(loginRequest)
         ).isInstanceOf(UnauthorizedException.class)
                 .hasMessage(AuthorizationErrorMessages.PERMISSION_DENIED)
                 .extracting("status").isEqualTo(HttpStatus.UNAUTHORIZED);
