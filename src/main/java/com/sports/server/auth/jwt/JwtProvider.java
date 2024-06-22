@@ -53,7 +53,8 @@ public class JwtProvider {
             return new UsernamePasswordAuthenticationToken(memberDetails, null,
                     memberDetails.getAuthorities());
         }
-        throw new UnauthorizedException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
+        throw new UnauthorizedException(
+                AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION);
     }
 
 }
