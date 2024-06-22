@@ -31,7 +31,7 @@ public class AuthControllerTest extends DocumentationTest {
         LoginRequest loginRequest = new LoginRequest(email, password);
         JwtResponse jwtResponse = new JwtResponse("testAccessToken");
 
-        given(authService.managerLogin(loginRequest)).willReturn(jwtResponse);
+        given(authService.loginByManager(loginRequest)).willReturn(jwtResponse);
 
         // when
         ResultActions result = mockMvc.perform(post("/manager/login")

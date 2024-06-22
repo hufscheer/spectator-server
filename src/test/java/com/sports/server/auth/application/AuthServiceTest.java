@@ -27,7 +27,7 @@ public class AuthServiceTest extends ServiceTest {
 
         // when & then
         assertThatThrownBy(
-                () -> authService.managerLogin(loginRequest)
+                () -> authService.loginByManager(loginRequest)
         ).isInstanceOf(NotFoundException.class)
                 .hasMessage(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION)
                 .extracting("status").isEqualTo(HttpStatus.NOT_FOUND);
@@ -43,7 +43,7 @@ public class AuthServiceTest extends ServiceTest {
 
         // when & then
         assertThatThrownBy(
-                () -> authService.managerLogin(loginRequest)
+                () -> authService.loginByManager(loginRequest)
         ).isInstanceOf(NotFoundException.class)
                 .hasMessage(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION)
                 .extracting("status").isEqualTo(HttpStatus.NOT_FOUND);
@@ -61,7 +61,7 @@ public class AuthServiceTest extends ServiceTest {
 
         // when & then
         assertThatThrownBy(
-                () -> authService.managerLogin(loginRequest)
+                () -> authService.loginByManager(loginRequest)
         ).isInstanceOf(UnauthorizedException.class)
                 .hasMessage(AuthorizationErrorMessages.PERMISSION_DENIED)
                 .extracting("status").isEqualTo(HttpStatus.UNAUTHORIZED);
