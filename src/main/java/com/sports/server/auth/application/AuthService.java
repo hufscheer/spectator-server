@@ -34,8 +34,4 @@ public class AuthService {
 
         return new JwtResponse(jwtProvider.createAccessToken(member));
     }
-
-    public void save(final String email) {
-        memberRepository.save(new Member(email, passwordEncoder.encode("1234"), true));
-    }
 }
