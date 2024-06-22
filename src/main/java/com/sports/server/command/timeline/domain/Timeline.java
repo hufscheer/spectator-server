@@ -1,7 +1,6 @@
 package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -18,15 +17,11 @@ import lombok.NoArgsConstructor;
 public abstract class Timeline extends BaseEntity<Timeline> {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
+    @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_team_id")
-    private GameTeam gameTeam;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recorded_quarter_id")
+    @JoinColumn(name = "recorded_quarter_id", nullable = false)
     private Quarter recordedQuarter;
 
     @Column(name = "recorded_at", nullable = false)
