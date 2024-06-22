@@ -44,7 +44,7 @@ public class JwtProviderTest {
 
     @BeforeEach
     public void setUp() {
-        member = memberRepository.findMemberByEmail(emailOfMember);
+        member = memberRepository.findMemberByEmail(emailOfMember).get();
     }
 
     @Test
@@ -58,8 +58,6 @@ public class JwtProviderTest {
 
     @Test
     public void 유효한_토큰을_통해_Authentication_객체를_올바르게_가져온다() {
-        Member member = memberRepository.findMemberByEmail(emailOfMember);
-
         String token = JWT.create().withSubject(this.member.getEmail())
                 .withExpiresAt(new Date(new Date().getTime() + tokenValidTime))
                 .withClaim("id", this.member.getId())

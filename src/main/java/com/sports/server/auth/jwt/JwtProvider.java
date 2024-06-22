@@ -47,12 +47,11 @@ public class JwtProvider {
         }
 
         if (email != null) {
-            Member member = memberRepository.findMemberByEmail(email);
-            if (member != null) {
-                MemberDetails memberDetails = new MemberDetails(member);
-                return new UsernamePasswordAuthenticationToken(memberDetails, null,
-                        memberDetails.getAuthorities());
-            }
+            Member member = memberRepository.findMemberByEmail(email).orElseThrow(
+                    () -> new UnauthorizedException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION));
+            MemberDetails memberDetails = new MemberDetails(member);
+            return new UsernamePasswordAuthenticationToken(memberDetails, null,
+                    memberDetails.getAuthorities());
         }
         throw new UnauthorizedException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
     }
