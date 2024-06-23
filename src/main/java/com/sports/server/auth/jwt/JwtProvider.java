@@ -30,9 +30,12 @@ public class JwtProvider {
 
     public String createAccessToken(Member member) {
         Date now = new Date();
-        return JWT.create().withSubject(member.getEmail())
-                .withExpiresAt(new Date(now.getTime() + TOKEN_VALID_TIME)).withClaim("id", member.getId())
-                .withClaim("email", member.getEmail()).sign(Algorithm.HMAC512(secretKey));
+        return JWT.create()
+                .withSubject(member.getEmail())
+                .withExpiresAt(new Date(now.getTime() + TOKEN_VALID_TIME))
+                .withClaim("id", member.getId())
+                .withClaim("email", member.getEmail())
+                .sign(Algorithm.HMAC512(secretKey));
     }
 
     public Authentication getAuthentication(final String token) {
