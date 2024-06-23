@@ -26,7 +26,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/manager/login")
-    public void managerLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public void loginByManager(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         JwtResponse jwtResponse = authService.loginByManager(loginRequest);
         ResponseCookie cookie = CookieUtil.createCookie(COOKIE_NAME, jwtResponse.accessToken(), COOKIE_VALID_TIME);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
