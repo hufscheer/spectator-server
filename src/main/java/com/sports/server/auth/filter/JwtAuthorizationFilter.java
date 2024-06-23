@@ -1,7 +1,7 @@
 package com.sports.server.auth.filter;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
-import com.sports.server.auth.jwt.JwtProvider;
+import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.auth.utils.CookieUtil;
 import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
@@ -16,7 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
 
     @Value("${cookie.name}")
     public String COOKIE_NAME;
@@ -26,7 +26,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         CookieUtil.getCookie(request, COOKIE_NAME)
                 .ifPresentOrElse(
                         cookie -> {
-                            jwtProvider.validateToken(cookie.getValue());
+                            jwtUtil.validateToken(cookie.getValue());
                         },
                         () -> {
                             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);

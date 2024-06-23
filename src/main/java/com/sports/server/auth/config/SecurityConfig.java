@@ -1,7 +1,7 @@
 package com.sports.server.auth.config;
 
 import com.sports.server.auth.filter.JwtAuthorizationFilter;
-import com.sports.server.auth.jwt.JwtProvider;
+import com.sports.server.auth.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(new JwtAuthorizationFilter(jwtProvider),
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

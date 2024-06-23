@@ -3,7 +3,7 @@ package com.sports.server.auth.application;
 import com.sports.server.auth.dto.JwtResponse;
 import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
-import com.sports.server.auth.jwt.JwtProvider;
+import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.common.exception.NotFoundException;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
     public JwtResponse loginByManager(final LoginRequest loginRequest) {
@@ -31,6 +31,6 @@ public class AuthService {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
 
-        return new JwtResponse(jwtProvider.createAccessToken(member));
+        return new JwtResponse(jwtUtil.createAccessToken(member));
     }
 }

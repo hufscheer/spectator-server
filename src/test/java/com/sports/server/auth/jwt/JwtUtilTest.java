@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
+import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -25,10 +26,10 @@ import org.springframework.test.context.jdbc.Sql;
 @DatabaseIsolation
 @Import(TestSecurityConfig.class)
 @Sql(scripts = "/member-fixture.sql")
-public class JwtProviderTest {
+public class JwtUtilTest {
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtUtil jwtUtil;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -48,7 +49,7 @@ public class JwtProviderTest {
 
     @Test
     public void 올바른_엑세스_토큰을_생성한다() {
-        String token = jwtProvider.createAccessToken(member);
+        String token = jwtUtil.createAccessToken(member);
         assertNotNull(token);
 
         String email = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token).getClaim("email").asString();
@@ -57,8 +58,8 @@ public class JwtProviderTest {
 
     @Test
     public void 유효한_토큰을_검증한다() {
-        String token = jwtProvider.createAccessToken(member);
-        assertDoesNotThrow(() -> jwtProvider.validateToken(token));
+        String token = jwtUtil.createAccessToken(member);
+        assertDoesNotThrow(() -> jwtUtil.validateToken(token));
     }
 
     @Test
@@ -77,7 +78,7 @@ public class JwtProviderTest {
         // 토큰 만료까지 대기
         Thread.sleep(2000);
 
-        Exception exception = assertThrows(UnauthorizedException.class, () -> jwtProvider.validateToken(token));
+        Exception exception = assertThrows(UnauthorizedException.class, () -> jwtUtil.validateToken(token));
         assertEquals(AuthorizationErrorMessages.TOKEN_EXPIRED_EXCEPTION, exception.getMessage());
     }
 
@@ -88,7 +89,7 @@ public class JwtProviderTest {
                 .sign(Algorithm.HMAC512(secretKey));
 
         Exception exception = assertThrows(UnauthorizedException.class,
-                () -> jwtProvider.validateToken(tokenWithoutClaims));
+                () -> jwtUtil.validateToken(tokenWithoutClaims));
         assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, exception.getMessage());
     }
 
@@ -103,7 +104,7 @@ public class JwtProviderTest {
                 .sign(Algorithm.HMAC512("invalidSecretKey"));
 
         Exception exception = assertThrows(UnauthorizedException.class,
-                () -> jwtProvider.validateToken(token));
+                () -> jwtUtil.validateToken(token));
         assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, exception.getMessage());
     }
 
@@ -111,7 +112,7 @@ public class JwtProviderTest {
     public void 잘못된_토큰을_검증하면_예외가_발생한다() {
         String invalidToken = "invalid.token.here";
 
-        Exception exception = assertThrows(UnauthorizedException.class, () -> jwtProvider.validateToken(invalidToken));
+        Exception exception = assertThrows(UnauthorizedException.class, () -> jwtUtil.validateToken(invalidToken));
         assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, exception.getMessage());
     }
 
