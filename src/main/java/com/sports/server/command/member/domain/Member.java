@@ -37,6 +37,12 @@ public class Member extends BaseEntity<Member> {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    public Member(String email, String password) {
+        this.email = email;
+        this.password = password;
+        this.isManager = true;
+    }
+
     public Member(String email, String password, boolean isManager) {
         this.email = email;
         this.password = password;
