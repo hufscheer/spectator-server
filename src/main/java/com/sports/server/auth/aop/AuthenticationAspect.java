@@ -33,7 +33,7 @@ public class AuthenticationAspect {
     private final JwtUtil jwtUtil;
 
     @Around("@annotation(authentication)")
-    public Object loginCheck(ProceedingJoinPoint proceedingJoinPoint, Authentication authentication)
+    public Object authenticate(ProceedingJoinPoint proceedingJoinPoint, Authentication authentication)
             throws Throwable {
 
         ServletRequestAttributes requestAttributes =
