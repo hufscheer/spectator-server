@@ -1,9 +1,6 @@
 package com.sports.server.command.timeline.domain;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
@@ -12,5 +9,6 @@ import lombok.Getter;
 public class QuarterChangeTimeline extends Timeline  {
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "quarter_change_type")
     private QuarterChangeType quarterChangeType;
 }
