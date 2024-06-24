@@ -60,7 +60,7 @@ public class CookieUtilTest {
             CookieUtil.getCookie(request, COOKIE_NAME);
         });
 
-        assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, thrown.getMessage());
+        assertEquals(AuthorizationErrorMessages.INVALID_COOKIE_EXCEPTION, thrown.getMessage());
     }
 
     @Test
