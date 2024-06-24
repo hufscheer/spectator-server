@@ -14,7 +14,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -23,10 +22,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationAspect {
-
-    @Value("${cookie.name}")
-    private String COOKIE_NAME;
-
     private static final String PARAMETER_MEMBER = "member";
 
     private final MemberRepository memberRepository;
@@ -40,7 +35,7 @@ public class AuthenticationAspect {
                 (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
 
-        Cookie cookie = CookieUtil.getCookie(request, COOKIE_NAME).orElseThrow(() ->
+        Cookie cookie = CookieUtil.getCookie(request, "HCC_SES").orElseThrow(() ->
                 new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED));
         String accessToken = cookie.getValue();
 
