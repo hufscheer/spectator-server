@@ -70,4 +70,16 @@ public class JwtUtil {
             throw new UnauthorizedException(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION);
         }
     }
+
+    public String getEmail(String token) {
+        DecodedJWT decodedJWT = getDecodedJWT(token);
+        Claim emailClaim = decodedJWT.getClaim(CLAIM_EMAIL);
+
+        if (emailClaim.isNull()) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION);
+        }
+
+        return emailClaim.asString();
+    }
+
 }
