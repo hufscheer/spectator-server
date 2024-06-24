@@ -10,7 +10,7 @@ CREATE TABLE timelines
     is_success                BIT(1)                NULL,
     origin_lineup_player_id   BIGINT                NULL,
     replaced_lineup_player_id BIGINT                NULL,
-    quarter_change_type       VARCHAR(255)          NULL,
+    game_progress_type        VARCHAR(255)          NULL,
     CONSTRAINT pk_timelines PRIMARY KEY (id)
 );
 
