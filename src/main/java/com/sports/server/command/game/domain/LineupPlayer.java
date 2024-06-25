@@ -41,4 +41,12 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private LineupPlayerState state;
+
+    public void changeStateToStarter() {
+        this.state = LineupPlayerState.STARTER;
+    }
+
+    public void changeStateToCandidate() {
+        this.state = LineupPlayerState.CANDIDATE;
+    }
 }
