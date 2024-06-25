@@ -36,7 +36,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @DatabaseIsolation
 @Import(TestSecurityConfig.class)
 @Sql(scripts = "/member-fixture.sql")
-public class AuthenticationAspectTest {
+public class LoadMemberAspectTest {
 
     @Value("${cookie.name}")
     private String COOKIE_NAME;
@@ -59,7 +59,7 @@ public class AuthenticationAspectTest {
     @Mock
     private MethodSignature methodSignature;
 
-    private AuthenticationAspect authenticationAspect;
+    private LoadMemberAspect loadMemberAspect;
     private MockHttpServletRequest request;
     private Member member;
     private String email;
@@ -76,7 +76,7 @@ public class AuthenticationAspectTest {
         cookie = new Cookie(COOKIE_NAME, accessToken);
         request.setCookies(cookie);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request)); // RequestContextHolder에 설정
-        authenticationAspect = new AuthenticationAspect(memberRepository, jwtUtil);
+        loadMemberAspect = new LoadMemberAspect(memberRepository);
 
         when(proceedingJoinPoint.getSignature()).thenReturn(methodSignature);
         when(methodSignature.getMethod()).thenReturn(this.getClass().getDeclaredMethods()[0]);
@@ -85,7 +85,7 @@ public class AuthenticationAspectTest {
     @Test
     void 검증에_성공한다() throws Throwable {
         when(proceedingJoinPoint.proceed(any())).thenReturn(member);
-        Member resultMember = (Member) authenticationAspect.authenticate(proceedingJoinPoint, null);
+        Member resultMember = (Member) loadMemberAspect.authenticate(proceedingJoinPoint, null);
 
         assertNotNull(resultMember);
         assertEquals(email, resultMember.getEmail());
@@ -105,7 +105,7 @@ public class AuthenticationAspectTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-            authenticationAspect.authenticate(proceedingJoinPoint, null);
+            loadMemberAspect.authenticate(proceedingJoinPoint, null);
         });
         assertEquals(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION, exception.getMessage());
     }
@@ -118,7 +118,7 @@ public class AuthenticationAspectTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-            authenticationAspect.authenticate(proceedingJoinPoint, null);
+            loadMemberAspect.authenticate(proceedingJoinPoint, null);
         });
         assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, exception.getMessage());
     }
