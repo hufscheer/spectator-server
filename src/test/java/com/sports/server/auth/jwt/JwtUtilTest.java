@@ -116,53 +116,12 @@ public class JwtUtilTest {
         assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, exception.getMessage());
     }
 
-//    @Test
-//    public void 유효한_토큰을_통해_Authentication_객체를_올바르게_가져온다() {
-//        String token = JWT.create().withSubject(this.member.getEmail())
-//                .withExpiresAt(new Date(new Date().getTime() + tokenValidTime))
-//                .withClaim("id", this.member.getId())
-//                .withClaim("email", this.member.getEmail())
-//                .sign(Algorithm.HMAC512(secretKey));
-//
-//        Authentication authentication = jwtProvider.getAuthentication(token);
-//        assertNotNull(authentication);
-//        assertEquals(emailOfMember, ((MemberDetails) authentication.getPrincipal()).getUsername());
-//    }
+    @Test
+    public void 토큰으로부터_올바른_이메일이_추출된다() {
+        String accessToken = jwtUtil.createAccessToken(member);
 
-//    @Test
-//    public void 유효하지_않은_토큰인_경우_예외를_던진다() {
-//        String invalidToken = "invalid.token.here";
-//
-//        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-//            jwtProvider.getAuthentication(invalidToken);
-//        });
-//        assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, exception.getMessage());
-//    }
-//
-//    @Test
-//    public void 존재하지_않는_회원인_경우_예외를_던진다() {
-//        String token = JWT.create().withSubject("non-existing@example.com")
-//                .withExpiresAt(new Date(new Date().getTime() + tokenValidTime))
-//                .withClaim("email", "non-existing@example.com")
-//                .sign(Algorithm.HMAC512(secretKey));
-//
-//        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-//            jwtProvider.getAuthentication(token);
-//        });
-//        assertEquals(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION, exception.getMessage());
-//    }
-//
-//    @Test
-//    public void 유효_기간이_지난_토큰인_경우_예외를_던진다() {
-//        String expiredToken = JWT.create().withSubject(member.getEmail())
-//                .withExpiresAt(new Date(new Date().getTime() - 1000))
-//                .withClaim("id", member.getId())
-//                .withClaim("email", member.getEmail())
-//                .sign(Algorithm.HMAC512(secretKey));
-//
-//        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-//            jwtProvider.getAuthentication(expiredToken);
-//        });
-//        assertEquals(AuthorizationErrorMessages.TOKEN_EXPIRED_EXCEPTION, exception.getMessage());
-//    }
+        assertEquals(emailOfMember, jwtUtil.getEmail(accessToken));
+
+    }
+
 }
