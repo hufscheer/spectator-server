@@ -31,17 +31,12 @@ public class AuthenticationAspect {
     public Object authenticate(ProceedingJoinPoint proceedingJoinPoint, Authentication authentication)
             throws Throwable {
 
-        ServletRequestAttributes requestAttributes =
-                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = requestAttributes.getRequest();
+        org.springframework.security.core.Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.INVALID_COOKIE_EXCEPTION);
+        }
 
-        Cookie cookie = CookieUtil.getCookie(request, "HCC_SES").orElseThrow(() ->
-                new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED));
-        String accessToken = cookie.getValue();
-
-        jwtUtil.validateToken(accessToken);
-        String email = jwtUtil.getEmail(accessToken);
-        Member member = memberRepository.findMemberByEmail(email).orElseThrow(() ->
+        Member member = memberRepository.findMemberByEmail(auth.getName()).orElseThrow(() ->
                 new UnauthorizedException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION));
 
         Object[] modifiedArgs = modifyArgsWithMember(member, proceedingJoinPoint.getArgs(),
