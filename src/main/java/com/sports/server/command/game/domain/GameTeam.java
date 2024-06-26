@@ -73,7 +73,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 			.ifPresent(LineupPlayer::changeStateToStarter);
 	}
 
-	public void rollBackToCandidate(final LineupPlayer lineupPlayer) {
+	public void rollbackToCandidate(final LineupPlayer lineupPlayer) {
 		this.lineupPlayers.stream()
 			.filter(lp -> {
 				if (Objects.equals(lp, lineupPlayer) && Objects.equals(lp.getState(), LineupPlayerState.CANDIDATE)) {
