@@ -2,6 +2,7 @@ package com.sports.server.query.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.command.timeline.domain.Timeline;
 
 public record RecordResponse(
         @JsonIgnore
@@ -16,4 +17,11 @@ public record RecordResponse(
         ScoreRecordResponse scoreRecord,
         ReplacementRecordResponse replacementRecord
 ) {
+    public static RecordResponse from(Timeline timeline) {
+        return new RecordResponse(
+                timeline.getRecordedQuarter(),
+                timeline.getId(),
+                timeline.getType(),
+        );
+    }
 }

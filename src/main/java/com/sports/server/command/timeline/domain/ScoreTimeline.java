@@ -15,4 +15,9 @@ public class ScoreTimeline extends Timeline {
 
     @Column(name = "score")
     private Integer score;
+
+    @Override
+    public String getType() {
+        return "SCORE";
+    }
 }

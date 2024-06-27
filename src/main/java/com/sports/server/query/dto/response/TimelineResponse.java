@@ -9,6 +9,11 @@ public record TimelineResponse(
         List<RecordResponse> records
 ) {
     public static TimelineResponse of(String quarter, List<Timeline> timelines) {
-        return null;
+        return new TimelineResponse(
+                quarter,
+                timelines.stream()
+                        .map(RecordResponse::from)
+                        .toList()
+        );
     }
 }

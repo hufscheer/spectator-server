@@ -15,4 +15,9 @@ public class PKTimeline extends Timeline {
 
     @Column(name = "is_success")
     private Boolean isSuccess;
+
+    @Override
+    public String getType() {
+        return "PK";
+    }
 }
