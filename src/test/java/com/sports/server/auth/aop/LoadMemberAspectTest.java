@@ -1,8 +1,8 @@
 package com.sports.server.auth.aop;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -75,10 +75,11 @@ public class LoadMemberAspectTest {
         setSecurityContext(fakeEmail);
         setupProceedingJoinPoint("testMethodWithMember", Member.class);
 
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-            loadMemberAspect.authenticate(proceedingJoinPoint, null);
-        });
-        assertEquals(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION, exception.getMessage());
+        assertThatThrownBy(
+                () -> loadMemberAspect.authenticate(proceedingJoinPoint, null)
+        ).isInstanceOf(UnauthorizedException.class)
+                .hasMessage(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION);
+
     }
 
     @Test
@@ -86,10 +87,10 @@ public class LoadMemberAspectTest {
         SecurityContextHolder.clearContext();
         setupProceedingJoinPoint("testMethodWithMember", Member.class);
 
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-            loadMemberAspect.authenticate(proceedingJoinPoint, null);
-        });
-        assertEquals(AuthorizationErrorMessages.INVALID_COOKIE_EXCEPTION, exception.getMessage());
+        assertThatThrownBy(
+                () -> loadMemberAspect.authenticate(proceedingJoinPoint, null)
+        ).isInstanceOf(UnauthorizedException.class)
+                .hasMessage(AuthorizationErrorMessages.INVALID_COOKIE_EXCEPTION);
     }
 
     private void setSecurityContext(final String email) {
