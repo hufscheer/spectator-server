@@ -2,16 +2,13 @@ package com.sports.server.auth.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
-import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,35 +41,21 @@ public class CookieUtilTest {
         Cookie[] cookies = {new Cookie(COOKIE_NAME, TOKEN)};
         when(request.getCookies()).thenReturn(cookies);
 
-        Optional<Cookie> cookie = CookieUtil.getCookie(request, COOKIE_NAME);
+        Cookie cookie = CookieUtil.getCookie(request, COOKIE_NAME);
 
-        assertTrue(cookie.isPresent());
-        assertEquals(COOKIE_NAME, cookie.get().getName());
-        assertEquals(TOKEN, cookie.get().getValue());
+        assertNotNull(cookie);
+        assertEquals(COOKIE_NAME, cookie.getName());
+        assertEquals(TOKEN, cookie.getValue());
     }
 
     @Test
-    public void 쿠키가_존재하지_않는_경우_예외를_던진다() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getCookies()).thenReturn(null);
-
-        UnauthorizedException thrown = assertThrows(UnauthorizedException.class, () -> {
-            CookieUtil.getCookie(request, COOKIE_NAME);
-        });
-
-        assertEquals(AuthorizationErrorMessages.INVALID_COOKIE_EXCEPTION, thrown.getMessage());
-    }
-
-    @Test
-    public void 요청에_해당하는_쿠키가_없는_경우_예외를_던진다() {
+    public void 요청에_해당하는_쿠키가_없는_경우_null을_반환한다() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         Cookie[] cookies = {new Cookie("anotherCookie", TOKEN)};
         when(request.getCookies()).thenReturn(cookies);
 
-        UnauthorizedException thrown = assertThrows(UnauthorizedException.class, () -> {
-            CookieUtil.getCookie(request, COOKIE_NAME);
-        });
+        Cookie cookie = CookieUtil.getCookie(request, COOKIE_NAME);
 
-        assertEquals(AuthorizationErrorMessages.INVALID_TOKEN_EXCEPTION, thrown.getMessage());
+        assertNull(cookie);
     }
 }

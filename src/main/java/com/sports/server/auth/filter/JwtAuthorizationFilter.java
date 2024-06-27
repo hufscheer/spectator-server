@@ -6,6 +6,7 @@ import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,23 +27,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        CookieUtil.getCookie(request, "HCC_SES")
-                .ifPresentOrElse(
-                        cookie -> {
-                            String accessToken = cookie.getValue();
-                            jwtUtil.validateToken(accessToken);
+        Cookie cookie = CookieUtil.getCookie(request, "HCC_SES");
 
-                            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                                    jwtUtil.getEmail(accessToken),
-                                    null,
-                                    null
-                            );
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
-                        },
-                        () -> {
-                            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-                        }
-                );
+        if (cookie == null) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+        }
+        String accessToken = cookie.getValue();
+        jwtUtil.validateToken(accessToken);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                jwtUtil.getEmail(accessToken),
+                null,
+                null
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);
     }
