@@ -3,6 +3,8 @@ package com.sports.server.auth.config;
 import com.sports.server.auth.filter.JwtAuthorizationFilter;
 import com.sports.server.auth.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
@@ -25,6 +28,10 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
 
+    @Autowired
+    @Qualifier("delegatedAuthenticationEntryPoint")
+    AuthenticationEntryPoint authEntryPoint;
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
@@ -32,11 +39,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern("/manager/login")).permitAll()
-                        .requestMatchers(mvc.pattern("/manager/**")).hasRole("MANAGER")
+                        .requestMatchers(mvc.pattern("/manager/**")).authenticated()
                         .anyRequest().permitAll()
                 )
-                .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil),
+                .httpBasic(basic -> basic.authenticationEntryPoint(authEntryPoint))
+                .exceptionHandling(Customizer.withDefaults())
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, authEntryPoint),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

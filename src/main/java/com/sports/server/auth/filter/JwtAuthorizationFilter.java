@@ -14,35 +14,44 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final AuthenticationEntryPoint authEntryPoint;
 
     @Value("${cookie.name}")
     public String COOKIE_NAME;
 
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        Cookie cookie = CookieUtil.getCookie(request, "HCC_SES");
+        try {
+            Cookie cookie = CookieUtil.getCookie(request, "HCC_SES");
 
-        if (cookie == null) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+            if (cookie == null) {
+                throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+            }
+
+            String accessToken = cookie.getValue();
+            jwtUtil.validateToken(accessToken);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    jwtUtil.getEmail(accessToken),
+                    null,
+                    null
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            chain.doFilter(request, response);
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            authEntryPoint.commence(request, response, new AuthenticationException(e.getMessage()) {
+            });
         }
-        String accessToken = cookie.getValue();
-        jwtUtil.validateToken(accessToken);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                jwtUtil.getEmail(accessToken),
-                null,
-                null
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        chain.doFilter(request, response);
     }
 
     @Override
