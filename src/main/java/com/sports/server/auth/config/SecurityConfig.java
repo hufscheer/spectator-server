@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern("/manager/login")).permitAll()
-                        .requestMatchers(mvc.pattern("/manager/**")).authenticated()
+                        .requestMatchers(mvc.pattern("/manager/**")).hasRole("MANAGER")
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
