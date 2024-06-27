@@ -1,6 +1,6 @@
 package com.sports.server.auth.dto;
 
-public record JwtResponse(
+public record LoginResponse(
         String accessToken
 ) {
 }

@@ -8,7 +8,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.auth.dto.JwtResponse;
+import com.sports.server.auth.dto.LoginResponse;
 import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
@@ -29,9 +29,9 @@ public class AuthControllerTest extends DocumentationTest {
         String email = "example@example.com";
         String password = "1234";
         LoginRequest loginRequest = new LoginRequest(email, password);
-        JwtResponse jwtResponse = new JwtResponse("testAccessToken");
+        LoginResponse loginResponse = new LoginResponse("testAccessToken");
 
-        given(authService.loginByManager(loginRequest)).willReturn(jwtResponse);
+        given(authService.loginByManager(loginRequest)).willReturn(loginResponse);
 
         // when
         ResultActions result = mockMvc.perform(post("/manager/login")

@@ -1,7 +1,7 @@
 package com.sports.server.auth.application;
 
-import com.sports.server.auth.dto.JwtResponse;
 import com.sports.server.auth.dto.LoginRequest;
+import com.sports.server.auth.dto.LoginResponse;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.command.member.domain.Member;
@@ -22,7 +22,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtResponse loginByManager(final LoginRequest loginRequest) {
+    public LoginResponse loginByManager(final LoginRequest loginRequest) {
         Member member = memberRepository.findMemberByEmail(loginRequest.email())
                 .filter(m -> passwordEncoder.matches(loginRequest.password(), m.getPassword()))
                 .orElseThrow(() -> new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION));
@@ -31,6 +31,10 @@ public class AuthService {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
 
-        return new JwtResponse(jwtUtil.createAccessToken(member));
+        return new LoginResponse(jwtUtil.createAccessToken(member));
+    }
+
+    public void register() {
+        memberRepository.save(new Member("sualng123@gmail.com", passwordEncoder.encode("1234"), true));
     }
 }

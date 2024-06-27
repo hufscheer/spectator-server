@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import com.sports.server.auth.dto.JwtResponse;
+import com.sports.server.auth.dto.LoginResponse;
 import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.auth.utils.JwtUtil;
@@ -51,7 +51,7 @@ public class AuthServiceTest extends ServiceTest {
             LoginRequest loginRequest = new LoginRequest(email, password);
 
             // when & then
-            JwtResponse response = authService.loginByManager(loginRequest);
+            LoginResponse response = authService.loginByManager(loginRequest);
             String accessToken = response.accessToken();
             assertEquals(email, jwtUtil.getEmail(accessToken));
         }
