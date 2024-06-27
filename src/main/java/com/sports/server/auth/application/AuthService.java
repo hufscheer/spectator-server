@@ -33,8 +33,4 @@ public class AuthService {
 
         return new LoginResponse(jwtUtil.createAccessToken(member));
     }
-
-    public void register() {
-        memberRepository.save(new Member("sualng123@gmail.com", passwordEncoder.encode("1234"), true));
-    }
 }
