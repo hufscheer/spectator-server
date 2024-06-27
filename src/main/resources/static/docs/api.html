@@ -462,6 +462,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_게임_라인업_조회">게임 라인업 조회</a></li>
 </ul>
 </li>
+<li><a href="#_라인업_api">라인업 API</a>
+<ul class="sectlevel2">
+<li><a href="#_라인업_선수_선발로_변경">라인업 선수 선발로 변경</a></li>
+<li><a href="#_라인업_선수_후보로_변경">라인업 선수 후보로 변경</a></li>
+</ul>
+</li>
 <li><a href="#_응원_횟수_api">응원 횟수 API</a>
 <ul class="sectlevel2">
 <li><a href="#_응원_횟수_업데이트">응원 횟수 업데이트</a></li>
@@ -1223,65 +1229,85 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1230
+Content-Length: 1620
 
 [ {
   "gameTeamId" : 1,
   "teamName" : "팀A",
   "gameTeamPlayers" : [ {
+    "id" : 1,
     "playerName" : "선수A",
     "description" : "탑",
     "number" : 1,
-    "isCaptain" : true
+    "isCaptain" : true,
+    "state" : "STARTER"
   }, {
+    "id" : 2,
     "playerName" : "선수B",
     "description" : "미드",
     "number" : 2,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   }, {
+    "id" : 3,
     "playerName" : "선수C",
     "description" : "정글",
     "number" : 3,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   }, {
+    "id" : 4,
     "playerName" : "선수D",
     "description" : "원딜",
     "number" : 4,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   }, {
+    "id" : 5,
     "playerName" : "선수E",
     "description" : "서폿",
     "number" : 5,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   } ]
 }, {
   "gameTeamId" : 2,
   "teamName" : "팀B",
   "gameTeamPlayers" : [ {
+    "id" : 1,
     "playerName" : "선수F",
     "description" : "탑",
     "number" : 1,
-    "isCaptain" : true
+    "isCaptain" : true,
+    "state" : "STARTER"
   }, {
+    "id" : 2,
     "playerName" : "선수G",
     "description" : "미드",
     "number" : 2,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   }, {
+    "id" : 3,
     "playerName" : "선수H",
     "description" : "정글",
     "number" : 3,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   }, {
+    "id" : 4,
     "playerName" : "선수I",
     "description" : "원딜",
     "number" : 4,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   }, {
+    "id" : 5,
     "playerName" : "선수J",
     "description" : "서폿",
     "number" : 5,
-    "isCaptain" : false
+    "isCaptain" : false,
+    "state" : "STARTER"
   } ]
 } ]</code></pre>
 </div>
@@ -1314,6 +1340,11 @@ Content-Length: 1230
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀 이름</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선수 ID</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].playerName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수 이름</p></td>
@@ -1332,6 +1363,74 @@ Content-Length: 1230
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].isCaptain</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수가 주장인지에 대한 정보</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].state</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선수의 선발 상태</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_라인업_api"><a class="link" href="#_라인업_api">라인업 API</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_라인업_선수_선발로_변경"><a class="link" href="#_라인업_선수_선발로_변경">라인업 선수 선발로 변경</a></h3>
+<div class="sect3">
+<h4 id="_라인업_선수_선발로_변경_path_parameters"><a class="link" href="#_라인업_선수_선발로_변경_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /games/{gameId}/lineup-players/{lineupPlayerId}/starter</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">라인업 선수의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_라인업_선수_후보로_변경"><a class="link" href="#_라인업_선수_후보로_변경">라인업 선수 후보로 변경</a></h3>
+<div class="sect3">
+<h4 id="_라인업_선수_후보로_변경_path_parameters"><a class="link" href="#_라인업_선수_후보로_변경_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /games/{gameId}/lineup-players/{lineupPlayerId}/candidate</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">라인업 선수의 ID</p></td>
 </tr>
 </tbody>
 </table>
@@ -2149,7 +2248,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-06-15 13:10:25 +0900
+Last updated 2024-06-27 17:46:56 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
