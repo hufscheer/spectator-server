@@ -63,24 +63,14 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
 	public void registerStarter(final LineupPlayer lineupPlayer) {
 		this.lineupPlayers.stream()
-			.filter(lp -> {
-				if (Objects.equals(lp, lineupPlayer) && Objects.equals(lp.getState(), LineupPlayerState.STARTER)) {
-					throw new CustomException(HttpStatus.BAD_REQUEST, "이미 선발로 등록된 선수입니다.");
-				}
-				return Objects.equals(lp, lineupPlayer);
-			})
+			.filter(lp -> lp.equals(lineupPlayer))
 			.findAny()
 			.ifPresent(LineupPlayer::changeStateToStarter);
 	}
 
 	public void rollbackToCandidate(final LineupPlayer lineupPlayer) {
 		this.lineupPlayers.stream()
-			.filter(lp -> {
-				if (Objects.equals(lp, lineupPlayer) && Objects.equals(lp.getState(), LineupPlayerState.CANDIDATE)) {
-					throw new CustomException(HttpStatus.BAD_REQUEST, "이미 후보로 내려간 선수입니다.");
-				}
-				return Objects.equals(lp, lineupPlayer);
-			})
+			.filter(lp -> lp.equals(lineupPlayer))
 			.findAny()
 			.ifPresent(LineupPlayer::changeStateToCandidate);
 	}

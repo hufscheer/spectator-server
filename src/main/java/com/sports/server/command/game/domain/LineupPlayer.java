@@ -1,6 +1,12 @@
 package com.sports.server.command.game.domain;
 
+import static com.sports.server.command.game.domain.LineupPlayerState.*;
+
+import org.springframework.http.HttpStatus;
+
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.exception.CustomException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,10 +49,16 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     private LineupPlayerState state;
 
     public void changeStateToStarter() {
-        this.state = LineupPlayerState.STARTER;
+        if (this.state == STARTER) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 선발로 등록된 선수입니다.");
+        }
+        this.state = STARTER;
     }
 
     public void changeStateToCandidate() {
-        this.state = LineupPlayerState.CANDIDATE;
+        if (this.state == CANDIDATE) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 후보로 등록된 선수입니다.");
+        }
+        this.state = CANDIDATE;
     }
 }
