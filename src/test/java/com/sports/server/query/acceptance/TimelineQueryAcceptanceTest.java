@@ -42,7 +42,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games/{gameId}/timeline", baseballId)
+                .get("/games/{gameId}/timeline/v2", baseballId)
                 .then().log().all()
                 .extract();
 
@@ -60,7 +60,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         2L,
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
-                                        new ScoreRecordResponse(2L, 3, List.of(
+                                        new ScoreRecordResponse(4L, 3, List.of(
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
@@ -76,7 +76,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse(2L,"선수3")
+                                        new ReplacementRecordResponse(3L,"선수3")
                                 )
                         )),
                         new TimelineResponse(
@@ -89,7 +89,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse(1L,"선수7")
+                                        new ReplacementRecordResponse(2L,"선수7")
                                 ),
                                 new RecordResponse(
                                         null, 1L, SCORE_TYPE,
