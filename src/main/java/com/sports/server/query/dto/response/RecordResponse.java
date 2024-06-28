@@ -23,7 +23,7 @@ public record RecordResponse(
         ReplacementRecordResponse replacementRecord
 ) {
     public static RecordResponse from(Timeline timeline) {
-        LineupPlayer lineupPlayer = getPlayerName(timeline);
+        LineupPlayer lineupPlayer = getPlayer(timeline);
         GameTeam gameTeam = lineupPlayer.getGameTeam();
         LeagueTeam leagueTeam = gameTeam.getLeagueTeam();
 
@@ -43,7 +43,7 @@ public record RecordResponse(
         );
     }
 
-    private static LineupPlayer getPlayerName(Timeline timeline) {
+    private static LineupPlayer getPlayer(Timeline timeline) {
         if (timeline instanceof ScoreTimeline scoreTimeline) {
             return scoreTimeline.getScorer();
         } else if (timeline instanceof ReplacementTimeline replacementTimeline) {
