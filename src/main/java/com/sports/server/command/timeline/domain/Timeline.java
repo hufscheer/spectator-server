@@ -18,12 +18,14 @@ public abstract class Timeline extends BaseEntity<Timeline> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", nullable = false)
-    private Game game;
+    protected Game game;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recorded_quarter_id", nullable = false)
-    private Quarter recordedQuarter;
+    protected Quarter recordedQuarter;
 
     @Column(name = "recorded_at", nullable = false)
-    private Integer recordedAt;
+    protected Integer recordedAt;
+
+    public abstract String getType();
 }

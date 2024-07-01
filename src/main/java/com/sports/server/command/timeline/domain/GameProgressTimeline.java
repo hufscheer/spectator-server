@@ -11,4 +11,9 @@ public class GameProgressTimeline extends Timeline  {
     @Enumerated(EnumType.STRING)
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
+
+    @Override
+    public String getType() {
+        return "GAME_PROGRESS";
+    }
 }
