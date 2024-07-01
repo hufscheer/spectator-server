@@ -17,8 +17,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@Component
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
@@ -32,7 +34,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
-            Cookie cookie = CookieUtil.getCookie(request, "HCC_SES");
+            Cookie cookie = CookieUtil.getCookie(request, COOKIE_NAME);
 
             if (cookie == null) {
                 throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
