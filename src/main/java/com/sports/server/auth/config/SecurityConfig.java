@@ -51,6 +51,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    JwtAuthorizationFilter jwtAuthorizationFilter(JwtUtil jwtUtil, AuthenticationEntryPoint authEntryPoint) {
+        return new JwtAuthorizationFilter(jwtUtil, authEntryPoint);
+    }
+
+    @Bean
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
     }
