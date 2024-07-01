@@ -1,11 +1,12 @@
 package com.sports.server.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sports.server.auth.presentation.AuthController;
 import com.sports.server.auth.application.AuthService;
+import com.sports.server.auth.presentation.AuthController;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameTeamService;
+import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
@@ -88,6 +89,9 @@ public class DocumentationTest {
 
     @MockBean
     protected SportQueryService sportQueryService;
+
+    @MockBean
+    protected LineupPlayerService lineupPlayerService;
 
     @MockBean
     protected AuthService authService;
