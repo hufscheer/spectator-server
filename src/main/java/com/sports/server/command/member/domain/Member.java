@@ -15,8 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "members")
 @Getter
+@Table(name = "members")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity<Member> {
 
@@ -41,7 +41,7 @@ public class Member extends BaseEntity<Member> {
         return new Member(email, password, true);
     }
 
-    public Member(String email, String password, boolean isManager) {
+    private Member(String email, String password, boolean isManager) {
         this.email = email;
         this.password = password;
         this.isManager = isManager;
