@@ -1,4 +1,5 @@
-SET foreign_key_checks = 0;
+SET
+foreign_key_checks = 0;
 
 -- 스포츠
 INSERT INTO sports (id, name)
@@ -44,26 +45,86 @@ VALUES (6, 2, '선수6', '센터', true, 6, 1),
        (10, 2, '선수10', '스몰 포워드', false, 10, 1);
 
 -- 1쿼터 경기 기록 추가
-INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
-VALUES (1, 1, 1, 1, 22, 'SCORE');
-INSERT INTO score_records (record_id, lineup_player_id, score)
-VALUES (1, 2, 2); -- A팀 선수 2의 2득점
 
-INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
-VALUES (2, 1, 2, 1, 24, 'REPLACEMENT');
-INSERT INTO replacement_records(record_id, origin_lineup_player_id, replaced_lineup_player_id)
-VALUES (2, 6, 7);
+-- A팀 선수 2의 2득점
+INSERT INTO timelines (type,
+                       game_id,
+                       recorded_quarter_id,
+                       recorded_at,
+                       scorer_id,
+                       score,
+                       game_team1_id,
+                       snapshot_score1,
+                       game_team2_id,
+                       snapshot_score2)
+VALUES ('SCORE', -- type
+        1, -- game_id
+        1, -- recorded_quarter_id
+        22, -- recorded_at (UNIX timestamp)
+        2, -- scorer_id
+        2, -- score
+        1, -- game_team1_id
+        2, -- snapshot_score1
+        2, -- game_team2_id
+        0 -- snapshot_score2
+       );
+
+
 -- B팀 6선수 OUT 7선수 IN
+INSERT INTO timelines (type,
+                       game_id,
+                       recorded_quarter_id,
+                       recorded_at,
+                       origin_lineup_player_id,
+                       replaced_lineup_player_id)
+VALUES ('REPLACEMENT', -- type
+        1, -- game_id
+        1, -- recorded_quarter_id
+        24, -- recorded_at (UNIX timestamp)
+        6, -- origin_lineup_player_id
+        7 -- replaced_lineup_player_id
+       );
 
 -- 2쿼터 경기 기록 추가
-INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
-VALUES (3, 1, 1, 2, 10, 'REPLACEMENT');
-INSERT INTO replacement_records(record_id, origin_lineup_player_id, replaced_lineup_player_id)
-VALUES (3, 2, 3); -- A팀 2선수 OUT 3선수 IN
 
-INSERT INTO records (id, game_id, game_team_id, recorded_quarter_id, recorded_at, record_type)
-VALUES (4, 1, 2, 2, 13, 'SCORE');
-INSERT INTO score_records (record_id, lineup_player_id, score)
-VALUES (4, 10, 3); -- B팀 선수 10의 3득점
+-- A팀 2선수 OUT 3선수 IN
+INSERT INTO timelines (type,
+                       game_id,
+                       recorded_quarter_id,
+                       recorded_at,
+                       origin_lineup_player_id,
+                       replaced_lineup_player_id)
+VALUES ('REPLACEMENT', -- type
+        1, -- game_id
+        2, -- recorded_quarter_id
+        10, -- recorded_at (UNIX timestamp)
+        2, -- origin_lineup_player_id
+        3 -- replaced_lineup_player_id
+       );
 
-SET foreign_key_checks = 1;
+
+-- B팀 선수 10의 3득점
+INSERT INTO timelines (type,
+                       game_id,
+                       recorded_quarter_id,
+                       recorded_at,
+                       scorer_id,
+                       score,
+                       game_team1_id,
+                       snapshot_score1,
+                       game_team2_id,
+                       snapshot_score2)
+VALUES ('SCORE', -- type
+        1, -- game_id
+        2, -- recorded_quarter_id
+        13, -- recorded_at (UNIX timestamp)
+        10, -- scorer_id
+        3, -- score
+        1, -- game_team1_id
+        2, -- snapshot_score1
+        2, -- game_team2_id
+        3 -- snapshot_score2
+       );
+
+SET
+foreign_key_checks = 1;

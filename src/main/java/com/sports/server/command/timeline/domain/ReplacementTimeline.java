@@ -16,4 +16,9 @@ public class ReplacementTimeline extends Timeline {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "replaced_lineup_player_id")
     private LineupPlayer replacedLineupPlayer;
+
+    @Override
+    public String getType() {
+        return "REPLACEMENT";
+    }
 }
