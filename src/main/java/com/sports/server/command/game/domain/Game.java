@@ -62,4 +62,12 @@ public class Game extends BaseEntity<Game> {
 
     @Column(name = "round", nullable = false)
     private Integer round;
+
+    public void registerStarter(final LineupPlayer lineupPlayer) {
+        this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));
+    }
+
+    public void rollbackToCandidate(final LineupPlayer lineupPlayer) {
+        this.teams.forEach(gameTeam -> gameTeam.rollbackToCandidate(lineupPlayer));
+    }
 }

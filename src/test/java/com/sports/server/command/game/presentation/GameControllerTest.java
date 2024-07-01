@@ -1,7 +1,7 @@
 package com.sports.server.command.game.presentation;
 
 
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -42,5 +42,51 @@ public class GameControllerTest extends DocumentationTest {
 
                         )
                 ));
+    }
+
+    @Test
+    void 라인업_선수의_상태를_선발로_변경한다() throws Exception {
+
+        //given
+        Long gameId = 1L;
+        Long lineupPlayerId = 1L;
+
+        //when
+        ResultActions result = mockMvc.perform(
+            patch("/games/{gameId}/lineup-players/{lineupPlayerId}/starter", gameId, lineupPlayerId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        result.andExpect((status().isOk()))
+            .andDo(restDocsHandler.document(
+                pathParameters(
+                    parameterWithName("gameId").description("게임의 ID"),
+                    parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                )
+            ));
+    }
+
+    @Test
+    void 라인업_선수의_상태를_후보로_변경한다() throws Exception {
+
+        //given
+        Long gameId = 1L;
+        Long lineupPlayerId = 1L;
+
+        //when
+        ResultActions result = mockMvc.perform(
+            patch("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate", gameId, lineupPlayerId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        result.andExpect((status().isOk()))
+            .andDo(restDocsHandler.document(
+                pathParameters(
+                    parameterWithName("gameId").description("게임의 ID"),
+                    parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                )
+            ));
     }
 }
