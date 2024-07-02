@@ -1,11 +1,17 @@
 package com.sports.server.common.config;
 
+import com.sports.server.auth.resolver.AuthMemberResolver;
+import com.sports.server.command.member.domain.MemberRepository;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     private static final String ALLOW_ALL_PATH = "/**";
@@ -13,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${cors-allow-origins}")
     private String origins;
+    private final MemberRepository memberRepository;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -21,4 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(origins.split(","));
     }
 
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new AuthMemberResolver(memberRepository));
+    }
 }
