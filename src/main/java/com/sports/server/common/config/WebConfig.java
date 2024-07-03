@@ -17,9 +17,10 @@ public class WebConfig implements WebMvcConfigurer {
     private static final String ALLOW_ALL_PATH = "/**";
     private static final String ALLOWED_METHODS = "*";
 
+    private final MemberRepository memberRepository;
+
     @Value("${cors-allow-origins}")
     private String origins;
-    private final MemberRepository memberRepository;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
