@@ -1,7 +1,6 @@
 package com.sports.server.auth.config;
 
 import com.sports.server.auth.filter.JwtAuthorizationFilter;
-import com.sports.server.auth.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +25,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @Autowired
     @Qualifier("delegatedAuthenticationEntryPoint")
@@ -44,15 +43,10 @@ public class SecurityConfig {
                 )
                 .httpBasic(basic -> basic.authenticationEntryPoint(authEntryPoint))
                 .exceptionHandling(Customizer.withDefaults())
-                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, authEntryPoint),
+                .addFilterBefore(jwtAuthorizationFilter,
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    JwtAuthorizationFilter jwtAuthorizationFilter(JwtUtil jwtUtil, AuthenticationEntryPoint authEntryPoint) {
-        return new JwtAuthorizationFilter(jwtUtil, authEntryPoint);
     }
 
     @Bean
