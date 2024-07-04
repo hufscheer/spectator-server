@@ -22,29 +22,45 @@ import org.hibernate.annotations.Where;
 @Getter
 public class League extends BaseEntity<League> {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "manager_id")
+	private Member manager;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "organization_id")
+	private Organization organization;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @Column(name = "start_at", nullable = false)
-    private LocalDateTime startAt;
+	@Column(name = "start_at", nullable = false)
+	private LocalDateTime startAt;
 
-    @Column(name = "end_at", nullable = false)
-    private LocalDateTime endAt;
+	@Column(name = "end_at", nullable = false)
+	private LocalDateTime endAt;
 
-    @Column(name = "max_round")
-    private Integer maxRound;
+	@Column(name = "max_round")
+	private Integer maxRound;
 
-    @Column(name = "in_progress_round")
-    private Integer inProgressRound;
+	@Column(name = "in_progress_round")
+	private Integer inProgressRound;
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted;
+
+	public League(
+		final Member manager,
+		final Organization organization,
+		final String name,
+		final LocalDateTime startAt,
+		final LocalDateTime endAt,
+		final Integer maxRound
+	) {
+		this.manager = manager;
+		this.organization = organization;
+		this.name = name;
+		this.startAt = startAt;
+		this.endAt = endAt;
+		this.maxRound = maxRound;
+	}
 }
