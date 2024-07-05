@@ -12,19 +12,16 @@ import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.common.exception.UnauthorizedException;
-import com.sports.server.support.TestSecurityConfig;
 import com.sports.server.support.isolation.DatabaseIsolation;
 import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
 @DatabaseIsolation
-@Import(TestSecurityConfig.class)
 @Sql(scripts = "/member-fixture.sql")
 public class JwtUtilTest {
 
