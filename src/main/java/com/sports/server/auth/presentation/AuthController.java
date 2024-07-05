@@ -1,17 +1,14 @@
 package com.sports.server.auth.presentation;
 
-import com.sports.server.auth.aop.LoadMember;
 import com.sports.server.auth.application.AuthService;
 import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.auth.dto.LoginResponse;
 import com.sports.server.auth.utils.CookieUtil;
-import com.sports.server.command.member.domain.Member;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,11 +30,5 @@ public class AuthController {
         LoginResponse loginResponse = authService.loginByManager(loginRequest);
         ResponseCookie cookie = CookieUtil.createCookie(COOKIE_NAME, loginResponse.accessToken(), COOKIE_VALID_TIME);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-    }
-
-    @LoadMember
-    @GetMapping("/manager/test")
-    public String test(Member member) {
-        return member.getEmail();
     }
 }
