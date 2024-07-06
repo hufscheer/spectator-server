@@ -2,23 +2,23 @@ package com.sports.server.command.member.domain;
 
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Entity
+@Getter
 @Table(name = "members")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity<Member> {
-
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9._-]+@[a-z]+[.]+[a-z]{2,3}$");
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$");
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
@@ -37,25 +37,14 @@ public class Member extends BaseEntity<Member> {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    public Member(String email, String password, boolean isAdministrator) {
-        validateEmail(email);
-        validatePassword(password);
+    public static Member manager(final String email, final String password) {
+        return new Member(email, password, true);
+    }
+
+    private Member(String email, String password, boolean isManager) {
         this.email = email;
         this.password = password;
-        this.isManager = isAdministrator;
+        this.isManager = isManager;
     }
 
-    private void validateEmail(final String email) {
-        Matcher matcher = EMAIL_PATTERN.matcher(email);
-        if (!matcher.matches()) {
-            // TODO: 예외 던지기
-        }
-    }
-
-    private void validatePassword(final String password) {
-        Matcher matcher = PASSWORD_PATTERN.matcher(password);
-        if (!matcher.matches()) {
-            // TODO: 예외 던지기
-        }
-    }
 }
