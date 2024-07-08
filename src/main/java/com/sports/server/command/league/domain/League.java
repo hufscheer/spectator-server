@@ -47,4 +47,8 @@ public class League extends BaseEntity<League> {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
+
+    public boolean isManagedBy(Member manager) {
+        return this.manager.equals(manager);
+    }
 }
