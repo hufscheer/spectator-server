@@ -1,7 +1,7 @@
 package com.sports.server.query.dto.mapper;
 
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.leagueteam.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.record.domain.Record;
 import com.sports.server.command.record.domain.ReplacementRecord;
 import com.sports.server.command.record.domain.ScoreRecord;

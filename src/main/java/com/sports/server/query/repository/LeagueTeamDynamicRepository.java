@@ -1,15 +1,14 @@
 package com.sports.server.query.repository;
 
+import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
+import static com.sports.server.command.leagueteam.domain.QLeagueTeam.leagueTeam;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.league.domain.League;
-import com.sports.server.command.leagueteam.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
-import static com.sports.server.command.leagueteam.QLeagueTeam.leagueTeam;
 
 @Repository
 @RequiredArgsConstructor
