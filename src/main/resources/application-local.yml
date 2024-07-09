@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mysql://localhost:3306/sports  # Replace 'your_database_name' with your actual database name
+    username: root  # Replace with your MySQL username
+    password: Qwer1234!  # Replace with your MySQL password
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     properties:
       dialect: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -21,3 +21,10 @@ jwt:
 cookie:
   valid-time: 604800 # 60 * 60 * 24 * 7 (일주일)
   name: HCC_SES
+
+amazon:
+  aws:
+    accessKey: access-key
+    secretKey: secret-key
+    region: ap-northeast-2
+    bucket: bucket-name
