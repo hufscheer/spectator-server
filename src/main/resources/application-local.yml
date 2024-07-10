@@ -13,3 +13,11 @@ spring:
 
 report-check-origin: fake-origin.com
 cors-allow-origins: http://localhost:3000
+
+jwt:
+  secret-key: secret
+  valid-time: 604800 # 60 * 60 * 24 * 7 (일주일)
+
+cookie:
+  valid-time: 604800 # 60 * 60 * 24 * 7 (일주일)
+  name: HCC_SES
