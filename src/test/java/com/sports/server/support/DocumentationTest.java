@@ -2,13 +2,20 @@ package com.sports.server.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.server.auth.application.AuthService;
-import com.sports.server.auth.filter.JwtAuthorizationFilter;
+import com.sports.server.auth.presentation.AuthController;
+import com.sports.server.auth.resolver.AuthMemberResolver;
+import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
+import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
+import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.leagueteam.application.LeagueTeamService;
 import com.sports.server.command.leagueteam.presentation.LeagueTeamController;
+import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.report.application.ReportService;
+import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.common.log.TimeLogTemplate;
 import com.sports.server.query.application.CheerTalkQueryService;
 import com.sports.server.query.application.GameQueryService;
@@ -17,19 +24,40 @@ import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.application.LineupPlayerQueryService;
 import com.sports.server.query.application.SportQueryService;
 import com.sports.server.query.application.timeline.TimelineQueryService;
+import com.sports.server.query.presentation.CheerTalkQueryController;
+import com.sports.server.query.presentation.GameQueryController;
+import com.sports.server.query.presentation.LeagueQueryController;
+import com.sports.server.query.presentation.SportQueryController;
+import com.sports.server.query.presentation.TimelineQueryController;
+import java.util.List;
+import java.util.Optional;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@WebMvcTest(
+        controllers = {
+                CheerTalkController.class,
+                GameController.class,
+                ReportController.class,
+                CheerTalkQueryController.class,
+                GameQueryController.class,
+                LeagueQueryController.class,
+                TimelineQueryController.class,
+                SportQueryController.class,
+                AuthController.class,
+                LeagueTeamController.class
+        })
 @Import({
         TimeLogTemplate.class,
         RestDocsConfig.class,
@@ -88,4 +116,29 @@ public class DocumentationTest {
 
     @MockBean
     protected LeagueTeamService leagueTeamService;
+
+    @MockBean
+    protected JwtUtil jwtUtil;
+
+    @MockBean
+    protected AuthenticationEntryPoint authenticationEntryPoint;
+
+    @MockBean
+    protected MemberRepository memberRepository;
+
+    @MockBean
+    private AuthMemberResolver authMemberResolver;
+
+    protected void setupMockAuthentication() {
+        String mockEmail = "test@gmail.com";
+        Member mockManager = Member.manager(mockEmail, "password");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockEmail, null, List.of())
+        );
+        Mockito.when(memberRepository.findMemberByEmail(mockEmail))
+                .thenReturn(Optional.of(mockManager));
+        Mockito.when(authMemberResolver.resolveArgument(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(mockManager);
+    }
 }

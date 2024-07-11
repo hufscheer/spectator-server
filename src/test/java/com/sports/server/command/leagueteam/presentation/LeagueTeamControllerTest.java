@@ -10,32 +10,18 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.auth.resolver.AuthMemberResolver;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest.LeagueTeamPlayerRegisterRequest;
-import com.sports.server.common.application.EntityUtils;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.ResultActions;
 
-@Sql("/league-fixture.sql")
 public class LeagueTeamControllerTest extends DocumentationTest {
-
-    @Autowired
-    private EntityUtils entityUtils;
-
-    @MockBean
-    private AuthMemberResolver authMemberResolver;
 
     @Test
     void 리그팀을_등록한다() throws Exception {
@@ -47,12 +33,10 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                 new LeagueTeamPlayerRegisterRequest("name-b", 2));
         LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(
                 "name", "logo-image-url", playerRegisterRequests);
-
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(new TestingAuthenticationToken("john.doe@example.com", null));
-        SecurityContextHolder.setContext(securityContext);
-
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+        setupMockAuthentication();
+        Mockito.doNothing().when(leagueTeamService).register(Mockito.anyLong(), Mockito.any(), Mockito.any());
 
         // when
         ResultActions result = mockMvc.perform(post("/manager/leagues/{leagueId}/teams", leagueId, request)
@@ -78,7 +62,5 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
-
-
     }
 }
