@@ -8,19 +8,15 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.auth.dto.LoginResponse;
 import com.sports.server.auth.dto.LoginRequest;
+import com.sports.server.auth.dto.LoginResponse;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class AuthControllerTest extends DocumentationTest {
-
-    @Value("${cookie.name}")
-    public String COOKIE_NAME;
 
     @Test
     void 로그인을_한다() throws Exception {
