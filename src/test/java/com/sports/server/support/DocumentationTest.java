@@ -2,9 +2,12 @@ package com.sports.server.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.server.auth.application.AuthService;
+import com.sports.server.auth.filter.JwtAuthorizationFilter;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
+import com.sports.server.command.leagueteam.application.LeagueTeamService;
+import com.sports.server.command.leagueteam.presentation.LeagueTeamController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.common.log.TimeLogTemplate;
 import com.sports.server.query.application.CheerTalkQueryService;
@@ -15,10 +18,13 @@ import com.sports.server.query.application.LineupPlayerQueryService;
 import com.sports.server.query.application.SportQueryService;
 import com.sports.server.query.application.timeline.TimelineQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,8 +35,11 @@ import org.springframework.test.web.servlet.MockMvc;
         RestDocsConfig.class,
 })
 @AutoConfigureRestDocs
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class DocumentationTest {
+
+    @Value("${cookie.name}")
+    protected String COOKIE_NAME;
 
     @Autowired
     protected RestDocumentationResultHandler restDocsHandler;
@@ -76,4 +85,7 @@ public class DocumentationTest {
 
     @MockBean
     protected AuthService authService;
+
+    @MockBean
+    protected LeagueTeamService leagueTeamService;
 }
