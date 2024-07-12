@@ -13,14 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class LeagueTeamService {
 
     private final LeagueTeamRepository leagueTeamRepository;
     private final EntityUtils entityUtils;
 
-    @Transactional
     public void register(final Long leagueId, final Member manager, final LeagueTeamRegisterRequest request) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
