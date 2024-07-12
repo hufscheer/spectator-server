@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -38,7 +39,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern("/manager/login")).permitAll()
-                        .requestMatchers(mvc.pattern("/manager/**"), mvc.pattern("/leagues/{leagueId}/teams"))
+                        .requestMatchers(mvc.pattern("/manager/**"),
+                                mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams"))
                         .authenticated()
                         .anyRequest().permitAll()
                 )
