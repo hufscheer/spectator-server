@@ -10,6 +10,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +28,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationEntryPoint authEntryPoint;
+    List<Pattern> authenticatedEndpointPatterns = List.of(
+            Pattern.compile("/leagues/\\d+/teams")
+    );
 
     @Value("${cookie.name}")
     public String COOKIE_NAME;
@@ -64,6 +69,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         } else if (path.contains("/manager")) {
             return false;
         } else {
+            for (Pattern pattern : authenticatedEndpointPatterns) {
+                if (pattern.matcher(path).matches()) {
+                    return false;
+                }
+            }
             return true;
         }
     }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/manager/leagues/{leagueId}/teams")
+@RequestMapping("/leagues/{leagueId}/teams")
 public class LeagueTeamController {
     private final LeagueTeamService leagueTeamService;
 

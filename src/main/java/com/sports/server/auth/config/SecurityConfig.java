@@ -38,7 +38,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern("/manager/login")).permitAll()
-                        .requestMatchers(mvc.pattern("/manager/**")).authenticated()
+                        .requestMatchers(mvc.pattern("/manager/**"), mvc.pattern("/leagues/{leagueId}/teams"))
+                        .authenticated()
                         .anyRequest().permitAll()
                 )
                 .httpBasic(basic -> basic.authenticationEntryPoint(authEntryPoint))
