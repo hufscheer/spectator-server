@@ -19,10 +19,10 @@ public class LeagueService {
 	private final EntityUtils entityUtils;
 	private final LeagueRepository leagueRepository;
 
-	public void register(final Member manager, final Long organizationId, final LeagueRequest leagueRequest) {
-		Organization organization = entityUtils.getEntity(organizationId, Organization.class);
+	public void register(final Member manager, final LeagueRequest request) {
+		Organization organization = entityUtils.getEntity(request.organizationId(), Organization.class);
 		leagueRepository.save(
-			new League(manager, organization, leagueRequest.name(), leagueRequest.startAt(), leagueRequest.endAt(),
-				leagueRequest.maxRound()));
+			new League(manager, organization, request.name(), request.startAt(), request.endAt(),
+				request.maxRound()));
 	}
 }
