@@ -2,10 +2,10 @@ package com.sports.server.common.application;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +28,8 @@ public class PresignedUrlGenerator {
     }
 
     private Date getExpiredDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, 50);
-        return calendar.getTime();
+        LocalDateTime now = new LocalDateTime().plusMinutes(50);
+        return now.toDate();
     }
 
 }
