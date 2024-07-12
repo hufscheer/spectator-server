@@ -4,6 +4,7 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,7 +42,7 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     @JoinColumn(name = "league_id")
     private League league;
 
-    @OneToMany(mappedBy = "leagueTeam")
+    @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
 
     public void addPlayer(LeagueTeamPlayer leagueTeamPlayer) {
