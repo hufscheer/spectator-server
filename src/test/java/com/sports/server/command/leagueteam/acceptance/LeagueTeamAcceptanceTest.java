@@ -36,7 +36,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
                 .pathParam("leagueId", leagueId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .post("/manager/leagues/{leagueId}/teams")
+                .post("/leagues/{leagueId}/teams")
                 .then().log().all()
                 .extract();
 

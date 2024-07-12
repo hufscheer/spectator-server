@@ -38,7 +38,7 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         Mockito.doNothing().when(leagueTeamService).register(Mockito.anyLong(), Mockito.any(), Mockito.any());
 
         // when
-        ResultActions result = mockMvc.perform(post("/manager/leagues/{leagueId}/teams", leagueId, request)
+        ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/teams", leagueId, request)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .cookie(cookie)
