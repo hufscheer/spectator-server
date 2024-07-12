@@ -31,6 +31,7 @@ import com.sports.server.query.presentation.SportQueryController;
 import com.sports.server.query.presentation.TimelineQueryController;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -128,6 +129,11 @@ public class DocumentationTest {
 
     @MockBean
     private AuthMemberResolver authMemberResolver;
+
+    @BeforeEach
+    void setUp() {
+        setupMockAuthentication();
+    }
 
     protected void setupMockAuthentication() {
         String mockEmail = "test@gmail.com";

@@ -35,7 +35,6 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                 "name", "logo-image-url", playerRegisterRequests);
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
-        setupMockAuthentication();
         Mockito.doNothing().when(leagueTeamService).register(Mockito.anyLong(), Mockito.any(), Mockito.any());
 
         // when
