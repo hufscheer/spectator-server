@@ -2,9 +2,8 @@ package com.sports.server.command.game.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import com.sports.server.command.leagueteam.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 

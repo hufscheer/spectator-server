@@ -1,4 +1,4 @@
-package com.sports.server.command.leagueteam;
+package com.sports.server.command.leagueteam.domain;
 
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.Column;
@@ -29,4 +29,10 @@ public class LeagueTeamPlayer extends BaseEntity<LeagueTeamPlayer> {
 
     @Column(name = "number", nullable = true)
     private int number;
+
+    public LeagueTeamPlayer(LeagueTeam leagueTeam, String name, int number) {
+        this.leagueTeam = leagueTeam;
+        this.name = name;
+        this.number = number;
+    }
 }

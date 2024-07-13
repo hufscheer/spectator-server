@@ -3,7 +3,7 @@ package com.sports.server.query.dto.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.leagueteam.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
