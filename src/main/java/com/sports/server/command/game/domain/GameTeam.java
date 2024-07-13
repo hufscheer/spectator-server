@@ -75,6 +75,9 @@ public class GameTeam extends BaseEntity<GameTeam> {
 	}
 
 	public void score(Integer score) {
+		if (score < 1) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "점수는 1 이상이여야 합니다.");
+		}
 		this.score += score;
 	}
 }

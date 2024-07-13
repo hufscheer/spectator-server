@@ -84,11 +84,15 @@ public class Game extends BaseEntity<Game> {
                 .orElseThrow();
     }
 
+    public void addTeam(GameTeam team) {
+        teams.add(team);
+    }
+
     public void score(LineupPlayer scorer, Integer score) {
         GameTeam scoredTeam = teams.stream()
                 .filter(team -> team.equals(scorer.getGameTeam()))
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점할 수 없습니다."));
 
         scoredTeam.score(score);
     }
