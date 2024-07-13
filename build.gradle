@@ -76,6 +76,9 @@ dependencies {
 
     // aws
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+
+    // fixture
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.0")
 }
 
 ext {
