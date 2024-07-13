@@ -73,6 +73,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
 			.findAny()
 			.ifPresent(LineupPlayer::changeStateToCandidate);
 	}
+
+	public void score(Integer score) {
+		this.score += score;
+	}
 }
 
 
