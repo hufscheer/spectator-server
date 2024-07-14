@@ -29,6 +29,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 	private static final int MAXIMUM_OF_CHEER_COUNT = 500;
 	private static final int MAXIMUM_OF_TOTAL_CHEER_COUNT = 100_000_000;
 	private static final int MINIMUM_OF_CHEER_COUNT = 0;
+	private static final int SCORE_VALUE = 1;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "game_id")
@@ -74,11 +75,8 @@ public class GameTeam extends BaseEntity<GameTeam> {
 			.ifPresent(LineupPlayer::changeStateToCandidate);
 	}
 
-	public void score(Integer score) {
-		if (score < 1) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, "점수는 1 이상이여야 합니다.");
-		}
-		this.score += score;
+	public void score() {
+		this.score += SCORE_VALUE;
 	}
 }
 

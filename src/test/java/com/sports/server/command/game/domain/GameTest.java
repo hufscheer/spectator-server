@@ -39,7 +39,7 @@ class GameTest {
                     .sample();
 
             // when
-            game.score(scorer, 1);
+            game.score(scorer);
 
             // then
             assertThat(game.getTeam1().getScore()).isEqualTo(1);
@@ -54,7 +54,7 @@ class GameTest {
                     .sample();
 
             // when
-            game.score(scorer, 1);
+            game.score(scorer);
 
             // then
             assertThat(game.getTeam1().getScore()).isEqualTo(0);
@@ -68,7 +68,7 @@ class GameTest {
                     .sample();
 
             // when then
-            assertThatThrownBy(() -> game.score(scorer, 1))
+            assertThatThrownBy(() -> game.score(scorer))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }

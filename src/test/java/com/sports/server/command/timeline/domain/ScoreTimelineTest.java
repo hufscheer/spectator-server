@@ -52,8 +52,7 @@ class ScoreTimelineTest {
                     game,
                     quarter,
                     10,
-                    scorer,
-                    1
+                    scorer
             );
 
             // then
@@ -74,8 +73,7 @@ class ScoreTimelineTest {
                     game,
                     quarter,
                     10,
-                    scorer,
-                    1
+                    scorer
             );
 
             // then

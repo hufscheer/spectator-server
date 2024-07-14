@@ -88,12 +88,12 @@ public class Game extends BaseEntity<Game> {
         teams.add(team);
     }
 
-    public void score(LineupPlayer scorer, Integer score) {
+    public void score(LineupPlayer scorer) {
         GameTeam scoredTeam = teams.stream()
                 .filter(team -> team.equals(scorer.getGameTeam()))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점할 수 없습니다."));
 
-        scoredTeam.score(score);
+        scoredTeam.score();
     }
 }

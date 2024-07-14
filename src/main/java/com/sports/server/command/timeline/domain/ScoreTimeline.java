@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ScoreTimeline extends Timeline {
 
-    private static final int MIN_SCORE = 1;
+    private static final int SCORE_VALUE = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scorer_id")
@@ -46,10 +46,9 @@ public class ScoreTimeline extends Timeline {
             Game game,
             Quarter recordedQuarter,
             Integer recordedAt,
-            LineupPlayer scorer,
-            Integer score
+            LineupPlayer scorer
     ) {
-        game.score(scorer, score);
+        game.score(scorer);
 
         GameTeam team1 = game.getTeam1();
         GameTeam team2 = game.getTeam2();
@@ -59,7 +58,7 @@ public class ScoreTimeline extends Timeline {
                 recordedQuarter,
                 recordedAt,
                 scorer,
-                score,
+                SCORE_VALUE,
                 team1,
                 team1.getScore(),
                 team2,
