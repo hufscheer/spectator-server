@@ -28,4 +28,22 @@ public abstract class Timeline extends BaseEntity<Timeline> {
     protected Integer recordedAt;
 
     public abstract String getType();
+
+    protected Timeline(
+            Game game,
+            Quarter recordedQuarter,
+            Integer recordedAt
+    ) {
+        validateRecordedAt(recordedAt);
+
+        this.game = game;
+        this.recordedQuarter = recordedQuarter;
+        this.recordedAt = recordedAt;
+    }
+
+    private void validateRecordedAt(Integer recordedAt) {
+        if (recordedAt < 0) {
+            throw new IllegalArgumentException("시간은 0 이상이어야 합니다.");
+        }
+    }
 }

@@ -29,6 +29,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 	private static final int MAXIMUM_OF_CHEER_COUNT = 500;
 	private static final int MAXIMUM_OF_TOTAL_CHEER_COUNT = 100_000_000;
 	private static final int MINIMUM_OF_CHEER_COUNT = 0;
+	private static final int SCORE_VALUE = 1;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "game_id")
@@ -72,6 +73,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
 			.filter(lp -> lp.equals(lineupPlayer))
 			.findAny()
 			.ifPresent(LineupPlayer::changeStateToCandidate);
+	}
+
+	public void score() {
+		this.score += SCORE_VALUE;
 	}
 }
 

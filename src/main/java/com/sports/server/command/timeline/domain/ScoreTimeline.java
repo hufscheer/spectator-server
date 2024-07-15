@@ -1,14 +1,20 @@
 package com.sports.server.command.timeline.domain;
 
+import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.command.sport.domain.Quarter;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @DiscriminatorValue("SCORE")
 @Getter
+@NoArgsConstructor
 public class ScoreTimeline extends Timeline {
+
+    private static final int SCORE_VALUE = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scorer_id")
@@ -34,5 +40,50 @@ public class ScoreTimeline extends Timeline {
     @Override
     public String getType() {
         return "SCORE";
+    }
+
+    public static ScoreTimeline score(
+            Game game,
+            Quarter recordedQuarter,
+            Integer recordedAt,
+            LineupPlayer scorer
+    ) {
+        game.score(scorer);
+
+        GameTeam team1 = game.getTeam1();
+        GameTeam team2 = game.getTeam2();
+
+        return new ScoreTimeline(
+                game,
+                recordedQuarter,
+                recordedAt,
+                scorer,
+                SCORE_VALUE,
+                team1,
+                team1.getScore(),
+                team2,
+                team2.getScore()
+        );
+    }
+
+    private ScoreTimeline(
+            Game game,
+            Quarter recordedQuarter,
+            Integer recordedAt,
+            LineupPlayer scorer,
+            Integer score,
+            GameTeam gameTeam1,
+            Integer snapshotScore1,
+            GameTeam gameTeam2,
+            Integer snapshotScore2
+    ) {
+        super(game, recordedQuarter, recordedAt);
+
+        this.scorer = scorer;
+        this.score = score;
+        this.gameTeam1 = gameTeam1;
+        this.snapshotScore1 = snapshotScore1;
+        this.gameTeam2 = gameTeam2;
+        this.snapshotScore2 = snapshotScore2;
     }
 }

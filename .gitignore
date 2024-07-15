@@ -39,3 +39,6 @@ out/
 
 ### log
 /log/**
+
+## fixture monkey
+.jqwik-database

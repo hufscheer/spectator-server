@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -69,5 +70,30 @@ public class Game extends BaseEntity<Game> {
 
     public void rollbackToCandidate(final LineupPlayer lineupPlayer) {
         this.teams.forEach(gameTeam -> gameTeam.rollbackToCandidate(lineupPlayer));
+    }
+
+    public GameTeam getTeam1() {
+        return teams.stream()
+                .min(Comparator.comparing(GameTeam::getId))
+                .orElseThrow();
+    }
+
+    public GameTeam getTeam2() {
+        return teams.stream()
+                .max(Comparator.comparing(GameTeam::getId))
+                .orElseThrow();
+    }
+
+    public void addTeam(GameTeam team) {
+        teams.add(team);
+    }
+
+    public void score(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(team -> team.equals(scorer.getGameTeam()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점할 수 없습니다."));
+
+        scoredTeam.score();
     }
 }
