@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/manager")
 public class LeagueController {
 	private final LeagueService leagueService;
 
