@@ -61,4 +61,8 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         }
         this.state = CANDIDATE;
     }
+
+    public boolean isSameTeam(LineupPlayer other) {
+        return this.gameTeam.equals(other.gameTeam);
+    }
 }

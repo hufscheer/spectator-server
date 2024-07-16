@@ -1,6 +1,6 @@
 package com.sports.server.query.dto.response;
 
-import com.sports.server.command.leagueteam.LeagueTeamPlayer;
+import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 
 public record LeagueTeamPlayerResponse(
 	Long id,
