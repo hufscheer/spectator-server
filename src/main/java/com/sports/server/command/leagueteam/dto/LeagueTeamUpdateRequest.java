@@ -5,9 +5,10 @@ import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import java.util.List;
 
 public record LeagueTeamUpdateRequest(
+
         String name,
         String logoImageUrl,
-        List<LeagueTeamPlayerRegisterRequest> players,
+        List<LeagueTeamPlayerRegisterRequest> addPlayers,
         List<Long> deletedPlayerIds
 
 ) {
