@@ -21,7 +21,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 대회를_저장한다() throws Exception {
 		// given
-		LeagueDto.LeagueRequest request = new LeagueDto.LeagueRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(),
+		LeagueDto.RegisterRequest request = new LeagueDto.RegisterRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(),
 			LocalDateTime.now());
 
 		configureMockJwtForEmail("john.doe@example.com");

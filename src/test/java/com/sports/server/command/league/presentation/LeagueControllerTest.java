@@ -24,10 +24,10 @@ class LeagueControllerTest extends DocumentationTest {
 	@Test
 	void 리그를_생성한다() throws Exception {
 		// given
-		LeagueDto.LeagueRequest request = new LeagueDto.LeagueRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(), LocalDateTime.now());
+		LeagueDto.RegisterRequest request = new LeagueDto.RegisterRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(), LocalDateTime.now());
 		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
-		doNothing().when(leagueService).register(any(Member.class), any(LeagueDto.LeagueRequest.class));
+		doNothing().when(leagueService).register(any(Member.class), any(LeagueDto.RegisterRequest.class));
 
 		// when
 		ResultActions result = mockMvc.perform(post("/leagues", request)

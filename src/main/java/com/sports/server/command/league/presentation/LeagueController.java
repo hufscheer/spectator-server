@@ -17,8 +17,8 @@ public class LeagueController {
 	private final LeagueService leagueService;
 
 	@PostMapping("/leagues")
-	public ResponseEntity<Void> register(@RequestBody final LeagueDto.LeagueRequest leagueRequest, Member member) {
-		leagueService.register(member, leagueRequest);
+	public ResponseEntity<Void> register(@RequestBody final LeagueDto.RegisterRequest registerRequest, Member member) {
+		leagueService.register(member, registerRequest);
 		return ResponseEntity.ok().build();
 	}
 }
