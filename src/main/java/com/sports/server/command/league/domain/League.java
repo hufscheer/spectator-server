@@ -62,6 +62,7 @@ public class League extends BaseEntity<League> {
 		this.startAt = startAt;
 		this.endAt = endAt;
 		this.maxRound = maxRound;
+		this.inProgressRound = maxRound;
 		this.isDeleted = false;
 	}
 
