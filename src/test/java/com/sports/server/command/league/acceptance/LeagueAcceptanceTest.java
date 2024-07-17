@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-import com.sports.server.command.league.dto.LeagueRequest;
+import com.sports.server.command.league.dto.LeagueDto;
 import com.sports.server.support.AcceptanceTest;
 
 import io.restassured.RestAssured;
@@ -21,7 +21,8 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 대회를_저장한다() throws Exception {
 		// given
-		LeagueRequest request = new LeagueRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(), LocalDateTime.now());
+		LeagueDto.LeagueRequest request = new LeagueDto.LeagueRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(),
+			LocalDateTime.now());
 
 		configureMockJwtForEmail("john.doe@example.com");
 

@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.sports.server.command.league.dto.LeagueRequest;
+import com.sports.server.command.league.dto.LeagueDto;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.support.DocumentationTest;
 
@@ -24,10 +24,10 @@ class LeagueControllerTest extends DocumentationTest {
 	@Test
 	void 리그를_생성한다() throws Exception {
 		// given
-		LeagueRequest request = new LeagueRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(), LocalDateTime.now());
+		LeagueDto.LeagueRequest request = new LeagueDto.LeagueRequest(1L, "우물정 제기차기 대회", 4, LocalDateTime.now(), LocalDateTime.now());
 		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
-		doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.class));
+		doNothing().when(leagueService).register(any(Member.class), any(LeagueDto.LeagueRequest.class));
 
 		// when
 		ResultActions result = mockMvc.perform(post("/leagues", request)
