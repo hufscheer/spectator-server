@@ -4,6 +4,7 @@ package com.sports.server.command.leagueteam.presentation;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest.LeagueTeamPlayerRegisterRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamUpdateRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
@@ -62,4 +64,51 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                         )
                 ));
     }
+
+    @Test
+    void 리그팀을_수정한다() throws Exception {
+
+        // given
+        Long leagueId = 1L;
+        Long teamId = 3L;
+        List<LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
+                new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
+                new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
+        LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
+                "name", "logo-image-url", playerRegisterRequests, List.of(1L, 2L));
+        Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+        Mockito.doNothing().when(leagueTeamService)
+                .update(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.anyLong());
+
+        // when
+        ResultActions result = mockMvc.perform(put("/leagues/{leagueId}/teams/{teamId}", leagueId, teamId, request)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(cookie)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID"),
+                                parameterWithName("teamId").description("리그팀의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("리그팀의 이름"),
+                                fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 url"),
+                                fieldWithPath("addPlayers").type(JsonFieldType.ARRAY).description("리그팀 선수 목록"),
+                                fieldWithPath("addPlayers[].name").type(JsonFieldType.STRING).description("선수의 이름"),
+                                fieldWithPath("addPlayers[].number").type(JsonFieldType.NUMBER).description("선수의 번호"),
+                                fieldWithPath("deletedPlayerIds").type(JsonFieldType.ARRAY)
+                                        .description("삭제할 리그팀 선수의 ID")
+
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
 }
