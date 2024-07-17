@@ -36,19 +36,20 @@ public class LeagueTeamService {
 
     public void update(Long leagueId, LeagueTeamUpdateRequest request, Member manager, Long teamId) {
         getLeagueAndCheckPermission(leagueId, manager);
-        LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
+        LeagueTeam leagueTeam = leagueTeamRepository.findById(teamId);
 
         leagueTeam.update(request.name(), request.logoImageUrl());
         request.addPlayers().stream()
                 .map(lgp -> lgp.toEntity(leagueTeam))
                 .forEach(leagueTeam::addPlayer);
 
-        // TODO: 해당 리그팀에 속한 플레이어가 아니라면 예외 던지기
         request.deletedPlayerIds().stream()
-                .map(lgpId -> entityUtils.getEntity(lgpId, LeagueTeamPlayer.class))
-                .forEach(lgp -> {
-                    leagueTeamPlayerRepository.delete(lgp);
-                });
+                .map(lgpId -> {
+                    LeagueTeamPlayer lgp = entityUtils.getEntity(lgpId, LeagueTeamPlayer.class);
+                    leagueTeam.validateLeagueTeamPlayer(lgp);
+                    return lgp;
+                })
+                .forEach(lgp -> leagueTeamPlayerRepository.delete(lgp));
     }
 
     private League getLeagueAndCheckPermission(final Long leagueId, final Member manager) {
