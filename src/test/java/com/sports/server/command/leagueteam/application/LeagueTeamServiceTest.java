@@ -1,5 +1,7 @@
 package com.sports.server.command.leagueteam.application;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,12 +11,16 @@ import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest.LeagueTeamPlayerRegisterRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamUpdateRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -67,5 +73,55 @@ public class LeagueTeamServiceTest extends ServiceTest {
 
         LeagueTeam savedLeagueTeam = savedLeagueTeamOptional.get();
         assertEquals(leagueTeamName, savedLeagueTeam.getName());
+    }
+
+    @Nested
+    @DisplayName("리그팀을 수정할 때")
+    class LeagueTeamUpdateTest {
+
+        private Long leagueId;
+        private Long teamId = 3L;
+        private Member manager;
+
+        @BeforeEach
+        void setUp() {
+            leagueId = 1L;
+            teamId = 3L;
+            manager = entityUtils.getEntity(1L, Member.class);
+        }
+
+        @Test
+        void 리그팀에_속하지_않은_리그팀_선수를_삭제하려고_할_때_예외가_발생한다() {
+            // given
+            List<LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
+                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
+                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
+            LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
+                    "name", "logo-image-url", playerRegisterRequests, List.of(5L));
+
+            // when & then
+            assertThatThrownBy(() -> leagueTeamService.update(leagueId, request, manager, teamId))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("해당 리그팀에 속하지 않은 선수입니다.");
+        }
+
+        @Test
+        void 정상적으로_리그팀이_수정된다() {
+            // given
+            List<LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
+                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
+                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
+            LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
+                    "name", "logo-image-url", playerRegisterRequests, List.of(3L));
+
+            // when
+            leagueTeamService.update(leagueId, request, manager, teamId);
+
+            // then
+            LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
+            assertThat(leagueTeam.getName()).isEqualTo(request.name());
+            assertThat(leagueTeam.getLogoImageUrl()).isEqualTo(request.logoImageUrl());
+        }
+
     }
 }
