@@ -1,8 +1,7 @@
 package com.sports.server.command.leagueteam.presentation;
 
 import com.sports.server.command.leagueteam.application.LeagueTeamService;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamUpdateRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +19,14 @@ public class LeagueTeamController {
     private final LeagueTeamService leagueTeamService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@PathVariable Long leagueId, @RequestBody LeagueTeamRegisterRequest request,
+    public ResponseEntity<Void> register(@PathVariable Long leagueId, @RequestBody LeagueTeamRequest.Register request,
                                          Member member) {
         leagueTeamService.register(leagueId, member, request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{teamId}")
-    public ResponseEntity<Void> update(@PathVariable Long leagueId, @RequestBody LeagueTeamUpdateRequest request,
+    public ResponseEntity<Void> update(@PathVariable Long leagueId, @RequestBody LeagueTeamRequest.Update request,
                                        Member member, @PathVariable Long teamId) {
         leagueTeamService.update(leagueId, request, member, teamId);
         return ResponseEntity.ok().build();

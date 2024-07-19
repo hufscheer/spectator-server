@@ -6,8 +6,7 @@ import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayerRepository;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamUpdateRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -31,7 +30,7 @@ public class LeagueTeamService {
     private final LeagueTeamPlayerRepository leagueTeamPlayerRepository;
     private final EntityUtils entityUtils;
 
-    public void register(final Long leagueId, final Member manager, final LeagueTeamRegisterRequest request) {
+    public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
         League league = getLeagueAndCheckPermission(leagueId, manager);
 
         LeagueTeam leagueTeam = request.toEntity(manager, league, changeLogoImageUrl(request.logoImageUrl()));
@@ -41,7 +40,7 @@ public class LeagueTeamService {
         leagueTeamRepository.save(leagueTeam);
     }
 
-    public void update(Long leagueId, LeagueTeamUpdateRequest request, Member manager, Long teamId) {
+    public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
         getLeagueAndCheckPermission(leagueId, manager);
         LeagueTeam leagueTeam = leagueTeamRepository.findById(teamId);
 

@@ -11,9 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest.LeagueTeamPlayerRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamUpdateRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
@@ -30,10 +28,10 @@ public class LeagueTeamControllerTest extends DocumentationTest {
 
         // given
         Long leagueId = 1L;
-        List<LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRegisterRequest("name-a", 1),
-                new LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(
+        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", "logo-image-url", playerRegisterRequests);
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -71,10 +69,10 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         // given
         Long leagueId = 1L;
         Long teamId = 3L;
-        List<LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
-                new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
+        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                 "name", "logo-image-url", playerRegisterRequests, List.of(1L, 2L));
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 

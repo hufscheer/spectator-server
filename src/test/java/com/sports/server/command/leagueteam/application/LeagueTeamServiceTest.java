@@ -9,9 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest.LeagueTeamPlayerRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamUpdateRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -56,7 +54,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
         // given
         Long leagueId = 1L;
         Member nonManager = entityUtils.getEntity(2L, Member.class);
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest("name", validLogoImageUrl, List.of());
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register("name", validLogoImageUrl, List.of());
 
         // when & then
         assertThrows(UnauthorizedException.class, () -> {
@@ -71,10 +69,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
         League league = entityUtils.getEntity(1L, League.class);
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
-        List<LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRegisterRequest("name-a", 1),
-                new LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(leagueTeamName, validLogoImageUrl,
+        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, validLogoImageUrl,
                 playerRegisterRequests);
 
         // when
@@ -95,10 +93,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
         Long leagueId = 1L;
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
-        List<LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRegisterRequest("name-a", 1),
-                new LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(leagueTeamName, "invalid-logo-url",
+        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, "invalid-logo-url",
                 playerRegisterRequests);
 
         // when & then
@@ -125,10 +123,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
         @Test
         void 리그팀에_속하지_않은_리그팀_선수를_삭제하려고_할_때_예외가_발생한다() {
             // given
-            List<LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
-                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
-            LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
+            List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+            LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", validLogoImageUrl, playerRegisterRequests, List.of(5L));
 
             // when & then
@@ -140,10 +138,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
         @Test
         void 정상적으로_리그팀이_수정된다() {
             // given
-            List<LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
-                    new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
-            LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
+            List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+            LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", validLogoImageUrl, playerRegisterRequests, List.of(3L));
 
             // when

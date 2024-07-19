@@ -2,9 +2,7 @@ package com.sports.server.command.leagueteam.acceptance;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest.LeagueTeamPlayerRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamUpdateRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -27,10 +25,10 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
     void 리그팀이_저장된다() {
         // given
         Long leagueId = 1L;
-        List<LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRegisterRequest("name-a", 1),
-                new LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(
+        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", originPrefix + "image", playerRegisterRequests);
 
         configureMockJwtForEmail("john.doe@example.com");
@@ -54,10 +52,10 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         // given
         Long leagueId = 1L;
         Long teamId = 3L;
-        List<LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
-                new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
+        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
+                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                 "name", originPrefix + "image", playerRegisterRequests, List.of(1L, 2L));
 
         configureMockJwtForEmail("john.doe@example.com");
