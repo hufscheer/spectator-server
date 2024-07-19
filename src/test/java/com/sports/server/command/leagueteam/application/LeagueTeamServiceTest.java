@@ -23,10 +23,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/league-fixture.sql")
 public class LeagueTeamServiceTest extends ServiceTest {
+
+    @Value("${image.origin-prefix}")
+    private String originPrefix;
+
+    @Value("${image.replaced-prefix}")
+    private String replacePrefix;
 
     @Autowired
     private EntityUtils entityUtils;
@@ -37,12 +44,19 @@ public class LeagueTeamServiceTest extends ServiceTest {
     @Autowired
     private LeagueTeamRepository leagueTeamRepository;
 
+    private String validLogoImageUrl;
+
+    @BeforeEach
+    void setUp() {
+        validLogoImageUrl = originPrefix + "image.png";
+    }
+
     @Test
     void 리그의_매니저가_아닌_회원이_리그팀을_등록하려고_하면_예외가_발생한다() {
         // given
         Long leagueId = 1L;
         Member nonManager = entityUtils.getEntity(2L, Member.class);
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest("name", "logo-image", List.of());
+        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest("name", validLogoImageUrl, List.of());
 
         // when & then
         assertThrows(UnauthorizedException.class, () -> {
@@ -60,7 +74,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
         List<LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
                 new LeagueTeamPlayerRegisterRequest("name-a", 1),
                 new LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(leagueTeamName, "logo-image-url",
+        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(leagueTeamName, validLogoImageUrl,
                 playerRegisterRequests);
 
         // when
@@ -73,6 +87,24 @@ public class LeagueTeamServiceTest extends ServiceTest {
 
         LeagueTeam savedLeagueTeam = savedLeagueTeamOptional.get();
         assertEquals(leagueTeamName, savedLeagueTeam.getName());
+    }
+
+    @Test
+    void 유효하지_않은_이미지_url을_등록하려고_하는_경우_예외가_발생한다() {
+        // given
+        Long leagueId = 1L;
+        Member manager = entityUtils.getEntity(1L, Member.class);
+        String leagueTeamName = "name";
+        List<LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRegisterRequest("name-a", 1),
+                new LeagueTeamPlayerRegisterRequest("name-b", 2));
+        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(leagueTeamName, "invalid-logo-url",
+                playerRegisterRequests);
+
+        // when & then
+        assertThatThrownBy(() -> leagueTeamService.register(leagueId, manager, request))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("잘못된 이미지 url 입니다.");
     }
 
     @Nested
@@ -97,7 +129,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
                     new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
                     new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
             LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
-                    "name", "logo-image-url", playerRegisterRequests, List.of(5L));
+                    "name", validLogoImageUrl, playerRegisterRequests, List.of(5L));
 
             // when & then
             assertThatThrownBy(() -> leagueTeamService.update(leagueId, request, manager, teamId))
@@ -112,7 +144,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
                     new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
                     new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
             LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
-                    "name", "logo-image-url", playerRegisterRequests, List.of(3L));
+                    "name", validLogoImageUrl, playerRegisterRequests, List.of(3L));
 
             // when
             leagueTeamService.update(leagueId, request, manager, teamId);
@@ -120,7 +152,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
             // then
             LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
             assertThat(leagueTeam.getName()).isEqualTo(request.name());
-            assertThat(leagueTeam.getLogoImageUrl()).isEqualTo(request.logoImageUrl());
+            assertThat(leagueTeam.getLogoImageUrl()).isEqualTo(
+                    request.logoImageUrl().replace(originPrefix, replacePrefix));
         }
 
     }
