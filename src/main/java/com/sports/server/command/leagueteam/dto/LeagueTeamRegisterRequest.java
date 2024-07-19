@@ -12,7 +12,7 @@ public record LeagueTeamRegisterRequest(
         List<LeagueTeamPlayerRegisterRequest> players
 ) {
 
-    public LeagueTeam toEntity(Member manager, League league) {
+    public LeagueTeam toEntity(Member manager, League league, String logoImageUrl) {
         return new LeagueTeam(name, logoImageUrl, manager, manager.getOrganization(), league);
     }
 
