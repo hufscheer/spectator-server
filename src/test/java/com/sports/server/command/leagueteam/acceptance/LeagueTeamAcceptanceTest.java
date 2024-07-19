@@ -11,6 +11,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -18,6 +19,9 @@ import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/league-fixture.sql")
 public class LeagueTeamAcceptanceTest extends AcceptanceTest {
+
+    @Value("${image.origin-prefix}")
+    private String originPrefix;
 
     @Test
     void 리그팀이_저장된다() {
@@ -27,7 +31,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
                 new LeagueTeamPlayerRegisterRequest("name-a", 1),
                 new LeagueTeamPlayerRegisterRequest("name-b", 2));
         LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(
-                "name", "logo-image-url", playerRegisterRequests);
+                "name", originPrefix + "image", playerRegisterRequests);
 
         configureMockJwtForEmail("john.doe@example.com");
 
@@ -54,7 +58,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
                 new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-a", 1),
                 new LeagueTeamUpdateRequest.LeagueTeamPlayerRegisterRequest("name-b", 2));
         LeagueTeamUpdateRequest request = new LeagueTeamUpdateRequest(
-                "name", "logo-image-url", playerRegisterRequests, List.of(1L, 2L));
+                "name", originPrefix + "image", playerRegisterRequests, List.of(1L, 2L));
 
         configureMockJwtForEmail("john.doe@example.com");
 
