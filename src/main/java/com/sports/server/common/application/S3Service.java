@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PresignedUrlGenerator {
+public class S3Service {
 
     private final AmazonS3 amazonS3;
 
