@@ -1,4 +1,4 @@
-= 훕치치 관객 서버 API 문서
+= 훕치치 서버 API 문서
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs

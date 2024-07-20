@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>훕치치 관객 서버 API 문서</title>
+<title>훕치치 서버 API 문서</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -440,7 +440,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>훕치치 관객 서버 API 문서</h1>
+<h1>훕치치 서버 API 문서</h1>
 <div class="details">
 <span id="revnumber">version 0.0.1-SNAPSHOT</span>
 </div>
@@ -480,6 +480,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_리그_api">리그 API</a>
 <ul class="sectlevel2">
+<li><a href="#_리그_생성">리그 생성</a></li>
 <li><a href="#_리그_전체_조회">리그 전체 조회</a></li>
 <li><a href="#_리그에_해당하는_스포츠_전체_조회">리그에 해당하는 스포츠 전체 조회</a></li>
 <li><a href="#_리그에_해당하는_리그팀_전체_조회">리그에 해당하는 리그팀 전체 조회</a></li>
@@ -1570,6 +1571,40 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h2 id="_리그_api"><a class="link" href="#_리그_api">리그 API</a></h2>
 <div class="sectionbody">
 <div class="sect2">
+<h3 id="_리그_생성"><a class="link" href="#_리그_생성">리그 생성</a></h3>
+<div class="sect3">
+<h4 id="_리그_생성_http_request"><a class="link" href="#_리그_생성_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
+Content-Type: application/json
+Content-Length: 174
+Host: www.api.hufstreaming.site
+Cookie: HCC_SES=temp-cookie
+
+{
+  "organizationId" : 1,
+  "name" : "우물정 제기차기 대회",
+  "maxRound" : 4,
+  "startAt" : "2024-07-20T12:32:59.636322",
+  "endAt" : "2024-07-20T12:32:59.636324"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_리그_생성_http_response"><a class="link" href="#_리그_생성_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_리그_전체_조회"><a class="link" href="#_리그_전체_조회">리그 전체 조회</a></h3>
 <div class="sect3">
 <h4 id="_리그_전체_조회_http_request"><a class="link" href="#_리그_전체_조회_http_request">HTTP request</a></h4>
@@ -2390,7 +2425,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 25 Jul 2024 03:19:18 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sat, 27 Jul 2024 03:32:58 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -2401,7 +2436,7 @@ Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 25 Jul
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-07-16 20:32:25 +0900
+Last updated 2024-07-20 12:31:41 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
