@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sports.server.command.league.application.LeagueService;
-import com.sports.server.command.league.dto.LeagueDto;
+import com.sports.server.command.league.dto.LeagueRequestDto;
 import com.sports.server.command.member.domain.Member;
 
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,8 @@ public class LeagueController {
 	private final LeagueService leagueService;
 
 	@PostMapping("/leagues")
-	public ResponseEntity<Void> register(@RequestBody final LeagueDto.RegisterRequest registerRequest, Member member) {
-		leagueService.register(member, registerRequest);
+	public ResponseEntity<Void> register(@RequestBody final LeagueRequestDto.Register register, Member member) {
+		leagueService.register(member, register);
 		return ResponseEntity.ok().build();
 	}
 }
