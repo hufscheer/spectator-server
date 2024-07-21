@@ -9,6 +9,7 @@ import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,11 +30,12 @@ public class LeagueTeamService {
     private final LeagueTeamRepository leagueTeamRepository;
     private final LeagueTeamPlayerRepository leagueTeamPlayerRepository;
     private final EntityUtils entityUtils;
+    private final S3Service s3Service;
 
     public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
         League league = getLeagueAndCheckPermission(leagueId, manager);
 
-        LeagueTeam leagueTeam = request.toEntity(manager, league, changeLogoImageUrl(request.logoImageUrl()));
+        LeagueTeam leagueTeam = request.toEntity(manager, league, changeLogoImageUrlToBeSaved(request.logoImageUrl()));
         request.players().stream()
                 .map(lgp -> lgp.toEntity(leagueTeam))
                 .forEach(leagueTeam::addPlayer);
@@ -44,7 +46,8 @@ public class LeagueTeamService {
         getLeagueAndCheckPermission(leagueId, manager);
         LeagueTeam leagueTeam = leagueTeamRepository.findById(teamId);
 
-        leagueTeam.update(request.name(), changeLogoImageUrl(request.logoImageUrl()));
+        leagueTeam.update(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
+
         request.addPlayers().stream()
                 .map(lgp -> lgp.toEntity(leagueTeam))
                 .forEach(leagueTeam::addPlayer);
@@ -58,11 +61,22 @@ public class LeagueTeamService {
                 .forEach(lgp -> leagueTeamPlayerRepository.delete(lgp));
     }
 
-    private String changeLogoImageUrl(String logoImageUrl) {
+    public void deleteLogoImage(Long leagueId, Member manager, Long teamId) {
+        getLeagueAndCheckPermission(leagueId, manager);
+        LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
+        s3Service.deleteFile(getKeyOfImageUrl(leagueTeam.getLogoImageUrl()));
+        leagueTeam.deleteLogoImageUrl();
+    }
+
+    private String changeLogoImageUrlToBeSaved(String logoImageUrl) {
         if (!logoImageUrl.contains(originPrefix)) {
             throw new IllegalStateException("잘못된 이미지 url 입니다.");
         }
         return logoImageUrl.replace(originPrefix, replacePrefix);
+    }
+
+    private String getKeyOfImageUrl(String logoImageUrl) {
+        return logoImageUrl.split(replacePrefix)[1];
     }
 
     private League getLeagueAndCheckPermission(final Long leagueId, final Member manager) {

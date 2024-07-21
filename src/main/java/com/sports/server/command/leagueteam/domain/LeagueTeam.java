@@ -59,12 +59,18 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
 
     public void update(String name, String logoImageUrl) {
         this.name = name;
-        this.logoImageUrl = logoImageUrl;
+        if (logoImageUrl != null) {
+            this.logoImageUrl = logoImageUrl;
+        }
     }
 
     public void validateLeagueTeamPlayer(LeagueTeamPlayer leagueTeamPlayer) {
         if (!this.leagueTeamPlayers.contains(leagueTeamPlayer)) {
             throw new IllegalStateException("해당 리그팀에 속하지 않은 선수입니다.");
         }
+    }
+
+    public void deleteLogoImageUrl() {
+        this.logoImageUrl = "";
     }
 }

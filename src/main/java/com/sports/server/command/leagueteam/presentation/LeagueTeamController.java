@@ -32,4 +32,10 @@ public class LeagueTeamController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{teamId}/delete-logo")
+    public ResponseEntity<Void> deleteLogo(@PathVariable Long leagueId, Member member, @PathVariable Long teamId) {
+        leagueTeamService.deleteLogoImage(leagueId, member, teamId);
+        return ResponseEntity.ok().build();
+    }
+
 }
