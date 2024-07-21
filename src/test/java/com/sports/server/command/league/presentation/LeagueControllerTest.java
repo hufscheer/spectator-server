@@ -41,7 +41,7 @@ class LeagueControllerTest extends DocumentationTest {
 					requestFields(
 						fieldWithPath("organizationId").type(JsonFieldType.NUMBER).description("조직 id"),
 						fieldWithPath("name").type(JsonFieldType.STRING).description("대회 이름"),
-						fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("대회 진행 라운드 수"),
+						fieldWithPath("maxRound").type(JsonFieldType.STRING).description("대회 진행 라운드 수"),
 						fieldWithPath("startAt").type(JsonFieldType.STRING).description("대회 시작 시간"),
 						fieldWithPath("endAt").type(JsonFieldType.STRING).description("대회 종료 시간")
 					),

@@ -145,8 +145,8 @@ VALUES (1, 1, 1, 1),
        (24, 4, 10, 0); -- 결승 진출 팀 D
 
 INSERT
-INTO leagues (id, manager_id, organization_id, name, start_at, end_at, is_deleted)
-VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false);
+INTO leagues (id, manager_id, organization_id, name, start_at, end_at, max_round, in_progress_round, is_deleted)
+VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', '16강', '16강', false);
 
 SET
     foreign_key_checks = 1;
