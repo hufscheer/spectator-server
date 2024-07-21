@@ -40,15 +40,33 @@ public class League extends BaseEntity<League> {
     private LocalDateTime endAt;
 
     @Column(name = "max_round")
-    private Integer maxRound;
+    private LeagueRound maxRound;
 
     @Column(name = "in_progress_round")
-    private Integer inProgressRound;
+    private LeagueRound inProgressRound;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    public boolean isManagedBy(Member manager) {
-        return this.manager.equals(manager);
-    }
+	public League(
+		final Member manager,
+		final Organization organization,
+		final String name,
+		final LocalDateTime startAt,
+		final LocalDateTime endAt,
+		final LeagueRound maxRound
+	) {
+		this.manager = manager;
+		this.organization = organization;
+		this.name = name;
+		this.startAt = startAt;
+		this.endAt = endAt;
+		this.maxRound = maxRound;
+		this.inProgressRound = maxRound;
+		this.isDeleted = false;
+	}
+
+	public boolean isManagedBy(Member manager) {
+		return this.manager.equals(manager);
+	}
 }

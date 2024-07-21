@@ -8,16 +8,16 @@ import java.time.LocalDate;
 public record LeagueResponse(
         Long leagueId,
         String name,
-        Integer maxRound,
-        Integer inProgressRound,
+        String maxRound,
+        String inProgressRound,
         Boolean isInProgress
 ) {
     public LeagueResponse(League league) {
         this(
                 league.getId(),
                 league.getName(),
-                league.getMaxRound(),
-                league.getInProgressRound(),
+                league.getMaxRound().getDescription(),
+                league.getInProgressRound().getDescription(),
                 InProgressLeagueChecker.check(LocalDate.now(), league)
         );
     }
