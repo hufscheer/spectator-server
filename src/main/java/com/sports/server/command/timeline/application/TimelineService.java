@@ -8,11 +8,9 @@ import com.sports.server.command.timeline.TimelineDto;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,7 +20,7 @@ public class TimelineService {
     private final TimelineRepository timelineRepository;
     private final EntityUtils entityUtils;
 
-    public void registerScoreTimeline(Member member, Long gameId, TimelineDto.RegisterScore request) {
+    public void registerScore(Member member, Long gameId, TimelineDto.RegisterScore request) {
         Game game = entityUtils.getEntity(gameId, Game.class);
 
         if (!game.isMangedBy(member)) {
@@ -40,5 +38,9 @@ public class TimelineService {
         );
 
         timelineRepository.save(timeline);
+    }
+
+    public void registerReplacement(Member member, Long gameId, TimelineDto.RegisterReplacement request) {
+
     }
 }

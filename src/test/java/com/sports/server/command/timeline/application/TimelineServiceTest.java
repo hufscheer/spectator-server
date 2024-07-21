@@ -53,7 +53,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerScoreTimeline(manager, gameId, request);
+            timelineService.registerScore(manager, gameId, request);
 
             // then
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)
@@ -82,7 +82,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerScoreTimeline(manager, gameId, request);
+            timelineService.registerScore(manager, gameId, request);
 
             // then
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)

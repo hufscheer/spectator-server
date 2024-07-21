@@ -8,4 +8,13 @@ public class TimelineDto {
             Integer recordedAt
     ) {
     }
+
+    public record RegisterReplacement(
+            Long gameTeamId,
+            Long recordedQuarterId,
+            Long originLineupPlayerId,
+            Long replacementLineupPlayerId,
+            Integer recordedAt
+    ) {
+    }
 }

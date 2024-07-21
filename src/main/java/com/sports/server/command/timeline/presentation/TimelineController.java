@@ -18,7 +18,16 @@ public class TimelineController {
     public ResponseEntity<Void> createScoreTimeline(@PathVariable Long gameId,
                                                     @RequestBody TimelineDto.RegisterScore request,
                                                     Member member) {
-        timelineService.registerScoreTimeline(member, gameId, request);
+        timelineService.registerScore(member, gameId, request);
+        return ResponseEntity.status(HttpStatus.CREATED.value())
+                .build();
+    }
+
+    @PostMapping("/replacement")
+    public ResponseEntity<Void> createReplacementTimeline(@PathVariable Long gameId,
+                                                          @RequestBody TimelineDto.RegisterReplacement request,
+                                                          Member member) {
+        timelineService.registerReplacement(member, gameId, request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
                 .build();
     }
