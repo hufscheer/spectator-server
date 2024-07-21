@@ -1,6 +1,9 @@
 SET
 foreign_key_checks = 0;
 
+INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
+VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00');
+
 -- 스포츠
 INSERT INTO sports (id, name)
 VALUES (1, '농구');

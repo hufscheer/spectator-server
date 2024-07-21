@@ -90,10 +90,14 @@ public class Game extends BaseEntity<Game> {
 
     public void score(LineupPlayer scorer) {
         GameTeam scoredTeam = teams.stream()
-                .filter(team -> team.equals(scorer.getGameTeam()))
+                .filter(scorer::isTeam)
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점할 수 없습니다."));
 
         scoredTeam.score();
+    }
+
+    public boolean isMangedBy(Member member) {
+        return manager.equals(member);
     }
 }

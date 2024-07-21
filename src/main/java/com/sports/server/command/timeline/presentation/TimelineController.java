@@ -1,5 +1,6 @@
 package com.sports.server.command.timeline.presentation;
 
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.TimelineDto;
 import com.sports.server.command.timeline.application.TimelineService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,9 @@ public class TimelineController {
 
     @PostMapping("/score")
     public ResponseEntity<Void> createScoreTimeline(@PathVariable Long gameId,
-                                                    @RequestBody TimelineDto.RegisterScore request) {
-        timelineService.registerScoreTimeline(gameId, request);
+                                                    @RequestBody TimelineDto.RegisterScore request,
+                                                    Member member) {
+        timelineService.registerScoreTimeline(member, gameId, request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
                 .build();
     }

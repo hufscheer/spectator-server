@@ -19,6 +19,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @Table(name = "lineup_players")
@@ -64,5 +66,9 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public boolean isSameTeam(LineupPlayer other) {
         return this.gameTeam.equals(other.gameTeam);
+    }
+
+    public boolean isTeam(GameTeam team) {
+        return Objects.equals(this.gameTeam.getId(), team.getId());
     }
 }
