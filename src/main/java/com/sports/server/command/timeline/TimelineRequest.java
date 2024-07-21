@@ -1,6 +1,6 @@
 package com.sports.server.command.timeline;
 
-public class TimelineDto {
+public class TimelineRequest {
     public record RegisterScore(
             Long gameTeamId,
             Long recordedQuarterId,

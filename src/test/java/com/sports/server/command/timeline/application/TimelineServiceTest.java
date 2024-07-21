@@ -2,7 +2,7 @@ package com.sports.server.command.timeline.application;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
-import com.sports.server.command.timeline.TimelineDto;
+import com.sports.server.command.timeline.TimelineRequest;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
@@ -47,7 +47,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1Id = 1L;
             Long team1PlayerId = 1L;
 
-            TimelineDto.RegisterScore request = new TimelineDto.RegisterScore(
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                     team1Id,
                     quarterId,
                     team1PlayerId,
@@ -76,7 +76,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team2Id = 2L;
             Long team2PlayerId = 6L;
 
-            TimelineDto.RegisterScore request = new TimelineDto.RegisterScore(
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                     team2Id,
                     quarterId,
                     team2PlayerId,
@@ -115,7 +115,7 @@ class TimelineServiceTest extends ServiceTest {
         void 팀1에서_생성한다() {
             // given
 
-            TimelineDto.RegisterReplacement request = new TimelineDto.RegisterReplacement(
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                     team1Id,
                     quarterId,
                     team1OriginPlayerId,
@@ -141,7 +141,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 팀2에서_생성한다() {
             // given
-            TimelineDto.RegisterReplacement request = new TimelineDto.RegisterReplacement(
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                     team2Id,
                     quarterId,
                     team2OriginPlayerId,
@@ -167,7 +167,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 다른_팀끼리_생성할_수_없다() {
             // given
-            TimelineDto.RegisterReplacement request = new TimelineDto.RegisterReplacement(
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                     team2Id,
                     quarterId,
                     team1OriginPlayerId,

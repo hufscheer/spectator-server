@@ -1,6 +1,6 @@
 package com.sports.server.command.timeline.presentation;
 
-import com.sports.server.command.timeline.TimelineDto;
+import com.sports.server.command.timeline.TimelineRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ public class TimelineControllerTest extends DocumentationTest {
     @Test
     void 득점_타임라인을_생성한다() throws Exception {
         // given
-        TimelineDto.RegisterScore request = new TimelineDto.RegisterScore(
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                 1L,
                 2L,
                 1L,
@@ -56,7 +56,7 @@ public class TimelineControllerTest extends DocumentationTest {
     @Test
     void 교체_타임라인을_생성한다() throws Exception {
         // given
-        TimelineDto.RegisterReplacement request = new TimelineDto.RegisterReplacement(
+        TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                 1L,
                 1L,
                 2L,

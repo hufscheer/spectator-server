@@ -1,7 +1,7 @@
 package com.sports.server.command.timeline.presentation;
 
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.timeline.TimelineDto;
+import com.sports.server.command.timeline.TimelineRequest;
 import com.sports.server.command.timeline.application.TimelineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ public class TimelineController {
 
     @PostMapping("/score")
     public ResponseEntity<Void> createScoreTimeline(@PathVariable Long gameId,
-                                                    @RequestBody TimelineDto.RegisterScore request,
+                                                    @RequestBody TimelineRequest.RegisterScore request,
                                                     Member member) {
         timelineService.registerScore(member, gameId, request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
@@ -25,7 +25,7 @@ public class TimelineController {
 
     @PostMapping("/replacement")
     public ResponseEntity<Void> createReplacementTimeline(@PathVariable Long gameId,
-                                                          @RequestBody TimelineDto.RegisterReplacement request,
+                                                          @RequestBody TimelineRequest.RegisterReplacement request,
                                                           Member member) {
         timelineService.registerReplacement(member, gameId, request);
         return ResponseEntity.status(HttpStatus.CREATED.value())

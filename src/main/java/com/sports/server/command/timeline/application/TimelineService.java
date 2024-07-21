@@ -4,7 +4,7 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.timeline.TimelineDto;
+import com.sports.server.command.timeline.TimelineRequest;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
@@ -21,7 +21,7 @@ public class TimelineService {
     private final TimelineRepository timelineRepository;
     private final EntityUtils entityUtils;
 
-    public void registerScore(Member member, Long gameId, TimelineDto.RegisterScore request) {
+    public void registerScore(Member member, Long gameId, TimelineRequest.RegisterScore request) {
         ScoreTimeline timeline = ScoreTimeline.score(
                 checkPermissionAndGet(gameId, member),
                 getQuarter(request.recordedQuarterId()),
@@ -32,7 +32,7 @@ public class TimelineService {
         timelineRepository.save(timeline);
     }
 
-    public void registerReplacement(Member member, Long gameId, TimelineDto.RegisterReplacement request) {
+    public void registerReplacement(Member member, Long gameId, TimelineRequest.RegisterReplacement request) {
         ReplacementTimeline timeline = new ReplacementTimeline(
                 checkPermissionAndGet(gameId, member),
                 getQuarter(request.recordedQuarterId()),

@@ -1,6 +1,6 @@
 package com.sports.server.command.timeline.acceptance;
 
-import com.sports.server.command.timeline.TimelineDto;
+import com.sports.server.command.timeline.TimelineRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -27,7 +27,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 득점_타임라인을_생성한다() {
-        TimelineDto.RegisterScore request = new TimelineDto.RegisterScore(
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                 team1Id,
                 quarterId,
                 team1PlayerId,
@@ -52,7 +52,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
     void 교체_타임라인을_생성한다() {
         // given
         long replacedPlayerId = 2L;
-        TimelineDto.RegisterReplacement request = new TimelineDto.RegisterReplacement(
+        TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                 team1Id,
                 quarterId,
                 team1PlayerId,
