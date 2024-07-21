@@ -30,7 +30,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final AuthenticationEntryPoint authEntryPoint;
     private final static Map<Pattern, String> authenticatedEndpointPatterns = Map.of(
             Pattern.compile("/leagues/\\d+/teams"), "POST",
-            Pattern.compile("/leagues/\\d+/teams/\\d+"), "PUT"
+            Pattern.compile("/leagues/\\d+/teams/\\d+"), "PUT",
+            Pattern.compile("/leagues/\\d+/teams/\\d+/delete-logo"), "POST"
     );
 
     @Value("${cookie.name}")
