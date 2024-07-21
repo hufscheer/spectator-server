@@ -5,6 +5,7 @@ import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,21 +17,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TimelineAcceptanceTest extends AcceptanceTest {
     private final Long gameId = 1L;
     private final Long quarterId = 3L;
+    private final Long team1Id = 1L;
+    private final Long team1PlayerId = 1L;
+
+    @BeforeEach
+    void configureAuth() {
+        configureMockJwtForEmail("john.doe@example.com");
+    }
 
     @Test
     void 득점_타임라인을_생성한다() {
-        // given
-        Long team1Id = 1L;
-        Long team1PlayerId = 1L;
-
         TimelineDto.RegisterScore request = new TimelineDto.RegisterScore(
                 team1Id,
                 quarterId,
                 team1PlayerId,
                 3
         );
-
-        configureMockJwtForEmail("john.doe@example.com");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -39,6 +41,32 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .post("/games/{gameId}/timelines/score", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 교체_타임라인을_생성한다() {
+        // given
+        long replacedPlayerId = 2L;
+        TimelineDto.RegisterReplacement request = new TimelineDto.RegisterReplacement(
+                team1Id,
+                quarterId,
+                team1PlayerId,
+                replacedPlayerId,
+                10
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/replacement", gameId)
                 .then().log().all()
                 .extract();
 
