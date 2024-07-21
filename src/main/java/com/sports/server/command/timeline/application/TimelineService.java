@@ -9,6 +9,7 @@ import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class TimelineService {
         Game game = entityUtils.getEntity(gameId, Game.class);
 
         if (!game.isMangedBy(member)) {
-            throw new CustomException(HttpStatus.FORBIDDEN, "타임라인 생성 권한이 없습니다.");
+            throw new UnauthorizedException("타임라인 생성 권한이 없습니다.");
         }
 
         Quarter quarter = entityUtils.getEntity(request.recordedQuarterId(), Quarter.class);

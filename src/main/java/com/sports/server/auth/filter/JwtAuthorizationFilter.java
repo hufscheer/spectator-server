@@ -1,17 +1,12 @@
 package com.sports.server.auth.filter;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.auth.utils.CookieUtil;
 import com.sports.server.auth.utils.JwtUtil;
-import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Map;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
@@ -41,18 +40,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         try {
             Cookie cookie = CookieUtil.getCookie(request, COOKIE_NAME);
 
-            if (cookie == null) {
-                throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+            if (cookie != null) {
+                authenticate(cookie);
             }
 
-            String accessToken = cookie.getValue();
-            jwtUtil.validateToken(accessToken);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    jwtUtil.getEmail(accessToken),
-                    null,
-                    null
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
@@ -61,23 +52,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        String method = request.getMethod();
+    private void authenticate(Cookie cookie) {
+        String accessToken = cookie.getValue();
 
-        if (path.contains("/manager/login")) {
-            return true;
-        } else if (path.contains("/manager")) {
-            return false;
-        } else {
-            for (Map.Entry<Pattern, String> entry : authenticatedEndpointPatterns.entrySet()) {
-                if (entry.getKey().matcher(path).matches() && entry.getValue().equalsIgnoreCase(method)) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        jwtUtil.validateToken(accessToken);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                jwtUtil.getEmail(accessToken),
+                null,
+                null
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
 

@@ -30,9 +30,12 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 3
         );
 
+        configureMockJwtForEmail("john.doe@example.com");
+
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
+                .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .post("/games/{gameId}/timelines/score", gameId)
