@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
+import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
@@ -69,9 +70,9 @@ public class LeagueTeamServiceTest extends ServiceTest {
         League league = entityUtils.getEntity(1L, League.class);
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
-        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRequest.Register("name-a", 1),
+                new LeagueTeamPlayerRequest.Register("name-b", 2));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, validLogoImageUrl,
                 playerRegisterRequests);
 
@@ -93,9 +94,9 @@ public class LeagueTeamServiceTest extends ServiceTest {
         Long leagueId = 1L;
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
-        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRequest.Register("name-a", 1),
+                new LeagueTeamPlayerRequest.Register("name-b", 2));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, "invalid-logo-url",
                 playerRegisterRequests);
 

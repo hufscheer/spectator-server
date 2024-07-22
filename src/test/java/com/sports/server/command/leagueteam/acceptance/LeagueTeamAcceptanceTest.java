@@ -2,6 +2,7 @@ package com.sports.server.command.leagueteam.acceptance;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -25,9 +26,9 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
     void 리그팀이_저장된다() {
         // given
         Long leagueId = 1L;
-        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRequest.Register("name-a", 1),
+                new LeagueTeamPlayerRequest.Register("name-b", 2));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", originPrefix + "image", playerRegisterRequests);
 

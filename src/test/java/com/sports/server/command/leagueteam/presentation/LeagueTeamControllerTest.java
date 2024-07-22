@@ -11,6 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
@@ -28,9 +29,9 @@ public class LeagueTeamControllerTest extends DocumentationTest {
 
         // given
         Long leagueId = 1L;
-        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRequest.Register("name-a", 1),
+                new LeagueTeamPlayerRequest.Register("name-b", 2));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", "logo-image-url", playerRegisterRequests);
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
