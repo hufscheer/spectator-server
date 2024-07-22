@@ -5,9 +5,9 @@ import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +25,7 @@ public class LeagueTeamController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{teamId}")
+    @PatchMapping("/{teamId}")
     public ResponseEntity<Void> update(@PathVariable Long leagueId, @RequestBody LeagueTeamRequest.Update request,
                                        Member member, @PathVariable Long teamId) {
         leagueTeamService.update(leagueId, request, member, teamId);

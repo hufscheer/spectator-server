@@ -45,20 +45,40 @@ public class LeagueTeamService {
     public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
         getLeagueAndCheckPermission(leagueId, manager);
         LeagueTeam leagueTeam = leagueTeamRepository.findById(teamId);
+        leagueTeam.updateInfo(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
+        addPlayers(request, leagueTeam);
+        updatePlayers(request, leagueTeam);
+        deletePlayers(request, leagueTeam);
+    }
 
-        leagueTeam.update(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
+    private void addPlayers(LeagueTeamRequest.Update request, LeagueTeam leagueTeam) {
+        if (request.newPlayers() != null) {
+            request.newPlayers().stream()
+                    .map(lgp -> lgp.toEntity(leagueTeam))
+                    .forEach(leagueTeam::addPlayer);
+        }
+    }
 
-        request.addPlayers().stream()
-                .map(lgp -> lgp.toEntity(leagueTeam))
-                .forEach(leagueTeam::addPlayer);
+    private void updatePlayers(LeagueTeamRequest.Update request, LeagueTeam leagueTeam) {
+        if (request.updatedPlayers() != null) {
+            request.updatedPlayers().forEach(updateRequest -> {
+                LeagueTeamPlayer player = entityUtils.getEntity(updateRequest.id(), LeagueTeamPlayer.class);
+                leagueTeam.validateLeagueTeamPlayer(player);
+                player.update(updateRequest.name(), updateRequest.number());
+            });
+        }
+    }
 
-        request.deletedPlayerIds().stream()
-                .map(lgpId -> {
-                    LeagueTeamPlayer lgp = entityUtils.getEntity(lgpId, LeagueTeamPlayer.class);
-                    leagueTeam.validateLeagueTeamPlayer(lgp);
-                    return lgp;
-                })
-                .forEach(lgp -> leagueTeamPlayerRepository.delete(lgp));
+    private void deletePlayers(LeagueTeamRequest.Update request, LeagueTeam leagueTeam) {
+        if (request.deletedPlayerIds() != null) {
+            request.deletedPlayerIds().stream()
+                    .map(lgpId -> {
+                        LeagueTeamPlayer lgp = entityUtils.getEntity(lgpId, LeagueTeamPlayer.class);
+                        leagueTeam.validateLeagueTeamPlayer(lgp);
+                        return lgp;
+                    })
+                    .forEach(lgp -> leagueTeamPlayerRepository.delete(lgp));
+        }
     }
 
     public void deleteLogoImage(Long leagueId, Member manager, Long teamId) {

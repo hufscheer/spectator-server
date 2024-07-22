@@ -57,7 +57,7 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         this.league = league;
     }
 
-    public void update(String name, String logoImageUrl) {
+    public void updateInfo(String name, String logoImageUrl) {
         this.name = name;
         if (logoImageUrl != null) {
             this.logoImageUrl = logoImageUrl;
