@@ -1,4 +1,4 @@
-= 훕치치 관객 서버 API 문서
+= 훕치치 서버 API 문서
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -61,6 +61,10 @@ operation::game-controller-test/응원_횟수를_업데이트한다[snippets='ht
 operation::report-controller-test/응원톡을_신고한다[snippets='http-request,request-fields,http-response']
 
 == 리그 API
+
+=== 리그 생성
+
+operation::league-controller-test/리그를_생성한다[snippets='http-request,http-response']
 
 === 리그 전체 조회
 

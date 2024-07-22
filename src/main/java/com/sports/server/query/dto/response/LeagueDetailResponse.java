@@ -1,6 +1,7 @@
 package com.sports.server.query.dto.response;
 
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.LeagueRound;
 import com.sports.server.query.application.InProgressLeagueChecker;
 
 import java.time.LocalDate;
@@ -10,8 +11,8 @@ public record LeagueDetailResponse(
         String name,
         LocalDateTime startAt,
         LocalDateTime endAt,
-        Integer maxRound,
-        Integer inProgressRound,
+        String maxRound,
+        String inProgressRound,
         Boolean isInProgress
 ) {
 
@@ -20,8 +21,8 @@ public record LeagueDetailResponse(
                 league.getName(),
                 league.getStartAt(),
                 league.getEndAt(),
-                league.getMaxRound(),
-                league.getInProgressRound(),
+                league.getMaxRound().getDescription(),
+                league.getInProgressRound().getDescription(),
                 InProgressLeagueChecker.check(LocalDate.now(), league)
         );
     }
