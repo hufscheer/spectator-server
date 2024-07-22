@@ -31,7 +31,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final static Map<Pattern, String> authenticatedEndpointPatterns = Map.of(
             Pattern.compile("/leagues/\\d+/teams"), "POST",
             Pattern.compile("/leagues"), "POST",
-            Pattern.compile("/leagues/\\d+/teams/\\d+"), "PUT",
+            Pattern.compile("/leagues/\\d+/teams/\\d+"), "PATCH",
             Pattern.compile("/leagues/\\d+/teams/\\d+/delete-logo"), "POST"
     );
 

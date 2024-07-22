@@ -53,11 +53,14 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         // given
         Long leagueId = 1L;
         Long teamId = 3L;
-        List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
-                new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+        List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRequest.Register("name-a", 1),
+                new LeagueTeamPlayerRequest.Register("name-b", 2));
+        List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
+                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0)
+        );
         LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
-                "name", originPrefix + "image", playerRegisterRequests, List.of(1L, 2L));
+                "name", originPrefix + "image", playerRegisterRequests, playerUpdateRequests, List.of(1L, 2L));
 
         configureMockJwtForEmail("john.doe@example.com");
 
@@ -68,7 +71,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
                 .pathParam("teamId", teamId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .put("/leagues/{leagueId}/teams/{teamId}")
+                .patch("/leagues/{leagueId}/teams/{teamId}")
                 .then().log().all()
                 .extract();
 

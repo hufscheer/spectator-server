@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
@@ -124,11 +125,12 @@ public class LeagueTeamServiceTest extends ServiceTest {
         @Test
         void 리그팀에_속하지_않은_리그팀_선수를_삭제하려고_할_때_예외가_발생한다() {
             // given
-            List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
-                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
-                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+            List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                    new LeagueTeamPlayerRequest.Register("name-a", 1),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+            List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
-                    "name", validLogoImageUrl, playerRegisterRequests, List.of(5L));
+                    "name", validLogoImageUrl, playerRegisterRequests, playerUpdateRequests, List.of(5L));
 
             // when & then
             assertThatThrownBy(() -> leagueTeamService.update(leagueId, request, manager, teamId))
@@ -137,13 +139,16 @@ public class LeagueTeamServiceTest extends ServiceTest {
         }
 
         @Test
-        void 정상적으로_리그팀이_수정된다() {
+        void 정상적으로_이미지_url이_수정된다() {
             // given
-            List<LeagueTeamRequest.LeagueTeamPlayerRequest> playerRegisterRequests = List.of(
-                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-a", 1),
-                    new LeagueTeamRequest.LeagueTeamPlayerRequest("name-b", 2));
+            List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                    new LeagueTeamPlayerRequest.Register("name-a", 1),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+            List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
+
+            );
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
-                    "name", validLogoImageUrl, playerRegisterRequests, List.of(3L));
+                    "name", validLogoImageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
 
             // when
             leagueTeamService.update(leagueId, request, manager, teamId);
@@ -153,6 +158,29 @@ public class LeagueTeamServiceTest extends ServiceTest {
             assertThat(leagueTeam.getName()).isEqualTo(request.name());
             assertThat(leagueTeam.getLogoImageUrl()).isEqualTo(
                     request.logoImageUrl().replace(originPrefix, replacePrefix));
+        }
+
+        @Test
+        void 정상적으로_리그팀_선수_정보가_수정된다() {
+            // given
+            Long updatedLeagueTeamPlayerId = 1L;
+            String updatedName = "여름수박진승희";
+            List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                    new LeagueTeamPlayerRequest.Register("name-a", 1),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+            List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
+                    new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0)
+            );
+            LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
+                    "name", validLogoImageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
+
+            // when
+            leagueTeamService.update(leagueId, request, manager, teamId);
+
+            // then
+            LeagueTeamPlayer leagueTeamPlayer = entityUtils.getEntity(updatedLeagueTeamPlayerId,
+                    LeagueTeamPlayer.class);
+            assertThat(leagueTeamPlayer.getName()).isEqualTo(updatedName);
         }
 
     }
