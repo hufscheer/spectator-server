@@ -13,7 +13,7 @@ public class LeagueTeamRequest {
     ) {
 
         public LeagueTeam toEntity(Member manager, League league, String logoImageUrl) {
-            return new LeagueTeam(name, logoImageUrl, manager, manager.getOrganization(), league);
+            return new LeagueTeam(name, logoImageUrl, manager, league);
         }
     }
 

@@ -49,11 +49,11 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         leagueTeamPlayers.add(leagueTeamPlayer);
     }
 
-    public LeagueTeam(String name, String logoImageUrl, Member manager, Organization organization, League league) {
+    public LeagueTeam(String name, String logoImageUrl, Member manager, League league) {
         this.name = name;
         this.logoImageUrl = logoImageUrl;
         this.manager = manager;
-        this.organization = organization;
+        this.organization = manager.getOrganization();
         this.league = league;
     }
 
