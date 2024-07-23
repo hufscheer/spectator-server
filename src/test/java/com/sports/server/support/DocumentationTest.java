@@ -10,6 +10,8 @@ import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.presentation.GameController;
+import com.sports.server.command.league.application.LeagueService;
+import com.sports.server.command.league.presentation.LeagueController;
 import com.sports.server.command.leagueteam.application.LeagueTeamService;
 import com.sports.server.command.leagueteam.presentation.LeagueTeamController;
 import com.sports.server.command.member.domain.Member;
@@ -52,6 +54,7 @@ import java.util.Optional;
                 SportQueryController.class,
                 AuthController.class,
                 LeagueTeamController.class,
+                LeagueController.class,
                 TimelineController.class
         })
 @Import({
@@ -127,6 +130,9 @@ public class DocumentationTest {
 
     @MockBean
     protected TimelineService timelineService;
+
+    @MockBean
+    protected LeagueService leagueService;
 
     @BeforeEach
     void setUp() {

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>훕치치 관객 서버 API 문서</title>
+<title>훕치치 서버 API 문서</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -489,8 +489,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_타임라인_api">타임라인 API</a>
 <ul class="sectlevel2">
-<li><a href="#_득점_타임라인_생성">득점 타임라인 생성</a></li>
-<li><a href="#_교체_타임라인_생성">교체 타임라인 생성</a></li>
 <li><a href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></li>
 </ul>
 </li>
@@ -2068,117 +2066,6 @@ Content-Length: 173
 <h2 id="_타임라인_api"><a class="link" href="#_타임라인_api">타임라인 API</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_득점_타임라인_생성"><a class="link" href="#_득점_타임라인_생성">득점 타임라인 생성</a></h3>
-<div class="sect3">
-<h4 id="_득점_타임라인_생성_http_request"><a class="link" href="#_득점_타임라인_생성_http_request">HTTP request</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/score HTTP/1.1
-Content-Type: application/json
-Content-Length: 99
-Host: www.api.hufstreaming.site
-Cookie: HCC_SES=temp-cookie
-
-{
-  "gameTeamId" : 1,
-  "recordedQuarterId" : 2,
-  "scoreLineupPlayerId" : 1,
-  "recordedAt" : 10
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_득점_타임라인_생성_path_parameters"><a class="link" href="#_득점_타임라인_생성_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/timelines/score</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">경기의 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_득점_타임라인_생성_http_response"><a class="link" href="#_득점_타임라인_생성_http_response">HTTP response</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_교체_타임라인_생성"><a class="link" href="#_교체_타임라인_생성">교체 타임라인 생성</a></h3>
-<div class="sect3">
-<h4 id="_교체_타임라인_생성_http_request"><a class="link" href="#_교체_타임라인_생성_http_request">HTTP request</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/replacement HTTP/1.1
-Content-Type: application/json
-Content-Length: 134
-Host: www.api.hufstreaming.site
-Cookie: HCC_SES=temp-cookie
-
-{
-  "gameTeamId" : 1,
-  "recordedQuarterId" : 1,
-  "originLineupPlayerId" : 2,
-  "replacementLineupPlayerId" : 3,
-  "recordedAt" : 5
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_교체_타임라인_생성_path_parameters"><a class="link" href="#_교체_타임라인_생성_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/timelines/replacement</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">경기의 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_교체_타임라인_생성_http_response"><a class="link" href="#_교체_타임라인_생성_http_response">HTTP response</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
 <h3 id="_게임의_타임라인_조회"><a class="link" href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></h3>
 <div class="sect3">
 <h4 id="_게임의_타임라인_조회_http_request"><a class="link" href="#_게임의_타임라인_조회_http_request">HTTP request</a></h4>
@@ -2503,7 +2390,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 28 Jul 2024 10:42:24 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sat, 27 Jul 2024 03:32:58 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -2514,7 +2401,7 @@ Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 28 Jul
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-07-21 19:42:08 +0900
+Last updated 2024-07-20 12:31:41 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

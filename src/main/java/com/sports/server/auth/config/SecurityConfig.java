@@ -42,7 +42,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 mvc.pattern("/manager/**"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/*/teams"),
-                                mvc.pattern(HttpMethod.POST, "/games/*/timelines/**")
+                                mvc.pattern(HttpMethod.POST, "/games/*/timelines/**"),
+                                mvc.pattern(HttpMethod.POST, "/leagues")
                         )
                         .authenticated()
                         .anyRequest().permitAll()
