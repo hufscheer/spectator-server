@@ -6,6 +6,7 @@ import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayerRepository;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
+import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
@@ -35,17 +36,22 @@ public class LeagueTeamService {
     public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
         League league = getLeagueAndCheckPermission(leagueId, manager);
 
-        LeagueTeam leagueTeam = request.toEntity(manager, league, changeLogoImageUrlToBeSaved(request.logoImageUrl()));
-        request.players().stream()
-                .map(lgp -> lgp.toEntity(leagueTeam))
-                .forEach(leagueTeam::addPlayer);
+        String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
+        LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
+
+        for (LeagueTeamPlayerRequest.Register player : request.players()) {
+            leagueTeam.addPlayer(player.toEntity(leagueTeam));
+        }
+
         leagueTeamRepository.save(leagueTeam);
     }
 
     public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
         getLeagueAndCheckPermission(leagueId, manager);
         LeagueTeam leagueTeam = leagueTeamRepository.findById(teamId);
+
         leagueTeam.updateInfo(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
+
         addPlayers(request, leagueTeam);
         updatePlayers(request, leagueTeam);
         deletePlayers(request, leagueTeam);
@@ -83,8 +89,10 @@ public class LeagueTeamService {
 
     public void deleteLogoImage(Long leagueId, Member manager, Long teamId) {
         getLeagueAndCheckPermission(leagueId, manager);
+
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         s3Service.deleteFile(getKeyOfImageUrl(leagueTeam.getLogoImageUrl()));
+
         leagueTeam.deleteLogoImageUrl();
     }
 
