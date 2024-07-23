@@ -90,7 +90,7 @@ public class Game extends BaseEntity<Game> {
 
     public void score(LineupPlayer scorer) {
         GameTeam scoredTeam = teams.stream()
-                .filter(scorer::isTeam)
+                .filter(scorer::isInTeam)
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점할 수 없습니다."));
 
