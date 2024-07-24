@@ -77,7 +77,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .when()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .cookie(COOKIE_NAME, "expired-token")
+                    .cookie(COOKIE_NAME, expiredToken)
                     .body(loginRequest)
                     .post("/manager/login")
                     .then().log().all()
