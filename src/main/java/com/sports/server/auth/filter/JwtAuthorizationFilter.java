@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,23 +18,12 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationEntryPoint authEntryPoint;
-    private final static Map<Pattern, String> authenticatedEndpointPatterns = Map.of(
-            Pattern.compile("/leagues/\\d+/teams"), "POST",
-            Pattern.compile("/leagues"), "POST",
-            Pattern.compile("/leagues/\\d+/teams/\\d+"), "PATCH",
-            Pattern.compile("/leagues/\\d+/teams/\\d+/delete-logo"), "POST"
-    );
-
     @Value("${cookie.name}")
     public String COOKIE_NAME;
 
