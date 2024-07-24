@@ -11,9 +11,11 @@ import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.S3Service;
+import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,9 +93,18 @@ public class LeagueTeamService {
         getLeagueAndCheckPermission(leagueId, manager);
 
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
-        s3Service.deleteFile(getKeyOfImageUrl(leagueTeam.getLogoImageUrl()));
+        String logoImageUrl = leagueTeam.getLogoImageUrl();
+        String keyOfImageUrl = getKeyOfImageUrl(logoImageUrl);
 
-        leagueTeam.deleteLogoImageUrl();
+        try {
+            leagueTeam.deleteLogoImageUrl();
+            s3Service.deleteFile(getKeyOfImageUrl(keyOfImageUrl));
+        } catch (Exception e) {
+            s3Service.rollbackFile(keyOfImageUrl);
+            leagueTeam.rollbackLogoImageUrl(logoImageUrl);
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "로고 이미지 삭제에 실패했습니다.");
+        }
+
     }
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl) {

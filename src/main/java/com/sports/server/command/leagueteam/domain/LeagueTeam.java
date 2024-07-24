@@ -73,4 +73,8 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     public void deleteLogoImageUrl() {
         this.logoImageUrl = "";
     }
+
+    public void rollbackLogoImageUrl(String logoImageUrl) {
+        this.logoImageUrl = logoImageUrl;
+    }
 }
