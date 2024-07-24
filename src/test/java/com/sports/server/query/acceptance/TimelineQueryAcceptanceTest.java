@@ -18,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Sql(scripts = "/record-fixture.sql")
+@Sql(scripts = "/timeline-fixture.sql")
 public class TimelineQueryAcceptanceTest extends AcceptanceTest {
 
 

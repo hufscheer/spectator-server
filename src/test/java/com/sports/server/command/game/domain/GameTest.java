@@ -64,7 +64,11 @@ class GameTest {
         @Test
         void 참여하지_않는_선수는_득점할_수_없다() {
             // given
+            GameTeam otherTeam = entityBuilder(GameTeam.class)
+                    .sample();
+
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", otherTeam)
                     .sample();
 
             // when then
