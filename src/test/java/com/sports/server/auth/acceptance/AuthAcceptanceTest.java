@@ -1,9 +1,12 @@
 package com.sports.server.auth.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.doThrow;
 
 import com.sports.server.auth.dto.LoginRequest;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
+import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -11,6 +14,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -61,6 +65,32 @@ public class AuthAcceptanceTest extends AcceptanceTest {
             assertThat(cookieValue).isNotNull();
         }
 
+        @Test
+        void 만료된_토큰이_교체된다() {
+            // given
+            String expiredToken = "expired-token";
+
+            doThrow(new UnauthorizedException("만료된 토큰입니다."))
+                    .when(jwtUtil).validateToken(expiredToken);
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .cookie(COOKIE_NAME, expiredToken)
+                    .body(loginRequest)
+                    .post("/manager/login")
+                    .then().log().all()
+                    .extract();
+
+            // then
+            String cookieValue = response.cookie(COOKIE_NAME);
+
+            assertDoesNotThrow(() -> {
+                jwtUtil.validateToken(cookieValue);
+            });
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
     }
 
     @Nested

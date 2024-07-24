@@ -2,6 +2,7 @@ package com.sports.server.auth.filter;
 
 import com.sports.server.auth.utils.CookieUtil;
 import com.sports.server.auth.utils.JwtUtil;
+import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -18,8 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
@@ -27,10 +26,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationEntryPoint authEntryPoint;
-    private final static Map<Pattern, String> authenticatedEndpointPatterns = Map.of(
-            Pattern.compile("/leagues/\\d+/teams"), "POST",
-        Pattern.compile("/leagues"), "POST"
-    );
 
     @Value("${cookie.name}")
     public String COOKIE_NAME;
@@ -56,7 +51,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private void authenticate(Cookie cookie) {
         String accessToken = cookie.getValue();
 
-        jwtUtil.validateToken(accessToken);
+        try {
+            jwtUtil.validateToken(accessToken);
+        } catch (UnauthorizedException e) {
+            return;
+        }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 jwtUtil.getEmail(accessToken),
