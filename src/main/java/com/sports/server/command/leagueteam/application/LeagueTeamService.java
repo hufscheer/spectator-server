@@ -95,7 +95,7 @@ public class LeagueTeamService {
         String logoImageUrl = leagueTeam.getLogoImageUrl();
         leagueTeam.deleteLogoImageUrl();
 
-        eventPublisher.publishEvent(new LogoImageDeletedEvent(changeLogoImageUrlToBeSaved(logoImageUrl)));
+        eventPublisher.publishEvent(new LogoImageDeletedEvent(getKeyOfImageUrl(logoImageUrl)));
     }
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl) {
