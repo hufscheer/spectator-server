@@ -41,21 +41,6 @@ public class S3Service {
         }
     }
 
-    public void rollbackFile(String key) {
-        String backupKey = backupPrefix + key;
-
-        // 기존의 파일이 삭제되었고, 백업 파일이 존재하는 경우
-        if (!doesFileExist(key) && doesFileExist(backupKey)) {
-            amazonS3.copyObject(new CopyObjectRequest(bucketName, backupKey, bucketName, key));
-        }
-
-    }
-
-
-    private boolean doesFileExist(String key) {
-        return amazonS3.doesObjectExist(bucketName, key);
-    }
-
     private String getFilePath(String extension) {
         return UUID.randomUUID() + "." + extension;
     }
