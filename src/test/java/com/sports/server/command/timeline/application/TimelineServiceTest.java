@@ -188,20 +188,22 @@ class TimelineServiceTest extends ServiceTest {
     @Nested
     class DeleteTest {
         @Test
-        void 마지막_타임라인을_삭제한다() {
+        void 마지막_타임라인을_차례로_삭제한다() {
             // given
-            Long deletedId = 4L;
+            long lastId = 4L;
 
             // when
-            timelineService.deleteTimeline(manager, gameId, deletedId);
+            for (long i = lastId; i > 0; i--) {
+                timelineService.deleteTimeline(manager, gameId, i);
+            }
 
             // then
-            assertThat(timelineFixtureRepository.findById(deletedId)).isEmpty();
+            assertThat(timelineFixtureRepository.findAll()).isEmpty();
         }
 
         @ParameterizedTest
         @ValueSource(longs = {1L, 2L, 3L})
-        void 마지막_타임라인이_아닌_타임라인을_삭제할_수_없다(long timelineId) {
+        void 마지막_타임라인이_아니면_삭제할_수_없다(long timelineId) {
             // when then
             assertThatThrownBy(() -> timelineService.deleteTimeline(manager, gameId, timelineId))
                     .isInstanceOf(CustomException.class);
