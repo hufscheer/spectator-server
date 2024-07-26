@@ -27,9 +27,9 @@ public class TimelineService {
     public void registerScore(Member member, Long gameId, TimelineRequest.RegisterScore request) {
         ScoreTimeline timeline = ScoreTimeline.score(
                 checkPermissionAndGet(gameId, member),
-                getQuarter(request.recordedQuarterId()),
-                request.recordedAt(),
-                getPlayer(request.scoreLineupPlayerId())
+                getQuarter(request.getRecordedQuarterId()),
+                request.getRecordedAt(),
+                getPlayer(request.getScoreLineupPlayerId())
         );
 
         timelineRepository.save(timeline);
@@ -38,10 +38,10 @@ public class TimelineService {
     public void registerReplacement(Member member, Long gameId, TimelineRequest.RegisterReplacement request) {
         ReplacementTimeline timeline = new ReplacementTimeline(
                 checkPermissionAndGet(gameId, member),
-                getQuarter(request.recordedQuarterId()),
-                request.recordedAt(),
-                getPlayer(request.originLineupPlayerId()),
-                getPlayer(request.replacementLineupPlayerId())
+                getQuarter(request.getRecordedQuarterId()),
+                request.getRecordedAt(),
+                getPlayer(request.getOriginLineupPlayerId()),
+                getPlayer(request.getReplacementLineupPlayerId())
         );
 
         timelineRepository.save(timeline);
