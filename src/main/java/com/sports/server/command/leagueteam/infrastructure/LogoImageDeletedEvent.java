@@ -1,4 +1,4 @@
-package com.sports.server.command.leagueteam.domain;
+package com.sports.server.command.leagueteam.infrastructure;
 
 public record LogoImageDeletedEvent(
         String keyOfImageUrl
