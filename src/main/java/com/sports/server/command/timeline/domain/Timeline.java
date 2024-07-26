@@ -47,7 +47,5 @@ public abstract class Timeline extends BaseEntity<Timeline> {
         }
     }
 
-    public void rollback() {
-        // 각 구현체에서 타임라인 삭제 시 롤백할 로직이 있다면 오버라이드해서 사용한다.
-    }
+    public abstract void rollback();
 }

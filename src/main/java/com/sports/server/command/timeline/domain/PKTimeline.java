@@ -20,4 +20,8 @@ public class PKTimeline extends Timeline {
     public String getType() {
         return "PK";
     }
+
+    @Override
+    public void rollback() {
+    }
 }
