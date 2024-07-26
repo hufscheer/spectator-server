@@ -1,6 +1,6 @@
 package com.sports.server.command.leagueteam.infrastructure;
 
-import com.sports.server.command.leagueteam.infrastructure.LogoImageDeletedEvent;
+import com.sports.server.command.leagueteam.domain.LogoImageDeletedEvent;
 import com.sports.server.common.application.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

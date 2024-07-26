@@ -6,7 +6,7 @@ import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayerRepository;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
-import com.sports.server.command.leagueteam.infrastructure.LogoImageDeletedEvent;
+import com.sports.server.command.leagueteam.domain.LogoImageDeletedEvent;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
