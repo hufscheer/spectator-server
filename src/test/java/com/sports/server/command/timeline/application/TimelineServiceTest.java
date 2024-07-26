@@ -6,11 +6,14 @@ import com.sports.server.command.timeline.TimelineRequest;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
+import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -178,6 +181,30 @@ class TimelineServiceTest extends ServiceTest {
             // when then
             assertThatThrownBy(() -> timelineService.registerReplacement(manager, gameId, request))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @DisplayName("타임라인을 삭제할 때")
+    @Nested
+    class DeleteTest {
+        @Test
+        void 마지막_타임라인을_삭제한다() {
+            // given
+            Long deletedId = 4L;
+
+            // when
+            timelineService.deleteTimeline(manager, gameId, deletedId);
+
+            // then
+            assertThat(timelineFixtureRepository.findById(deletedId)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void 마지막_타임라인이_아닌_타임라인을_삭제할_수_없다(long timelineId) {
+            // when then
+            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, gameId, timelineId))
+                    .isInstanceOf(CustomException.class);
         }
     }
 }
