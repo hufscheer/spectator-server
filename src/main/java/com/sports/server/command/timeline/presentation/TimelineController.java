@@ -31,4 +31,13 @@ public class TimelineController {
         return ResponseEntity.status(HttpStatus.CREATED.value())
                 .build();
     }
+
+    @DeleteMapping("/{timelineId}")
+    public ResponseEntity<Void> deleteTimeline(@PathVariable Long gameId,
+                                               @PathVariable Long timelineId,
+                                               Member member) {
+        timelineService.deleteTimeline(member, gameId, timelineId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT.value())
+                .build();
+    }
 }
