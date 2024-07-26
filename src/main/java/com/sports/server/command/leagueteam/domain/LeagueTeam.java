@@ -72,5 +72,6 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
 
     public void deleteLogoImageUrl() {
         this.logoImageUrl = "";
+        registerEvent(new LogoImageDeletedEvent(logoImageUrl));
     }
 }

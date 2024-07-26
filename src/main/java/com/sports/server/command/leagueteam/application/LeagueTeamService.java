@@ -6,7 +6,6 @@ import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayerRepository;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
-import com.sports.server.command.leagueteam.domain.LogoImageDeletedEvent;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
@@ -92,10 +91,7 @@ public class LeagueTeamService {
         getLeagueAndCheckPermission(leagueId, manager);
 
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
-        String logoImageUrl = leagueTeam.getLogoImageUrl();
         leagueTeam.deleteLogoImageUrl();
-
-        eventPublisher.publishEvent(new LogoImageDeletedEvent(getKeyOfImageUrl(logoImageUrl)));
     }
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl) {
@@ -103,10 +99,6 @@ public class LeagueTeamService {
             throw new IllegalStateException("잘못된 이미지 url 입니다.");
         }
         return logoImageUrl.replace(originPrefix, replacePrefix);
-    }
-
-    private String getKeyOfImageUrl(String logoImageUrl) {
-        return logoImageUrl.split(replacePrefix)[1];
     }
 
     private League getLeagueAndCheckPermission(final Long leagueId, final Member manager) {
