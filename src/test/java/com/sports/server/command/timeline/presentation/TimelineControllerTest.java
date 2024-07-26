@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -83,6 +84,27 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER).description("기존 선수 Id"),
                                 fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER).description("교체 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("교체 시간")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 타임라인을_삭제한다() throws Exception {
+        // when
+        ResultActions result = mockMvc.perform(
+                delete("/games/{gameId}/timelines/{timelineId}", 1, 1)
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isNoContent())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID"),
+                                parameterWithName("timelineId").description("타임라인의 ID")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
