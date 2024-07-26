@@ -78,6 +78,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
 	public void score() {
 		this.score += SCORE_VALUE;
 	}
+
+	public void cancelScore() {
+		this.score -= SCORE_VALUE;
+	}
 }
 
 
