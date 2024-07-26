@@ -30,5 +30,5 @@ amazon:
     bucket: bucket-name
 
 image:
-  origin-prefix: origin
-  replaced-prefix: replace
+  origin-prefix: origin/
+  replaced-prefix: replace/
