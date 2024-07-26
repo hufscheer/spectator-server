@@ -2,7 +2,7 @@ package com.sports.server.command.timeline.application;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
-import com.sports.server.command.timeline.TimelineRequest;
+import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;

@@ -1,7 +1,7 @@
 package com.sports.server.command.timeline.presentation;
 
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.timeline.TimelineRequest;
+import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.application.TimelineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

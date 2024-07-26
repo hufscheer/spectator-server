@@ -1,6 +1,6 @@
 package com.sports.server.command.timeline.presentation;
 
-import com.sports.server.command.timeline.TimelineRequest;
+import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;

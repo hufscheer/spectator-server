@@ -1,4 +1,4 @@
-package com.sports.server.command.timeline;
+package com.sports.server.command.timeline.dto;
 
 public class TimelineRequest {
     public record RegisterScore(
