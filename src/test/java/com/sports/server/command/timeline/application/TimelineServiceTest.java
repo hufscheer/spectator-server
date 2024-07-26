@@ -58,7 +58,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerScore(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)
@@ -87,7 +87,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerScore(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)
@@ -127,7 +127,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerReplacement(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ReplacementTimeline actual =
@@ -153,7 +153,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerReplacement(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ReplacementTimeline actual =
@@ -179,7 +179,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when then
-            assertThatThrownBy(() -> timelineService.registerReplacement(manager, gameId, request))
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
