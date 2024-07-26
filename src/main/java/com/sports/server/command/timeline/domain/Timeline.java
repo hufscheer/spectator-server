@@ -46,4 +46,8 @@ public abstract class Timeline extends BaseEntity<Timeline> {
             throw new IllegalArgumentException("시간은 0 이상이어야 합니다.");
         }
     }
+
+    public void rollback() {
+        // 각 구현체에서 타임라인 삭제 시 롤백할 로직이 있다면 오버라이드해서 사용한다.
+    }
 }
