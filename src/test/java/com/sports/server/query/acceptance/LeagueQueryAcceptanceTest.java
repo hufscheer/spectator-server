@@ -120,7 +120,7 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.endAt()).isEqualTo(LocalDateTime.of(2023, 11, 20, 0, 0, 0)),
                 () -> assertThat(actual.inProgressRound()).isEqualTo("8강"),
                 () -> assertThat(actual.maxRound()).isEqualTo("16강"),
-                () -> assertThat(actual.leagueProgress()).isEqualTo(LeagueProgress.IN_PROGRESS.getDescription())
+                () -> assertThat(actual.leagueProgress()).isEqualTo(LeagueProgress.FINISHED.getDescription())
         );
     }
 
