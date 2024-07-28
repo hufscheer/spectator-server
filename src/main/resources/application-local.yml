@@ -28,3 +28,7 @@ amazon:
     secretKey: secret-key
     region: ap-northeast-2
     bucket: bucket-name
+
+image:
+  origin-prefix: origin/
+  replaced-prefix: replace/

@@ -39,11 +39,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern("/manager/login")).permitAll()
-                        .requestMatchers(
-                                mvc.pattern("/manager/**"),
+                        .requestMatchers(mvc.pattern("/manager/**"),
+                                mvc.pattern(HttpMethod.POST, "/leagues"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/*/teams"),
-                                mvc.pattern(HttpMethod.POST, "/games/*/timelines/**"),
-                                mvc.pattern(HttpMethod.POST, "/leagues")
+                                mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams"),
+                                mvc.pattern(HttpMethod.PUT, "/leagues/{leagueId}/teams/{teamId}"),
+                                mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams/{teamId}/delete-logo"),
+                                mvc.pattern(HttpMethod.POST, "/games/*/timelines/**")
                         )
                         .authenticated()
                         .anyRequest().permitAll()

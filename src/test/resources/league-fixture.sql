@@ -70,6 +70,7 @@ INSERT INTO league_team_players (id, name, description, number, league_team_id)
 VALUES (1, '봄동나물진승희', '설명설명설명', 0, 3),
        (2, '가을전어이동규', '설명설명설명', 2, 3),
        (3, '겨울붕어빵이현제', '설명설명설명', 3, 3),
-       (4, '여름수박고병룡', '설명설명설명', 3, 3);
+       (4, '여름수박고병룡', '설명설명설명', 3, 3),
+       (5, '승희', '설명', 10, 1);
 
 SET foreign_key_checks = 1;

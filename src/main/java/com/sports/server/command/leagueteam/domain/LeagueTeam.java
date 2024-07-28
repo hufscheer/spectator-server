@@ -49,11 +49,29 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         leagueTeamPlayers.add(leagueTeamPlayer);
     }
 
-    public LeagueTeam(String name, String logoImageUrl, Member manager, Organization organization, League league) {
+    public LeagueTeam(String name, String logoImageUrl, Member manager, League league) {
         this.name = name;
         this.logoImageUrl = logoImageUrl;
         this.manager = manager;
-        this.organization = organization;
+        this.organization = manager.getOrganization();
         this.league = league;
+    }
+
+    public void updateInfo(String name, String logoImageUrl) {
+        this.name = name;
+        if (logoImageUrl != null) {
+            this.logoImageUrl = logoImageUrl;
+        }
+    }
+
+    public void validateLeagueTeamPlayer(LeagueTeamPlayer leagueTeamPlayer) {
+        if (!this.leagueTeamPlayers.contains(leagueTeamPlayer)) {
+            throw new IllegalStateException("해당 리그팀에 속하지 않은 선수입니다.");
+        }
+    }
+
+    public void deleteLogoImageUrl() {
+        this.logoImageUrl = "";
+        registerEvent(new LogoImageDeletedEvent(logoImageUrl));
     }
 }

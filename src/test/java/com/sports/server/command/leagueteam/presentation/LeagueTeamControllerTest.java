@@ -3,6 +3,7 @@ package com.sports.server.command.leagueteam.presentation;
 
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -10,8 +11,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRegisterRequest.LeagueTeamPlayerRegisterRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
+import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
@@ -28,10 +29,10 @@ public class LeagueTeamControllerTest extends DocumentationTest {
 
         // given
         Long leagueId = 1L;
-        List<LeagueTeamPlayerRegisterRequest> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRegisterRequest("name-a", 1),
-                new LeagueTeamPlayerRegisterRequest("name-b", 2));
-        LeagueTeamRegisterRequest request = new LeagueTeamRegisterRequest(
+        List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRequest.Register("name-a", 1),
+                new LeagueTeamPlayerRequest.Register("name-b", 2));
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", "logo-image-url", playerRegisterRequests);
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -62,4 +63,63 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                         )
                 ));
     }
+
+    @Test
+    void 리그팀을_수정한다() throws Exception {
+
+        // given
+        Long leagueId = 1L;
+        Long teamId = 3L;
+        List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
+                new LeagueTeamPlayerRequest.Register("name-a", 1),
+                new LeagueTeamPlayerRequest.Register("name-b", 2));
+        List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
+                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0)
+        );
+        LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
+                "name", "logo-image-url", playerRegisterRequests, playerUpdateRequests, List.of(5L));
+
+        Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+        Mockito.doNothing().when(leagueTeamService)
+                .update(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.anyLong());
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/leagues/{leagueId}/teams/{teamId}", leagueId, teamId, request)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(cookie)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID"),
+                                parameterWithName("teamId").description("리그팀의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("리그팀의 이름"),
+                                fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 url"),
+                                fieldWithPath("newPlayers").type(JsonFieldType.ARRAY).description("등록할 리그팀 선수 목록"),
+                                fieldWithPath("newPlayers[].name").type(JsonFieldType.STRING).description("등록할 선수의 이름"),
+                                fieldWithPath("newPlayers[].number").type(JsonFieldType.NUMBER)
+                                        .description("등록할 선수의 번호"),
+                                fieldWithPath("updatedPlayers").type(JsonFieldType.ARRAY).description("수정할 리그팀 선수 목록"),
+                                fieldWithPath("updatedPlayers[].id").type(JsonFieldType.NUMBER)
+                                        .description("수정할 리그팀 선수의 ID"),
+                                fieldWithPath("updatedPlayers[].name").type(JsonFieldType.STRING)
+                                        .description("수정하고자 하는 이름"),
+                                fieldWithPath("updatedPlayers[].number").type(JsonFieldType.NUMBER)
+                                        .description("수정하고자 하는 번호"),
+                                fieldWithPath("deletedPlayerIds").type(JsonFieldType.ARRAY)
+                                        .description("삭제할 리그팀 선수의 ID")
+
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
 }
