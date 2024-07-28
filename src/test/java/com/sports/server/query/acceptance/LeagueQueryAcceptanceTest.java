@@ -1,5 +1,6 @@
 package com.sports.server.query.acceptance;
 
+import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
@@ -119,7 +120,7 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.endAt()).isEqualTo(LocalDateTime.of(2023, 11, 20, 0, 0, 0)),
                 () -> assertThat(actual.inProgressRound()).isEqualTo("8강"),
                 () -> assertThat(actual.maxRound()).isEqualTo("16강"),
-                () -> assertThat(actual.isInProgress()).isEqualTo(false)
+                () -> assertThat(actual.leagueProgress()).isEqualTo(LeagueProgress.IN_PROGRESS.getDescription())
         );
     }
 
