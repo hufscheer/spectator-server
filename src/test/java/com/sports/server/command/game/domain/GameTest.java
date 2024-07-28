@@ -81,17 +81,26 @@ class GameTest {
     @DisplayName("Game에서")
     class CancelScoreTest {
 
+        private LineupPlayer team1Player;
+        private LineupPlayer team2Player;
+
+        @BeforeEach
+        void setUp() {
+            team1Player = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", game.getTeam1())
+                    .sample();
+            team2Player = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", game.getTeam2())
+                    .sample();
+        }
+
         @Test
         void team1의_득점을_취소한다() {
             // given
-            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam1())
-                    .sample();
-
-            game.score(scorer);
+            game.score(team1Player);
 
             // when
-            game.cancelScore(scorer);
+            game.cancelScore(team1Player);
 
             // then
             assertThat(game.getTeam1().getScore()).isEqualTo(0);
@@ -101,18 +110,28 @@ class GameTest {
         @Test
         void team2의_득점을_취소한다() {
             // given
-            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam2())
-                    .sample();
-
-            game.score(scorer);
+            game.score(team2Player);
 
             // when
-            game.cancelScore(scorer);
+            game.cancelScore(team2Player);
 
             // then
             assertThat(game.getTeam1().getScore()).isEqualTo(0);
             assertThat(game.getTeam2().getScore()).isEqualTo(0);
+        }
+
+        @Test
+        void 동점_상황에서_한_팀만_점수를_취소한다() {
+            // given
+            game.score(team1Player);
+            game.score(team2Player);
+
+            // when
+            game.cancelScore(team1Player);
+
+            // then
+            assertThat(game.getTeam1().getScore()).isEqualTo(0);
+            assertThat(game.getTeam2().getScore()).isEqualTo(1);
         }
 
         @Test
