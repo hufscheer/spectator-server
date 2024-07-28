@@ -41,7 +41,7 @@ public class TimelineService {
         Game game = entityUtils.getEntity(gameId, Game.class);
 
         if (!game.isMangedBy(member)) {
-            throw new UnauthorizedException("타임라인 생성 권한이 없습니다.");
+            throw new UnauthorizedException("타임라인 조작 권한이 없습니다.");
         }
 
         return game;
