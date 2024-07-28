@@ -24,7 +24,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
 		// given
 		List<LeagueResponse> responses = List.of(
-			new LeagueResponse(1L, "리그 첫번쨰", "16강", "4강", "종료"),
+			new LeagueResponse(1L, "리그 첫번째", "16강", "4강", "종료"),
 			new LeagueResponse(2L, "리그 두번째", "32강", "32강", "진행 중")
 		);
 
