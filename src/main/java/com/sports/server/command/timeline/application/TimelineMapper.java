@@ -18,16 +18,16 @@ public class TimelineMapper {
 
     public Timeline toEntity(Game game, TimelineRequest request) {
         if (request instanceof TimelineRequest.RegisterScore scoreRequest) {
-            return scoreTimeline(game, scoreRequest);
+            return toScoreTimeline(game, scoreRequest);
         } else if (request instanceof TimelineRequest.RegisterReplacement replacementRequest) {
-            return replacementTimeline(game, replacementRequest);
+            return toReplacementTimeline(game, replacementRequest);
         }
 
         throw new IllegalArgumentException("지원하지 않는 타입입니다.");
     }
 
-    private ScoreTimeline scoreTimeline(Game game,
-                                        TimelineRequest.RegisterScore scoreRequest) {
+    private ScoreTimeline toScoreTimeline(Game game,
+                                          TimelineRequest.RegisterScore scoreRequest) {
         return ScoreTimeline.score(
                 game,
                 getQuarter(scoreRequest.getRecordedQuarterId()),
@@ -36,8 +36,8 @@ public class TimelineMapper {
         );
     }
 
-    private ReplacementTimeline replacementTimeline(Game game,
-                                                    TimelineRequest.RegisterReplacement replacementRequest) {
+    private ReplacementTimeline toReplacementTimeline(Game game,
+                                                      TimelineRequest.RegisterReplacement replacementRequest) {
         return new ReplacementTimeline(
                 game,
                 getQuarter(replacementRequest.getRecordedQuarterId()),
