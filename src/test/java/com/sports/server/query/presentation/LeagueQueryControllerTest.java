@@ -50,7 +50,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 					fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
 					fieldWithPath("[].inProgressRound").type(JsonFieldType.STRING)
 						.description("현재 진행 중인 라운드"),
-					fieldWithPath("[].leagueProgress").type(JsonFieldType.BOOLEAN).description("현재 대회 진행 상태")
+					fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태")
 				)
 			));
 	}
@@ -135,7 +135,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 				LocalDateTime.of(2024, 3, 26, 0, 0, 0),
 				"16강",
 				"4강",
-				"진행 중"
+				"진행 중",
+				3
 			));
 
 		// when
@@ -155,7 +156,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 					fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
 					fieldWithPath("inProgressRound").type(JsonFieldType.STRING).description("리그의 현재 라운드"),
 					fieldWithPath("maxRound").type(JsonFieldType.STRING).description("리그 총 라운드"),
-					fieldWithPath("leagueProgress").type(JsonFieldType.BOOLEAN).description("현재 대회 진행 상태")
+					fieldWithPath("leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
+					fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수")
 				)
 			));
 	}

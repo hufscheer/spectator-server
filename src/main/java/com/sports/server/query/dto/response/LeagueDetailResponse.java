@@ -11,17 +11,18 @@ public record LeagueDetailResponse(
         LocalDateTime endAt,
         String maxRound,
         String inProgressRound,
-        String leagueProgress
+        String leagueProgress,
+        Integer leagueTeamCount
 ) {
-
-    public LeagueDetailResponse(League league) {
-        this(
-                league.getName(),
-                league.getStartAt(),
-                league.getEndAt(),
-                league.getMaxRound().getDescription(),
-                league.getInProgressRound().getDescription(),
-                LeagueProgress.check(LocalDateTime.now(), league)
-        );
-    }
+	public static LeagueDetailResponse of(League league, Integer leagueTeamCount) {
+		return new LeagueDetailResponse(
+			league.getName(),
+			league.getStartAt(),
+			league.getEndAt(),
+			league.getMaxRound().getDescription(),
+			league.getInProgressRound().getDescription(),
+			LeagueProgress.check(LocalDateTime.now(), league),
+			leagueTeamCount
+		);
+	}
 }
