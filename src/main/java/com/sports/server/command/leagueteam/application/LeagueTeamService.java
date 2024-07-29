@@ -56,6 +56,14 @@ public class LeagueTeamService {
         deletePlayers(request, leagueTeam);
     }
 
+    public void delete(Long leagueId, Member manager, Long teamId) {
+        League league = getLeagueAndCheckPermission(leagueId, manager);
+        LeagueTeam leagueTeam = getLeagueTeam(teamId);
+        leagueTeam.isParticipate(league);
+
+        leagueTeamRepository.delete(leagueTeam);
+    }
+
     private LeagueTeam getLeagueTeam(final Long leagueTeamId) {
         return leagueTeamRepository.findById(leagueTeamId)
                 .orElseThrow(() -> new NotFoundException("해당 리그팀이 존재하지 않습니다."));

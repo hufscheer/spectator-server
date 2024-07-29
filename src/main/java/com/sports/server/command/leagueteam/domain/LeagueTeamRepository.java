@@ -15,5 +15,7 @@ public interface LeagueTeamRepository extends Repository<LeagueTeam, Long> {
                     + "LEFT JOIN FETCH lt.leagueTeamPlayers "
                     + "WHERE lt.id = :id"
     )
-    LeagueTeam findById(Long id);
+    Optional<LeagueTeam> findById(Long id);
+
+    void delete(LeagueTeam leagueTeam);
 }
