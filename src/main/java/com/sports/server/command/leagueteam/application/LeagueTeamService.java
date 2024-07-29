@@ -10,10 +10,10 @@ import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +31,6 @@ public class LeagueTeamService {
     private final LeagueTeamRepository leagueTeamRepository;
     private final LeagueTeamPlayerRepository leagueTeamPlayerRepository;
     private final EntityUtils entityUtils;
-    private final ApplicationEventPublisher eventPublisher;
 
     public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
         League league = getLeagueAndCheckPermission(leagueId, manager);
@@ -48,7 +47,7 @@ public class LeagueTeamService {
 
     public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
         getLeagueAndCheckPermission(leagueId, manager);
-        LeagueTeam leagueTeam = leagueTeamRepository.findById(teamId);
+        LeagueTeam leagueTeam = getLeagueTeam(teamId);
 
         leagueTeam.updateInfo(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
 
@@ -56,6 +55,12 @@ public class LeagueTeamService {
         updatePlayers(request, leagueTeam);
         deletePlayers(request, leagueTeam);
     }
+
+    private LeagueTeam getLeagueTeam(final Long leagueTeamId) {
+        return leagueTeamRepository.findById(leagueTeamId)
+                .orElseThrow(() -> new NotFoundException("해당 리그팀이 존재하지 않습니다."));
+    }
+
 
     private void addPlayers(LeagueTeamRequest.Update request, LeagueTeam leagueTeam) {
         if (request.newPlayers() != null) {
