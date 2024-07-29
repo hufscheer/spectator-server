@@ -61,6 +61,7 @@ public class LeagueTeamService {
         LeagueTeam leagueTeam = getLeagueTeam(teamId);
         leagueTeam.isParticipate(league);
 
+        leagueTeam.deleteLogoImageUrl();
         leagueTeamRepository.delete(leagueTeam);
     }
 
