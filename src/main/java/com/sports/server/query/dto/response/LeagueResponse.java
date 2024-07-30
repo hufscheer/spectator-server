@@ -18,7 +18,7 @@ public record LeagueResponse(
 			league.getName(),
 			league.getMaxRound().getDescription(),
 			league.getInProgressRound().getDescription(),
-			LeagueProgress.check(LocalDateTime.now(), league)
+			LeagueProgress.getProgressDescription(LocalDateTime.now(), league)
 		);
 	}
 }

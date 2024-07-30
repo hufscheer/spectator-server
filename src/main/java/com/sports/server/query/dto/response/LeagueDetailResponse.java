@@ -21,7 +21,7 @@ public record LeagueDetailResponse(
 			league.getEndAt(),
 			league.getMaxRound().getDescription(),
 			league.getInProgressRound().getDescription(),
-			LeagueProgress.check(LocalDateTime.now(), league),
+			LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
 			leagueTeamCount
 		);
 	}

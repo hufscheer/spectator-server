@@ -26,7 +26,7 @@ public enum LeagueProgress {
 	private final String description;
 	private final BiFunction<LocalDateTime, League, Boolean> InProgressFunction;
 
-	public static String check(final LocalDateTime localDateTime, final League league) {
+	public static String getProgressDescription(final LocalDateTime localDateTime, final League league) {
 		return Stream.of(LeagueProgress.values())
 			.filter(lp -> lp.getInProgressFunction().apply(localDateTime, league))
 			.map(LeagueProgress::getDescription)

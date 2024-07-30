@@ -30,7 +30,7 @@ class LeagueProgressTest {
 		LocalDateTime now = LocalDateTime.of(2024, 2, dayOfMonth, 0, 0, 0);
 
 		// when
-		String actual = LeagueProgress.check(now, league);
+		String actual = LeagueProgress.getProgressDescription(now, league);
 
 		// then
 		assertThat(actual).isEqualTo(LeagueProgress.BEFORE_START.getDescription());
@@ -43,7 +43,7 @@ class LeagueProgressTest {
 		LocalDateTime now = LocalDateTime.of(2024, 2, dayOfMonth, 0, 0, 0);
 
 		// when
-		String actual = LeagueProgress.check(now, league);
+		String actual = LeagueProgress.getProgressDescription(now, league);
 
 		// then
 		assertThat(actual).isEqualTo(LeagueProgress.IN_PROGRESS.getDescription());
@@ -56,7 +56,7 @@ class LeagueProgressTest {
 		LocalDateTime now = LocalDateTime.of(2024, 2, dayOfMonth, 0, 0, 0);
 
 		// when
-		String actual = LeagueProgress.check(now, league);
+		String actual = LeagueProgress.getProgressDescription(now, league);
 
 		// then
 		assertThat(actual).isEqualTo(LeagueProgress.FINISHED.getDescription());
