@@ -1,24 +1,24 @@
 package com.sports.server.query.dto.response;
 
-import com.sports.server.command.league.domain.League;
-import com.sports.server.query.application.InProgressLeagueChecker;
+import java.time.LocalDateTime;
 
-import java.time.LocalDate;
+import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.LeagueProgress;
 
 public record LeagueResponse(
-        Long leagueId,
-        String name,
-        String maxRound,
-        String inProgressRound,
-        Boolean isInProgress
+	Long leagueId,
+	String name,
+	String maxRound,
+	String inProgressRound,
+	String leagueProgress
 ) {
-    public LeagueResponse(League league) {
-        this(
-                league.getId(),
-                league.getName(),
-                league.getMaxRound().getDescription(),
-                league.getInProgressRound().getDescription(),
-                InProgressLeagueChecker.check(LocalDate.now(), league)
-        );
-    }
+	public LeagueResponse(League league) {
+		this(
+			league.getId(),
+			league.getName(),
+			league.getMaxRound().getDescription(),
+			league.getInProgressRound().getDescription(),
+			LeagueProgress.getProgressDescription(LocalDateTime.now(), league)
+		);
+	}
 }
