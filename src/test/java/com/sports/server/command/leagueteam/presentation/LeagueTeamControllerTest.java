@@ -3,6 +3,7 @@ package com.sports.server.command.leagueteam.presentation;
 
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -115,6 +116,36 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                                 fieldWithPath("deletedPlayerIds").type(JsonFieldType.ARRAY)
                                         .description("삭제할 리그팀 선수의 ID")
 
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 리그팀을_삭제한다() throws Exception {
+
+        // given
+        Long leagueId = 1L;
+        Long teamId = 3L;
+        Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+        Mockito.doNothing().when(leagueTeamService)
+                .delete(Mockito.anyLong(), Mockito.any(), Mockito.anyLong());
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/leagues/{leagueId}/teams/{teamId}", leagueId, teamId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(cookie)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID"),
+                                parameterWithName("teamId").description("리그팀의 ID")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
