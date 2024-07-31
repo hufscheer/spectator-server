@@ -4,7 +4,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
-public class LeagueRoundConverter implements AttributeConverter<Round, String> {
+public class RoundConverter implements AttributeConverter<Round, String> {
 	@Override
 	public String convertToDatabaseColumn(Round attribute) {
 		return attribute.getDescription();
