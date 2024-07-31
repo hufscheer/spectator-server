@@ -1,9 +1,11 @@
 package com.sports.server.command.leagueteam.domain;
 
+import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -73,5 +75,11 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     public void deleteLogoImageUrl() {
         this.logoImageUrl = "";
         registerEvent(new LogoImageDeletedEvent(logoImageUrl));
+    }
+
+    public void isParticipate(League league) {
+        if (!this.league.equals(league)) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+        }
     }
 }

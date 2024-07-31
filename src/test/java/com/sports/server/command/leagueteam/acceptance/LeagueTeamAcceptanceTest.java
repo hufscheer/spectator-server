@@ -78,4 +78,26 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @Test
+    void 리그팀을_삭제한다() {
+        // given
+        Long leagueId = 1L;
+        Long teamId = 3L;
+
+        configureMockJwtForEmail("john.doe@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .pathParam("leagueId", leagueId)
+                .pathParam("teamId", teamId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/leagues/{leagueId}/teams/{teamId}")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

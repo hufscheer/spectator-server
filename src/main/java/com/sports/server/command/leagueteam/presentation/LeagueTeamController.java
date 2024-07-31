@@ -5,6 +5,7 @@ import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,13 @@ public class LeagueTeamController {
     @PostMapping("/{teamId}/delete-logo")
     public ResponseEntity<Void> deleteLogo(@PathVariable Long leagueId, Member member, @PathVariable Long teamId) {
         leagueTeamService.deleteLogoImage(leagueId, member, teamId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{teamId}")
+    public ResponseEntity<Void> delete(@PathVariable Long leagueId,
+                                       Member member, @PathVariable Long teamId) {
+        leagueTeamService.delete(leagueId, member, teamId);
         return ResponseEntity.ok().build();
     }
 
