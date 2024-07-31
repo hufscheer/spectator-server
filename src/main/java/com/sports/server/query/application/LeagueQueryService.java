@@ -1,6 +1,7 @@
 package com.sports.server.query.application;
 
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
@@ -53,7 +54,10 @@ public class LeagueQueryService {
 
 	public LeagueDetailResponse findLeagueDetail(Long leagueId) {
 		return leagueQueryRepository.findById(leagueId)
-			.map(LeagueDetailResponse::new)
+			.map(league -> {
+				return LeagueDetailResponse.of(league,
+					leagueTeamDynamicRepository.findByLeagueAndRound(league, null).size());
+			})
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
 	}
 

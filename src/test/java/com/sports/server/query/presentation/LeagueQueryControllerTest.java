@@ -24,8 +24,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
 		// given
 		List<LeagueResponse> responses = List.of(
-			new LeagueResponse(1L, "리그 첫번쨰", "16강", "4강", false),
-			new LeagueResponse(2L, "리그 두번째", "32강", "32강", true)
+			new LeagueResponse(1L, "리그 첫번째", "16강", "4강", "종료"),
+			new LeagueResponse(2L, "리그 두번째", "32강", "32강", "진행 중")
 		);
 
 		int year = 2024;
@@ -50,7 +50,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 					fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
 					fieldWithPath("[].inProgressRound").type(JsonFieldType.STRING)
 						.description("현재 진행 중인 라운드"),
-					fieldWithPath("[].isInProgress").type(JsonFieldType.BOOLEAN).description("현재 진행 중인지 여부")
+					fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태")
 				)
 			));
 	}
@@ -135,7 +135,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 				LocalDateTime.of(2024, 3, 26, 0, 0, 0),
 				"16강",
 				"4강",
-				true
+				"진행 중",
+				3
 			));
 
 		// when
@@ -155,7 +156,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 					fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
 					fieldWithPath("inProgressRound").type(JsonFieldType.STRING).description("리그의 현재 라운드"),
 					fieldWithPath("maxRound").type(JsonFieldType.STRING).description("리그 총 라운드"),
-					fieldWithPath("isInProgress").type(JsonFieldType.BOOLEAN).description("대회가 현재 진행 중인지 여햐")
+					fieldWithPath("leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
+					fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수")
 				)
 			));
 	}
