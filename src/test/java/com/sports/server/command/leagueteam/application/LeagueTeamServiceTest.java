@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
+import com.sports.server.command.leagueteam.domain.LeagueTeamPlayerFixtureRepository;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
@@ -44,11 +45,17 @@ public class LeagueTeamServiceTest extends ServiceTest {
     @Autowired
     private LeagueTeamRepository leagueTeamRepository;
 
+    @Autowired
+    private LeagueTeamPlayerFixtureRepository leagueTeamPlayerFixtureRepository;
+
     private String validLogoImageUrl;
+
+    private Member manager;
 
     @BeforeEach
     void setUp() {
         validLogoImageUrl = originPrefix + "image.png";
+        manager = entityUtils.getEntity(1L, Member.class);
     }
 
     @Test
@@ -184,4 +191,21 @@ public class LeagueTeamServiceTest extends ServiceTest {
         }
 
     }
+
+    @Test
+    void 리그팀을_삭제한다() {
+        // given
+        Long leagueId = 1L;
+        Long leagueTeamId = 3L;
+        List<Long> leagueTeamPlayerIds = List.of(1L, 2L, 3L, 4L);
+
+        // when
+        leagueTeamService.delete(leagueId, manager, leagueTeamId);
+
+        // then
+        assertThat(leagueTeamRepository.findById(leagueTeamId).isEmpty());
+        leagueTeamPlayerIds.stream()
+                .forEach(id -> assertThat(leagueTeamPlayerFixtureRepository.findById(id)).isEmpty());
+    }
+
 }
