@@ -58,7 +58,7 @@ public class LeagueTeamService {
 
     public void delete(Long leagueId, Member manager, Long teamId) {
         League league = getLeagueAndCheckPermission(leagueId, manager);
-        LeagueTeam leagueTeam = getLeagueTeam(teamId);
+        LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         leagueTeam.isParticipate(league);
 
         leagueTeam.deleteLogoImageUrl();
