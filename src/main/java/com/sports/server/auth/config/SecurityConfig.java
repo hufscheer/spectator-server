@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern("/manager/login")).permitAll()
                         .requestMatchers(mvc.pattern("/manager/**"),
+                                mvc.pattern(HttpMethod.GET, "/members/info"),
                                 mvc.pattern(HttpMethod.POST, "/leagues"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/*/teams"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams"),
@@ -58,6 +59,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
