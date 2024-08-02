@@ -86,4 +86,9 @@ public class ScoreTimeline extends Timeline {
         this.gameTeam2 = gameTeam2;
         this.snapshotScore2 = snapshotScore2;
     }
+
+    @Override
+    public void rollback() {
+        game.cancelScore(scorer);
+    }
 }

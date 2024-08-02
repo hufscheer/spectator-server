@@ -16,4 +16,9 @@ public class GameProgressTimeline extends Timeline  {
     public String getType() {
         return "GAME_PROGRESS";
     }
+
+    @Override
+    public void rollback() {
+        // TODO 게임 상태 변경 타임라인 생성 로직 구현 이후 구현 예정
+    }
 }

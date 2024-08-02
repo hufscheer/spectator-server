@@ -46,4 +46,6 @@ public abstract class Timeline extends BaseEntity<Timeline> {
             throw new IllegalArgumentException("시간은 0 이상이어야 합니다.");
         }
     }
+
+    public abstract void rollback();
 }

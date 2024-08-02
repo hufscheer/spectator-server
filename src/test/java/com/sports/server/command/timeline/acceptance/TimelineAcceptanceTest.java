@@ -1,6 +1,6 @@
 package com.sports.server.command.timeline.acceptance;
 
-import com.sports.server.command.timeline.TimelineRequest;
+import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

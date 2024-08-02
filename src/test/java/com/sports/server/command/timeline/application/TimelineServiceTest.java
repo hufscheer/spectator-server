@@ -2,15 +2,18 @@ package com.sports.server.command.timeline.application;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
-import com.sports.server.command.timeline.TimelineRequest;
+import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
+import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -55,7 +58,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerScore(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)
@@ -84,7 +87,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerScore(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)
@@ -124,7 +127,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerReplacement(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ReplacementTimeline actual =
@@ -150,7 +153,7 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when
-            timelineService.registerReplacement(manager, gameId, request);
+            timelineService.register(manager, gameId, request);
 
             // then
             ReplacementTimeline actual =
@@ -176,8 +179,34 @@ class TimelineServiceTest extends ServiceTest {
             );
 
             // when then
-            assertThatThrownBy(() -> timelineService.registerReplacement(manager, gameId, request))
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @DisplayName("타임라인을 삭제할 때")
+    @Nested
+    class DeleteTest {
+        @Test
+        void 마지막_타임라인을_차례로_삭제한다() {
+            // given
+            long lastId = 4L;
+
+            // when
+            for (long i = lastId; i > 0; i--) {
+                timelineService.deleteTimeline(manager, gameId, i);
+            }
+
+            // then
+            assertThat(timelineFixtureRepository.findAll()).isEmpty();
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void 마지막_타임라인이_아니면_삭제할_수_없다(long timelineId) {
+            // when then
+            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, gameId, timelineId))
+                    .isInstanceOf(CustomException.class);
         }
     }
 }
