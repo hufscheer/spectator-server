@@ -1,6 +1,7 @@
 package com.sports.server.command.game.domain;
 
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
@@ -62,7 +63,7 @@ public class Game extends BaseEntity<Game> {
     private GameState state;
 
     @Column(name = "round", nullable = false)
-    private Integer round;
+    private Round round;
 
     public void registerStarter(final LineupPlayer lineupPlayer) {
         this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));
