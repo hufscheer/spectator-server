@@ -1,5 +1,5 @@
 SET
-foreign_key_checks = 0;
+    foreign_key_checks = 0;
 
 INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
 VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00');
@@ -15,9 +15,9 @@ VALUES (1, '1쿼터', 1),
        (4, '4쿼터', 1);
 
 -- 경기
-INSERT INTO games (sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
-                   state)
-VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'PLAYING');
+INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at,
+                   game_quarter, state, round)
+VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'PLAYING', '4강');
 
 -- 팀
 INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
@@ -130,4 +130,4 @@ VALUES ('SCORE', -- type
        );
 
 SET
-foreign_key_checks = 1;
+    foreign_key_checks = 1;
