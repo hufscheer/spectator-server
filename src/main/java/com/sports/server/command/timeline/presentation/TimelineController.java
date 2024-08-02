@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/games/{gameId}/timelines")
 @RequiredArgsConstructor
@@ -19,8 +21,7 @@ public class TimelineController {
                                                     @RequestBody TimelineRequest.RegisterScore request,
                                                     Member member) {
         timelineService.register(member, gameId, request);
-        return ResponseEntity.status(HttpStatus.CREATED.value())
-                .build();
+        return ResponseEntity.created(URI.create("")).build();
     }
 
     @PostMapping("/replacement")
@@ -28,8 +29,7 @@ public class TimelineController {
                                                           @RequestBody TimelineRequest.RegisterReplacement request,
                                                           Member member) {
         timelineService.register(member, gameId, request);
-        return ResponseEntity.status(HttpStatus.CREATED.value())
-                .build();
+        return ResponseEntity.created(URI.create("")).build();
     }
 
     @DeleteMapping("/{timelineId}")
