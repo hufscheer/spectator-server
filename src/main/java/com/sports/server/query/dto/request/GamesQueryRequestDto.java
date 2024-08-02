@@ -12,15 +12,15 @@ public class GamesQueryRequestDto {
     private String stateValue;
     private List<Long> sportIds;
     private List<Long> leagueTeamIds;
-    private Integer round;
+    private String descriptionOfRound;
 
     public GamesQueryRequestDto(Long league_id, String state, List<Long> sport_id, List<Long> league_team_id,
-                                Integer round) {
+                                String description_of_round) {
         this.leagueId = league_id;
         this.stateValue = state;
         this.sportIds = sport_id;
         this.leagueTeamIds = league_team_id;
-        this.round = round;
+        this.descriptionOfRound = description_of_round;
     }
 
     public String getStateValue() {

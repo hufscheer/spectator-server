@@ -6,6 +6,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import java.time.LocalDateTime;
@@ -39,9 +40,14 @@ public class GamesQueryConditionMapper {
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state))
                 .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()))
-                .and(() -> game.round.in(gamesQueryRequestDto.getRound()))
                 .and(() -> game.id.in(
                         gameTeamDynamicRepository.findAllByLeagueTeamIds(gamesQueryRequestDto.getLeagueTeamIds())));
+
+        if (gamesQueryRequestDto.getDescriptionOfRound() != null) {
+            Round round = Round.from(gamesQueryRequestDto.getDescriptionOfRound());
+            booleanBuilder.and(() -> game.round.eq(round));
+        }
+
         return booleanBuilder
                 .and(() -> game.startTime.eq(cursorStartTime).and(game.id.gt(cursor))
                         .or(game.startTime.gt(cursorStartTime)))
