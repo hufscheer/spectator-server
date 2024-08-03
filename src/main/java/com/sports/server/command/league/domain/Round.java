@@ -26,4 +26,9 @@ public enum Round {
                     throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.ROUND_NOT_FOUND_EXCEPTION);
                 });
     }
+
+    public static boolean isValidDescription(final String value) {
+        return Stream.of(Round.values())
+                .anyMatch(round -> round.getDescription().equals(value));
+    }
 }

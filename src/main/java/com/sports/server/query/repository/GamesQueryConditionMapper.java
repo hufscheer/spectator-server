@@ -36,6 +36,7 @@ public class GamesQueryConditionMapper {
         GameState state = GameState.from(gamesQueryRequestDto.getStateValue());
         Long cursor = pageRequestDto.cursor();
         LocalDateTime cursorStartTime = getCursorStartTime(cursor);
+
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state))
@@ -43,8 +44,10 @@ public class GamesQueryConditionMapper {
                 .and(() -> game.id.in(
                         gameTeamDynamicRepository.findAllByLeagueTeamIds(gamesQueryRequestDto.getLeagueTeamIds())));
 
-        if (gamesQueryRequestDto.getDescriptionOfRound() != null) {
-            Round round = Round.from(gamesQueryRequestDto.getDescriptionOfRound());
+        String descriptionOfRound = gamesQueryRequestDto.getDescriptionOfRound();
+
+        if (Round.isValidDescription(descriptionOfRound)) {
+            Round round = Round.from(descriptionOfRound);
             booleanBuilder.and(() -> game.round.eq(round));
         }
 

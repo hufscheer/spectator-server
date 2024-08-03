@@ -22,7 +22,7 @@ public class LeagueTeamDynamicRepository {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> leagueTeam.league.eq(league));
 
-        if (descriptionOfRound != null) {
+        if (Round.isValidDescription(descriptionOfRound)) {
             Round round = Round.from(descriptionOfRound);
             booleanBuilder.and(() -> game.round.eq(round));
         }
