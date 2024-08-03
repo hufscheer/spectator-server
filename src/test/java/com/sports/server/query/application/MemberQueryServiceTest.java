@@ -1,6 +1,7 @@
 package com.sports.server.query.application;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
@@ -29,8 +30,11 @@ public class MemberQueryServiceTest extends ServiceTest {
         MemberResponse memberInfoDto = memberQueryService.getMemberInfo(member);
 
         // then
-        assertEquals(memberInfoDto.email(), "john@example.com");
-        assertEquals(memberInfoDto.nameOfOrganization(), "축구 협회");
+        assertAll(
+                () -> assertEquals(memberInfoDto.email(), "john@example.com"),
+                () -> assertEquals(memberInfoDto.nameOfOrganization(), "축구 협회")
+        );
+
     }
 
 }
