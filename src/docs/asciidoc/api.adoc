@@ -80,7 +80,7 @@ operation::league-query-controller-test/리그의_모든_리그팀을_라운드�
 
 === 리그팀 등록
 
-operation::league-team-controller-test/리그팀을_등록한다[snippets='http-request,path-parameters,request-fields,http-response']
+operation::league-team-controller-test/리그팀을_등록한다[snippets='http-request,request-fields,http-response']
 
 === 리그팀 수정
 
@@ -97,16 +97,17 @@ operation::league-query-controller-test/리그를_하나_조회한다[snippets='
 == 타임라인 API
 
 === 득점 타임라인 생성
-
 operation::timeline-controller-test/득점_타임라인을_생성한다[snippets='http-request,path-parameters,http-response']
 
 === 교체 타임라인 생성
-
 operation::timeline-controller-test/교체_타임라인을_생성한다[snippets='http-request,path-parameters,http-response']
 
 === 게임의 타임라인 조회
 
 operation::timeline-query-controller-test/타임라인을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 타임라인 삭제
+operation::timeline-controller-test/타임라인을_삭제한다[snippets='http-request,request-cookies,path-parameters,http-response']
 
 == 스포츠 API
 

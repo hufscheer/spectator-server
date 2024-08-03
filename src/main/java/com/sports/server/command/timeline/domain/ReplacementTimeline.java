@@ -47,4 +47,8 @@ public class ReplacementTimeline extends Timeline {
             throw new IllegalArgumentException("다른 팀의 선수끼리 교체할 수 없습니다.");
         }
     }
+
+    @Override
+    public void rollback() {
+    }
 }
