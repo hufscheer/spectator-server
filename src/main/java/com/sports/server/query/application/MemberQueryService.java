@@ -17,8 +17,8 @@ public class MemberQueryService {
     private final MemberRepository memberRepository;
 
     public MemberResponse getMemberInfo(final Member member) {
-        Member loadedMember = memberRepository.findMemberByEmailWithOrganization(member.getEmail())
+        return memberRepository.findMemberByEmailWithOrganization(member.getEmail())
+                .map(MemberResponse::new)
                 .orElseThrow(() -> new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION));
-        return new MemberResponse(loadedMember);
     }
 }
