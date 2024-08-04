@@ -115,8 +115,12 @@ operation::timeline-controller-test/타임라인을_삭제한다[snippets='http-
 
 operation::sport-query-controller-test/스포츠를_전체_조회한다[snippets='http-request,http-response,response-fields']
 
-== 로그인 API
+== 사용자 API
 
 === 사용자 로그인
 
 operation::auth-controller-test/로그인을_한다[snippets='http-request,request-fields,http-response']
+
+=== 사용자 정보 조회
+
+operation::sport-query-controller-test/스포츠를_전체_조회한다[snippets='http-request,http-response,response-fields']
