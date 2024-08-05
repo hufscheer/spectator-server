@@ -101,4 +101,13 @@ public class Game extends BaseEntity<Game> {
     public boolean isMangedBy(Member member) {
         return manager.equals(member);
     }
+
+    public void cancelScore(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(scorer::isInTeam)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
+
+        scoredTeam.cancelScore();
+    }
 }

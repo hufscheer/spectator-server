@@ -502,9 +502,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_스포츠_전체_조회">스포츠 전체 조회</a></li>
 </ul>
 </li>
-<li><a href="#_로그인_api">로그인 API</a>
+<li><a href="#_사용자_api">사용자 API</a>
 <ul class="sectlevel2">
 <li><a href="#_사용자_로그인">사용자 로그인</a></li>
+<li><a href="#_사용자_정보_조회">사용자 정보 조회</a></li>
 </ul>
 </li>
 </ul>
@@ -2630,6 +2631,77 @@ Content-Length: 1344
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_타임라인_삭제"><a class="link" href="#_타임라인_삭제">타임라인 삭제</a></h3>
+<div class="sect3">
+<h4 id="_타임라인_삭제_http_request"><a class="link" href="#_타임라인_삭제_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /games/1/timelines/1 HTTP/1.1
+Host: www.api.hufstreaming.site
+Cookie: HCC_SES=temp-cookie</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_타임라인_삭제_request_cookies"><a class="link" href="#_타임라인_삭제_request_cookies">Request cookies</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HCC_SES</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">로그인을 통해 얻은 토큰</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_타임라인_삭제_path_parameters"><a class="link" href="#_타임라인_삭제_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /games/{gameId}/timelines/{timelineId}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>timelineId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">타임라인의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_타임라인_삭제_http_response"><a class="link" href="#_타임라인_삭제_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2701,7 +2773,7 @@ Content-Length: 82
 </div>
 </div>
 <div class="sect1">
-<h2 id="_로그인_api"><a class="link" href="#_로그인_api">로그인 API</a></h2>
+<h2 id="_사용자_api"><a class="link" href="#_사용자_api">사용자 API</a></h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_사용자_로그인"><a class="link" href="#_사용자_로그인">사용자 로그인</a></h3>
@@ -2758,7 +2830,41 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sat, 10 Aug 2024 06:09:14 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Fri, 9 Aug 2024 06:22:34 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_사용자_정보_조회"><a class="link" href="#_사용자_정보_조회">사용자 정보 조회</a></h3>
+<div class="sect3">
+<h4 id="_사용자_정보_조회_http_request"><a class="link" href="#_사용자_정보_조회_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /sports HTTP/1.1
+Content-Type: application/json
+Host: www.api.hufstreaming.site</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_사용자_정보_조회_http_response"><a class="link" href="#_사용자_정보_조회_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 82
+
+[ {
+  "id" : 1,
+  "name" : "농구"
+}, {
+  "id" : 2,
+  "name" : "루미큐브"
+} ]</code></pre>
 </div>
 </div>
 </div>
