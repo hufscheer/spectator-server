@@ -1,12 +1,11 @@
 package com.sports.server.support.fixture;
 
+import com.sports.server.command.league.domain.Round;
 import java.util.Random;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
-
-import com.sports.server.command.league.domain.LeagueRound;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -24,8 +23,8 @@ public class FixtureMonkeyUtils {
                 .set("id", RANDOM.nextLong(1, 10000));
     }
 
-    public static Arbitrary<LeagueRound> maxRoundArbitrary() {
-        return Arbitraries.of(LeagueRound.class);
+    public static Arbitrary<Round> maxRoundArbitrary() {
+        return Arbitraries.of(Round.class);
     }
 
     public static StringArbitrary nameArbitrary() {

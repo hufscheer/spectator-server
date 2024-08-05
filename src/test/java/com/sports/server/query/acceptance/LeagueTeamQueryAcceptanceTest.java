@@ -1,19 +1,18 @@
 package com.sports.server.query.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/game-fixture.sql")
 public class LeagueTeamQueryAcceptanceTest extends AcceptanceTest {
@@ -49,13 +48,13 @@ public class LeagueTeamQueryAcceptanceTest extends AcceptanceTest {
     void 라운드에_진출한_리그팀만_조회한다() {
         // given
         Long threeBuildingCup = 1L;
-        Integer finalRound = 2;
+        String finalRound = "결승";
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .param("round", finalRound)
+                .param("descriptionOfRound", finalRound)
                 .get("/leagues/{leagueId}/teams", threeBuildingCup)
                 .then().log().all()
                 .extract();
