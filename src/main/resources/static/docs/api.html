@@ -495,7 +495,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_득점_타임라인_생성">득점 타임라인 생성</a></li>
 <li><a href="#_교체_타임라인_생성">교체 타임라인 생성</a></li>
 <li><a href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></li>
-<li><a href="#_타임라인_삭제">타임라인 삭제</a></li>
 </ul>
 </li>
 <li><a href="#_스포츠_api">스포츠 API</a>
@@ -503,9 +502,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_스포츠_전체_조회">스포츠 전체 조회</a></li>
 </ul>
 </li>
-<li><a href="#_로그인_api">로그인 API</a>
+<li><a href="#_사용자_api">사용자 API</a>
 <ul class="sectlevel2">
 <li><a href="#_사용자_로그인">사용자 로그인</a></li>
+<li><a href="#_사용자_정보_조회">사용자 정보 조회</a></li>
 </ul>
 </li>
 </ul>
@@ -934,7 +934,7 @@ Content-Length: 27
 <h4 id="_게임_목록_조회_http_request"><a class="link" href="#_게임_목록_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games?league_id=1&amp;state=PLAYING&amp;sport_id=1&amp;sport_id=2&amp;round=4&amp;league_team_id=1&amp;cursor=12&amp;size=10 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /games?league_id=1&amp;state=PLAYING&amp;sport_id=1&amp;sport_id=2&amp;description_of_round=4%EA%B0%95&amp;league_team_id=1&amp;cursor=12&amp;size=10 HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -979,8 +979,8 @@ Host: www.api.hufstreaming.site</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">리그팀의 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">라운드</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>description_of_round</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">라운드의 이름 ex. 4강, 결승</p></td>
 </tr>
 </tbody>
 </table>
@@ -994,14 +994,14 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 823
+Content-Length: 861
 
 [ {
   "id" : 1,
   "startTime" : "2024-01-19T13:00:00",
   "gameQuarter" : "전반전",
   "gameName" : "4강",
-  "round" : 4,
+  "descriptionOfRound" : "4강",
   "videoId" : "abc123",
   "gameTeams" : [ {
     "gameTeamId" : 1,
@@ -1020,7 +1020,7 @@ Content-Length: 823
   "startTime" : "2024-01-19T13:00:00",
   "gameQuarter" : "1쿼터",
   "gameName" : "결승전",
-  "round" : 2,
+  "descriptionOfRound" : "결승",
   "videoId" : "abc123",
   "gameTeams" : [ {
     "gameTeamId" : 3,
@@ -1075,9 +1075,9 @@ Content-Length: 823
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].round</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임 라운드</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].descriptionOfRound</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임 라운드의 이름 ex. 4강, 결승</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].videoId</code></p></td>
@@ -1591,8 +1591,8 @@ Cookie: HCC_SES=temp-cookie
   "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
   "maxRound" : "4강",
-  "startAt" : "2024-08-01T00:31:37.948993",
-  "endAt" : "2024-08-01T00:31:37.948995"
+  "startAt" : "2024-08-03T15:09:16.407165",
+  "endAt" : "2024-08-03T15:09:16.407181"
 }</code></pre>
 </div>
 </div>
@@ -1805,7 +1805,7 @@ Content-Length: 86
 <h4 id="_리그에_해당하는_리그팀_전체_조회_http_request"><a class="link" href="#_리그에_해당하는_리그팀_전체_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/1/teams?round=2 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/1/teams?descriptionOfRound=%EA%B2%B0%EC%8A%B9 HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -1848,8 +1848,8 @@ Host: www.api.hufstreaming.site</code></pre>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">라운드</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>descriptionOfRound</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">라운드의 이름 ex. 4강, 결승</p></td>
 </tr>
 </tbody>
 </table>
@@ -1937,6 +1937,28 @@ Cookie: HCC_SES=temp-cookie
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_리그팀_등록_path_parameters"><a class="link" href="#_리그팀_등록_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /leagues/{leagueId}/teams</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>leagueId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 ID</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_리그팀_등록_request_fields"><a class="link" href="#_리그팀_등록_request_fields">Request fields</a></h4>
@@ -2316,8 +2338,8 @@ Cookie: HCC_SES=temp-cookie
 {
   "gameTeamId" : 1,
   "recordedQuarterId" : 2,
-  "recordedAt" : 10,
-  "scoreLineupPlayerId" : 1
+  "scoreLineupPlayerId" : 1,
+  "recordedAt" : 10
 }</code></pre>
 </div>
 </div>
@@ -2371,9 +2393,9 @@ Cookie: HCC_SES=temp-cookie
 {
   "gameTeamId" : 1,
   "recordedQuarterId" : 1,
-  "recordedAt" : 5,
   "originLineupPlayerId" : 2,
-  "replacementLineupPlayerId" : 3
+  "replacementLineupPlayerId" : 3,
+  "recordedAt" : 5
 }</code></pre>
 </div>
 </div>
@@ -2751,7 +2773,7 @@ Content-Length: 82
 </div>
 </div>
 <div class="sect1">
-<h2 id="_로그인_api"><a class="link" href="#_로그인_api">로그인 API</a></h2>
+<h2 id="_사용자_api"><a class="link" href="#_사용자_api">사용자 API</a></h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_사용자_로그인"><a class="link" href="#_사용자_로그인">사용자 로그인</a></h3>
@@ -2808,7 +2830,41 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 7 Aug 2024 15:31:36 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Fri, 9 Aug 2024 06:22:34 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_사용자_정보_조회"><a class="link" href="#_사용자_정보_조회">사용자 정보 조회</a></h3>
+<div class="sect3">
+<h4 id="_사용자_정보_조회_http_request"><a class="link" href="#_사용자_정보_조회_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /sports HTTP/1.1
+Content-Type: application/json
+Host: www.api.hufstreaming.site</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_사용자_정보_조회_http_response"><a class="link" href="#_사용자_정보_조회_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 82
+
+[ {
+  "id" : 1,
+  "name" : "농구"
+}, {
+  "id" : 2,
+  "name" : "루미큐브"
+} ]</code></pre>
 </div>
 </div>
 </div>
@@ -2819,7 +2875,7 @@ Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 7 Aug 
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-08-01 00:30:47 +0900
+Last updated 2024-08-03 14:57:29 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

@@ -367,7 +367,7 @@ public class GameQueryServiceTest extends ServiceTest {
     @Test
     void round로_게임을_조회한다() {
         // given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, null, 8);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, null, "8강");
 
         //when
         List<GameResponseDto> firstPage = gameQueryService.getAllGames(
@@ -394,7 +394,7 @@ public class GameQueryServiceTest extends ServiceTest {
     void 게임팀이_순서에_맞게_반환된다() {
 
         // given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, null, 8);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, null, "8강");
 
         //when
         List<GameResponseDto> responseDtos = gameQueryService.getAllGames(
