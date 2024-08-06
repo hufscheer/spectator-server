@@ -15,8 +15,8 @@ VALUES (1, '1쿼터', 1),
 
 -- 경기
 INSERT INTO games (sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
-                   state)
-VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'PLAYING');
+                   state, round)
+VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'PLAYING', '결승');
 
 -- 팀
 INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
