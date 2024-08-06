@@ -12,9 +12,9 @@ import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -27,16 +27,18 @@ import java.util.List;
 public class TimelineMigration {
     private final TimelineRepository timelineRepository;
     private final EntityManager em;
+    private final TransactionTemplate transactionTemplate;
 
     @PostConstruct
-    @Transactional
     void migrateTimeline() {
-        // 마이그레이션 이후 이 클래스를 삭제하지 않고 배포 시 다시 마이그레이션 되지 않도록 함
-        if (alreadyMigrated()) return;
+        transactionTemplate.executeWithoutResult(status -> {
+            // 마이그레이션 이후 이 클래스를 삭제하지 않고 배포 시 다시 마이그레이션 되지 않도록 함
+            if (alreadyMigrated()) return;
 
-        List<Long> gameIds = getGameIds();
+            List<Long> gameIds = getGameIds();
 
-        gameIds.forEach(this::migrateTimeline);
+            gameIds.forEach(this::migrateTimeline);
+        });
     }
 
     private boolean alreadyMigrated() {
