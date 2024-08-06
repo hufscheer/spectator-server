@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -55,7 +56,7 @@ public class TimelineMigration {
 
     private void migrateTimeline(Long gameId) {
         List<Record> records = em.createQuery(
-                "SELECT r FROM Record r WHERE r.game.id = :gameId ORDER BY r.id",
+                        "SELECT r FROM Record r WHERE r.game.id = :gameId ORDER BY r.id",
                         Record.class)
                 .setParameter("gameId", gameId)
                 .getResultList();
@@ -64,39 +65,43 @@ public class TimelineMigration {
         clearGameScore(records);
 
         for (Record record : records) {
-            timelineRepository.save(convert(record));
+            convert(record).ifPresent(timelineRepository::save);
         }
     }
 
-    private Timeline convert(Record record) {
+    private Optional<Timeline> convert(Record record) {
         if (record.getRecordType() == RecordType.SCORE) {
-            ScoreRecord scoreRecord = getRecord(record, ScoreRecord.class);
+            return getRecord(record, ScoreRecord.class)
+                    .map(value -> ScoreTimeline.score(
+                            record.getGame(),
+                            record.getRecordedQuarter(),
+                            record.getRecordedAt(),
+                            value.getLineupPlayer()
+                    ));
 
-            return ScoreTimeline.score(
-                    record.getGame(),
-                    record.getRecordedQuarter(),
-                    record.getRecordedAt(),
-                    scoreRecord.getLineupPlayer()
-            );
         } else if (record.getRecordType() == RecordType.REPLACEMENT) {
-            ReplacementRecord replacementRecord = getRecord(record, ReplacementRecord.class);
-
-            return new ReplacementTimeline(
-                    record.getGame(),
-                    record.getRecordedQuarter(),
-                    record.getRecordedAt(),
-                    replacementRecord.getOriginLineupPlayer(),
-                    replacementRecord.getReplacedLineupPlayer()
-            );
+            return getRecord(record, ReplacementRecord.class)
+                    .map(value -> new ReplacementTimeline(
+                            record.getGame(),
+                            record.getRecordedQuarter(),
+                            record.getRecordedAt(),
+                            value.getOriginLineupPlayer(),
+                            value.getReplacedLineupPlayer()
+                    ));
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    private <E> E getRecord(Record record, Class<E> clazz) {
-        return em.createQuery("SELECT r FROM " + clazz.getSimpleName() + " r WHERE r.record.id = :recordId", clazz)
+    private <E> Optional<E> getRecord(Record record, Class<E> clazz) {
+        List<E> records = em.createQuery("SELECT r FROM " + clazz.getSimpleName() + " r WHERE r.record.id = :recordId", clazz)
                 .setParameter("recordId", record.getId())
-                .getSingleResult();
+                .getResultList();
+
+        if (records.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(records.get(0));
     }
 
     private void clearGameScore(List<Record> records) {
