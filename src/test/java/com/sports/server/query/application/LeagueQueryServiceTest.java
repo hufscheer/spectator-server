@@ -1,7 +1,7 @@
 package com.sports.server.query.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.ServiceTest;
@@ -28,8 +28,8 @@ public class LeagueQueryServiceTest extends ServiceTest {
 
         // then
         assertAll(
-                () -> assertEquals(leagueTeam.teamName(), "미컴 축구생각"),
-                () -> assertEquals(leagueTeam.sizeOfLeagueTeamPlayers(), 4)
+                () -> assertThat(leagueTeam.teamName()).isEqualTo("미컴 축구생각"),
+                () -> assertThat(leagueTeam.sizeOfLeagueTeamPlayers()).isEqualTo(4)
         );
 
     }
