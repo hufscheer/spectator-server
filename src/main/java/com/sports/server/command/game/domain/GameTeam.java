@@ -1,12 +1,9 @@
 package com.sports.server.command.game.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,10 +11,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 
 @Entity
@@ -39,7 +37,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
     @JoinColumn(name = "league_team_id")
     private LeagueTeam leagueTeam;
 
-    @OneToMany(mappedBy = "gameTeam")
+    @OneToMany(mappedBy = "gameTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineupPlayer> lineupPlayers = new ArrayList<>();
 
     @Column(name = "cheer_count", nullable = false)
@@ -83,6 +81,17 @@ public class GameTeam extends BaseEntity<GameTeam> {
         if (this.score > 0) {
             this.score -= SCORE_VALUE;
         }
+    }
+
+    public GameTeam(Game game, LeagueTeam leagueTeam) {
+        this.game = game;
+        this.leagueTeam = leagueTeam;
+        this.cheerCount = 0;
+        this.score = 0;
+    }
+
+    public void registerLineup(LineupPlayer lineupPlayer) {
+        this.lineupPlayers.add(lineupPlayer);
     }
 }
 
