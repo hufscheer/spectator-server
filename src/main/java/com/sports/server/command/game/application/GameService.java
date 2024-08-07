@@ -13,6 +13,7 @@ import com.sports.server.command.sport.domain.SportRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,23 +32,29 @@ public class GameService {
                          final GameRequestDto.Register requestDto,
                          final Member manager) {
         Game game = saveGame(leagueId, manager, requestDto);
-        saveGameTeamsAndCopyPlayers(requestDto, game);
+
+        List<LeagueTeam> leagueTeams = List.of(getLeagueTeam(requestDto.idOfTeam1()),
+                getLeagueTeam(requestDto.idOfTeam2()));
+
+        List<GameTeam> gameTeams = saveGameTeams(requestDto, game, leagueTeams);
+        copyPlayers(gameTeams, leagueTeams);
 
         gameRepository.save(game);
     }
 
-    private void saveGameTeamsAndCopyPlayers(GameRequestDto.Register requestDto, Game game) {
-        LeagueTeam leagueTeam1 = getLeagueTeam(requestDto.idOfTeam1());
-        LeagueTeam leagueTeam2 = getLeagueTeam(requestDto.idOfTeam2());
-
-        GameTeam gameTeam1 = createGameTeam(game, leagueTeam1);
-        GameTeam gameTeam2 = createGameTeam(game, leagueTeam2);
+    private List<GameTeam> saveGameTeams(GameRequestDto.Register requestDto, Game game, List<LeagueTeam> leagueTeams) {
+        GameTeam gameTeam1 = createGameTeam(game, leagueTeams.get(0));
+        GameTeam gameTeam2 = createGameTeam(game, leagueTeams.get(1));
 
         game.addTeam(gameTeam1);
         game.addTeam(gameTeam2);
 
-        copyPlayersToLineup(gameTeam1, leagueTeam1);
-        copyPlayersToLineup(gameTeam2, leagueTeam2);
+        return List.of(gameTeam1, gameTeam2);
+    }
+
+    private void copyPlayers(List<GameTeam> gameTeams, List<LeagueTeam> leagueTeams) {
+        copyPlayersToLineup(gameTeams.get(0), leagueTeams.get(0));
+        copyPlayersToLineup(gameTeams.get(1), leagueTeams.get(1));
     }
 
     private LeagueTeam getLeagueTeam(Long teamId) {
