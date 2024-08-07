@@ -26,43 +26,56 @@ public class GameService {
     private final EntityUtils entityUtils;
     private final GameRepository gameRepository;
     private final SportRepository sportRepository;
-    private static final String nameOfSport = "축구";
+    private static final String NAME_OF_SPORT = "축구";
 
     @Transactional
     public void register(final Long leagueId,
                          final GameRequestDto.Register requestDto,
-                         final Member manager
-    ) {
-        // Game 저장
-        Sport sport = getSport(nameOfSport);
-        League league = getLeagueAndCheckPermission(leagueId, manager);
-        Game game = requestDto.toEntity(sport, manager, league);
-
-        // GameTeam 저장
-        LeagueTeam leagueTeam1 = entityUtils.getEntity(requestDto.idOfTeam1(), LeagueTeam.class);
-        LeagueTeam leagueTeam2 = entityUtils.getEntity(requestDto.idOfTeam2(), LeagueTeam.class);
-        GameTeam gameTeam1 = new GameTeam(game, leagueTeam1);
-        GameTeam gameTeam2 = new GameTeam(game, leagueTeam2);
-
-        game.addTeam(gameTeam1);
-        game.addTeam(gameTeam2);
-
-        // LeagueTeamPlayer >> LineupPlayer 로 복사
-        leagueTeam1.getLeagueTeamPlayers().stream()
-                .map(lgp -> new LineupPlayer(
-                        gameTeam1, lgp.getId(), lgp.getName(), lgp.getNumber(), false, LineupPlayerState.CANDIDATE))
-                .forEach(gameTeam1::registerLineup);
-
-        leagueTeam2.getLeagueTeamPlayers().stream()
-                .map(lgp -> new LineupPlayer(
-                        gameTeam1, lgp.getId(), lgp.getName(), lgp.getNumber(), false, LineupPlayerState.CANDIDATE)
-                ).forEach(gameTeam2::registerLineup);
+                         final Member manager) {
+        Game game = saveGame(leagueId, manager, requestDto);
+        saveGameTeamsAndCopyPlayers(requestDto, game);
 
         gameRepository.save(game);
     }
 
-    private Sport getSport(String nameOfSport) {
-        return sportRepository.findByName(nameOfSport)
+    private void saveGameTeamsAndCopyPlayers(GameRequestDto.Register requestDto, Game game) {
+        LeagueTeam leagueTeam1 = getLeagueTeam(requestDto.idOfTeam1());
+        LeagueTeam leagueTeam2 = getLeagueTeam(requestDto.idOfTeam2());
+
+        GameTeam gameTeam1 = createGameTeam(game, leagueTeam1);
+        GameTeam gameTeam2 = createGameTeam(game, leagueTeam2);
+
+        game.addTeam(gameTeam1);
+        game.addTeam(gameTeam2);
+
+        copyPlayersToLineup(gameTeam1, leagueTeam1);
+        copyPlayersToLineup(gameTeam2, leagueTeam2);
+    }
+
+    private LeagueTeam getLeagueTeam(Long teamId) {
+        return entityUtils.getEntity(teamId, LeagueTeam.class);
+    }
+
+    private GameTeam createGameTeam(Game game, LeagueTeam leagueTeam) {
+        return new GameTeam(game, leagueTeam);
+    }
+
+    private void copyPlayersToLineup(GameTeam gameTeam, LeagueTeam leagueTeam) {
+        leagueTeam.getLeagueTeamPlayers().stream()
+                .map(player -> new LineupPlayer(
+                        gameTeam, player.getId(), player.getName(), player.getNumber(), false,
+                        LineupPlayerState.CANDIDATE))
+                .forEach(gameTeam::registerLineup);
+    }
+
+    private Game saveGame(Long leagueId, Member manager, GameRequestDto.Register requestDto) {
+        Sport sport = getSport(NAME_OF_SPORT);
+        League league = getLeagueAndCheckPermission(leagueId, manager);
+        return requestDto.toEntity(sport, manager, league);
+    }
+
+    private Sport getSport(String sportName) {
+        return sportRepository.findByName(sportName)
                 .orElseThrow(() -> new NotFoundException("해당 이름을 가진 스포츠가 존재하지 않습니다."));
     }
 
