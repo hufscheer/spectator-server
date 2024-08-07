@@ -19,4 +19,12 @@ public class LeagueRequestDto {
 			return new League(manager, organization, name, startAt, endAt, Round.from(maxRound));
 		}
 	}
+
+	public record Update(
+		String name,
+		LocalDateTime startAt,
+		LocalDateTime endAt,
+		String maxRound
+	) {
+	}
 }
