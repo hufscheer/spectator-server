@@ -2,12 +2,12 @@ package com.sports.server.command.league.application;
 
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ public class LeagueServiceTest extends ServiceTest {
     @DisplayName("리그를 삭제할 떄")
     class LeagueDeleteTest {
         @Test
-        void isDeleted가_true가_된다() {
+        void 삭제한_이후에는_해당_객체를_찾을_수_없다() {
             // given
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
@@ -37,8 +37,9 @@ public class LeagueServiceTest extends ServiceTest {
             leagueService.delete(manager, leagueId);
 
             // then
-            League league = entityUtils.getEntity(leagueId, League.class);
-            assertThat(league.isDeleted()).isEqualTo(true);
+            assertThatThrownBy(
+                    () -> entityUtils.getEntity(leagueId, League.class))
+                    .isInstanceOf(NotFoundException.class);
         }
 
         @Test
