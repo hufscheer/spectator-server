@@ -4,8 +4,6 @@ import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.GameRequestDto;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
@@ -62,9 +60,6 @@ public class GameService {
 
     private void copyPlayersToLineup(GameTeam gameTeam, LeagueTeam leagueTeam) {
         leagueTeam.getLeagueTeamPlayers().stream()
-                .map(player -> new LineupPlayer(
-                        gameTeam, player.getId(), player.getName(), player.getNumber(), false,
-                        LineupPlayerState.CANDIDATE))
                 .forEach(gameTeam::registerLineup);
     }
 

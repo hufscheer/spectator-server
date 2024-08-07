@@ -1,6 +1,7 @@
 package com.sports.server.command.game.domain;
 
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;
@@ -90,7 +91,15 @@ public class GameTeam extends BaseEntity<GameTeam> {
         this.score = 0;
     }
 
-    public void registerLineup(LineupPlayer lineupPlayer) {
+    public void registerLineup(LeagueTeamPlayer player) {
+        LineupPlayer lineupPlayer = new LineupPlayer(
+                this,
+                player.getId(),
+                player.getName(),
+                player.getNumber(),
+                false,
+                LineupPlayerState.CANDIDATE);
+
         this.lineupPlayers.add(lineupPlayer);
     }
 }
