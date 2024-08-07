@@ -49,7 +49,7 @@ public class GameController {
 
     @PostMapping("/leagues/{leagueId}/games")
     public ResponseEntity<Void> registerGame(@PathVariable final Long leagueId,
-                                             final GameRequestDto.Register requestDto,
+                                             @RequestBody final GameRequestDto.Register requestDto,
                                              final Member member) {
         gameService.register(leagueId, requestDto, member);
         return ResponseEntity.created(URI.create("")).build();
