@@ -48,25 +48,36 @@ public class League extends BaseEntity<League> {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-	public League(
-		final Member manager,
-		final Organization organization,
-		final String name,
-		final LocalDateTime startAt,
-		final LocalDateTime endAt,
-		final Round maxRound
-	) {
-		this.manager = manager;
-		this.organization = organization;
-		this.name = name;
-		this.startAt = startAt;
-		this.endAt = endAt;
-		this.maxRound = maxRound;
-		this.inProgressRound = maxRound;
-		this.isDeleted = false;
-	}
+    public League(
+            final Member manager,
+            final Organization organization,
+            final String name,
+            final LocalDateTime startAt,
+            final LocalDateTime endAt,
+            final Round maxRound
+    ) {
+        this.manager = manager;
+        this.organization = organization;
+        this.name = name;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.maxRound = maxRound;
+        this.inProgressRound = maxRound;
+        this.isDeleted = false;
+    }
 
-	public boolean isManagedBy(Member manager) {
-		return this.manager.equals(manager);
-	}
+    public boolean isManagedBy(Member manager) {
+        return this.manager.equals(manager);
+    }
+
+    public void delete() {
+        if (isDeleted) {
+            throw new IllegalArgumentException("이미 삭제된 리그입니다.");
+        }
+        this.isDeleted = true;
+    }
+
+    public String manager() {
+        return manager.getEmail();
+    }
 }
