@@ -99,8 +99,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
 
         List<LeagueTeamResponse> responses = List.of(
-                new LeagueTeamResponse(1L, "경영 야생마", "s3:logoImageUrl1"),
-                new LeagueTeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2")
+                new LeagueTeamResponse(1L, "경영 야생마", "s3:logoImageUrl1", 3),
+                new LeagueTeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2", 6)
         );
 
         given(leagueQueryService.findTeamsByLeagueRound(leagueId, "결승"))
@@ -125,7 +125,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 팀 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("리그에 참여하는 팀의 이름"),
                                 fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING)
-                                        .description("리그의 팀 로고 이미지 URL®")
+                                        .description("리그의 팀 로고 이미지 URL®"),
+                                fieldWithPath("[].sizeOfLeagueTeamPlayers").type(JsonFieldType.NUMBER)
+                                        .description("리그팀 선수의 인원수")
                         )
                 ));
     }
