@@ -1,11 +1,14 @@
 package com.sports.server.query.application;
 
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.query.repository.LeagueQueryRepository;
@@ -65,5 +68,11 @@ public class LeagueQueryService {
                 .stream()
                 .map(LeagueTeamPlayerResponse::new)
                 .toList();
+    }
+
+    public LeagueTeamDetailResponse findLeagueTeam(final Long leagueTeamId) {
+        LeagueTeam leagueTeam = entityUtils.getEntity(leagueTeamId, LeagueTeam.class);
+        List<LeagueTeamPlayer> leagueTeamPlayers = leagueTeamPlayerQueryRepository.findByLeagueTeamId(leagueTeam.getId());
+        return LeagueTeamDetailResponse.of(leagueTeam, leagueTeamPlayers);
     }
 }
