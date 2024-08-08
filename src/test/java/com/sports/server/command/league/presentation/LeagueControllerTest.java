@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -21,12 +20,6 @@ import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 
 class LeagueControllerTest extends DocumentationTest {
-	private Cookie cookie;
-
-	@BeforeEach
-	void setUp() {
-		cookie = new Cookie(COOKIE_NAME, "temp-cookie");
-	}
 
 	@Test
 	void 리그를_생성한다() throws Exception {
@@ -39,7 +32,7 @@ class LeagueControllerTest extends DocumentationTest {
 		ResultActions result = mockMvc.perform(post("/leagues", request)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request))
-			.cookie(cookie));
+			.cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
 		// then
 		result.andExpect(status().isOk())
@@ -70,7 +63,8 @@ class LeagueControllerTest extends DocumentationTest {
 		// when
 		ResultActions result = mockMvc.perform(put("/leagues/{leagueId}", leagueId)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.content(objectMapper.writeValueAsString(request)));
+			.content(objectMapper.writeValueAsString(request))
+			.cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
 		// then
 		result.andExpect(status().isOk())
