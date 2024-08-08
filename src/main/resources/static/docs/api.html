@@ -496,7 +496,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_득점_타임라인_생성">득점 타임라인 생성</a></li>
 <li><a href="#_교체_타임라인_생성">교체 타임라인 생성</a></li>
 <li><a href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></li>
-<li><a href="#_타임라인_삭제">타임라인 삭제</a></li>
 </ul>
 </li>
 <li><a href="#_스포츠_api">스포츠 API</a>
@@ -1925,16 +1924,18 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 202
+Content-Length: 268
 
 [ {
   "leagueTeamId" : 1,
   "teamName" : "경영 야생마",
-  "logoImageUrl" : "s3:logoImageUrl1"
+  "logoImageUrl" : "s3:logoImageUrl1",
+  "sizeOfLeagueTeamPlayers" : 3
 }, {
   "leagueTeamId" : 2,
   "teamName" : "서어 뻬데뻬",
-  "logoImageUrl" : "s3:logoImageUrl2"
+  "logoImageUrl" : "s3:logoImageUrl2",
+  "sizeOfLeagueTeamPlayers" : 6
 } ]</code></pre>
 </div>
 </div>
@@ -1969,6 +1970,11 @@ Content-Length: 202
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].logoImageUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">리그의 팀 로고 이미지 URL®</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].sizeOfLeagueTeamPlayers</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그팀 선수의 인원수</p></td>
 </tr>
 </tbody>
 </table>
@@ -2413,8 +2419,7 @@ Cookie: HCC_SES=temp-cookie
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Location:</code></pre>
+Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 </div>
@@ -2434,9 +2439,9 @@ Cookie: HCC_SES=temp-cookie
 {
   "gameTeamId" : 1,
   "recordedQuarterId" : 1,
-  "recordedAt" : 5,
   "originLineupPlayerId" : 2,
-  "replacementLineupPlayerId" : 3
+  "replacementLineupPlayerId" : 3,
+  "recordedAt" : 5
 }</code></pre>
 </div>
 </div>
@@ -2470,8 +2475,7 @@ Cookie: HCC_SES=temp-cookie
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Location:</code></pre>
+Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 </div>
@@ -2946,7 +2950,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-08-07 22:34:23 +0900
+Last updated 2024-08-03 14:57:29 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
