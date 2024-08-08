@@ -25,7 +25,6 @@ class LeagueControllerTest extends DocumentationTest {
 	void 리그를_생성한다() throws Exception {
 		// given
 		LeagueRequestDto.Register request = new LeagueRequestDto.Register(1L, "우물정 제기차기 대회", "4강", LocalDateTime.now(), LocalDateTime.now());
-		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
 		doNothing().when(leagueService).register(any(Member.class), any(LeagueRequestDto.Register.class));
 
@@ -33,7 +32,7 @@ class LeagueControllerTest extends DocumentationTest {
 		ResultActions result = mockMvc.perform(post("/leagues", request)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request))
-			.cookie(cookie));
+			.cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
 		// then
 		result.andExpect(status().isOk())
@@ -50,5 +49,35 @@ class LeagueControllerTest extends DocumentationTest {
 					)
 				)
 			);
+	}
+
+	@Test
+	void 리그를_수정한다() throws Exception {
+		// given
+		Long leagueId = 5124L;
+		LeagueRequestDto.Update request = new LeagueRequestDto.Update("훕치치배 망고 빨리먹기 대회", LocalDateTime.now(),
+			LocalDateTime.now(), "16강");
+
+		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequestDto.Update.class), anyLong());
+
+		// when
+		ResultActions result = mockMvc.perform(put("/leagues/{leagueId}", leagueId)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.content(objectMapper.writeValueAsString(request))
+			.cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+		// then
+		result.andExpect(status().isOk())
+			.andDo(restDocsHandler.document(
+				requestFields(
+					fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 대회의 이름"),
+					fieldWithPath("startAt").type(JsonFieldType.STRING).description("변경할 대회 시작시간"),
+					fieldWithPath("endAt").type(JsonFieldType.STRING).description("변경할 대회 종료시간"),
+					fieldWithPath("maxRound").type(JsonFieldType.STRING).description("변경할 대회의 총 라운드 수")
+				),
+				requestCookies(
+					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+				)
+			));
 	}
 }

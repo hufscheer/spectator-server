@@ -22,7 +22,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void configureAuth() {
-        configureMockJwtForEmail("john.doe@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
     }
 
     @Test

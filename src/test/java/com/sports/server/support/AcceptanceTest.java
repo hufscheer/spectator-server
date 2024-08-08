@@ -28,6 +28,8 @@ import static org.mockito.BDDMockito.willDoNothing;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
+    protected static final String MOCK_EMAIL = "john.doe@example.com";
+
     @LocalServerPort
     protected int port;
 
