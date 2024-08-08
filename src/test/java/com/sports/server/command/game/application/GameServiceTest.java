@@ -1,10 +1,8 @@
 package com.sports.server.command.game.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
@@ -27,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
 @Sql("/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -62,7 +59,6 @@ public class GameServiceTest extends ServiceTest {
     }
 
     @Test
-    @Transactional
     void 정상적으로_게임이_등록된다() {
         // given
         Member manager = entityUtils.getEntity(1L, Member.class);
@@ -72,7 +68,7 @@ public class GameServiceTest extends ServiceTest {
 
         // then
         Optional<Game> gameOptional = gameFixtureRepository.findByName(nameOfGame);
-        assertTrue(gameOptional.isPresent(), "게임이 등록되지 않았습니다.");
+        assertThat(gameOptional).isPresent().withFailMessage("게임이 등록되지 않았습니다.");
 
         Game game = gameOptional.get();
         assertInFormationOfGame(game);
@@ -84,16 +80,17 @@ public class GameServiceTest extends ServiceTest {
 
     private void assertInFormationOfGame(Game game) {
         assertAll(
-                () -> assertNotNull(game, "게임이 null 입니다."),
-                () -> assertEquals(nameOfGame, game.getName(), "게임 이름이 일치하지 않습니다."),
-                () -> assertEquals(Round.from("16강"), game.getRound(), "라운드가 일치하지 않습니다.")
+                () -> assertThat(game).isNotNull(),
+                () -> assertThat(game.getName()).isEqualTo(nameOfGame),
+                () -> assertThat(game.getRound()).isEqualTo(Round.from("16강"))
         );
+
     }
 
     private void assertGameTeams(List<GameTeam> gameTeams) {
         List<Long> expectedTeamIds = List.of(idOfTeam1, idOfTeam2);
         List<Long> actualTeamIds = gameTeams.stream().map(gt -> gt.getLeagueTeam().getId()).toList();
-        assertEquals(expectedTeamIds, actualTeamIds, "게임 팀 ID가 일치하지 않습니다.");
+        assertThat(actualTeamIds).isEqualTo(expectedTeamIds);
     }
 
     private void assertLineupPlayers(List<GameTeam> gameTeams) {
@@ -104,7 +101,7 @@ public class GameServiceTest extends ServiceTest {
                     .map(LeagueTeamPlayer::getId).toList();
             List<Long> actualPlayerIds = gameTeam.getLineupPlayers().stream()
                     .map(LineupPlayer::getLeagueTeamPlayerId).toList();
-            assertEquals(expectedPlayerIds, actualPlayerIds, "라인업 선수 ID가 일치하지 않습니다.");
+            assertThat(actualPlayerIds).isEqualTo(expectedPlayerIds);
         }
     }
 
@@ -115,8 +112,7 @@ public class GameServiceTest extends ServiceTest {
         Member nonManager = entityUtils.getEntity(2L, Member.class);
 
         // when & then
-        assertThrows(UnauthorizedException.class, () -> {
-            gameService.register(leagueId, requestDto, nonManager);
-        });
+        assertThatThrownBy(() -> gameService.register(leagueId, requestDto, nonManager))
+                .isInstanceOf(UnauthorizedException.class);
     }
 }
