@@ -68,10 +68,27 @@ VALUES ('팀 D', 'http://example.com/logo_c.png', 1, 1, 1);
 INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 E', 'http://example.com/logo_c.png', 3, 2, 2);
 
+-- league_team_id가 1인 선수들
+INSERT INTO league_team_players (league_team_id, name, description, number)
+VALUES (1, '김철수', '능숙한 포워드', 10),
+       (1, '이영희', '민첩한 미드필더', 8),
+       (1, '박지훈', '강력한 수비수', 5),
+       (1, '최수진', '빠른 윙어', 7),
+       (1, '정민수', '신뢰할 수 있는 골키퍼', 1);
+
+-- league_team_id가 2인 선수들
+INSERT INTO league_team_players (league_team_id, name, description, number)
+VALUES (2, '홍길동', '경험 많은 포워드', 11),
+       (2, '김민아', '다재다능한 미드필더', 6),
+       (2, '박성호', '탄탄한 수비수', 4),
+       (2, '이하나', '빠른 윙어', 9),
+       (2, '최준혁', '재능 있는 골키퍼', 2);
+
 -- 스포츠
 INSERT INTO sports(id, name)
 VALUES (1, '농구'),
-       (2, '루미큐브');
+       (2, '루미큐브'),
+       (3, '축구');
 
 -- 농구 대전(game_id = 1) A팀 선수
 INSERT INTO lineup_players (id, game_team_id, name, description, number, is_captain, league_team_player_id, state)
@@ -144,6 +161,13 @@ VALUES (1, 1, 1, 1),
 INSERT
 INTO leagues (id, manager_id, organization_id, name, start_at, end_at, max_round, in_progress_round, is_deleted)
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', '16강', '16강', false);
+
+INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
+VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'),
+       (2, 1, 'jane.smith@example.com', 'password456', FALSE, '2024-07-02 12:30:00'),
+       (3, 1, 'alice.johnson@example.com', 'password789', TRUE, '2024-07-03 09:45:00'),
+       (4, 1, 'bob.brown@example.com', 'password321', FALSE, '2024-07-04 14:20:00'),
+       (5, 1, 'carol.white@example.com', 'password654', TRUE, '2024-07-05 16:10:00');
 
 SET
     foreign_key_checks = 1;
