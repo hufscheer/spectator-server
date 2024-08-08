@@ -24,7 +24,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
 		LeagueRequestDto.Register request = new LeagueRequestDto.Register(1L, "우물정 제기차기 대회", "4강", LocalDateTime.now(),
 			LocalDateTime.now());
 
-		configureMockJwtForEmail("john.doe@example.com");
+		configureMockJwtForEmail(MOCK_EMAIL);
 
 		// when
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -32,6 +32,31 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.body(request)
 			.post("/leagues")
+			.then().log().all()
+			.extract();
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@Test
+	void 대회를_수정한다() throws Exception {
+		// given
+		Long leagueId = 1L;
+		LeagueRequestDto.Update request = new LeagueRequestDto.Update(
+			"라임즙 많이 먹기 대회",
+			LocalDateTime.of(24, 12, 11, 0, 0, 0),
+			LocalDateTime.of(24, 12, 13, 0, 0, 0),
+			"16강");
+
+		configureMockJwtForEmail(MOCK_EMAIL);
+
+		// when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.cookie(COOKIE_NAME, mockToken)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.body(request)
+			.put("/leagues/{leagueId}", leagueId)
 			.then().log().all()
 			.extract();
 
