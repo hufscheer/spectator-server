@@ -28,7 +28,6 @@ class LeagueControllerTest extends DocumentationTest {
 		cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 	}
 
-
 	@Test
 	void 리그를_생성한다() throws Exception {
 		// given
