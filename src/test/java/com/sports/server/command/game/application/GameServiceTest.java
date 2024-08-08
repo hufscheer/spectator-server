@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 @Sql("/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -59,6 +60,7 @@ public class GameServiceTest extends ServiceTest {
     }
 
     @Test
+    @Transactional
     void 정상적으로_게임이_등록된다() {
         // given
         Member manager = entityUtils.getEntity(1L, Member.class);
