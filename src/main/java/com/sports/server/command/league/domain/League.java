@@ -1,15 +1,20 @@
 package com.sports.server.command.league.domain;
 
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,25 +53,28 @@ public class League extends BaseEntity<League> {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-	public League(
-		final Member manager,
-		final Organization organization,
-		final String name,
-		final LocalDateTime startAt,
-		final LocalDateTime endAt,
-		final Round maxRound
-	) {
-		this.manager = manager;
-		this.organization = organization;
-		this.name = name;
-		this.startAt = startAt;
-		this.endAt = endAt;
-		this.maxRound = maxRound;
-		this.inProgressRound = maxRound;
-		this.isDeleted = false;
-	}
+    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<LeagueTeam> leagueTeams = new ArrayList<>();
 
-	public boolean isManagedBy(Member manager) {
-		return this.manager.equals(manager);
-	}
+    public League(
+            final Member manager,
+            final Organization organization,
+            final String name,
+            final LocalDateTime startAt,
+            final LocalDateTime endAt,
+            final Round maxRound
+    ) {
+        this.manager = manager;
+        this.organization = organization;
+        this.name = name;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.maxRound = maxRound;
+        this.inProgressRound = maxRound;
+        this.isDeleted = false;
+    }
+
+    public boolean isManagedBy(Member manager) {
+        return this.manager.equals(manager);
+    }
 }

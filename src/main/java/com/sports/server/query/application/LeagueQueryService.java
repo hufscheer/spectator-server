@@ -1,18 +1,27 @@
 package com.sports.server.query.application;
 
+import static java.util.stream.Collectors.toMap;
+
+import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.LeagueProgress;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
+import com.sports.server.query.dto.response.LeagueResponseForManager;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
+import com.sports.server.query.repository.GameQueryRepository;
 import com.sports.server.query.repository.LeagueQueryRepository;
 import com.sports.server.query.repository.LeagueSportQueryRepository;
 import com.sports.server.query.repository.LeagueTeamDynamicRepository;
 import com.sports.server.query.repository.LeagueTeamPlayerQueryRepository;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +35,7 @@ public class LeagueQueryService {
     private final LeagueSportQueryRepository leagueSportQueryRepository;
     private final LeagueTeamDynamicRepository leagueTeamDynamicRepository;
     private final LeagueTeamPlayerQueryRepository leagueTeamPlayerQueryRepository;
+    private final GameQueryRepository gameQueryRepository;
     private final EntityUtils entityUtils;
 
     public List<LeagueResponse> findLeagues(Integer year) {
@@ -66,4 +76,22 @@ public class LeagueQueryService {
                 .map(LeagueTeamPlayerResponse::new)
                 .toList();
     }
+
+    public List<LeagueResponseForManager> findLeaguesByManager(final Member member) {
+        List<League> leagues = leagueQueryRepository.findByManager(member);
+        Map<League, List<Game>> gamesForLeagues = getGamesForLeague(leagues);
+
+        return leagues.stream()
+                .map(league -> LeagueResponseForManager.of(
+                        league,
+                        LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
+                        gamesForLeagues.get(league)))
+                .toList();
+    }
+
+    private Map<League, List<Game>> getGamesForLeague(List<League> leagues) {
+        return leagues.stream()
+                .collect(toMap(league -> league, league -> gameQueryRepository.findByLeagueWithGameTeams(league)));
+    }
+
 }

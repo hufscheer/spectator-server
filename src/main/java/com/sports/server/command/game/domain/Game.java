@@ -5,6 +5,7 @@ import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,6 +65,9 @@ public class Game extends BaseEntity<Game> {
 
     @Column(name = "round", nullable = false)
     private Round round;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GameTeam> gameTeams = new ArrayList<>();
 
     public void registerStarter(final LineupPlayer lineupPlayer) {
         this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));
