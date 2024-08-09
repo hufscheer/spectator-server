@@ -1,5 +1,8 @@
 package com.sports.server.query.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
@@ -9,16 +12,12 @@ import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/league-fixture.sql")
 public class LeagueQueryAcceptanceTest extends AcceptanceTest {
@@ -39,16 +38,16 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
                         .map(LeagueResponse::leagueId)
-                        .containsExactly(3L, 2L, 1L, 7L, 6L, 5L),
+                        .containsExactly(8L, 3L, 2L, 1L, 7L, 6L, 5L),
                 () -> assertThat(actual)
                         .map(LeagueResponse::name)
-                        .containsExactly("롤 대회", "농구대잔치", "삼건물 대회", "롤 대회", "농구대잔치", "삼건물 대회"),
+                        .containsExactly("탁구 대회", "롤 대회", "농구대잔치", "삼건물 대회", "롤 대회", "농구대잔치", "삼건물 대회"),
                 () -> assertThat(actual)
                         .map(LeagueResponse::maxRound)
-                        .containsExactly("8강", "8강", "16강", "8강", "8강", "16강"),
+                        .containsExactly("16강", "8강", "8강", "16강", "8강", "8강", "16강"),
                 () -> assertThat(actual)
                         .map(LeagueResponse::inProgressRound)
-                        .containsExactly("8강", "결승", "8강", "8강", "결승", "8강")
+                        .containsExactly("16강", "8강", "결승", "8강", "8강", "결승", "8강")
         );
     }
 
@@ -131,20 +130,20 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .get("/leagues/teams/{leagueTeamId}/players", soccerishThought)
-            .then().log().all()
-            .extract();
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/teams/{leagueTeamId}/players", soccerishThought)
+                .then().log().all()
+                .extract();
 
         // then
         List<LeagueTeamPlayerResponse> actual = toResponses(response, LeagueTeamPlayerResponse.class);
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(actual).map(LeagueTeamPlayerResponse::name)
-                .containsExactly("가을전어이동규", "겨울붕어빵이현제", "봄동나물진승희", "여름수박고병룡"),
-            () -> assertThat(actual).map(LeagueTeamPlayerResponse::id)
-                .containsExactly(2L, 3L, 1L, 4L)
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual).map(LeagueTeamPlayerResponse::name)
+                        .containsExactly("가을전어이동규", "겨울붕어빵이현제", "봄동나물진승희", "여름수박고병룡"),
+                () -> assertThat(actual).map(LeagueTeamPlayerResponse::id)
+                        .containsExactly(2L, 3L, 1L, 4L)
         );
     }
 }
