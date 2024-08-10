@@ -146,4 +146,22 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(2L, 3L, 1L, 4L)
         );
     }
+
+    @Test
+    void 매니저가_생성한_리그를_모두_조회한다() {
+
+        // given
+        configureMockJwtForEmail("john.doe@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/manager")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
