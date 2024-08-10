@@ -4,6 +4,7 @@ import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import java.util.List;
@@ -47,5 +48,10 @@ public class LeagueQueryController {
     @GetMapping("/teams/{leagueTeamId}/players")
     public ResponseEntity<List<LeagueTeamPlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
         return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));
+    }
+
+    @GetMapping("/teams/{leagueTeamId}")
+    public ResponseEntity<LeagueTeamDetailResponse> findLeagueTeam(@PathVariable final Long leagueTeamId) {
+        return ResponseEntity.ok(leagueQueryService.findLeagueTeam(leagueTeamId));
     }
 }
