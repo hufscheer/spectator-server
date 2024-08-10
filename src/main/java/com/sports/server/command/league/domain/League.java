@@ -71,9 +71,6 @@ public class League extends BaseEntity<League> {
     }
 
     public void delete() {
-        if (isDeleted) {
-            throw new IllegalArgumentException("이미 삭제된 리그입니다.");
-        }
         this.isDeleted = true;
     }
 
