@@ -29,6 +29,6 @@ public class LeagueService {
         if (!league.isManagedBy(manager)) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
-        league.delete();
+        leagueRepository.delete(league);
     }
 }
