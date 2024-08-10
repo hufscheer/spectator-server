@@ -13,7 +13,6 @@ import com.sports.server.command.sport.domain.SportRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,53 +31,33 @@ public class GameService {
                          final GameRequestDto.Register requestDto,
                          final Member manager) {
         Game game = saveGame(leagueId, manager, requestDto);
-
-        List<LeagueTeam> leagueTeams = List.of(getLeagueTeam(requestDto.idOfTeam1()),
-                getLeagueTeam(requestDto.idOfTeam2()));
-
-        List<GameTeam> gameTeams = saveGameTeams(requestDto, game, leagueTeams);
-        copyPlayers(gameTeams, leagueTeams);
-
-        gameRepository.save(game);
+        saveGameTeams(game, requestDto);
     }
 
-    private List<GameTeam> saveGameTeams(GameRequestDto.Register requestDto, Game game, List<LeagueTeam> leagueTeams) {
-        GameTeam gameTeam1 = createGameTeam(game, leagueTeams.get(0));
-        GameTeam gameTeam2 = createGameTeam(game, leagueTeams.get(1));
+    private void saveGameTeams(Game game, GameRequestDto.Register requestDto) {
+
+        LeagueTeam leagueTeam1 = entityUtils.getEntity(requestDto.idOfTeam1(), LeagueTeam.class);
+        LeagueTeam leagueTeam2 = entityUtils.getEntity(requestDto.idOfTeam2(), LeagueTeam.class);
+
+        GameTeam gameTeam1 = new GameTeam(game, leagueTeam1);
+        GameTeam gameTeam2 = new GameTeam(game, leagueTeam1);
 
         game.addTeam(gameTeam1);
         game.addTeam(gameTeam2);
 
-        return List.of(gameTeam1, gameTeam2);
-    }
-
-    private void copyPlayers(List<GameTeam> gameTeams, List<LeagueTeam> leagueTeams) {
-        copyPlayersToLineup(gameTeams.get(0), leagueTeams.get(0));
-        copyPlayersToLineup(gameTeams.get(1), leagueTeams.get(1));
-    }
-
-    private LeagueTeam getLeagueTeam(Long teamId) {
-        return entityUtils.getEntity(teamId, LeagueTeam.class);
-    }
-
-    private GameTeam createGameTeam(Game game, LeagueTeam leagueTeam) {
-        return new GameTeam(game, leagueTeam);
-    }
-
-    private void copyPlayersToLineup(GameTeam gameTeam, LeagueTeam leagueTeam) {
-        leagueTeam.getLeagueTeamPlayers().stream()
-                .forEach(gameTeam::registerLineup);
+        leagueTeam1.getLeagueTeamPlayers().stream()
+                .forEach(gameTeam1::registerLineup);
+        leagueTeam2.getLeagueTeamPlayers().stream()
+                .forEach(gameTeam2::registerLineup);
     }
 
     private Game saveGame(Long leagueId, Member manager, GameRequestDto.Register requestDto) {
-        Sport sport = getSport(NAME_OF_SPORT);
-        League league = getLeagueAndCheckPermission(leagueId, manager);
-        return requestDto.toEntity(sport, manager, league);
-    }
-
-    private Sport getSport(String sportName) {
-        return sportRepository.findByName(sportName)
+        Sport sport = sportRepository.findByName(NAME_OF_SPORT)
                 .orElseThrow(() -> new NotFoundException("해당 이름을 가진 스포츠가 존재하지 않습니다."));
+        League league = getLeagueAndCheckPermission(leagueId, manager);
+        Game game = requestDto.toEntity(sport, manager, league);
+        gameRepository.save(game);
+        return game;
     }
 
     private League getLeagueAndCheckPermission(final Long leagueId, final Member manager) {
