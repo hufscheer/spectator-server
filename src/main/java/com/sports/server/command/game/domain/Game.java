@@ -41,7 +41,7 @@ public class Game extends BaseEntity<Game> {
     @JoinColumn(name = "league_id")
     private League league;
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GameTeam> teams = new ArrayList<>();
 
     @Column(name = "name", nullable = false)
@@ -65,9 +65,6 @@ public class Game extends BaseEntity<Game> {
 
     @Column(name = "round", nullable = false)
     private Round round;
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GameTeam> gameTeams = new ArrayList<>();
 
     public void registerStarter(final LineupPlayer lineupPlayer) {
         this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));

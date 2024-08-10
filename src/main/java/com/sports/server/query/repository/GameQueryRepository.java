@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface GameQueryRepository extends Repository<Game, Long> {
     @Query(
             "SELECT g FROM Game g "
-                    + "JOIN FETCH g.gameTeams "
+                    + "JOIN FETCH g.teams "
                     + "WHERE g.league =:league "
                     + "AND g.state = 'PLAYING'"
     )

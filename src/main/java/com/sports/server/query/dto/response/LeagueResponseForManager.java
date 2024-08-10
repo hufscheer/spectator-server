@@ -53,7 +53,7 @@ public record LeagueResponseForManager(
         public static GameDetailResponse of(final Game game) {
             return new GameDetailResponse(
                     game.getId(), game.getState().name(), game.getStartTime(),
-                    game.getGameTeams().stream()
+                    game.getTeams().stream()
                             .map(GameTeamResponse::of)
                             .toList()
             );
