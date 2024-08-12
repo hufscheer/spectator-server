@@ -98,6 +98,10 @@ operation::league-query-controller-test/리그를_하나_조회한다[snippets='
 
 operation::league-controller-test/리그를_삭제한다[snippets='http-request,path-parameters,http-response']
 
+=== 리그팀 상세 조회
+
+operation::league-query-controller-test/리그팀을_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
 == 타임라인 API
 
 === 득점 타임라인 생성
