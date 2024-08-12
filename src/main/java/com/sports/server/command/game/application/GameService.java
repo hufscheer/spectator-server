@@ -40,7 +40,7 @@ public class GameService {
         LeagueTeam leagueTeam2 = entityUtils.getEntity(requestDto.idOfTeam2(), LeagueTeam.class);
 
         GameTeam gameTeam1 = new GameTeam(game, leagueTeam1);
-        GameTeam gameTeam2 = new GameTeam(game, leagueTeam1);
+        GameTeam gameTeam2 = new GameTeam(game, leagueTeam2);
 
         game.addTeam(gameTeam1);
         game.addTeam(gameTeam2);
