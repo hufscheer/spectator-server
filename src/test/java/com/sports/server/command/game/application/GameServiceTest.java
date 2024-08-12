@@ -22,10 +22,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
 @Sql("/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -59,62 +60,81 @@ public class GameServiceTest extends ServiceTest {
                 LocalDateTime.now(), idOfTeam1, idOfTeam2, null);
     }
 
-    @Test
-    @Transactional
-    void 정상적으로_게임이_등록된다() {
-        // given
-        Member manager = entityUtils.getEntity(1L, Member.class);
+    @Nested
+    @DisplayName("게임을 저장할 때")
+    class registerGameTest {
+        @Test
+        void 정상적으로_게임팀이_저장된다() {
+            // given
+            Member manager = entityUtils.getEntity(1L, Member.class);
 
-        // when
-        gameService.register(1L, requestDto, manager);
+            // when
+            gameService.register(1L, requestDto, manager);
 
-        // then
-        Optional<Game> gameOptional = gameFixtureRepository.findByName(nameOfGame);
-        assertThat(gameOptional).isPresent().withFailMessage("게임이 등록되지 않았습니다.");
+            // then
+            Optional<Game> gameOptional = gameFixtureRepository.findByName(nameOfGame);
+            assertThat(gameOptional).isPresent().withFailMessage("게임이 등록되지 않았습니다.");
 
-        Game game = gameOptional.get();
-        assertInFormationOfGame(game);
+            Game game = gameOptional.get();
+            assertInFormationOfGame(game);
 
-        List<GameTeam> gameTeams = gameTeamFixtureRepository.findByGame(game);
-        assertGameTeams(gameTeams);
-        assertLineupPlayers(gameTeams);
-    }
+            List<GameTeam> gameTeams = gameTeamFixtureRepository.findByGame(game);
+            assertGameTeams(gameTeams);
+        }
 
-    private void assertInFormationOfGame(Game game) {
-        assertAll(
-                () -> assertThat(game).isNotNull(),
-                () -> assertThat(game.getName()).isEqualTo(nameOfGame),
-                () -> assertThat(game.getRound()).isEqualTo(Round.from("16강"))
-        );
+        @Test
+        void 정상적으로_라인업이_복사된다() {
+            // given
+            Member manager = entityUtils.getEntity(1L, Member.class);
 
-    }
+            // when
+            gameService.register(1L, requestDto, manager);
 
-    private void assertGameTeams(List<GameTeam> gameTeams) {
-        List<Long> expectedTeamIds = List.of(idOfTeam1, idOfTeam2);
-        List<Long> actualTeamIds = gameTeams.stream().map(gt -> gt.getLeagueTeam().getId()).toList();
-        assertThat(actualTeamIds).isEqualTo(expectedTeamIds);
-    }
+            // then
+            Optional<Game> gameOptional = gameFixtureRepository.findByName(nameOfGame);
+            assertThat(gameOptional).isPresent().withFailMessage("게임이 등록되지 않았습니다.");
 
-    private void assertLineupPlayers(List<GameTeam> gameTeams) {
-        for (GameTeam gameTeam : gameTeams) {
-            LeagueTeam leagueTeam = gameTeam.getLeagueTeam();
-            leagueTeamPlayerFixtureRepository.findByLeagueTeam(leagueTeam);
-            List<Long> expectedPlayerIds = leagueTeam.getLeagueTeamPlayers().stream()
-                    .map(LeagueTeamPlayer::getId).toList();
-            List<Long> actualPlayerIds = gameTeam.getLineupPlayers().stream()
-                    .map(LineupPlayer::getLeagueTeamPlayerId).toList();
-            assertThat(actualPlayerIds).isEqualTo(expectedPlayerIds);
+            List<GameTeam> gameTeams = gameTeamFixtureRepository.findByGame(gameOptional.get());
+            assertLineupPlayers(gameTeams);
+        }
+
+        private void assertInFormationOfGame(Game game) {
+            assertAll(
+                    () -> assertThat(game).isNotNull(),
+                    () -> assertThat(game.getName()).isEqualTo(nameOfGame),
+                    () -> assertThat(game.getRound()).isEqualTo(Round.from("16강"))
+            );
+
+        }
+
+        private void assertGameTeams(List<GameTeam> gameTeams) {
+            List<Long> expectedTeamIds = List.of(idOfTeam1, idOfTeam2);
+            List<Long> actualTeamIds = gameTeams.stream().map(gt -> gt.getLeagueTeam().getId()).toList();
+            assertThat(actualTeamIds).isEqualTo(expectedTeamIds);
+        }
+
+        private void assertLineupPlayers(List<GameTeam> gameTeams) {
+            for (GameTeam gameTeam : gameTeams) {
+                LeagueTeam leagueTeam = gameTeam.getLeagueTeam();
+                List<Long> expectedPlayerIds = leagueTeamPlayerFixtureRepository.findByLeagueTeam(leagueTeam).stream()
+                        .map(LeagueTeamPlayer::getId).toList();
+                List<Long> actualPlayerIds = gameTeam.getLineupPlayers().stream()
+                        .map(LineupPlayer::getLeagueTeamPlayerId).toList();
+                assertThat(actualPlayerIds).isEqualTo(expectedPlayerIds);
+            }
+        }
+
+        @Test
+        void 리그의_매니저가_아닌_회원이_리그팀을_등록하려고_하면_예외가_발생한다() {
+            // given
+            Long leagueId = 1L;
+            Member nonManager = entityUtils.getEntity(2L, Member.class);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.register(leagueId, requestDto, nonManager))
+                    .isInstanceOf(UnauthorizedException.class);
         }
     }
 
-    @Test
-    void 리그의_매니저가_아닌_회원이_리그팀을_등록하려고_하면_예외가_발생한다() {
-        // given
-        Long leagueId = 1L;
-        Member nonManager = entityUtils.getEntity(2L, Member.class);
 
-        // when & then
-        assertThatThrownBy(() -> gameService.register(leagueId, requestDto, nonManager))
-                .isInstanceOf(UnauthorizedException.class);
-    }
 }
