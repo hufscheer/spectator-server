@@ -1,12 +1,8 @@
 package com.sports.server.command.game.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,10 +10,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 
 @Entity
@@ -83,6 +80,13 @@ public class GameTeam extends BaseEntity<GameTeam> {
         if (this.score > 0) {
             this.score -= SCORE_VALUE;
         }
+    }
+
+    public void changeCaptainStatus(LineupPlayer lineupPlayer) {
+        this.lineupPlayers.stream()
+                .filter(lp -> lp.equals(lineupPlayer))
+                .findAny()
+                .ifPresent(LineupPlayer::changeCaptainStatus);
     }
 }
 

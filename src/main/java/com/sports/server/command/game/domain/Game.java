@@ -73,6 +73,10 @@ public class Game extends BaseEntity<Game> {
         this.teams.forEach(gameTeam -> gameTeam.rollbackToCandidate(lineupPlayer));
     }
 
+    public void changeCaptainStatus(final LineupPlayer lineupPlayer) {
+        this.teams.forEach(gameTeam -> gameTeam.changeCaptainStatus(lineupPlayer));
+    }
+
     public GameTeam getTeam1() {
         return teams.stream()
                 .min(Comparator.comparing(GameTeam::getId))

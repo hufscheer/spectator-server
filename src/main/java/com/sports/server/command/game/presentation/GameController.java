@@ -18,27 +18,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/games")
 public class GameController {
 
-	private final GameTeamService gameTeamService;
-	private final LineupPlayerService lineupPlayerService;
+    private final GameTeamService gameTeamService;
+    private final LineupPlayerService lineupPlayerService;
 
-	@PostMapping("/{gameId}/cheer")
-	public ResponseEntity<Void> updateCheerCount(@PathVariable final Long gameId,
-		@RequestBody @Valid CheerCountUpdateRequest cheerRequestDto) {
-		gameTeamService.updateCheerCount(gameId, cheerRequestDto);
-		return ResponseEntity.ok().build();
-	}
+    @PostMapping("/{gameId}/cheer")
+    public ResponseEntity<Void> updateCheerCount(@PathVariable final Long gameId,
+                                                 @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto) {
+        gameTeamService.updateCheerCount(gameId, cheerRequestDto);
+        return ResponseEntity.ok().build();
+    }
 
-	@PatchMapping("/{gameId}/lineup-players/{lineupPlayerId}/starter")
-	public ResponseEntity<Void> changePlayerStateToStarter(@PathVariable final Long gameId,
-		@PathVariable final Long lineupPlayerId) {
-		lineupPlayerService.changePlayerStateToStarter(gameId, lineupPlayerId);
-		return ResponseEntity.ok().build();
-	}
+    @PatchMapping("/{gameId}/lineup-players/{lineupPlayerId}/starter")
+    public ResponseEntity<Void> changePlayerStateToStarter(@PathVariable final Long gameId,
+                                                           @PathVariable final Long lineupPlayerId) {
+        lineupPlayerService.changePlayerStateToStarter(gameId, lineupPlayerId);
+        return ResponseEntity.ok().build();
+    }
 
-	@PatchMapping("/{gameId}/lineup-players/{lineupPlayerId}/candidate")
-	public ResponseEntity<Void> changePlayerStateToCandidate(@PathVariable final Long gameId,
-		@PathVariable final Long lineupPlayerId) {
-		lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
-		return ResponseEntity.ok().build();
-	}
+    @PatchMapping("/{gameId}/lineup-players/{lineupPlayerId}/candidate")
+    public ResponseEntity<Void> changePlayerStateToCandidate(@PathVariable final Long gameId,
+                                                             @PathVariable final Long lineupPlayerId) {
+        lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{gameId}/lineup-players/{lineupPlayerId}/captain")
+    public ResponseEntity<Void> changePlayerCaptainStatus(@PathVariable final Long gameId,
+                                                          @PathVariable final Long lineupPlayerId) {
+        lineupPlayerService.changePlayerCaptainStatus(gameId, lineupPlayerId);
+        return ResponseEntity.ok().build();
+    }
+
 }

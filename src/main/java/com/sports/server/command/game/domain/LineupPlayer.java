@@ -1,12 +1,10 @@
 package com.sports.server.command.game.domain;
 
-import static com.sports.server.command.game.domain.LineupPlayerState.*;
-
-import org.springframework.http.HttpStatus;
+import static com.sports.server.command.game.domain.LineupPlayerState.CANDIDATE;
+import static com.sports.server.command.game.domain.LineupPlayerState.STARTER;
 
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,11 +13,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
@@ -70,5 +68,9 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public boolean isInTeam(GameTeam team) {
         return Objects.equals(this.gameTeam, team);
+    }
+
+    public void changeCaptainStatus() {
+        this.isCaptain = !this.isCaptain;
     }
 }
