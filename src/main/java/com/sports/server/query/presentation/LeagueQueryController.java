@@ -4,7 +4,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueResponseForManager;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
@@ -53,7 +53,7 @@ public class LeagueQueryController {
     }
 
     @GetMapping("/manager")
-    public ResponseEntity<List<LeagueResponseForManager>> findLeaguesByManager(final Member member) {
+    public ResponseEntity<List<LeagueResponseWithInProgressGames>> findLeaguesByManager(final Member member) {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManager(member));
     }
 

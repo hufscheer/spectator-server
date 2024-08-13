@@ -15,9 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueResponseForManager;
-import com.sports.server.query.dto.response.LeagueResponseForManager.GameDetailResponse;
-import com.sports.server.query.dto.response.LeagueResponseForManager.GameDetailResponse.GameTeamResponse;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
@@ -225,8 +225,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new GameDetailResponse(1L, "PLAYING", LocalDateTime.now(), gameTeams)
         );
 
-        List<LeagueResponseForManager> responses = List.of(
-                new LeagueResponseForManager(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
+        List<LeagueResponseWithInProgressGames> responses = List.of(
+                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
                         LocalDateTime.now(), inProgressGames));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");

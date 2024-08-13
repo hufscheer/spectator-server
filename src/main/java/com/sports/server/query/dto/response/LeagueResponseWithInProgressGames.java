@@ -6,7 +6,7 @@ import com.sports.server.command.league.domain.League;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record LeagueResponseForManager(
+public record LeagueResponseWithInProgressGames(
 
         Long id,
         String name,
@@ -18,8 +18,8 @@ public record LeagueResponseForManager(
         List<GameDetailResponse> inProgressGames
 
 ) {
-    public static LeagueResponseForManager of(League league, String state, List<Game> games) {
-        return new LeagueResponseForManager(
+    public static LeagueResponseWithInProgressGames of(League league, String state, List<Game> games) {
+        return new LeagueResponseWithInProgressGames(
                 league.getId(), league.getName(), state, league.getLeagueTeams().size(),
                 league.getMaxRound().getDescription(), league.getStartAt(), league.getEndAt(),
                 games.stream()

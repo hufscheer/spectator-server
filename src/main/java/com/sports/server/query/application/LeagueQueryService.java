@@ -12,7 +12,7 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueResponseForManager;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
@@ -80,12 +80,12 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    public List<LeagueResponseForManager> findLeaguesByManager(final Member member) {
+    public List<LeagueResponseWithInProgressGames> findLeaguesByManager(final Member member) {
         List<League> leagues = leagueQueryRepository.findByManager(member);
         Map<League, List<Game>> gamesForLeagues = getGamesForLeague(leagues);
 
         return leagues.stream()
-                .map(league -> LeagueResponseForManager.of(
+                .map(league -> LeagueResponseWithInProgressGames.of(
                         league,
                         LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
                         gamesForLeagues.get(league)))

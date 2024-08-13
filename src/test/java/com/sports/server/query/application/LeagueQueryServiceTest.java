@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.query.dto.response.LeagueResponseForManager;
-import com.sports.server.query.dto.response.LeagueResponseForManager.GameDetailResponse;
-import com.sports.server.query.dto.response.LeagueResponseForManager.GameDetailResponse.GameTeamResponse;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
@@ -55,7 +55,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
     class LeaguesByManagerTest {
 
         private Member manager;
-        private List<LeagueResponseForManager> response;
+        private List<LeagueResponseWithInProgressGames> response;
 
         @BeforeEach
         void setUp() {
@@ -63,7 +63,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
             response = leagueQueryService.findLeaguesByManager(manager);
         }
 
-        private Optional<LeagueResponseForManager> getFirstLeagueById(Long leagueId) {
+        private Optional<LeagueResponseWithInProgressGames> getFirstLeagueById(Long leagueId) {
             return response.stream()
                     .filter(league -> league.id().equals(leagueId))
                     .findFirst();
@@ -73,7 +73,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         void 다른_매니저가_생성한_리그는_조회되지_않는다() {
             // then
             List<Long> ids = response.stream()
-                    .map(LeagueResponseForManager::id)
+                    .map(LeagueResponseWithInProgressGames::id)
                     .toList();
             assertFalse(ids.contains(8L), "다른 매니저가 생성한 리그는 조회 되어서는 안됩니다.");
         }
@@ -85,7 +85,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
             Long nonPlayingGameId = 2L;
 
             // then
-            LeagueResponseForManager firstLeague = getFirstLeagueById(leagueId)
+            LeagueResponseWithInProgressGames firstLeague = getFirstLeagueById(leagueId)
                     .orElseThrow(() -> new AssertionError("리그가 존재하지 않습니다."));
 
             List<Long> ids = firstLeague.inProgressGames()
@@ -103,7 +103,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
             Long otherLeagueGameId = 4L;
 
             // then
-            LeagueResponseForManager firstLeague = getFirstLeagueById(leagueId)
+            LeagueResponseWithInProgressGames firstLeague = getFirstLeagueById(leagueId)
                     .orElseThrow(() -> new AssertionError("리그가 존재하지 않습니다."));
 
             List<Long> ids = firstLeague.inProgressGames()
@@ -121,7 +121,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
             Long gameId = 1L;
 
             // then
-            LeagueResponseForManager firstLeague = getFirstLeagueById(leagueId)
+            LeagueResponseWithInProgressGames firstLeague = getFirstLeagueById(leagueId)
                     .orElseThrow(() -> new AssertionError("리그가 존재하지 않습니다."));
 
             List<Long> idsOfGameTeamsOfFirstGame = firstLeague.inProgressGames()
