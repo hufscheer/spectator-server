@@ -5,8 +5,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.query.dto.response.LeagueResponseWithGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
@@ -14,6 +16,7 @@ import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.ServiceTest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,5 +191,67 @@ public class LeagueQueryServiceTest extends ServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("리그와 리그의 경기들을 조회할 때")
+    class findLeagueAndGamesTest {
 
+        private Long leagueId;
+
+        @BeforeEach
+        void setUp() {
+            this.leagueId = 1L;
+        }
+
+        @Test
+        void 다른_리그에_속한_경기가_반환되어서는_안된다() {
+            // given
+            Long leagueId = 1L;
+            Long otherLeagueGameId = 4L;
+
+            // when
+            LeagueResponseWithGames leagueAndGames = leagueQueryService.findLeagueAndGames(leagueId);
+            List<Long> ids = new ArrayList<>();
+            ids.addAll(leagueAndGames.playingGames().stream()
+                    .map(LeagueResponseWithGames.GameDetailResponse::id).toList());
+
+            ids.addAll(leagueAndGames.scheduledGames().stream()
+                    .map(LeagueResponseWithGames.GameDetailResponse::id).toList());
+
+            ids.addAll(leagueAndGames
+                    .finishedGames().stream().map(LeagueResponseWithGames.GameDetailResponse::id).toList());
+
+            // then
+            assertFalse(ids.contains(otherLeagueGameId), "다른 리그에 속한 경기가 반환되어서는 안됩니다.");
+        }
+
+        @Test
+        void playingGames에는_진행_중인_경기만_반환된다() {
+            // when
+            LeagueResponseWithGames leagueWithGames = leagueQueryService.findLeagueAndGames(leagueId);
+
+            // then
+            leagueWithGames.playingGames().stream()
+                    .forEach(g -> assertThat(g.state()).isEqualTo(GameState.PLAYING.name()));
+        }
+
+        @Test
+        void scheduledGames에는_예정된_경기만_반환된다() {
+            // when
+            LeagueResponseWithGames leagueWithGames = leagueQueryService.findLeagueAndGames(leagueId);
+
+            // then
+            leagueWithGames.scheduledGames().stream()
+                    .forEach(g -> assertThat(g.state()).isEqualTo(GameState.SCHEDULED.name()));
+        }
+
+        @Test
+        void finishedGames에는_종료된_경기만_반환된다() {
+            // when
+            LeagueResponseWithGames leagueWithGames = leagueQueryService.findLeagueAndGames(leagueId);
+
+            // then
+            leagueWithGames.finishedGames().stream()
+                    .forEach(g -> assertThat(g.state()).isEqualTo(GameState.FINISHED.name()));
+        }
+    }
 }
