@@ -15,4 +15,11 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "AND g.state = 'PLAYING'"
     )
     List<Game> findPlayingGamesByLeagueWithGameTeams(@Param("league") League league);
+
+    @Query(
+            "SELECT g FROM Game g "
+                    + "JOIN FETCH g.teams "
+                    + "WHERE g.league=:league"
+    )
+    List<Game> findByLeagueWithGameTeams(@Param("league") League league);
 }
