@@ -19,6 +19,7 @@ import com.sports.server.query.dto.response.LeagueResponseForManager;
 import com.sports.server.query.dto.response.LeagueResponseForManager.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseForManager.GameDetailResponse.GameTeamResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.DocumentationTest;
@@ -273,4 +274,45 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         )
                 ));
     }
+
+    @Test
+    void 리그팀을_상세_조회한다() throws Exception {
+        // given
+        Long leagueTeamId = 3L;
+
+        List<LeagueTeamDetailResponse.LeagueTeamPlayerResponse> leagueTeamPlayerResponses = List.of(
+                new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(1L, "봄동나물진승희", 0),
+                new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(2L, "가을전어이동규", 2)
+        );
+        LeagueTeamDetailResponse leagueTeamDetailResponse = new LeagueTeamDetailResponse(
+                "이미지이미지", "미컴 축구생각", leagueTeamPlayerResponses
+        );
+
+        given(leagueQueryService.findLeagueTeam(leagueTeamId))
+                .willReturn(leagueTeamDetailResponse);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/teams/{leagueTeamId}", leagueTeamId)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueTeamId").description("리그 팀의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("teamName").type(JsonFieldType.STRING).description("대회 팀의 이름"),
+                                fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("로고 이미지의 URL"),
+                                fieldWithPath("leagueTeamPlayers").type(JsonFieldType.ARRAY).description("대회 팀 선수들"),
+                                fieldWithPath("leagueTeamPlayers[].id").type(JsonFieldType.NUMBER)
+                                        .description("대회 팀 선수 ID"),
+                                fieldWithPath("leagueTeamPlayers[].name").type(JsonFieldType.STRING)
+                                        .description("대회 팀 선수 이름"),
+                                fieldWithPath("leagueTeamPlayers[].number").type(JsonFieldType.NUMBER)
+                                        .description("대회 팀 선수 점수")
+                        )
+                ));
+    }
 }
+

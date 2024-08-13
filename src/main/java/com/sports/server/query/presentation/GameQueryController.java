@@ -1,16 +1,23 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.GameQueryService;
-import com.sports.server.query.application.LineupPlayerQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
-import com.sports.server.query.dto.response.*;
+import com.sports.server.query.application.LineupPlayerQueryService;
+import com.sports.server.query.dto.request.GamesQueryRequestDto;
+import com.sports.server.query.dto.response.GameDetailResponse;
+import com.sports.server.query.dto.response.GameResponseDto;
+import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
+import com.sports.server.query.dto.response.LineupPlayerResponse;
+import com.sports.server.query.dto.response.VideoResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor

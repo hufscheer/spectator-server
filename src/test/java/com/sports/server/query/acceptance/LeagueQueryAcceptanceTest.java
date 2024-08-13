@@ -1,23 +1,25 @@
 package com.sports.server.query.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
+import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/league-fixture.sql")
 public class LeagueQueryAcceptanceTest extends AcceptanceTest {
@@ -164,4 +166,30 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @Test
+    void 리그팀의_상세정보를_조회한다() {
+        // given
+        Long leagueTeamId = 3L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("leagueTeamId", leagueTeamId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/teams/{leagueTeamId}")
+                .then().log().all()
+                .extract();
+
+        // then
+        LeagueTeamDetailResponse actual = toResponse(response, LeagueTeamDetailResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual.leagueTeamPlayers()).map(
+                                LeagueTeamDetailResponse.LeagueTeamPlayerResponse::name)
+                        .containsExactly("가을전어이동규", "겨울붕어빵이현제", "봄동나물진승희", "여름수박고병룡"),
+                () -> assertThat(actual.teamName()).isEqualTo("미컴 축구생각"),
+                () -> assertThat(actual.logoImageUrl()).isEqualTo("이미지이미지")
+        );
+    }
+
 }
