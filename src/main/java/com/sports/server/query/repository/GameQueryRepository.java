@@ -14,5 +14,5 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "WHERE g.league =:league "
                     + "AND g.state = 'PLAYING'"
     )
-    List<Game> findByLeagueWithGameTeams(@Param("league") League league);
+    List<Game> findPlayingGamesByLeagueWithGameTeams(@Param("league") League league);
 }
