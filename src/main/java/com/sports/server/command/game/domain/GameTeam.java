@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -83,13 +84,14 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
     public void changeCaptainStatus(LineupPlayer lineupPlayer) {
-        boolean captainExists = this.lineupPlayers.stream()
-                .anyMatch(LineupPlayer::isCaptain);
+        Optional<LineupPlayer> captain = this.lineupPlayers.stream()
+                .filter(LineupPlayer::isCaptain)
+                .findAny();
 
         boolean playerExistsInTeam = this.lineupPlayers.stream()
                 .anyMatch(lp -> lp.equals(lineupPlayer));
 
-        if (captainExists && playerExistsInTeam) {
+        if (captain.isPresent() && !captain.get().equals(lineupPlayer) && playerExistsInTeam) {
             throw new IllegalStateException("주장은 두 명 이상 등록할 수 없습니다.");
         }
 
