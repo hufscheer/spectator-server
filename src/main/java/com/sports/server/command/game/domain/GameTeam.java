@@ -83,11 +83,21 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
     public void changeCaptainStatus(LineupPlayer lineupPlayer) {
-        this.lineupPlayers.stream()
-                .filter(lp -> lp.equals(lineupPlayer))
-                .findAny()
-                .ifPresent(LineupPlayer::changeCaptainStatus);
+        boolean captainExists = this.lineupPlayers.stream()
+                .anyMatch(LineupPlayer::isCaptain);
+
+        boolean playerExistsInTeam = this.lineupPlayers.stream()
+                .anyMatch(lp -> lp.equals(lineupPlayer));
+
+        if (captainExists && playerExistsInTeam) {
+            throw new IllegalStateException("주장은 두 명 이상 등록할 수 없습니다.");
+        }
+
+        if (playerExistsInTeam) {
+            lineupPlayer.changeCaptainStatus();
+        }
     }
+
 }
 
 
