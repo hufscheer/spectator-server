@@ -215,6 +215,15 @@ class GameTest {
                     .hasMessage("주장은 두 명 이상 등록할 수 없습니다.");
         }
 
+        @Test
+        void 주장인_선수는_주장이_아니도록_변경한다() {
+            // when
+            game.changeCaptainStatus(team1FirstPlayer);
+
+            // then
+            assertThat(team1FirstPlayer.isCaptain()).isEqualTo(false);
+        }
+
 
     }
 }
