@@ -1,15 +1,15 @@
 package com.sports.server.command.game.domain;
 
+import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-
-import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GameTest {
     private Game game;
@@ -148,5 +148,73 @@ class GameTest {
             assertThatThrownBy(() -> game.cancelScore(scorer))
                     .isInstanceOf(IllegalArgumentException.class);
         }
+    }
+
+    @Nested
+    @DisplayName("Game에서 주장으로 등록할 때")
+    class changeCaptainStatusTest {
+        private Game game;
+        private LineupPlayer team1FirstPlayer;
+        private LineupPlayer team1SecondPlayer;
+        private LineupPlayer team2FirstPlayer;
+        private LineupPlayer team2SecondPlayer;
+
+        @BeforeEach
+        void setUp() {
+            game = entityBuilder(Game.class)
+                    .set("teams", new ArrayList<>())
+                    .sample();
+
+            // 주장이 이미 존재하는 팀
+            team1FirstPlayer = entityBuilder(LineupPlayer.class)
+                    .set("isCaptain", true)
+                    .sample();
+            team1SecondPlayer = entityBuilder(LineupPlayer.class)
+                    .set("isCaptain", false)
+                    .sample();
+
+            // 주장이 없는 팀
+            team2FirstPlayer = entityBuilder(LineupPlayer.class)
+                    .set("isCaptain", false)
+                    .sample();
+            team2SecondPlayer = entityBuilder(LineupPlayer.class)
+                    .set("isCaptain", false)
+                    .sample();
+
+            GameTeam teamWithCaptain = entityBuilder(GameTeam.class)
+                    .set("game", game)
+                    .set("score", 0)
+                    .set("lineupPlayers", List.of(team1FirstPlayer, team1SecondPlayer))
+                    .sample();
+
+            GameTeam teamWithoutCaptain = entityBuilder(GameTeam.class)
+                    .set("game", game)
+                    .set("score", 0)
+                    .set("lineupPlayers", List.of(team2FirstPlayer, team2SecondPlayer))
+                    .sample();
+
+            game.addTeam(teamWithCaptain);
+            game.addTeam(teamWithoutCaptain);
+        }
+
+        @Test
+        void 주장이_없는_팀은_주장_등록을_할_수_있다() {
+            // when
+            game.changeCaptainStatus(team2FirstPlayer);
+
+            // then
+            assertThat(team2FirstPlayer.isCaptain()).isEqualTo(true);
+        }
+
+        @Test
+        void 주장이_있는_팀은_주장_등록을_할_수_없다() {
+            // when & then
+            assertThatThrownBy(
+                    () -> game.changeCaptainStatus(team1SecondPlayer))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("주장은 두 명 이상 등록할 수 없습니다.");
+        }
+
+
     }
 }
