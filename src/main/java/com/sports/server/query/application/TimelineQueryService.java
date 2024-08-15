@@ -1,4 +1,4 @@
-package com.sports.server.query.application.timeline;
+package com.sports.server.query.application;
 
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.timeline.domain.Timeline;

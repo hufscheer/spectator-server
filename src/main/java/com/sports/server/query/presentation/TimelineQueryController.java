@@ -1,6 +1,6 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.query.application.timeline.TimelineQueryService;
+import com.sports.server.query.application.TimelineQueryService;
 import com.sports.server.query.dto.response.TimelineResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
