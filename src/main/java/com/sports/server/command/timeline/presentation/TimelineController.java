@@ -32,6 +32,14 @@ public class TimelineController {
         return ResponseEntity.created(URI.create("")).build();
     }
 
+    @PostMapping("/progress")
+    public ResponseEntity<Void> createProgressTimeline(@PathVariable Long gameId,
+                                                       @RequestBody TimelineRequest.RegisterProgress request,
+                                                       Member member) {
+        timelineService.register(member, gameId, request);
+        return ResponseEntity.created(URI.create("")).build();
+    }
+
     @DeleteMapping("/{timelineId}")
     public ResponseEntity<Void> deleteTimeline(@PathVariable Long gameId,
                                                @PathVariable Long timelineId,

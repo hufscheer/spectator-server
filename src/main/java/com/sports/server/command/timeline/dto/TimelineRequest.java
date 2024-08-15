@@ -1,5 +1,6 @@
 package com.sports.server.command.timeline.dto;
 
+import com.sports.server.command.timeline.domain.GameProgressType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -40,6 +41,20 @@ public class TimelineRequest {
             super(gameTeamId, recordedQuarterId, recordedAt);
             this.originLineupPlayerId = originLineupPlayerId;
             this.replacementLineupPlayerId = replacementLineupPlayerId;
+        }
+    }
+
+    @Getter
+    public static class RegisterProgress extends TimelineRequest {
+        private final GameProgressType gameProgressType;
+
+        public RegisterProgress(
+                Integer recordedAt,
+                Long recordedQuarterId,
+                GameProgressType gameProgressType
+        ) {
+            super(null, recordedQuarterId, recordedAt);
+            this.gameProgressType = gameProgressType;
         }
     }
 }
