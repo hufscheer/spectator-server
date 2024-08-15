@@ -7,12 +7,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TimelineRequest {
-    private final Long gameTeamId;
     private final Long recordedQuarterId;
     private final Integer recordedAt;
 
     @Getter
     public static class RegisterScore extends TimelineRequest {
+        private final Long gameTeamId;
         private final Long scoreLineupPlayerId;
 
         public RegisterScore(
@@ -21,13 +21,15 @@ public class TimelineRequest {
                 Long scoreLineupPlayerId,
                 Integer recordedAt
         ) {
-            super(gameTeamId, recordedQuarterId, recordedAt);
+            super(recordedQuarterId, recordedAt);
+            this.gameTeamId = gameTeamId;
             this.scoreLineupPlayerId = scoreLineupPlayerId;
         }
     }
 
     @Getter
     public static class RegisterReplacement extends TimelineRequest {
+        private final Long gameTeamId;
         private final Long originLineupPlayerId;
         private final Long replacementLineupPlayerId;
 
@@ -38,7 +40,8 @@ public class TimelineRequest {
                 Long replacementLineupPlayerId,
                 Integer recordedAt
         ) {
-            super(gameTeamId, recordedQuarterId, recordedAt);
+            super(recordedQuarterId, recordedAt);
+            this.gameTeamId = gameTeamId;
             this.originLineupPlayerId = originLineupPlayerId;
             this.replacementLineupPlayerId = replacementLineupPlayerId;
         }
@@ -53,7 +56,7 @@ public class TimelineRequest {
                 Long recordedQuarterId,
                 GameProgressType gameProgressType
         ) {
-            super(null, recordedQuarterId, recordedAt);
+            super(recordedQuarterId, recordedAt);
             this.gameProgressType = gameProgressType;
         }
     }
