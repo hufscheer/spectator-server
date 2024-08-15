@@ -3,6 +3,7 @@ package com.sports.server.command.timeline.application;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
@@ -21,6 +22,8 @@ public class TimelineMapper {
             return toScoreTimeline(game, scoreRequest);
         } else if (request instanceof TimelineRequest.RegisterReplacement replacementRequest) {
             return toReplacementTimeline(game, replacementRequest);
+        } else if (request instanceof TimelineRequest.RegisterProgress progressRequest) {
+            return toProgressTimeline(game, progressRequest);
         }
 
         throw new IllegalArgumentException("지원하지 않는 타입입니다.");
@@ -44,6 +47,16 @@ public class TimelineMapper {
                 replacementRequest.getRecordedAt(),
                 getPlayer(replacementRequest.getOriginLineupPlayerId()),
                 getPlayer(replacementRequest.getReplacementLineupPlayerId())
+        );
+    }
+
+    private Timeline toProgressTimeline(Game game,
+                                        TimelineRequest.RegisterProgress progressRequest) {
+        return new GameProgressTimeline(
+                game,
+                getQuarter(progressRequest.getRecordedQuarterId()),
+                progressRequest.getRecordedAt(),
+                progressRequest.getGameProgressType()
         );
     }
 

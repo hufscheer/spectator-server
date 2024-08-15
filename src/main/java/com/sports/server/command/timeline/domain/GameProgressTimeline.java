@@ -1,16 +1,31 @@
 package com.sports.server.command.timeline.domain;
 
+import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.sport.domain.Quarter;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @DiscriminatorValue("GAME_PROGRESS")
 @Getter
-public class GameProgressTimeline extends Timeline  {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class GameProgressTimeline extends Timeline {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
+
+    public GameProgressTimeline(
+            Game game,
+            Quarter quarter,
+            Integer recordedAt,
+            GameProgressType gameProgressType
+    ) {
+        super(game, quarter, recordedAt);
+        this.gameProgressType = gameProgressType;
+    }
 
     @Override
     public String getType() {
