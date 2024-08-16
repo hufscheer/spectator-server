@@ -94,6 +94,10 @@ operation::league-team-controller-test/리그팀을_삭제한다[snippets='http-
 
 operation::league-query-controller-test/리그를_하나_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 리그 삭제
+
+operation::league-controller-test/리그를_삭제한다[snippets='http-request,path-parameters,http-response']
+
 === 리그팀 상세 조회
 
 operation::league-query-controller-test/리그팀을_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
