@@ -466,6 +466,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_라인업_선수_선발로_변경">라인업 선수 선발로 변경</a></li>
 <li><a href="#_라인업_선수_후보로_변경">라인업 선수 후보로 변경</a></li>
+<li><a href="#_라인업_선수_주장으로_등록_및_취소">라인업 선수 주장으로 등록 및 취소</a></li>
 </ul>
 </li>
 <li><a href="#_응원_횟수_api">응원 횟수 API</a>
@@ -1450,6 +1451,39 @@ Content-Length: 1620
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_라인업_선수_주장으로_등록_및_취소"><a class="link" href="#_라인업_선수_주장으로_등록_및_취소">라인업 선수 주장으로 등록 및 취소</a></h3>
+<div class="sect3">
+<h4 id="_라인업_선수_주장으로_등록_및_취소_path_parameters"><a class="link" href="#_라인업_선수_주장으로_등록_및_취소_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">라인업 선수의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1585,7 +1619,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
 Content-Type: application/json
-Content-Length: 178
+Content-Length: 179
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -1593,8 +1627,8 @@ Cookie: HCC_SES=temp-cookie
   "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
   "maxRound" : "4강",
-  "startAt" : "2024-08-08T16:15:24.740259",
-  "endAt" : "2024-08-08T16:15:24.74027"
+  "startAt" : "2024-08-17T16:38:35.725862",
+  "endAt" : "2024-08-17T16:38:35.725866"
 }</code></pre>
 </div>
 </div>
@@ -2930,7 +2964,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 15 Aug 2024 07:15:21 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sat, 24 Aug 2024 07:38:31 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -3004,7 +3038,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-08-08 16:14:48 +0900
+Last updated 2024-08-17 16:37:45 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

@@ -1,7 +1,8 @@
 package com.sports.server.command.game.presentation;
 
 
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -53,18 +54,18 @@ public class GameControllerTest extends DocumentationTest {
 
         //when
         ResultActions result = mockMvc.perform(
-            patch("/games/{gameId}/lineup-players/{lineupPlayerId}/starter", gameId, lineupPlayerId)
-                .contentType(MediaType.APPLICATION_JSON)
+                patch("/games/{gameId}/lineup-players/{lineupPlayerId}/starter", gameId, lineupPlayerId)
+                        .contentType(MediaType.APPLICATION_JSON)
         );
 
         //then
         result.andExpect((status().isOk()))
-            .andDo(restDocsHandler.document(
-                pathParameters(
-                    parameterWithName("gameId").description("게임의 ID"),
-                    parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
-                )
-            ));
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID"),
+                                parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        )
+                ));
     }
 
     @Test
@@ -76,17 +77,43 @@ public class GameControllerTest extends DocumentationTest {
 
         //when
         ResultActions result = mockMvc.perform(
-            patch("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate", gameId, lineupPlayerId)
-                .contentType(MediaType.APPLICATION_JSON)
+                patch("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate", gameId, lineupPlayerId)
+                        .contentType(MediaType.APPLICATION_JSON)
         );
 
         //then
         result.andExpect((status().isOk()))
-            .andDo(restDocsHandler.document(
-                pathParameters(
-                    parameterWithName("gameId").description("게임의 ID"),
-                    parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
-                )
-            ));
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID"),
+                                parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        )
+                ));
+    }
+
+    @Test
+    void 라인업_선수를_주장으로_등록_및_취소한다() throws Exception {
+
+        //given
+        Long gameId = 1L;
+        Long lineupPlayerId = 1L;
+        Long gameTeamId = 1L;
+
+        //when
+        ResultActions result = mockMvc.perform(
+                patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain", gameId, gameTeamId,
+                        lineupPlayerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID"),
+                                parameterWithName("gameTeamId").description("게임팀의 ID"),
+                                parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        )
+                ));
     }
 }
