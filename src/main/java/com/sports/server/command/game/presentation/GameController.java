@@ -42,10 +42,11 @@ public class GameController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{gameId}/lineup-players/{lineupPlayerId}/captain")
+    @PatchMapping("/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain")
     public ResponseEntity<Void> changePlayerCaptainStatus(@PathVariable final Long gameId,
+                                                          @PathVariable final Long gameTeamId,
                                                           @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.appointCaptain(gameId, lineupPlayerId);
+        lineupPlayerService.appointCaptain(gameId, gameTeamId, lineupPlayerId);
         return ResponseEntity.ok().build();
     }
 

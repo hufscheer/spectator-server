@@ -158,6 +158,8 @@ class GameTest {
         private LineupPlayer team1SecondPlayer;
         private LineupPlayer team2FirstPlayer;
         private LineupPlayer team2SecondPlayer;
+        private GameTeam teamWithoutCaptain;
+        private GameTeam teamWithCaptain;
 
         @BeforeEach
         void setUp() {
@@ -181,13 +183,13 @@ class GameTest {
                     .set("isCaptain", false)
                     .sample();
 
-            GameTeam teamWithCaptain = entityBuilder(GameTeam.class)
+            teamWithCaptain = entityBuilder(GameTeam.class)
                     .set("game", game)
                     .set("score", 0)
                     .set("lineupPlayers", List.of(team1FirstPlayer, team1SecondPlayer))
                     .sample();
 
-            GameTeam teamWithoutCaptain = entityBuilder(GameTeam.class)
+            teamWithoutCaptain = entityBuilder(GameTeam.class)
                     .set("game", game)
                     .set("score", 0)
                     .set("lineupPlayers", List.of(team2FirstPlayer, team2SecondPlayer))
@@ -200,7 +202,7 @@ class GameTest {
         @Test
         void 주장이_없는_팀은_주장_등록을_할_수_있다() {
             // when
-            game.appointCaptain(team2FirstPlayer);
+            game.appointCaptain(teamWithoutCaptain, team2FirstPlayer);
 
             // then
             assertThat(team2FirstPlayer.isCaptain()).isEqualTo(true);
@@ -210,7 +212,7 @@ class GameTest {
         void 주장이_있는_팀은_주장_등록을_할_수_없다() {
             // when & then
             assertThatThrownBy(
-                    () -> game.appointCaptain(team1SecondPlayer))
+                    () -> game.appointCaptain(teamWithCaptain, team1SecondPlayer))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("주장은 두 명 이상 등록할 수 없습니다.");
         }
@@ -218,7 +220,7 @@ class GameTest {
         @Test
         void 주장인_선수는_주장이_아니도록_변경한다() {
             // when
-            game.appointCaptain(team1FirstPlayer);
+            game.appointCaptain(teamWithCaptain, team1FirstPlayer);
 
             // then
             assertThat(team1FirstPlayer.isCaptain()).isEqualTo(false);

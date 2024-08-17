@@ -73,8 +73,8 @@ public class Game extends BaseEntity<Game> {
         this.teams.forEach(gameTeam -> gameTeam.rollbackToCandidate(lineupPlayer));
     }
 
-    public void appointCaptain(final LineupPlayer lineupPlayer) {
-        this.teams.forEach(gameTeam -> gameTeam.changeCaptainStatus(lineupPlayer));
+    public void appointCaptain(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        gameTeam.appointCaptain(lineupPlayer);
     }
 
     public GameTeam getTeam1() {

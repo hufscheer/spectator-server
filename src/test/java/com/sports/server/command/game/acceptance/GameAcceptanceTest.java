@@ -143,7 +143,8 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .cookie(COOKIE_NAME, mockToken)
-                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain", gameId, lineupPlayerId)
+                .patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain",
+                        gameId, gameTeamId, lineupPlayerId)
                 .then().log().all()
                 .extract();
 
