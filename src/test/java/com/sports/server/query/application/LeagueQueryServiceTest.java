@@ -9,6 +9,7 @@ import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.LeagueResponseWithGames;
+import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
@@ -212,13 +213,13 @@ public class LeagueQueryServiceTest extends ServiceTest {
             LeagueResponseWithGames leagueAndGames = leagueQueryService.findLeagueAndGames(leagueId);
             List<Long> ids = new ArrayList<>();
             ids.addAll(leagueAndGames.playingGames().stream()
-                    .map(LeagueResponseWithGames.GameDetailResponse::id).toList());
+                    .map(GameDetail::id).toList());
 
             ids.addAll(leagueAndGames.scheduledGames().stream()
-                    .map(LeagueResponseWithGames.GameDetailResponse::id).toList());
+                    .map(GameDetail::id).toList());
 
             ids.addAll(leagueAndGames
-                    .finishedGames().stream().map(LeagueResponseWithGames.GameDetailResponse::id).toList());
+                    .finishedGames().stream().map(GameDetail::id).toList());
 
             // then
             assertFalse(ids.contains(otherLeagueGameId), "다른 리그에 속한 경기가 반환되어서는 안됩니다.");

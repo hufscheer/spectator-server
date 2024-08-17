@@ -16,6 +16,8 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithGames;
+import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
+import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.GameTeam;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
@@ -321,28 +323,28 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // given
         Long leagueId = 1L;
 
-        List<LeagueResponseWithGames.GameDetailResponse.GameTeamResponse> playingGameTeams = List.of(
-                new LeagueResponseWithGames.GameDetailResponse.GameTeamResponse(1L, "게임팀1", "이미지url", 1),
-                new LeagueResponseWithGames.GameDetailResponse.GameTeamResponse(2L, "게임팀2", "이미지url", 1)
+        List<LeagueResponseWithGames.GameDetail.GameTeam> playingGameTeams = List.of(
+                new GameTeam(1L, "게임팀1", "이미지url", 1),
+                new GameTeam(2L, "게임팀2", "이미지url", 1)
         );
-        List<LeagueResponseWithGames.GameDetailResponse.GameTeamResponse> scheduledGameTeams = List.of(
-                new LeagueResponseWithGames.GameDetailResponse.GameTeamResponse(3L, "게임팀3", "이미지url", 1),
-                new LeagueResponseWithGames.GameDetailResponse.GameTeamResponse(4L, "게임팀4", "이미지url", 1)
+        List<LeagueResponseWithGames.GameDetail.GameTeam> scheduledGameTeams = List.of(
+                new GameTeam(3L, "게임팀3", "이미지url", 1),
+                new GameTeam(4L, "게임팀4", "이미지url", 1)
         );
-        List<LeagueResponseWithGames.GameDetailResponse.GameTeamResponse> finishedGameTeams = List.of(
-                new LeagueResponseWithGames.GameDetailResponse.GameTeamResponse(5L, "게임팀5", "이미지url", 1),
-                new LeagueResponseWithGames.GameDetailResponse.GameTeamResponse(6L, "게임팀6", "이미지url", 1)
+        List<LeagueResponseWithGames.GameDetail.GameTeam> finishedGameTeams = List.of(
+                new GameTeam(5L, "게임팀5", "이미지url", 1),
+                new GameTeam(6L, "게임팀6", "이미지url", 1)
         );
-        List<LeagueResponseWithGames.GameDetailResponse> playingGames = List.of(
-                new LeagueResponseWithGames.GameDetailResponse(1L, "PLAYING", LocalDateTime.of(2024, 8, 11, 13, 30),
+        List<LeagueResponseWithGames.GameDetail> playingGames = List.of(
+                new GameDetail(1L, "PLAYING", LocalDateTime.of(2024, 8, 11, 13, 30),
                         playingGameTeams)
         );
-        List<LeagueResponseWithGames.GameDetailResponse> finishedGames = List.of(
-                new LeagueResponseWithGames.GameDetailResponse(2L, "FINISHED", LocalDateTime.of(2024, 8, 11, 13, 30),
+        List<LeagueResponseWithGames.GameDetail> finishedGames = List.of(
+                new GameDetail(2L, "FINISHED", LocalDateTime.of(2024, 8, 11, 13, 30),
                         finishedGameTeams)
         );
-        List<LeagueResponseWithGames.GameDetailResponse> scheduledGames = List.of(
-                new LeagueResponseWithGames.GameDetailResponse(3L, "SCHEDULED", LocalDateTime.of(2024, 8, 11, 13, 30),
+        List<LeagueResponseWithGames.GameDetail> scheduledGames = List.of(
+                new GameDetail(3L, "SCHEDULED", LocalDateTime.of(2024, 8, 11, 13, 30),
                         scheduledGameTeams)
         );
         LeagueResponseWithGames response = new LeagueResponseWithGames(
@@ -373,32 +375,50 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("playingGames").type(JsonFieldType.ARRAY).description("진행 중인 경기 목록"),
                                 fieldWithPath("playingGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("playingGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
-                                fieldWithPath("playingGames[].startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),
-                                fieldWithPath("playingGames[].gameTeams").type(JsonFieldType.ARRAY).description("경기 팀 목록"),
-                                fieldWithPath("playingGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀 ID"),
-                                fieldWithPath("playingGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING).description("경기 팀 이름"),
-                                fieldWithPath("playingGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("경기 팀 로고 이미지 URL"),
-                                fieldWithPath("playingGames[].gameTeams[].score").type(JsonFieldType.NUMBER).description("경기 팀 점수"),
+                                fieldWithPath("playingGames[].startTime").type(JsonFieldType.STRING)
+                                        .description("경기 시작 시간"),
+                                fieldWithPath("playingGames[].gameTeams").type(JsonFieldType.ARRAY)
+                                        .description("경기 팀 목록"),
+                                fieldWithPath("playingGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 ID"),
+                                fieldWithPath("playingGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("경기 팀 이름"),
+                                fieldWithPath("playingGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("경기 팀 로고 이미지 URL"),
+                                fieldWithPath("playingGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 점수"),
 
                                 fieldWithPath("scheduledGames").type(JsonFieldType.ARRAY).description("예정된 경기 목록"),
                                 fieldWithPath("scheduledGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("scheduledGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
-                                fieldWithPath("scheduledGames[].startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),
-                                fieldWithPath("scheduledGames[].gameTeams").type(JsonFieldType.ARRAY).description("경기 팀 목록"),
-                                fieldWithPath("scheduledGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀 ID"),
-                                fieldWithPath("scheduledGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING).description("경기 팀 이름"),
-                                fieldWithPath("scheduledGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("경기 팀 로고 이미지 URL"),
-                                fieldWithPath("scheduledGames[].gameTeams[].score").type(JsonFieldType.NUMBER).description("경기 팀 점수"),
+                                fieldWithPath("scheduledGames[].startTime").type(JsonFieldType.STRING)
+                                        .description("경기 시작 시간"),
+                                fieldWithPath("scheduledGames[].gameTeams").type(JsonFieldType.ARRAY)
+                                        .description("경기 팀 목록"),
+                                fieldWithPath("scheduledGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 ID"),
+                                fieldWithPath("scheduledGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("경기 팀 이름"),
+                                fieldWithPath("scheduledGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("경기 팀 로고 이미지 URL"),
+                                fieldWithPath("scheduledGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 점수"),
 
                                 fieldWithPath("finishedGames").type(JsonFieldType.ARRAY).description("완료된 경기 목록"),
                                 fieldWithPath("finishedGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("finishedGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
-                                fieldWithPath("finishedGames[].startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),
-                                fieldWithPath("finishedGames[].gameTeams").type(JsonFieldType.ARRAY).description("경기 팀 목록"),
-                                fieldWithPath("finishedGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀 ID"),
-                                fieldWithPath("finishedGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING).description("경기 팀 이름"),
-                                fieldWithPath("finishedGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("경기 팀 로고 이미지 URL"),
-                                fieldWithPath("finishedGames[].gameTeams[].score").type(JsonFieldType.NUMBER).description("경기 팀 점수")
+                                fieldWithPath("finishedGames[].startTime").type(JsonFieldType.STRING)
+                                        .description("경기 시작 시간"),
+                                fieldWithPath("finishedGames[].gameTeams").type(JsonFieldType.ARRAY)
+                                        .description("경기 팀 목록"),
+                                fieldWithPath("finishedGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 ID"),
+                                fieldWithPath("finishedGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("경기 팀 이름"),
+                                fieldWithPath("finishedGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("경기 팀 로고 이미지 URL"),
+                                fieldWithPath("finishedGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 점수")
                         )
                 ));
     }
