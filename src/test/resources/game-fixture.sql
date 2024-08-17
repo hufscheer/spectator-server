@@ -90,6 +90,11 @@ VALUES (6, 2, '선수6', '센터', 1, false, 1, 'CANDIDATE'),
        (9, 2, '선수9', '포인트 가드', 4, false, 1, 'STARTER'),
        (10, 2, '선수10', '스몰 포워드', 5, false, 1, 'STARTER');
 
+-- game_id = 2 B팀 선수
+INSERT INTO lineup_players (id, game_team_id, name, description, number, is_captain, league_team_player_id, state)
+VALUES (11, 3, '선수1', '센터', 1, true, 1, 'CANDIDATE'),
+       (12, 3, '선수2', '파워 포워드', 2, false, 2, 'STARTER');
+
 -- 농구 대전 (game_id = 1) A팀 vs B팀
 -- User
 INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
