@@ -25,9 +25,9 @@ public class LineupPlayerService {
         game.rollbackToCandidate(lineupPlayer);
     }
 
-    public void changePlayerCaptainStatus(Long gameId, Long lineupPlayerId) {
+    public void appointCaptain(Long gameId, Long lineupPlayerId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
-        game.changeCaptainStatus(lineupPlayer);
+        game.appointCaptain(lineupPlayer);
     }
 }

@@ -45,7 +45,7 @@ public class GameController {
     @PatchMapping("/{gameId}/lineup-players/{lineupPlayerId}/captain")
     public ResponseEntity<Void> changePlayerCaptainStatus(@PathVariable final Long gameId,
                                                           @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.changePlayerCaptainStatus(gameId, lineupPlayerId);
+        lineupPlayerService.appointCaptain(gameId, lineupPlayerId);
         return ResponseEntity.ok().build();
     }
 

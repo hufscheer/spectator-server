@@ -200,7 +200,7 @@ class GameTest {
         @Test
         void 주장이_없는_팀은_주장_등록을_할_수_있다() {
             // when
-            game.changeCaptainStatus(team2FirstPlayer);
+            game.appointCaptain(team2FirstPlayer);
 
             // then
             assertThat(team2FirstPlayer.isCaptain()).isEqualTo(true);
@@ -210,7 +210,7 @@ class GameTest {
         void 주장이_있는_팀은_주장_등록을_할_수_없다() {
             // when & then
             assertThatThrownBy(
-                    () -> game.changeCaptainStatus(team1SecondPlayer))
+                    () -> game.appointCaptain(team1SecondPlayer))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("주장은 두 명 이상 등록할 수 없습니다.");
         }
@@ -218,7 +218,7 @@ class GameTest {
         @Test
         void 주장인_선수는_주장이_아니도록_변경한다() {
             // when
-            game.changeCaptainStatus(team1FirstPlayer);
+            game.appointCaptain(team1FirstPlayer);
 
             // then
             assertThat(team1FirstPlayer.isCaptain()).isEqualTo(false);
