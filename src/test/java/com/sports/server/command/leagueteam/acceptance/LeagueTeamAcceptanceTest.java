@@ -32,7 +32,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", originPrefix + "image", playerRegisterRequests);
 
-        configureMockJwtForEmail("john.doe@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -62,7 +62,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                 "name", originPrefix + "image", playerRegisterRequests, playerUpdateRequests, List.of(1L, 2L));
 
-        configureMockJwtForEmail("john.doe@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -85,7 +85,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
         Long teamId = 3L;
 
-        configureMockJwtForEmail("john.doe@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
