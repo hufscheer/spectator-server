@@ -1,5 +1,6 @@
 package com.sports.server.command.timeline.acceptance;
 
+import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -67,6 +68,29 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .post("/games/{gameId}/timelines/replacement", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 진행_타임라인을_생성한다() {
+        // given
+        TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
+                10,
+                quarterId,
+                GameProgressType.QUARTER_START
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/progress", gameId)
                 .then().log().all()
                 .extract();
 
