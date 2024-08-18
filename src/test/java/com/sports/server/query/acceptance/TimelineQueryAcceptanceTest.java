@@ -66,6 +66,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
                                         )),
+                                        null,
                                         null
                                 ),
                                 new RecordResponse(
@@ -76,7 +77,8 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse(3L,"선수3")
+                                        new ReplacementRecordResponse(3L,"선수3"),
+                                        null
                                 )
                         )),
                         new TimelineResponse(
@@ -89,7 +91,8 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse(2L,"선수7")
+                                        new ReplacementRecordResponse(2L,"선수7"),
+                                        null
                                 ),
                                 new RecordResponse(
                                         null, 1L, SCORE_TYPE,
@@ -104,6 +107,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
                                         )),
+                                        null,
                                         null
                                 )
                         ))

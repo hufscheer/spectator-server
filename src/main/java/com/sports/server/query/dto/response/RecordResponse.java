@@ -5,9 +5,12 @@ import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
+
+import java.util.Optional;
 
 public record RecordResponse(
         @JsonIgnore
@@ -20,35 +23,38 @@ public record RecordResponse(
         String teamName,
         String teamImageUrl,
         ScoreRecordResponse scoreRecord,
-        ReplacementRecordResponse replacementRecord
+        ReplacementRecordResponse replacementRecord,
+        ProgressTimelineResponse progressRecord
 ) {
     public static RecordResponse from(Timeline timeline) {
-        LineupPlayer lineupPlayer = getPlayer(timeline);
-        GameTeam gameTeam = lineupPlayer.getGameTeam();
-        LeagueTeam leagueTeam = gameTeam.getLeagueTeam();
+        Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
+        Optional<GameTeam> gameTeam = lineupPlayer.map(LineupPlayer::getGameTeam);
+        Optional<LeagueTeam> leagueTeam = gameTeam.map(GameTeam::getLeagueTeam);
 
         return new RecordResponse(
                 timeline.getRecordedQuarter(),
                 timeline.getId(),
                 timeline.getType(),
                 timeline.getRecordedAt(),
-                lineupPlayer.getName(),
-                gameTeam.getId(),
-                leagueTeam.getName(),
-                leagueTeam.getLogoImageUrl(),
+                lineupPlayer.map(LineupPlayer::getName).orElse(null),
+                gameTeam.map(GameTeam::getId).orElse(null),
+                leagueTeam.map(LeagueTeam::getName).orElse(null),
+                leagueTeam.map(LeagueTeam::getLogoImageUrl).orElse(null),
                 timeline instanceof ScoreTimeline scoreTimeline
                         ? ScoreRecordResponse.from(scoreTimeline) : null,
                 timeline instanceof ReplacementTimeline replacementTimeline
-                        ? ReplacementRecordResponse.from(replacementTimeline) : null
+                        ? ReplacementRecordResponse.from(replacementTimeline) : null,
+                timeline instanceof GameProgressTimeline progressTimeline
+                        ? ProgressTimelineResponse.from(progressTimeline) : null
         );
     }
 
-    private static LineupPlayer getPlayer(Timeline timeline) {
+    private static Optional<LineupPlayer> getPlayer(Timeline timeline) {
         if (timeline instanceof ScoreTimeline scoreTimeline) {
-            return scoreTimeline.getScorer();
+            return Optional.of(scoreTimeline.getScorer());
         } else if (timeline instanceof ReplacementTimeline replacementTimeline) {
-            return replacementTimeline.getOriginLineupPlayer();
+            return Optional.of(replacementTimeline.getOriginLineupPlayer());
         }
-        return null;
+        return Optional.empty();
     }
 }
