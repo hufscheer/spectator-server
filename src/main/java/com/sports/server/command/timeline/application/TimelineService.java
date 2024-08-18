@@ -25,6 +25,8 @@ public class TimelineService {
         Game game = checkPermissionAndGet(gameId, member);
 
         Timeline timeline = timelineMapper.toEntity(game, request);
+        timeline.apply();
+
         timelineRepository.save(timeline);
     }
 

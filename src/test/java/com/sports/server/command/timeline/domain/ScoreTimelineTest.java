@@ -55,6 +55,8 @@ class ScoreTimelineTest {
                     scorer
             );
 
+            timeline.apply();
+
             // then
             assertThat(timeline.getScorer()).isEqualTo(scorer);
             assertThat(timeline.getSnapshotScore1()).isEqualTo(2);
@@ -75,6 +77,8 @@ class ScoreTimelineTest {
                     10,
                     scorer
             );
+
+            timeline.apply();
 
             // then
             assertThat(timeline.getScorer()).isEqualTo(scorer);

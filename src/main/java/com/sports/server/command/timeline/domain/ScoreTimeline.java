@@ -48,8 +48,6 @@ public class ScoreTimeline extends Timeline {
             Integer recordedAt,
             LineupPlayer scorer
     ) {
-        game.score(scorer);
-
         GameTeam team1 = game.getTeam1();
         GameTeam team2 = game.getTeam2();
 
@@ -85,6 +83,14 @@ public class ScoreTimeline extends Timeline {
         this.snapshotScore1 = snapshotScore1;
         this.gameTeam2 = gameTeam2;
         this.snapshotScore2 = snapshotScore2;
+    }
+
+    @Override
+    public void apply() {
+        game.score(scorer);
+
+        snapshotScore1 = gameTeam1.getScore();
+        snapshotScore2 = gameTeam2.getScore();
     }
 
     @Override

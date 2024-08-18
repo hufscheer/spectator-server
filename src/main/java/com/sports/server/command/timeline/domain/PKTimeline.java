@@ -22,6 +22,10 @@ public class PKTimeline extends Timeline {
     }
 
     @Override
+    public void apply() {
+    }
+
+    @Override
     public void rollback() {
     }
 }

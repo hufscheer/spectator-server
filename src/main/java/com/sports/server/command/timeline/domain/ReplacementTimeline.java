@@ -49,6 +49,11 @@ public class ReplacementTimeline extends Timeline {
     }
 
     @Override
+    public void apply() {
+
+    }
+
+    @Override
     public void rollback() {
     }
 }

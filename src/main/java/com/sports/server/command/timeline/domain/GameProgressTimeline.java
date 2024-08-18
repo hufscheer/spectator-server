@@ -33,6 +33,11 @@ public class GameProgressTimeline extends Timeline {
     }
 
     @Override
+    public void apply() {
+        // TODO Game 상태 변경
+    }
+
+    @Override
     public void rollback() {
         // TODO 게임 상태 변경 타임라인 생성 로직 구현 이후 구현 예정
     }

@@ -47,5 +47,7 @@ public abstract class Timeline extends BaseEntity<Timeline> {
         }
     }
 
+    public abstract void apply();
+
     public abstract void rollback();
 }
