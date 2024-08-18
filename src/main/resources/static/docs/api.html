@@ -1587,7 +1587,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
 Content-Type: application/json
-Content-Length: 179
+Content-Length: 178
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -1595,8 +1595,8 @@ Cookie: HCC_SES=temp-cookie
   "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
   "maxRound" : "4강",
-  "startAt" : "2024-08-18T19:02:25.811293",
-  "endAt" : "2024-08-18T19:02:25.811296"
+  "startAt" : "2024-08-18T23:40:10.56796",
+  "endAt" : "2024-08-18T23:40:10.567963"
 }</code></pre>
 </div>
 </div>
@@ -2798,7 +2798,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1344
+Content-Length: 1492
 
 [ {
   "gameQuarter" : "2쿼터",
@@ -2826,6 +2826,9 @@ Content-Length: 1344
     "replacementRecord" : {
       "replacementRecordId" : 1,
       "replacedPlayerName" : "선수3"
+    },
+    "progressRecord" : {
+      "gameProgressType" : "QUARTER_START"
     }
   }, {
     "recordId" : 1,
@@ -2851,6 +2854,9 @@ Content-Length: 1344
     "replacementRecord" : {
       "replacementRecordId" : 1,
       "replacedPlayerName" : "선수3"
+    },
+    "progressRecord" : {
+      "gameProgressType" : "QUARTER_END"
     }
   } ]
 } ]</code></pre>
@@ -2947,6 +2953,11 @@ Content-Length: 1344
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].replacementRecord.replacedPlayerName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">REPLACEMENT 타입일 때 교체되어 IN 되는 선수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].records[].progressRecord.gameProgressType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROGRESS 타입일 때 게임 진행 상태 타입 (GAME_START, QUARTER_START, QUARTER_END, GAME_END)</p></td>
 </tr>
 </tbody>
 </table>
@@ -3151,7 +3162,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 25 Aug 2024 10:02:24 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 25 Aug 2024 14:40:09 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
