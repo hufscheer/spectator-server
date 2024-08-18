@@ -34,8 +34,8 @@ public class TimelineService {
         Game game = checkPermissionAndGet(gameId, member);
 
         Timeline timeline = getLastTimeline(timelineId, game);
-
         timeline.rollback();
+
         timelineRepository.delete(timeline);
     }
 
