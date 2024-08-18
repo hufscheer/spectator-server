@@ -53,7 +53,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
                                         )),
                                         new ReplacementRecordResponse(1L, "선수3"),
-                                        new ProgressTimelineResponse(GameProgressType.QUARTER_START)
+                                        new ProgressRecordResponse(GameProgressType.QUARTER_START)
                                 ),
                                 new RecordResponse(
                                         null, 1L,  REPLACEMENT_TYPE,
@@ -69,7 +69,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
                                         )),
                                         new ReplacementRecordResponse(1L, "선수3"),
-                                        new ProgressTimelineResponse(GameProgressType.QUARTER_END)
+                                        new ProgressRecordResponse(GameProgressType.QUARTER_END)
                                 )
                         ))
                 ));

@@ -24,7 +24,7 @@ public record RecordResponse(
         String teamImageUrl,
         ScoreRecordResponse scoreRecord,
         ReplacementRecordResponse replacementRecord,
-        ProgressTimelineResponse progressRecord
+        ProgressRecordResponse progressRecord
 ) {
     public static RecordResponse from(Timeline timeline) {
         Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
@@ -45,7 +45,7 @@ public record RecordResponse(
                 timeline instanceof ReplacementTimeline replacementTimeline
                         ? ReplacementRecordResponse.from(replacementTimeline) : null,
                 timeline instanceof GameProgressTimeline progressTimeline
-                        ? ProgressTimelineResponse.from(progressTimeline) : null
+                        ? ProgressRecordResponse.from(progressTimeline) : null
         );
     }
 
