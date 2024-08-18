@@ -1,6 +1,6 @@
 package com.sports.server.command.league.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import java.time.LocalDateTime;
 
@@ -18,22 +18,43 @@ import io.restassured.response.Response;
 
 @Sql("/league-fixture.sql")
 public class LeagueAcceptanceTest extends AcceptanceTest {
-	@Test
-	void 대회를_저장한다() throws Exception {
-		// given
-		LeagueRequestDto.Register request = new LeagueRequestDto.Register(1L, "우물정 제기차기 대회", "4강", LocalDateTime.now(),
-			LocalDateTime.now());
+    @Test
+    void 대회를_저장한다() {
+        // given
+        LeagueRequestDto.Register request = new LeagueRequestDto.Register(1L, "우물정 제기차기 대회", "4강", LocalDateTime.now(),
+                LocalDateTime.now());
 
+        configureMockJwtForEmail("john.doe@example.com");
 		configureMockJwtForEmail(MOCK_EMAIL);
 
-		// when
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.cookie(COOKIE_NAME, mockToken)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(request)
-			.post("/leagues")
-			.then().log().all()
-			.extract();
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/leagues")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void 리그를_삭제한다() {
+        // given
+        Long leagueId = 1L;
+
+        configureMockJwtForEmail("john.doe@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .pathParam("leagueId", leagueId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/leagues/{leagueId}")
+                .then().log().all()
+                .extract();
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -60,7 +81,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract();
 
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-	}
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
