@@ -68,7 +68,11 @@ operation::report-controller-test/응원톡을_신고한다[snippets='http-reque
 
 === 리그 생성
 
-operation::league-controller-test/리그를_생성한다[snippets='http-request,http-response']
+operation::league-controller-test/리그를_생성한다[snippets='http-request,request-fields,http-response']
+
+=== 리그 수정
+
+operation::league-controller-test/리그를_수정한다[snippets='http-request,request-fields,http-response']
 
 === 리그 전체 조회
 

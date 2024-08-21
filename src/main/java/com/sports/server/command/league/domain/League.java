@@ -1,20 +1,24 @@
 package com.sports.server.command.league.domain;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.Where;
+import org.springframework.util.StringUtils;
+
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "leagues")
@@ -68,9 +72,18 @@ public class League extends BaseEntity<League> {
         this.isDeleted = false;
     }
 
-    public boolean isManagedBy(Member manager) {
-        return this.manager.equals(manager);
-    }
+	public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound) {
+		if (StringUtils.hasText(name)) {
+			this.name = name;
+		}
+		this.startAt = startAt;
+		this.endAt = endAt;
+		this.maxRound = maxRound;
+	}
+
+	public boolean isManagedBy(Member manager) {
+		return this.manager.equals(manager);
+	}
 
     public void delete() {
         this.isDeleted = true;
