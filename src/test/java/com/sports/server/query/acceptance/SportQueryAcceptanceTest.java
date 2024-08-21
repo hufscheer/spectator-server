@@ -34,10 +34,10 @@ public class SportQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
                         .map(SportResponse::id)
-                        .containsExactly(1L, 2L),
+                        .containsExactly(1L, 2L, 3L),
                 () -> assertThat(actual)
                         .map(SportResponse::name)
-                        .containsExactly("농구", "루미큐브"));
+                        .containsExactly("농구", "루미큐브", "축구"));
     }
 
 }

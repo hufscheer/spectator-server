@@ -38,6 +38,10 @@ operation::game-query-controller-test/응원_횟수를_조회한다[snippets='ht
 
 operation::game-query-controller-test/라인업을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 게임 등록
+
+operation::game-controller-test/경기를_등록한다[snippets='http-request,path-parameters,http-response']
+
 == 라인업 API
 
 === 라인업 선수 선발로 변경
