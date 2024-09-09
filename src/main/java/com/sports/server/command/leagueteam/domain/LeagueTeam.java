@@ -1,6 +1,7 @@
 package com.sports.server.command.leagueteam.domain;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
@@ -46,6 +47,9 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
 
     @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GameTeam> gameTeams = new ArrayList<>();
 
     public void addPlayer(LeagueTeamPlayer leagueTeamPlayer) {
         leagueTeamPlayers.add(leagueTeamPlayer);

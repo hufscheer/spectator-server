@@ -102,13 +102,18 @@ operation::league-team-controller-test/리그팀을_삭제한다[snippets='http-
 
 operation::league-query-controller-test/리그를_하나_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 매니저가 생성한 리그 전체 조회
+
+operation::league-query-controller-test/매니저가_생성한_모든_리그를_조회한다[snippets='http-request,http-response,response-fields']
 === 리그 삭제
 
 operation::league-controller-test/리그를_삭제한다[snippets='http-request,path-parameters,http-response']
 
 === 리그팀 상세 조회
 
-operation::league-query-controller-test/리그팀을_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+=== 리그의 정보와 리그에 해당하는 경기 전체 조회
+
+operation::league-query-controller-test/리그의_정보와_리그에_속한_모든_경기를_조회한다[snippets='http-request,http-response,response-fields']
 
 == 타임라인 API
 

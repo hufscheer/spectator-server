@@ -39,16 +39,16 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
                         .map(LeagueResponse::leagueId)
-                        .containsExactly(3L, 2L, 1L, 7L, 6L, 5L),
+                        .containsExactly(8L, 3L, 2L, 1L, 7L, 6L, 5L),
                 () -> assertThat(actual)
                         .map(LeagueResponse::name)
-                        .containsExactly("롤 대회", "농구대잔치", "삼건물 대회", "롤 대회", "농구대잔치", "삼건물 대회"),
+                        .containsExactly("탁구 대회", "롤 대회", "농구대잔치", "삼건물 대회", "롤 대회", "농구대잔치", "삼건물 대회"),
                 () -> assertThat(actual)
                         .map(LeagueResponse::maxRound)
-                        .containsExactly("8강", "8강", "16강", "8강", "8강", "16강"),
+                        .containsExactly("16강", "8강", "8강", "16강", "8강", "8강", "16강"),
                 () -> assertThat(actual)
                         .map(LeagueResponse::inProgressRound)
-                        .containsExactly("8강", "결승", "8강", "8강", "결승", "8강")
+                        .containsExactly("16강", "8강", "결승", "8강", "8강", "결승", "8강")
         );
     }
 
@@ -149,6 +149,24 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 매니저가_생성한_리그를_모두_조회한다() {
+
+        // given
+        configureMockJwtForEmail("john.doe@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/manager")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
     void 리그팀의_상세정보를_조회한다() {
         // given
         Long leagueTeamId = 3L;
@@ -171,6 +189,23 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.teamName()).isEqualTo("미컴 축구생각"),
                 () -> assertThat(actual.logoImageUrl()).isEqualTo("이미지이미지")
         );
+    }
+
+    @Test
+    void 리그의_모든_경기를_조회한다() {
+        // given
+        Long leagueId = 1L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("leagueId", leagueId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/{leagueId}/games")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
 }

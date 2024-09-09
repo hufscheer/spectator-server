@@ -1,6 +1,9 @@
 package com.sports.server.query.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -9,13 +12,21 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
+import com.sports.server.query.dto.response.LeagueResponseWithGames;
+import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
+import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.GameTeam;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
+import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.DocumentationTest;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -204,6 +215,70 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     }
 
     @Test
+    void 매니저가_생성한_모든_리그를_조회한다() throws Exception {
+
+        // given
+        List<GameTeamResponse> gameTeams = List.of(
+                new GameTeamResponse(1L, "경영 야생마", "이미지 이미지", 1),
+                new GameTeamResponse(2L, "서어 뼤데뻬", "이미지 이미지", 1)
+        );
+
+        // 진행 중인 경기만
+        List<GameDetailResponse> inProgressGames = List.of(
+                new GameDetailResponse(1L, "PLAYING", LocalDateTime.now(), gameTeams)
+        );
+
+        List<LeagueResponseWithInProgressGames> responses = List.of(
+                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
+                        LocalDateTime.now(), inProgressGames));
+
+        Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+        given(leagueQueryService.findLeaguesByManager(any(Member.class)))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/manager")
+                .cookie(cookie)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("리그의 ID"),
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
+                                fieldWithPath("[].state").type(JsonFieldType.STRING)
+                                        .description("리그의 진행 상태 ex. 진행 중, 종료"),
+                                fieldWithPath("[].sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀의 수"),
+                                fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
+                                fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
+                                fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
+                                fieldWithPath("[].inProgressGames").type(JsonFieldType.ARRAY).description("진행 중인 게임들"),
+                                fieldWithPath("[].inProgressGames[].id").type(JsonFieldType.NUMBER)
+                                        .description("진행 중인 게임의 ID"),
+                                fieldWithPath("[].inProgressGames[].state").type(JsonFieldType.STRING)
+                                        .description("진행 중인 게임의 상태"),
+                                fieldWithPath("[].inProgressGames[].startTime").type(JsonFieldType.STRING)
+                                        .description("진행 중인 게임의 시작 시간"),
+                                fieldWithPath("[].inProgressGames[].gameTeams").type(JsonFieldType.ARRAY)
+                                        .description("게임에 속한 팀들"),
+                                fieldWithPath("[].inProgressGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("게임 팀의 ID"),
+                                fieldWithPath("[].inProgressGames[].gameTeams[].gameTeamName").type(
+                                        JsonFieldType.STRING).description("게임 팀의 이름"),
+                                fieldWithPath("[].inProgressGames[].gameTeams[].logoImageUrl").type(
+                                        JsonFieldType.STRING).description("게임 팀의 로고 이미지 URL"),
+                                fieldWithPath("[].inProgressGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("게임 팀의 점수")
+                        )
+                ));
+    }
+
+    @Test
     void 리그팀을_상세_조회한다() throws Exception {
         // given
         Long leagueTeamId = 3L;
@@ -242,4 +317,111 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         )
                 ));
     }
+
+    @Test
+    void 리그의_정보와_리그에_속한_모든_경기를_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+
+        List<LeagueResponseWithGames.GameDetail.GameTeam> playingGameTeams = List.of(
+                new GameTeam(1L, "게임팀1", "이미지url", 1),
+                new GameTeam(2L, "게임팀2", "이미지url", 1)
+        );
+        List<LeagueResponseWithGames.GameDetail.GameTeam> scheduledGameTeams = List.of(
+                new GameTeam(3L, "게임팀3", "이미지url", 1),
+                new GameTeam(4L, "게임팀4", "이미지url", 1)
+        );
+        List<LeagueResponseWithGames.GameDetail.GameTeam> finishedGameTeams = List.of(
+                new GameTeam(5L, "게임팀5", "이미지url", 1),
+                new GameTeam(6L, "게임팀6", "이미지url", 1)
+        );
+        List<LeagueResponseWithGames.GameDetail> playingGames = List.of(
+                new GameDetail(1L, "PLAYING", LocalDateTime.of(2024, 8, 11, 13, 30),
+                        playingGameTeams)
+        );
+        List<LeagueResponseWithGames.GameDetail> finishedGames = List.of(
+                new GameDetail(2L, "FINISHED", LocalDateTime.of(2024, 8, 11, 13, 30),
+                        finishedGameTeams)
+        );
+        List<LeagueResponseWithGames.GameDetail> scheduledGames = List.of(
+                new GameDetail(3L, "SCHEDULED", LocalDateTime.of(2024, 8, 11, 13, 30),
+                        scheduledGameTeams)
+        );
+        LeagueResponseWithGames response = new LeagueResponseWithGames(
+                1L, "첫번째 리그", 6, "16강", LocalDateTime.of(2024, 8, 11, 13, 30), LocalDateTime.of(2024, 8, 30, 13, 30),
+                playingGames, scheduledGames, finishedGames
+        );
+
+        given(leagueQueryService.findLeagueAndGames(leagueId))
+                .willReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/games", leagueId)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 Id")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("리그 ID"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("리그 이름"),
+                                fieldWithPath("sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀 수"),
+                                fieldWithPath("maxRound").type(JsonFieldType.STRING).description("리그 최대 라운드"),
+                                fieldWithPath("startAt").type(JsonFieldType.STRING).description("리그 시작 시간"),
+                                fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
+                                fieldWithPath("playingGames").type(JsonFieldType.ARRAY).description("진행 중인 경기 목록"),
+                                fieldWithPath("playingGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
+                                fieldWithPath("playingGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
+                                fieldWithPath("playingGames[].startTime").type(JsonFieldType.STRING)
+                                        .description("경기 시작 시간"),
+                                fieldWithPath("playingGames[].gameTeams").type(JsonFieldType.ARRAY)
+                                        .description("경기 팀 목록"),
+                                fieldWithPath("playingGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 ID"),
+                                fieldWithPath("playingGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("경기 팀 이름"),
+                                fieldWithPath("playingGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("경기 팀 로고 이미지 URL"),
+                                fieldWithPath("playingGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 점수"),
+
+                                fieldWithPath("scheduledGames").type(JsonFieldType.ARRAY).description("예정된 경기 목록"),
+                                fieldWithPath("scheduledGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
+                                fieldWithPath("scheduledGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
+                                fieldWithPath("scheduledGames[].startTime").type(JsonFieldType.STRING)
+                                        .description("경기 시작 시간"),
+                                fieldWithPath("scheduledGames[].gameTeams").type(JsonFieldType.ARRAY)
+                                        .description("경기 팀 목록"),
+                                fieldWithPath("scheduledGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 ID"),
+                                fieldWithPath("scheduledGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("경기 팀 이름"),
+                                fieldWithPath("scheduledGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("경기 팀 로고 이미지 URL"),
+                                fieldWithPath("scheduledGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 점수"),
+
+                                fieldWithPath("finishedGames").type(JsonFieldType.ARRAY).description("완료된 경기 목록"),
+                                fieldWithPath("finishedGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
+                                fieldWithPath("finishedGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
+                                fieldWithPath("finishedGames[].startTime").type(JsonFieldType.STRING)
+                                        .description("경기 시작 시간"),
+                                fieldWithPath("finishedGames[].gameTeams").type(JsonFieldType.ARRAY)
+                                        .description("경기 팀 목록"),
+                                fieldWithPath("finishedGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 ID"),
+                                fieldWithPath("finishedGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("경기 팀 이름"),
+                                fieldWithPath("finishedGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("경기 팀 로고 이미지 URL"),
+                                fieldWithPath("finishedGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 점수")
+                        )
+                ));
+    }
+
 }
+
