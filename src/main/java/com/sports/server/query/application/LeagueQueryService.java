@@ -12,6 +12,7 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
+import com.sports.server.query.dto.response.LeagueResponseWithGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
@@ -94,7 +95,8 @@ public class LeagueQueryService {
 
     private Map<League, List<Game>> getGamesForLeague(List<League> leagues) {
         return leagues.stream()
-                .collect(toMap(league -> league, league -> gameQueryRepository.findByLeagueWithGameTeams(league)));
+                .collect(toMap(league -> league,
+                        league -> gameQueryRepository.findPlayingGamesByLeagueWithGameTeams(league)));
     }
 
 
@@ -103,5 +105,12 @@ public class LeagueQueryService {
         List<LeagueTeamPlayer> leagueTeamPlayers = leagueTeamPlayerQueryRepository.findByLeagueTeamId(
                 leagueTeam.getId());
         return LeagueTeamDetailResponse.of(leagueTeam, leagueTeamPlayers);
+    }
+
+    public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
+        League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
+        List<Game> games = gameQueryRepository.findByLeagueWithGameTeams(league);
+        return LeagueResponseWithGames.of(league, games);
     }
 }
