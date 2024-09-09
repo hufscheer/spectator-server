@@ -18,11 +18,14 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "leagues")
 @Where(clause = "is_deleted = 0")
+@SQLDelete(sql = "UPDATE leagues SET is_deleted = 1 WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class League extends BaseEntity<League> {
@@ -74,7 +77,24 @@ public class League extends BaseEntity<League> {
         this.isDeleted = false;
     }
 
+    public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.maxRound = maxRound;
+    }
+
     public boolean isManagedBy(Member manager) {
         return this.manager.equals(manager);
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+    public String manager() {
+        return manager.getEmail();
     }
 }

@@ -111,4 +111,17 @@ public class Game extends BaseEntity<Game> {
 
         scoredTeam.cancelScore();
     }
+
+    public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
+                String videoId, String gameQuarter, GameState state, Round round) {
+        this.sport = sport;
+        this.manager = manager;
+        this.league = league;
+        this.name = name;
+        this.startTime = startTime;
+        this.videoId = videoId;
+        this.gameQuarter = gameQuarter;
+        this.state = state;
+        this.round = round;
+    }
 }

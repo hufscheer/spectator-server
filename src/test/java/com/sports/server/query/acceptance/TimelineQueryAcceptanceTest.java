@@ -42,7 +42,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games/{gameId}/timeline/v2", baseballId)
+                .get("/games/{gameId}/timeline", baseballId)
                 .then().log().all()
                 .extract();
 

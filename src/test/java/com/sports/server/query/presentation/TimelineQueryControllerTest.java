@@ -37,7 +37,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
     void 타임라인을_조회한다() throws Exception {
         // given
         Long gameId = 1L;
-        BDDMockito.given(timelineQueryService.getTimeline(gameId))
+        BDDMockito.given(timelineQueryService.getTimelines(gameId))
                 .willReturn(List.of(
                         new TimelineResponse(
                                 QUARTER2, List.of(
