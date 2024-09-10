@@ -33,5 +33,20 @@ public class LineupPlayerServiceTest extends ServiceTest {
         LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         assertThat(changedLineupPlayer.isCaptain()).isEqualTo(true);
     }
+
+    @Test
+    void 선수를_주장에서_해제한다() {
+        // given
+        Long gameId = 1L;
+        Long gameTeamId = 2L;
+        Long lineupPlayerId = 6L;
+
+        // when
+        lineupPlayerService.revokeCaptainFromPlayer(gameId, gameTeamId, lineupPlayerId);
+
+        // then
+        LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
+        assertThat(changedLineupPlayer.isCaptain()).isEqualTo(false);
+    }
 }
 
