@@ -25,7 +25,18 @@ public class GameTeamTest {
                             .sample()
             );
         }
+    }
 
+    @Test
+    void 해당_팀에_속하지_않는_선수인_경우_예외를_던진다() {
+        // given
+        LineupPlayer invalidPlayer = entityBuilder(LineupPlayer.class)
+                .sample();
+
+        // when & then
+        assertThatThrownBy(() -> gameTeam.revokeCaptainFromPlayer(invalidPlayer))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 게임팀에 속하지 않는 선수입니다.");
     }
 
     @Nested
