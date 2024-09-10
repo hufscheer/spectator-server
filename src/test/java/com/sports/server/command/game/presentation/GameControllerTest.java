@@ -168,4 +168,31 @@ public class GameControllerTest extends DocumentationTest {
                 ));
     }
 
+    @Test
+    void 라인업_선수를_주장에서_해제한다() throws Exception {
+
+        //given
+        Long gameId = 1L;
+        Long gameTeamId = 1L;
+        Long lineupPlayerId = 1L;
+
+        //when
+        ResultActions result = mockMvc.perform(
+                patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
+                        gameTeamId,
+                        lineupPlayerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID"),
+                                parameterWithName("gameTeamId").description("게임팀의 ID"),
+                                parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        )
+                ));
+    }
+
 }
