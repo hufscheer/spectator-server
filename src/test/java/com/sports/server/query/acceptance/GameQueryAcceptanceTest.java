@@ -199,7 +199,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(1, 2, 3, 4, 5),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::isCaptain)
-                        .containsOnly(false)
+                        .containsExactly(true, false, false, false, false)
         );
     }
 }
