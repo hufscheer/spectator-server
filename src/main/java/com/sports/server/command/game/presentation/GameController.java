@@ -52,4 +52,12 @@ public class GameController {
         gameService.register(leagueId, requestDto, member);
         return ResponseEntity.created(URI.create("")).build();
     }
+
+    @PatchMapping("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register")
+    public ResponseEntity<Void> changePlayerToCaptain(@PathVariable final Long gameId,
+                                                      @PathVariable final Long lineupPlayerId,
+                                                      @PathVariable final Long gameTeamId) {
+        lineupPlayerService.changePlayerToCaptain(gameId, gameTeamId, lineupPlayerId);
+        return ResponseEntity.ok().build();
+    }
 }

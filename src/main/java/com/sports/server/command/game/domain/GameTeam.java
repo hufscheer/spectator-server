@@ -102,7 +102,22 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
         this.lineupPlayers.add(lineupPlayer);
     }
+
+    public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
+        isCaptainExists(lineupPlayer);
+
+        this.lineupPlayers.stream()
+                .filter(lp -> lp.equals(lineupPlayer))
+                .findAny()
+                .ifPresent(LineupPlayer::changePlayerToCaptain);
+    }
+
+    private void isCaptainExists(final LineupPlayer lineupPlayer) {
+        boolean captainExists = lineupPlayers.stream()
+                .anyMatch(lp -> lp.isCaptain() && !lp.equals(lineupPlayer));
+
+        if (captainExists) {
+            throw new IllegalArgumentException("이미 등록된 주장이 존재합니다.");
+        }
+    }
 }
-
-
-
