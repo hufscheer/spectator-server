@@ -206,19 +206,10 @@ public class GameAcceptanceTest extends AcceptanceTest {
 
         //given
         Long gameId = 1L;
-        Long gameTeamId = 1L;
-        Long lineupPlayerId = 2L;
+        Long gameTeamId = 2L;
+        Long lineupPlayerId = 6L;
 
         // when
-
-        // 주장으로 등록
-        RestAssured.given().log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
-                        gameTeamId,
-                        lineupPlayerId);
-
         RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
