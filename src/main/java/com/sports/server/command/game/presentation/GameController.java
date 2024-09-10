@@ -60,4 +60,12 @@ public class GameController {
         lineupPlayerService.changePlayerToCaptain(gameId, gameTeamId, lineupPlayerId);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke")
+    public ResponseEntity<Void> revokeCaptainFromPlayer(@PathVariable final Long gameId,
+                                                        @PathVariable final Long lineupPlayerId,
+                                                        @PathVariable final Long gameTeamId) {
+        lineupPlayerService.revokeCaptainFromPlayer(gameId, gameTeamId, lineupPlayerId);
+        return ResponseEntity.ok().build();
+    }
 }

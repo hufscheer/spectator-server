@@ -104,12 +104,23 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
     public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
+        validateLineupPlayer(lineupPlayer);
         isCaptainExists(lineupPlayer);
+        lineupPlayer.changePlayerToCaptain();
+    }
 
-        this.lineupPlayers.stream()
-                .filter(lp -> lp.equals(lineupPlayer))
-                .findAny()
-                .ifPresent(LineupPlayer::changePlayerToCaptain);
+    public void revokeCaptainFromPlayer(final LineupPlayer lineupPlayer) {
+        validateLineupPlayer(lineupPlayer);
+        lineupPlayer.revokeCaptainFromPlayer(lineupPlayer);
+    }
+
+    private void validateLineupPlayer(final LineupPlayer lineupPlayer) {
+        boolean exists = this.lineupPlayers.stream()
+                .anyMatch(lp -> lp.equals(lineupPlayer));
+
+        if (!exists) {
+            throw new IllegalArgumentException("해당 게임팀에 속하지 않는 선수입니다.");
+        }
     }
 
     private void isCaptainExists(final LineupPlayer lineupPlayer) {
@@ -120,4 +131,6 @@ public class GameTeam extends BaseEntity<GameTeam> {
             throw new IllegalArgumentException("이미 등록된 주장이 존재합니다.");
         }
     }
+
+
 }

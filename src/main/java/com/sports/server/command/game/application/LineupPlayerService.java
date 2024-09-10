@@ -32,4 +32,11 @@ public class LineupPlayerService {
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         game.changePlayerToCaptain(gameTeam, lineupPlayer);
     }
+
+    public void revokeCaptainFromPlayer(final Long gameId, final Long gameTeamId, final Long lineupPlayerId) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
+        LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
+        game.revokeCaptainFromPlayer(gameTeam, lineupPlayer);
+    }
 }

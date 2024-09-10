@@ -130,6 +130,11 @@ public class Game extends BaseEntity<Game> {
         gameTeam.changePlayerToCaptain(lineupPlayer);
     }
 
+    public void revokeCaptainFromPlayer(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        validateGameTeam(gameTeam);
+        gameTeam.revokeCaptainFromPlayer(lineupPlayer);
+    }
+
     private void validateGameTeam(final GameTeam gameTeam) {
         if (!teams.contains(gameTeam)) {
             throw new IllegalArgumentException("해당 게임팀은 이 게임에 포함되지 않습니다.");
