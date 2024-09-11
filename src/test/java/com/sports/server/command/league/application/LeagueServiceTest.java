@@ -25,7 +25,7 @@ public class LeagueServiceTest extends ServiceTest {
     private EntityUtils entityUtils;
 
     @Nested
-    @DisplayName("리그를 삭제할 떄")
+    @DisplayName("리그를 삭제할 때")
     class LeagueDeleteTest {
         @Test
         void 삭제한_이후에는_해당_객체를_찾을_수_없다() {

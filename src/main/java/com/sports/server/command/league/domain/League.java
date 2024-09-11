@@ -1,24 +1,26 @@
 package com.sports.server.command.league.domain;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.Where;
-import org.springframework.util.StringUtils;
-
+import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.flywaydb.core.internal.util.StringUtils;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "leagues")
@@ -54,6 +56,9 @@ public class League extends BaseEntity<League> {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
+    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<LeagueTeam> leagueTeams = new ArrayList<>();
+
     public League(
             final Member manager,
             final Organization organization,
@@ -72,18 +77,18 @@ public class League extends BaseEntity<League> {
         this.isDeleted = false;
     }
 
-	public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound) {
-		if (StringUtils.hasText(name)) {
-			this.name = name;
-		}
-		this.startAt = startAt;
-		this.endAt = endAt;
-		this.maxRound = maxRound;
-	}
+    public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.maxRound = maxRound;
+    }
 
-	public boolean isManagedBy(Member manager) {
-		return this.manager.equals(manager);
-	}
+    public boolean isManagedBy(Member manager) {
+        return this.manager.equals(manager);
+    }
 
     public void delete() {
         this.isDeleted = true;
