@@ -159,4 +159,31 @@ public class GameAcceptanceTest extends AcceptanceTest {
         // then
         AssertionsForClassTypes.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
+
+    @Test
+    void 경기_정보를_수정한다() throws Exception {
+
+        // given
+        Long leagueId = 1L;
+        Long gameId = 1L;
+        GameRequestDto.Update request = new GameRequestDto.Update("경기 이름", "16강", "후반전", "PLAYING",
+                LocalDateTime.now(), "videoId");
+
+        configureMockJwtForEmail("john.doe@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .pathParam("leagueId", leagueId)
+                .pathParam("gameId", gameId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
 }
