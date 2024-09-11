@@ -149,8 +149,9 @@ public class GameServiceTest extends ServiceTest {
 
         @BeforeEach
         void setUp() {
+            LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
             updateDto = new GameRequestDto.Update(nameOfGame, "8강", "후반전", "PLAYING",
-                    LocalDateTime.now(), "videoId");
+                    fixedLocalDateTime, "videoId");
             leagueId = 1L;
             gameId = 1L;
             manager = entityUtils.getEntity(1L, Member.class);
