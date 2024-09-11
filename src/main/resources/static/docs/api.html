@@ -1399,7 +1399,7 @@ Content-Length: 1620
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues/1/games HTTP/1.1
 Content-Type: application/json
-Content-Length: 211
+Content-Length: 212
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -1408,7 +1408,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "경기전",
   "state" : "SCHEDULED",
-  "startTime" : "2024-09-11T17:39:40.64101",
+  "startTime" : "2024-09-11T19:10:12.787684",
   "idOfTeam1" : 1,
   "idOfTeam2" : 2,
   "videoId" : "videoId"
@@ -1468,7 +1468,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "전반전",
   "state" : "PLAYING",
-  "startTime" : "2024-09-11T17:39:40.691981",
+  "startTime" : "2024-09-11T19:10:12.810535",
   "videoId" : "videoId"
 }</code></pre>
 </div>
@@ -1476,9 +1476,29 @@ Cookie: HCC_SES=temp-cookie
 </div>
 <div class="sect3">
 <h4 id="_게임_수정_path_parameters"><a class="link" href="#_게임_수정_path_parameters">Path parameters</a></h4>
-<div class="paragraph">
-<p>Snippet path-parameters not found for operation::game-controller-test/경기를_수정한다</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /leagues/{leagueId}/{gameId}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>leagueId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기의 ID</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_게임_수정_http_response"><a class="link" href="#_게임_수정_http_response">HTTP response</a></h4>
@@ -1690,7 +1710,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
 Content-Type: application/json
-Content-Length: 178
+Content-Length: 179
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -1698,8 +1718,8 @@ Cookie: HCC_SES=temp-cookie
   "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
   "maxRound" : "4강",
-  "startAt" : "2024-09-11T17:39:41.53961",
-  "endAt" : "2024-09-11T17:39:41.539618"
+  "startAt" : "2024-09-11T19:10:13.156769",
+  "endAt" : "2024-09-11T19:10:13.156773"
 }</code></pre>
 </div>
 </div>
@@ -1774,8 +1794,8 @@ Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "훕치치배 망고 빨리먹기 대회",
-  "startAt" : "2024-09-11T17:39:41.603027",
-  "endAt" : "2024-09-11T17:39:41.603035",
+  "startAt" : "2024-09-11T19:10:13.188636",
+  "endAt" : "2024-09-11T19:10:13.188641",
   "maxRound" : "16강"
 }</code></pre>
 </div>
@@ -3198,7 +3218,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 18 Sep 2024 08:39:37 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 18 Sep 2024 10:10:09 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
