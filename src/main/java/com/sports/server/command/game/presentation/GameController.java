@@ -10,11 +10,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,5 +47,14 @@ public class GameController {
                                              final Member member) {
         gameService.register(leagueId, requestDto, member);
         return ResponseEntity.created(URI.create("")).build();
+    }
+
+    @PutMapping("/leagues/{leagueId}/{gameId}")
+    public ResponseEntity<Void> updateGame(@PathVariable final Long leagueId,
+                                           @PathVariable final Long gameId,
+                                           @RequestBody final GameRequestDto.Update requestDto,
+                                           final Member member) {
+        gameService.updateGame(leagueId, gameId, requestDto, member);
+        return ResponseEntity.ok().build();
     }
 }

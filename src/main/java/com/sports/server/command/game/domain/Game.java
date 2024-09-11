@@ -22,6 +22,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -110,6 +111,20 @@ public class Game extends BaseEntity<Game> {
                 .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
 
         scoredTeam.cancelScore();
+    }
+
+    public void update(String name, LocalDateTime startTime,
+                       String videoId, String gameQuarter, GameState state, Round round) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        this.startTime = startTime;
+        this.videoId = videoId;
+        if (StringUtils.hasText(name)) {
+            this.gameQuarter = gameQuarter;
+        }
+        this.state = state;
+        this.round = round;
     }
 
     public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,

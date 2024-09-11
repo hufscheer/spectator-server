@@ -3,9 +3,11 @@ package com.sports.server.command.game.application;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.dto.GameRequestDto;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
@@ -68,5 +70,15 @@ public class GameService {
         }
 
         return league;
+    }
+
+    @Transactional
+    public void updateGame(Long leagueId, Long gameId, GameRequestDto.Update request, Member manager) {
+        League league = entityUtils.getEntity(leagueId, League.class);
+        if (!league.isManagedBy(manager)) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+        }
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        game.update(request.name(), request.startTime(), request.videoId(), request.quarter(), GameState.from(request.state()), Round.from(request.round()));
     }
 }
