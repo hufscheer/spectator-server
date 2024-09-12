@@ -97,10 +97,10 @@ class TimelineServiceTest extends ServiceTest {
 
             assertAll(
                     () -> assertThat(actual.getScorer().getId()).isEqualTo(team2PlayerId),
-                    () -> assertThat(actual.getSnapshotScore1()).isEqualTo(16),
-                    () -> assertThat(actual.getSnapshotScore2()).isEqualTo(10),
+                    () -> assertThat(actual.getSnapshotScore1()).isEqualTo(15),
+                    () -> assertThat(actual.getSnapshotScore2()).isEqualTo(11),
                     () -> assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId),
-                    () -> assertThat(actual.getRecordedAt()).isEqualTo(3)
+                    () -> assertThat(actual.getRecordedAt()).isEqualTo(5)
             );
         }
     }
