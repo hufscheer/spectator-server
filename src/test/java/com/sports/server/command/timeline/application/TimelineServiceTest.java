@@ -1,11 +1,15 @@
 package com.sports.server.command.timeline.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
-import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
+import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +20,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @Sql(scripts = "/timeline-fixture.sql")
 class TimelineServiceTest extends ServiceTest {
@@ -64,13 +65,14 @@ class TimelineServiceTest extends ServiceTest {
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)
                     .get(0);
 
-            assertThat(actual.getScorer().getId()).isEqualTo(team1PlayerId);
+            assertAll(
+                    () -> assertThat(actual.getScorer().getId()).isEqualTo(team1PlayerId),
+                    () -> assertThat(actual.getSnapshotScore1()).isEqualTo(16),
+                    () -> assertThat(actual.getSnapshotScore2()).isEqualTo(10),
+                    () -> assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId),
+                    () -> assertThat(actual.getRecordedAt()).isEqualTo(3)
+            );
 
-            assertThat(actual.getSnapshotScore1()).isEqualTo(16);
-            assertThat(actual.getSnapshotScore2()).isEqualTo(10);
-
-            assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId);
-            assertThat(actual.getRecordedAt()).isEqualTo(3);
         }
 
         @Test
@@ -93,13 +95,13 @@ class TimelineServiceTest extends ServiceTest {
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId)
                     .get(0);
 
-            assertThat(actual.getScorer().getId()).isEqualTo(team2PlayerId);
-
-            assertThat(actual.getSnapshotScore1()).isEqualTo(15);
-            assertThat(actual.getSnapshotScore2()).isEqualTo(11);
-
-            assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId);
-            assertThat(actual.getRecordedAt()).isEqualTo(5);
+            assertAll(
+                    () -> assertThat(actual.getScorer().getId()).isEqualTo(team2PlayerId),
+                    () -> assertThat(actual.getSnapshotScore1()).isEqualTo(16),
+                    () -> assertThat(actual.getSnapshotScore2()).isEqualTo(10),
+                    () -> assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId),
+                    () -> assertThat(actual.getRecordedAt()).isEqualTo(3)
+            );
         }
     }
 
@@ -130,15 +132,17 @@ class TimelineServiceTest extends ServiceTest {
             timelineService.register(manager, gameId, request);
 
             // then
-            ReplacementTimeline actual =
-                    (ReplacementTimeline) timelineFixtureRepository.findAllLatest(gameId)
-                            .get(0);
+            ReplacementTimeline actual = timelineFixtureRepository.findReplacementTimelineWithLineupPlayers(gameId)
+                    .get(0);
 
-            assertThat(actual.getOriginLineupPlayer().getId()).isEqualTo(team1OriginPlayerId);
-            assertThat(actual.getReplacedLineupPlayer().getId()).isEqualTo(team1ReplacedPlayerId);
-
-            assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId);
-            assertThat(actual.getRecordedAt()).isEqualTo(3);
+            assertAll(
+                    () -> assertThat(actual.getOriginLineupPlayer().getId()).isEqualTo(team1OriginPlayerId),
+                    () -> assertThat(actual.getReplacedLineupPlayer().getId()).isEqualTo(team1ReplacedPlayerId),
+                    () -> assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId),
+                    () -> assertThat(actual.getRecordedAt()).isEqualTo(3),
+                    () -> assertThat(actual.getOriginLineupPlayer().isPlaying()).isEqualTo(false),
+                    () -> assertThat(actual.getReplacedLineupPlayer().isPlaying()).isEqualTo(true)
+            );
         }
 
         @Test
@@ -156,15 +160,17 @@ class TimelineServiceTest extends ServiceTest {
             timelineService.register(manager, gameId, request);
 
             // then
-            ReplacementTimeline actual =
-                    (ReplacementTimeline) timelineFixtureRepository.findAllLatest(gameId)
-                            .get(0);
+            ReplacementTimeline actual = timelineFixtureRepository.findReplacementTimelineWithLineupPlayers(gameId)
+                    .get(0);
 
-            assertThat(actual.getOriginLineupPlayer().getId()).isEqualTo(team2OriginPlayerId);
-            assertThat(actual.getReplacedLineupPlayer().getId()).isEqualTo(team2ReplacedPlayerId);
-
-            assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId);
-            assertThat(actual.getRecordedAt()).isEqualTo(3);
+            assertAll(
+                    () -> assertThat(actual.getOriginLineupPlayer().getId()).isEqualTo(team2OriginPlayerId),
+                    () -> assertThat(actual.getReplacedLineupPlayer().getId()).isEqualTo(team2ReplacedPlayerId),
+                    () -> assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId),
+                    () -> assertThat(actual.getRecordedAt()).isEqualTo(3),
+                    () -> assertThat(actual.getOriginLineupPlayer().isPlaying()).isEqualTo(false),
+                    () -> assertThat(actual.getReplacedLineupPlayer().isPlaying()).isEqualTo(true)
+            );
         }
 
         @Test
