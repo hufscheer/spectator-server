@@ -3,7 +3,11 @@ package com.sports.server.command.timeline.domain;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.sport.domain.Quarter;
-import jakarta.persistence.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +41,9 @@ public class ReplacementTimeline extends Timeline {
         super(game, recordedQuarter, recordedAt);
 
         validatePlayers(originLineupPlayer, replacedLineupPlayer);
+
+        originLineupPlayer.deactivatePlayerInGame();
+        replacedLineupPlayer.activatePlayerInGame();
 
         this.originLineupPlayer = originLineupPlayer;
         this.replacedLineupPlayer = replacedLineupPlayer;

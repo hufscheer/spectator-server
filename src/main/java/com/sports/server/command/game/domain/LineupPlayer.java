@@ -73,6 +73,14 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         return Objects.equals(this.gameTeam, team);
     }
 
+    public void activatePlayerInGame() {
+        this.isPlaying = true;
+    }
+
+    public void deactivatePlayerInGame() {
+        this.isPlaying = false;
+    }
+
     public LineupPlayer(GameTeam gameTeam, Long leagueTeamPlayerId, String name, int number,
                         boolean isCaptain, LineupPlayerState state) {
         this.gameTeam = gameTeam;
