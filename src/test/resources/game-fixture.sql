@@ -101,7 +101,7 @@ VALUES (1, 1, '선수1', '센터', 1, false, 1, 'CANDIDATE'),
 
 -- 농구 대전(game_id = 1) B팀 선수
 INSERT INTO lineup_players (id, game_team_id, name, description, number, is_captain, league_team_player_id, state)
-VALUES (6, 2, '선수6', '센터', 1, false, 1, 'CANDIDATE'),
+VALUES (6, 2, '선수6', '센터', 1, true, 1, 'CANDIDATE'),
        (7, 2, '선수7', '파워 포워드', 2, false, 1, 'STARTER'),
        (8, 2, '선수8', '슈팅 가드', 3, false, 1, 'STARTER'),
        (9, 2, '선수9', '포인트 가드', 4, false, 1, 'STARTER'),

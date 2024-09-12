@@ -16,7 +16,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -159,7 +158,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        AssertionsForClassTypes.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @Test
@@ -189,6 +188,49 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        GameRequestDto.Update update = toResponses(response, GameRequestDto.Update.class).get(0);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(update.quarter()).isEqualTo(quarter),
+                () -> assertThat(update.round()).isEqualTo(Round.from(round)),
+                () -> assertThat(update.name()).isEqualTo(name),
+                () -> assertThat(update.startTime()).isEqualTo(fixedLocalDateTime),
+                () -> assertThat(update.state()).isEqualTo(GameState.from(state)),
+                () -> assertThat(update.videoId()).isEqualTo(videoId)
+        );
+    }
+
+    @Test
+    void 라인업_선수를_주장으로_등록한다() throws Exception {
+
+        //given
+        Long gameId = 1L;
+        Long gameTeamId = 1L;
+        Long lineupPlayerId = 2L;
+        String name = "경기 이름";
+        String round = "16깅";
+        String quarter = "후반전";
+        String state = "PLAYING";
+        LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+        String videoId = "videoId";
+
+        // when
+        RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
+                        gameTeamId,
+                        lineupPlayerId)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/games/{gameId}/lineup", gameId)
+                .then().log().all()
+                .extract();
+
         // then
         GameRequestDto.Update update = toResponses(response, GameRequestDto.Update.class).get(0);
         assertAll(
@@ -199,6 +241,45 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(update.startTime()).isEqualTo(fixedLocalDateTime),
                 () -> assertThat(update.state()).isEqualTo(GameState.from(state)),
                 () -> assertThat(update.videoId()).isEqualTo(videoId)
+        );
+    }
+
+    @Test
+    void 라인업_선수를_주장에서_해제한다() throws Exception {
+
+        //given
+        Long gameId = 1L;
+        Long gameTeamId = 2L;
+        Long lineupPlayerId = 6L;
+
+        // when
+        RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
+                        gameTeamId,
+                        lineupPlayerId);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/games/{gameId}/lineup", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        List<LineupPlayerResponse> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.class).stream()
+                .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
+                .toList();
+
+        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).gameTeamPlayers().stream()
+                .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
+                .toList();
+
+        assertAll(
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
+                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
+                () -> assertThat(actual.get(0).isCaptain()).isEqualTo(false)
         );
     }
 }

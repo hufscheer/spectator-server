@@ -56,6 +56,14 @@ operation::game-controller-test/라인업_선수의_상태를_선발로_변경�
 
 operation::game-controller-test/라인업_선수의_상태를_후보로_변경한다[snippets='path-parameters']
 
+=== 라인업 선수 주장으로 등록
+
+operation::game-controller-test/라인업_선수를_주장으로_등록한다[snippets='path-parameters']
+
+=== 라인업 선수 주장에서 해제
+
+operation::game-controller-test/라인업_선수를_주장에서_해제한다[snippets='path-parameters']
+
 == 응원 횟수 API
 
 === 응원 횟수 업데이트
