@@ -1,7 +1,6 @@
 package com.sports.server.command.game.application;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.game.domain.Game;
@@ -164,12 +163,14 @@ public class GameServiceTest extends ServiceTest {
 
             // then
             Game game = entityUtils.getEntity(gameId, Game.class);
-            assertThat(game.getGameQuarter()).isEqualTo(updateDto.quarter());
-            assertThat(game.getRound()).isEqualTo(Round.from(updateDto.round()));
-            assertThat(game.getName()).isEqualTo(updateDto.name());
-            assertThat(game.getStartTime()).isEqualTo(updateDto.startTime());
-            assertThat(game.getState()).isEqualTo(GameState.from(updateDto.state()));
-            assertThat(game.getVideoId()).isEqualTo(updateDto.videoId());
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(updateDto.quarter()),
+                    () -> assertThat(game.getRound()).isEqualTo(Round.from(updateDto.round())),
+                    () -> assertThat(game.getName()).isEqualTo(updateDto.name()),
+                    () -> assertThat(game.getStartTime()).isEqualTo(updateDto.startTime()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.from(updateDto.state())),
+                    () -> assertThat(game.getVideoId()).isEqualTo(updateDto.videoId())
+            );
         }
 
         @Test
@@ -178,9 +179,8 @@ public class GameServiceTest extends ServiceTest {
             Member nonManager = entityUtils.getEntity(2L, Member.class);
 
             // when & then
-            assertThrows(UnauthorizedException.class, () -> {
-                gameService.updateGame(leagueId, gameId, updateDto, nonManager);
-            });
+            assertThatThrownBy(() -> gameService.updateGame(leagueId, gameId, updateDto, nonManager))
+                    .isInstanceOf(UnauthorizedException.class);
         }
 
     }
