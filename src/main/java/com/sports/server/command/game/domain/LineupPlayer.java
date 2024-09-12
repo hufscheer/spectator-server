@@ -48,6 +48,9 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @Enumerated(EnumType.STRING)
     private LineupPlayerState state;
 
+    @Column(name = "is_playing", nullable = false)
+    private boolean isPlaying;
+
     public void changeStateToStarter() {
         if (this.state == STARTER) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 선발로 등록된 선수입니다.");
