@@ -3,9 +3,11 @@ package com.sports.server.command.game.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.AcceptanceTest;
@@ -166,8 +168,13 @@ public class GameAcceptanceTest extends AcceptanceTest {
         // given
         Long leagueId = 1L;
         Long gameId = 1L;
-        GameRequestDto.Update request = new GameRequestDto.Update("경기 이름", "16강", "후반전", "PLAYING",
-                LocalDateTime.now(), "videoId");
+        String name = "경기 이름";
+        String round = "16깅";
+        String quarter = "후반전";
+        String state = "PLAYING";
+        LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+        String videoId = "videoId";
+        GameRequestDto.Update request = new GameRequestDto.Update(name, round, quarter, state, fixedLocalDateTime, videoId);
 
         configureMockJwtForEmail("john.doe@example.com");
 
@@ -183,7 +190,15 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
+        GameRequestDto.Update update = toResponses(response, GameRequestDto.Update.class).get(0);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(update.quarter()).isEqualTo(quarter),
+                () -> assertThat(update.round()).isEqualTo(Round.from(round)),
+                () -> assertThat(update.name()).isEqualTo(name),
+                () -> assertThat(update.startTime()).isEqualTo(fixedLocalDateTime),
+                () -> assertThat(update.state()).isEqualTo(GameState.from(state)),
+                () -> assertThat(update.videoId()).isEqualTo(videoId)
+        );
     }
 }
