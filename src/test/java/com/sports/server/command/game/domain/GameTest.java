@@ -150,24 +150,22 @@ class GameTest {
         }
     }
 
-    @Nested
-    @DisplayName("주장 상태를 변경할 때")
-    class ChangePlayerToCaptainTest {
-        @Test
-        void 게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
-            // given
-            GameTeam gameTeam = entityBuilder(GameTeam.class)
-                    .sample();
 
-            LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
-                    .sample();
+    @Test
+    void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
+        // given
+        GameTeam gameTeam = entityBuilder(GameTeam.class)
+                .sample();
 
-            // when & then
-            assertThatThrownBy(() -> game.changePlayerToCaptain(gameTeam, lineupPlayer))
-                    .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
-                    .isInstanceOf(CustomException.class);
+        LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
+                .sample();
+
+        // when & then
+        assertThatThrownBy(() -> game.changePlayerToCaptain(gameTeam, lineupPlayer))
+                .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
+                .isInstanceOf(CustomException.class);
 
 
-        }
     }
+
 }
