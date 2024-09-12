@@ -1,15 +1,15 @@
 package com.sports.server.command.game.domain;
 
+import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import com.sports.server.common.exception.CustomException;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-
-import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GameTest {
     private Game game;
@@ -149,4 +149,23 @@ class GameTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
+
+
+    @Test
+    void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
+        // given
+        GameTeam gameTeam = entityBuilder(GameTeam.class)
+                .sample();
+
+        LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
+                .sample();
+
+        // when & then
+        assertThatThrownBy(() -> game.changePlayerToCaptain(gameTeam, lineupPlayer))
+                .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
+                .isInstanceOf(CustomException.class);
+
+
+    }
+
 }

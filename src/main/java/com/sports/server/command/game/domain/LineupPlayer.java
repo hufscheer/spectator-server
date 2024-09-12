@@ -79,4 +79,19 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         this.isCaptain = isCaptain;
         this.state = state;
     }
+
+    public void changePlayerToCaptain() {
+        if (this.isCaptain) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 주장으로 등록된 선수입니다.");
+        }
+        this.isCaptain = true;
+    }
+
+    public void revokeCaptainFromPlayer(LineupPlayer lineupPlayer) {
+        if (!isCaptain) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 선수는 주장이 아닙니다.");
+        }
+
+        this.isCaptain = false;
+    }
 }
