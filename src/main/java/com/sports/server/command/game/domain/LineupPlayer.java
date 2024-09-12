@@ -89,7 +89,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public void revokeCaptainFromPlayer(LineupPlayer lineupPlayer) {
         if (!isCaptain) {
-            throw new IllegalArgumentException("해당 선수는 주장이 아닙니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 선수는 주장이 아닙니다.");
         }
 
         this.isCaptain = false;

@@ -3,6 +3,7 @@ package com.sports.server.command.game.domain;
 import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +36,7 @@ public class GameTeamTest {
 
         // when & then
         assertThatThrownBy(() -> gameTeam.revokeCaptainFromPlayer(invalidPlayer))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("해당 게임팀에 속하지 않는 선수입니다.");
     }
 
@@ -51,7 +52,7 @@ public class GameTeamTest {
 
             // when & then
             assertThatThrownBy(() -> gameTeam.changePlayerToCaptain(secondLineupPlayer))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(CustomException.class)
                     .hasMessage("이미 등록된 주장이 존재합니다.");
         }
     }

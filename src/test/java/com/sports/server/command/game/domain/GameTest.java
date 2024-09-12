@@ -4,6 +4,7 @@ import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -164,7 +165,7 @@ class GameTest {
             // when & then
             assertThatThrownBy(() -> game.changePlayerToCaptain(gameTeam, lineupPlayer))
                     .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(CustomException.class);
 
 
         }

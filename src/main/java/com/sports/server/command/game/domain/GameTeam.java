@@ -119,7 +119,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
                 .anyMatch(lp -> lp.equals(lineupPlayer));
 
         if (!exists) {
-            throw new IllegalArgumentException("해당 게임팀에 속하지 않는 선수입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀에 속하지 않는 선수입니다.");
         }
     }
 
@@ -128,7 +128,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
                 .anyMatch(lp -> lp.isCaptain() && !lp.equals(lineupPlayer));
 
         if (captainExists) {
-            throw new IllegalArgumentException("이미 등록된 주장이 존재합니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 등록된 주장이 존재합니다.");
         }
     }
 
