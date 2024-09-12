@@ -56,6 +56,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 선발로 등록된 선수입니다.");
         }
         this.state = STARTER;
+        activatePlayerInGame();
     }
 
     public void changeStateToCandidate() {
@@ -63,6 +64,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 후보로 등록된 선수입니다.");
         }
         this.state = CANDIDATE;
+        deactivatePlayerInGame();
     }
 
     public boolean isSameTeam(LineupPlayer other) {
