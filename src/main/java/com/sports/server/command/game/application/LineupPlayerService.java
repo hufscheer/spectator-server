@@ -1,6 +1,7 @@
 package com.sports.server.command.game.application;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,19 @@ public class LineupPlayerService {
         Game game = entityUtils.getEntity(gameId, Game.class);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         game.rollbackToCandidate(lineupPlayer);
+    }
+
+    public void changePlayerToCaptain(final Long gameId, final Long gameTeamId, final Long lineupPlayerId) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
+        LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
+        game.changePlayerToCaptain(gameTeam, lineupPlayer);
+    }
+
+    public void revokeCaptainFromPlayer(final Long gameId, final Long gameTeamId, final Long lineupPlayerId) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
+        LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
+        game.revokeCaptainFromPlayer(gameTeam, lineupPlayer);
     }
 }
