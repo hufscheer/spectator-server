@@ -57,5 +57,7 @@ public class ReplacementTimeline extends Timeline {
 
     @Override
     public void rollback() {
+        this.originLineupPlayer.activatePlayerInGame();
+        this.replacedLineupPlayer.deactivatePlayerInGame();
     }
 }
