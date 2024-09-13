@@ -8,6 +8,7 @@ import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequestDto;
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.AcceptanceTest;
@@ -162,41 +163,48 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 경기_정보를_수정한다() throws Exception {
+    void 경기_정보를_수정한_후_다시_가져와_확인한다() throws Exception {
 
         // given
         Long leagueId = 1L;
         Long gameId = 1L;
         String name = "경기 이름";
-        String round = "16깅";
+        String round = "16강";
         String quarter = "후반전";
         String state = "PLAYING";
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         String videoId = "videoId";
         GameRequestDto.Update request = new GameRequestDto.Update(name, round, quarter, state, fixedLocalDateTime, videoId);
 
-        configureMockJwtForEmail("john.doe@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> putResponse = RestAssured.given().log().all()
                 .cookie(COOKIE_NAME, mockToken)
                 .pathParam("leagueId", leagueId)
                 .pathParam("gameId", gameId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
+                .put("/leagues/{leagueId}/{gameId}")
+                .then().log().all()
+                .extract();
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/games/{gameId}", gameId)
                 .then().log().all()
                 .extract();
 
-        GameRequestDto.Update update = toResponses(response, GameRequestDto.Update.class).get(0);
+        // then
+        GameDetailResponse updatedGame = toResponse(getResponse, GameDetailResponse.class);
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(update.quarter()).isEqualTo(quarter),
-                () -> assertThat(update.round()).isEqualTo(Round.from(round)),
-                () -> assertThat(update.name()).isEqualTo(name),
-                () -> assertThat(update.startTime()).isEqualTo(fixedLocalDateTime),
-                () -> assertThat(update.state()).isEqualTo(GameState.from(state)),
-                () -> assertThat(update.videoId()).isEqualTo(videoId)
+                () -> assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(updatedGame.gameQuarter()).isEqualTo(quarter),
+                () -> assertThat(updatedGame.round()).isEqualTo(Round.from(round).name()),
+                () -> assertThat(updatedGame.gameName()).isEqualTo(name),
+                () -> assertThat(updatedGame.startTime()).isEqualTo(fixedLocalDateTime),
+                () -> assertThat(updatedGame.state()).isEqualTo(state),
+                () -> assertThat(updatedGame.videoId()).isEqualTo(videoId)
         );
     }
 
@@ -207,12 +215,6 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         Long gameTeamId = 1L;
         Long lineupPlayerId = 2L;
-        String name = "경기 이름";
-        String round = "16깅";
-        String quarter = "후반전";
-        String state = "PLAYING";
-        LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-        String videoId = "videoId";
 
         // when
         RestAssured.given().log().all()
@@ -232,15 +234,18 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        GameRequestDto.Update update = toResponses(response, GameRequestDto.Update.class).get(0);
+        List<LineupPlayerResponse> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.class).stream()
+                .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
+                .toList();
+
+        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).gameTeamPlayers().stream()
+                .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
+                .toList();
+
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(update.quarter()).isEqualTo(quarter),
-                () -> assertThat(update.round()).isEqualTo(Round.from(round)),
-                () -> assertThat(update.name()).isEqualTo(name),
-                () -> assertThat(update.startTime()).isEqualTo(fixedLocalDateTime),
-                () -> assertThat(update.state()).isEqualTo(GameState.from(state)),
-                () -> assertThat(update.videoId()).isEqualTo(videoId)
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
+                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
+                () -> assertThat(actual.get(0).isCaptain()).isEqualTo(true)
         );
     }
 
