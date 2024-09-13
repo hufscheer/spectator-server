@@ -38,7 +38,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(
-                startTime, "videoId", "전반전", "4강", "축구", gameTeams, "PLAYING"
+                startTime, "videoId", "전반전", "여름축구", "축구", gameTeams, "PLAYING", "4강"
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);

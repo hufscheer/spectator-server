@@ -13,7 +13,8 @@ public record GameDetailResponse(
         String gameName,
         String sportName,
         List<TeamResponse> gameTeams,
-        String state
+        String state,
+        String round
 ) {
 
     public GameDetailResponse(Game game, List<GameTeam> gameTeams) {
@@ -27,7 +28,8 @@ public record GameDetailResponse(
                         .sorted(Comparator.comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
                         .toList(),
-                game.getState().name()
+                game.getState().name(),
+                game.getRound().name()
         );
     }
 
