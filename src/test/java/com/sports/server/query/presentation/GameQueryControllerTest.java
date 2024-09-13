@@ -60,7 +60,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
-                                fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
+                                fieldWithPath("round").type(JsonFieldType.STRING).description("게임의 라운드"),
                                 fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
                                 fieldWithPath("gameTeams[].gameTeamName").type(JsonFieldType.STRING)

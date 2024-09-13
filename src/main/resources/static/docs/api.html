@@ -493,8 +493,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_리그팀_수정">리그팀 수정</a></li>
 <li><a href="#_리그팀_삭제">리그팀 삭제</a></li>
 <li><a href="#_리그_상세_조회">리그 상세 조회</a></li>
-<li><a href="#_리그_삭제">리그 삭제</a></li>
-<li><a href="#_리그팀_상세_조회">리그팀 상세 조회</a></li>
 <li><a href="#_매니저가_생성한_리그_전체_조회">매니저가 생성한 리그 전체 조회</a></li>
 <li><a href="#_리그_삭제">리그 삭제</a></li>
 <li><a href="#_리그팀_상세_조회">리그팀 상세 조회</a></li>
@@ -765,13 +763,13 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 403
+Content-Length: 431
 
 {
   "startTime" : "2024-01-19T13:00:00",
   "videoId" : "videoId",
   "gameQuarter" : "전반전",
-  "gameName" : "4강",
+  "gameName" : "여름축구",
   "sportName" : "축구",
   "gameTeams" : [ {
     "gameTeamId" : 1,
@@ -784,7 +782,8 @@ Content-Length: 403
     "logoImageUrl" : "logo.com",
     "score" : 1
   } ],
-  "state" : "PLAYING"
+  "state" : "PLAYING",
+  "round" : "4강"
 }</code></pre>
 </div>
 </div>
@@ -831,9 +830,9 @@ Content-Length: 403
 <td class="tableblock halign-left valign-top"><p class="tableblock">종목</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sportName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">종목</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 라운드</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].gameTeamId</code></p></td>
@@ -1414,8 +1413,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "경기전",
   "state" : "SCHEDULED",
-  "startTime" : "2024-09-11T19:10:12.787684",
-  "startTime" : "2024-09-10T21:21:14.922773",
+  "startTime" : "2024-09-14T01:15:12.218141",
   "idOfTeam1" : 1,
   "idOfTeam2" : 2,
   "videoId" : "videoId"
@@ -1475,7 +1473,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "전반전",
   "state" : "PLAYING",
-  "startTime" : "2024-09-11T19:10:12.810535",
+  "startTime" : "2024-09-14T01:15:12.238992",
   "videoId" : "videoId"
 }</code></pre>
 </div>
@@ -1791,10 +1789,8 @@ Cookie: HCC_SES=temp-cookie
   "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
   "maxRound" : "4강",
-  "startAt" : "2024-09-11T19:10:13.156769",
-  "endAt" : "2024-09-11T19:10:13.156773"
-  "startAt" : "2024-09-10T21:21:15.379606",
-  "endAt" : "2024-09-10T21:21:15.379615"
+  "startAt" : "2024-09-14T01:15:12.582777",
+  "endAt" : "2024-09-14T01:15:12.582781"
 }</code></pre>
 </div>
 </div>
@@ -1863,16 +1859,14 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /leagues/5124 HTTP/1.1
 Content-Type: application/json
-Content-Length: 166
+Content-Length: 165
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "훕치치배 망고 빨리먹기 대회",
-  "startAt" : "2024-09-11T19:10:13.188636",
-  "endAt" : "2024-09-11T19:10:13.188641",
-  "startAt" : "2024-09-10T21:21:15.472437",
-  "endAt" : "2024-09-10T21:21:15.472445",
+  "startAt" : "2024-09-14T01:15:12.60881",
+  "endAt" : "2024-09-14T01:15:12.608815",
   "maxRound" : "16강"
 }</code></pre>
 </div>
@@ -2645,7 +2639,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 633
+Content-Length: 629
 
 [ {
   "id" : 1,
@@ -2653,12 +2647,12 @@ Content-Length: 633
   "state" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-10T21:21:20.177233",
-  "endAt" : "2024-09-10T21:21:20.177234",
+  "startAt" : "2024-09-14T01:15:17.7731",
+  "endAt" : "2024-09-14T01:15:17.7731",
   "inProgressGames" : [ {
     "id" : 1,
     "state" : "PLAYING",
-    "startTime" : "2024-09-10T21:21:20.177222",
+    "startTime" : "2024-09-14T01:15:17.773091",
     "gameTeams" : [ {
       "gameTeamId" : 1,
       "gameTeamName" : "경영 야생마",
@@ -3607,9 +3601,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 18 Sep 2024 10:10:09 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 15 Aug 2024 07:15:21 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 17 Sep 2024 12:21:07 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Fri, 20 Sep 2024 16:15:04 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -3683,7 +3675,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-11 17:29:43 +0900
+Last updated 2024-09-12 17:56:21 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
