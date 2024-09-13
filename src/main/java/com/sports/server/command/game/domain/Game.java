@@ -115,18 +115,43 @@ public class Game extends BaseEntity<Game> {
         scoredTeam.cancelScore();
     }
 
-    public void update(String name, LocalDateTime startTime,
-                       String videoId, String gameQuarter, GameState state, Round round) {
+    public void updateName(String name) {
         if (StringUtils.hasText(name)) {
             this.name = name;
         }
+    }
+
+    public void updateStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
-        this.videoId = videoId;
-        if (StringUtils.hasText(name)) {
+    }
+
+    public void updateVideoId(String videoId) {
+        if (StringUtils.hasText(videoId)) {
+            this.videoId = videoId;
+        }
+    }
+
+    public void updateGameQuarter(String gameQuarter) {
+        if (StringUtils.hasText(gameQuarter)) {
             this.gameQuarter = gameQuarter;
         }
+    }
+
+    public void updateState(GameState state) {
         this.state = state;
+    }
+
+    public void updateRound(Round round) {
         this.round = round;
+    }
+
+    public void updateAll(Game updatedGame) {
+        updateName(updatedGame.name);
+        updateStartTime(updatedGame.startTime);
+        updateVideoId(updatedGame.videoId);
+        updateGameQuarter(updatedGame.gameQuarter);
+        updateState(updatedGame.state);
+        updateRound(updatedGame.round);
     }
 
     public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
