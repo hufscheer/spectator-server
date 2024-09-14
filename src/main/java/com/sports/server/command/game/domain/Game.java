@@ -5,6 +5,7 @@ import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +23,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
@@ -123,5 +125,21 @@ public class Game extends BaseEntity<Game> {
         this.gameQuarter = gameQuarter;
         this.state = state;
         this.round = round;
+    }
+
+    public void changePlayerToCaptain(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        validateGameTeam(gameTeam);
+        gameTeam.changePlayerToCaptain(lineupPlayer);
+    }
+
+    public void revokeCaptainFromPlayer(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        validateGameTeam(gameTeam);
+        gameTeam.revokeCaptainFromPlayer(lineupPlayer);
+    }
+
+    private void validateGameTeam(final GameTeam gameTeam) {
+        if (!teams.contains(gameTeam)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
+        }
     }
 }
