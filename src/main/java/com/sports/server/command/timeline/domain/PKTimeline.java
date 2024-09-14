@@ -17,8 +17,8 @@ public class PKTimeline extends Timeline {
     private Boolean isSuccess;
 
     @Override
-    public String getType() {
-        return "PK";
+    public TimelineType getType() {
+        return TimelineType.PK;
     }
 
     @Override

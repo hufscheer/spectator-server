@@ -38,8 +38,8 @@ public class ScoreTimeline extends Timeline {
     private Integer snapshotScore2;
 
     @Override
-    public String getType() {
-        return "SCORE";
+    public TimelineType getType() {
+        return TimelineType.SCORE;
     }
 
     public static ScoreTimeline score(

@@ -27,8 +27,8 @@ public class ReplacementTimeline extends Timeline {
     private LineupPlayer replacedLineupPlayer;
 
     @Override
-    public String getType() {
-        return "REPLACEMENT";
+    public TimelineType getType() {
+        return TimelineType.REPLACEMENT;
     }
 
     public ReplacementTimeline(

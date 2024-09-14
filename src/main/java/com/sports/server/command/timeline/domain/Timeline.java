@@ -27,7 +27,7 @@ public abstract class Timeline extends BaseEntity<Timeline> {
     @Column(name = "recorded_at", nullable = false)
     protected Integer recordedAt;
 
-    public abstract String getType();
+    public abstract TimelineType getType();
 
     protected Timeline(
             Game game,

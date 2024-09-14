@@ -34,7 +34,7 @@ public record RecordResponse(
         return new RecordResponse(
                 timeline.getRecordedQuarter(),
                 timeline.getId(),
-                timeline.getType(),
+                timeline.getType().name(),
                 timeline.getRecordedAt(),
                 lineupPlayer.map(LineupPlayer::getName).orElse(null),
                 gameTeam.map(GameTeam::getId).orElse(null),

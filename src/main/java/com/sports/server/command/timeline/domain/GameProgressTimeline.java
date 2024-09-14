@@ -28,8 +28,8 @@ public class GameProgressTimeline extends Timeline {
     }
 
     @Override
-    public String getType() {
-        return "GAME_PROGRESS";
+    public TimelineType getType() {
+        return TimelineType.GAME_PROGRESS;
     }
 
     @Override
