@@ -1,12 +1,10 @@
 package com.sports.server.command.game.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
+import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,10 +12,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 
 @Entity
@@ -39,7 +38,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
     @JoinColumn(name = "league_team_id")
     private LeagueTeam leagueTeam;
 
-    @OneToMany(mappedBy = "gameTeam")
+    @OneToMany(mappedBy = "gameTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineupPlayer> lineupPlayers = new ArrayList<>();
 
     @Column(name = "cheer_count", nullable = false)
@@ -84,7 +83,54 @@ public class GameTeam extends BaseEntity<GameTeam> {
             this.score -= SCORE_VALUE;
         }
     }
+
+    public GameTeam(Game game, LeagueTeam leagueTeam) {
+        this.game = game;
+        this.leagueTeam = leagueTeam;
+        this.cheerCount = 0;
+        this.score = 0;
+    }
+
+    public void registerLineup(LeagueTeamPlayer player) {
+        LineupPlayer lineupPlayer = new LineupPlayer(
+                this,
+                player.getId(),
+                player.getName(),
+                player.getNumber(),
+                false,
+                LineupPlayerState.CANDIDATE);
+
+        this.lineupPlayers.add(lineupPlayer);
+    }
+
+    public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
+        validateLineupPlayer(lineupPlayer);
+        isCaptainExists(lineupPlayer);
+        lineupPlayer.changePlayerToCaptain();
+    }
+
+    public void revokeCaptainFromPlayer(final LineupPlayer lineupPlayer) {
+        validateLineupPlayer(lineupPlayer);
+        lineupPlayer.revokeCaptainFromPlayer(lineupPlayer);
+    }
+
+    private void validateLineupPlayer(final LineupPlayer lineupPlayer) {
+        boolean exists = this.lineupPlayers.stream()
+                .anyMatch(lp -> lp.equals(lineupPlayer));
+
+        if (!exists) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀에 속하지 않는 선수입니다.");
+        }
+    }
+
+    private void isCaptainExists(final LineupPlayer lineupPlayer) {
+        boolean captainExists = lineupPlayers.stream()
+                .anyMatch(lp -> lp.isCaptain() && !lp.equals(lineupPlayer));
+
+        if (captainExists) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 등록된 주장이 존재합니다.");
+        }
+    }
+
+
 }
-
-
-

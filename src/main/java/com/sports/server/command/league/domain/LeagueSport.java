@@ -21,5 +21,4 @@ public class LeagueSport extends BaseEntity<LeagueSport> {
     @JoinColumn(name = "league_id")
     private League league;
 
-
 }

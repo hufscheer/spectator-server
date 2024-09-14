@@ -5,6 +5,8 @@ import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.exception.CustomException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,6 +23,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
@@ -40,7 +43,7 @@ public class Game extends BaseEntity<Game> {
     @JoinColumn(name = "league_id")
     private League league;
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GameTeam> teams = new ArrayList<>();
 
     @Column(name = "name", nullable = false)
@@ -109,5 +112,34 @@ public class Game extends BaseEntity<Game> {
                 .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
 
         scoredTeam.cancelScore();
+    }
+
+    public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
+                String videoId, String gameQuarter, GameState state, Round round) {
+        this.sport = sport;
+        this.manager = manager;
+        this.league = league;
+        this.name = name;
+        this.startTime = startTime;
+        this.videoId = videoId;
+        this.gameQuarter = gameQuarter;
+        this.state = state;
+        this.round = round;
+    }
+
+    public void changePlayerToCaptain(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        validateGameTeam(gameTeam);
+        gameTeam.changePlayerToCaptain(lineupPlayer);
+    }
+
+    public void revokeCaptainFromPlayer(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        validateGameTeam(gameTeam);
+        gameTeam.revokeCaptainFromPlayer(lineupPlayer);
+    }
+
+    private void validateGameTeam(final GameTeam gameTeam) {
+        if (!teams.contains(gameTeam)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
+        }
     }
 }
