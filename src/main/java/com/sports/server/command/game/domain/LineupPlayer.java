@@ -48,11 +48,15 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @Enumerated(EnumType.STRING)
     private LineupPlayerState state;
 
+    @Column(name = "is_playing", nullable = false)
+    private boolean isPlaying;
+
     public void changeStateToStarter() {
         if (this.state == STARTER) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 선발로 등록된 선수입니다.");
         }
         this.state = STARTER;
+        activatePlayerInGame();
     }
 
     public void changeStateToCandidate() {
@@ -60,6 +64,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 후보로 등록된 선수입니다.");
         }
         this.state = CANDIDATE;
+        deactivatePlayerInGame();
     }
 
     public boolean isSameTeam(LineupPlayer other) {
@@ -68,6 +73,14 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public boolean isInTeam(GameTeam team) {
         return Objects.equals(this.gameTeam, team);
+    }
+
+    public void activatePlayerInGame() {
+        this.isPlaying = true;
+    }
+
+    public void deactivatePlayerInGame() {
+        this.isPlaying = false;
     }
 
     public LineupPlayer(GameTeam gameTeam, Long leagueTeamPlayerId, String name, int number,
