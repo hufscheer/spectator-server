@@ -42,9 +42,6 @@ public class ReplacementTimeline extends Timeline {
 
         validatePlayers(originLineupPlayer, replacedLineupPlayer);
 
-        originLineupPlayer.deactivatePlayerInGame();
-        replacedLineupPlayer.activatePlayerInGame();
-
         this.originLineupPlayer = originLineupPlayer;
         this.replacedLineupPlayer = replacedLineupPlayer;
     }
@@ -57,7 +54,8 @@ public class ReplacementTimeline extends Timeline {
 
     @Override
     public void apply() {
-
+        originLineupPlayer.deactivatePlayerInGame();
+        replacedLineupPlayer.activatePlayerInGame();
     }
 
     @Override
