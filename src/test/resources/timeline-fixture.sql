@@ -32,20 +32,20 @@ VALUES (1, 1, 1, 15), -- 팀 A의 정보
 -- 팀 B의 정보
 
 -- 농구 대전(game_id = 1) A팀(game_team_id = 1) 선수
-INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number, league_team_player_id)
-VALUES (1, 1, '선수1', '센터', true, 1, 1),
-       (2, 1, '선수2', '파워 포워드', false, 2, 1),
-       (3, 1, '선수3', '슈팅 가드', false, 3, 1),
-       (4, 1, '선수4', '포인트 가드', false, 4, 1),
-       (5, 1, '선수5', '스몰 포워드', false, 5, 1);
+INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number, league_team_player_id, is_playing)
+VALUES (1, 1, '선수1', '센터', true, 1, 1, false),
+       (2, 1, '선수2', '파워 포워드', false, 2, 1, false),
+       (3, 1, '선수3', '슈팅 가드', false, 3, 1, false),
+       (4, 1, '선수4', '포인트 가드', false, 4, 1, false),
+       (5, 1, '선수5', '스몰 포워드', false, 5, 1, false);
 
 -- 농구 대전(game_id = 1) B팀(game_team_id = 2) 선수
-INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number, league_team_player_id)
-VALUES (6, 2, '선수6', '센터', true, 6, 1),
-       (7, 2, '선수7', '파워 포워드', false, 7, 1),
-       (8, 2, '선수8', '슈팅 가드', false, 8, 1),
-       (9, 2, '선수9', '포인트 가드', false, 9, 1),
-       (10, 2, '선수10', '스몰 포워드', false, 10, 1);
+INSERT INTO lineup_players (id, game_team_id, name, description, is_captain, number, league_team_player_id, is_playing)
+VALUES (6, 2, '선수6', '센터', true, 6, 1, false),
+       (7, 2, '선수7', '파워 포워드', false, 7, 1, false),
+       (8, 2, '선수8', '슈팅 가드', false, 8, 1, false),
+       (9, 2, '선수9', '포인트 가드', false, 9, 1, false),
+       (10, 2, '선수10', '스몰 포워드', false, 10, 1, false);
 
 -- 1쿼터 경기 기록 추가
 
