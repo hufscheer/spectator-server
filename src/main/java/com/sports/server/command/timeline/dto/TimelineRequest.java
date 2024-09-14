@@ -1,14 +1,19 @@
 package com.sports.server.command.timeline.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.TimelineType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class TimelineRequest {
+public abstract class TimelineRequest {
     private final Long recordedQuarterId;
     private final Integer recordedAt;
+
+    @JsonIgnore
+    public abstract TimelineType getType();
 
     @Getter
     public static class RegisterScore extends TimelineRequest {
@@ -24,6 +29,11 @@ public class TimelineRequest {
             super(recordedQuarterId, recordedAt);
             this.gameTeamId = gameTeamId;
             this.scoreLineupPlayerId = scoreLineupPlayerId;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.SCORE;
         }
     }
 
@@ -45,6 +55,11 @@ public class TimelineRequest {
             this.originLineupPlayerId = originLineupPlayerId;
             this.replacementLineupPlayerId = replacementLineupPlayerId;
         }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.REPLACEMENT;
+        }
     }
 
     @Getter
@@ -58,6 +73,11 @@ public class TimelineRequest {
         ) {
             super(recordedQuarterId, recordedAt);
             this.gameProgressType = gameProgressType;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.GAME_PROGRESS;
         }
     }
 }

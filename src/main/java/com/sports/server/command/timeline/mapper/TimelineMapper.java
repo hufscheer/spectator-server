@@ -1,32 +1,32 @@
-package com.sports.server.command.timeline.application;
+package com.sports.server.command.timeline.mapper;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.timeline.domain.GameProgressTimeline;
-import com.sports.server.command.timeline.domain.ReplacementTimeline;
-import com.sports.server.command.timeline.domain.ScoreTimeline;
-import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class TimelineMapper {
     private final EntityUtils entityUtils;
 
-    public Timeline toEntity(Game game, TimelineRequest request) {
-        if (request instanceof TimelineRequest.RegisterScore scoreRequest) {
-            return toScoreTimeline(game, scoreRequest);
-        } else if (request instanceof TimelineRequest.RegisterReplacement replacementRequest) {
-            return toReplacementTimeline(game, replacementRequest);
-        } else if (request instanceof TimelineRequest.RegisterProgress progressRequest) {
-            return toProgressTimeline(game, progressRequest);
-        }
+    private final Map<TimelineType, TimelineSupplier> suppliers = Map.of(
+            TimelineType.SCORE, (g, r) -> toScoreTimeline(g, (TimelineRequest.RegisterScore) r),
+            TimelineType.REPLACEMENT, (g, r) -> toReplacementTimeline(g, (TimelineRequest.RegisterReplacement) r),
+            TimelineType.GAME_PROGRESS, (g, r) -> toProgressTimeline(g, (TimelineRequest.RegisterProgress) r)
+    );
 
-        throw new IllegalArgumentException("지원하지 않는 타입입니다.");
+    public Timeline toEntity(Game game, TimelineRequest request) {
+        return Optional.ofNullable(suppliers.get(request.getType()))
+                .map(supplier -> supplier.get(game, request))
+                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 타입입니다."));
     }
 
     private ScoreTimeline toScoreTimeline(Game game,
