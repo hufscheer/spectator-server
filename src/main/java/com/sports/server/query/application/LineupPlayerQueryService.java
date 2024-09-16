@@ -34,4 +34,18 @@ public class LineupPlayerQueryService {
                         groupByTeam.getOrDefault(gameTeam, new ArrayList<>())))
                 .toList();
     }
+
+    public List<LineupPlayerResponse> getPlayingLineup(final Long gameId) {
+        Map<GameTeam, List<LineupPlayer>> groupByTeam = lineupPlayerQueryRepository.findPlayingPlayersByGameId(gameId)
+                .stream()
+                .collect(groupingBy(LineupPlayer::getGameTeam));
+
+        List<GameTeam> gameTeams = groupByTeam.keySet().stream().toList();
+
+        return gameTeams.stream()
+                .sorted(Comparator.comparingLong(GameTeam::getId))
+                .map(gameTeam -> new LineupPlayerResponse(gameTeam,
+                        groupByTeam.getOrDefault(gameTeam, new ArrayList<>())))
+                .toList();
+    }
 }
