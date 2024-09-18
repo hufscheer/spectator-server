@@ -31,12 +31,13 @@ public class CheerTalkQueryService {
         return responses;
     }
 
-    private List<Long> getOrderedGameTeamIds(final List<CheerTalk> cheerTalks) {
-        return cheerTalks.stream()
-                .map(CheerTalk::getGameTeamId)
-                .collect(Collectors.toSet())
-                .stream()
-                .sorted()
-                .toList();
+    public List<CheerTalkResponse> getReportedCheerTalksByLeagueId(final Long leagueId,
+                                                                   final PageRequestDto pageRequest) {
+        List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
+                leagueId, pageRequest.cursor(), pageRequest.size()
+        );
+
+        return reportedCheerTalks.stream().map(CheerTalkResponse::new).toList();
     }
+
 }
