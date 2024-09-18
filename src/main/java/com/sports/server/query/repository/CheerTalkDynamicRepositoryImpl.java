@@ -4,6 +4,8 @@ import static com.sports.server.command.cheertalk.domain.QCheerTalk.cheerTalk;
 import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
 import static com.sports.server.command.report.domain.QReport.report;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.report.domain.ReportState;
@@ -21,35 +23,47 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
     @Override
     public List<CheerTalk> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-        return queryFactory.selectFrom(cheerTalk)
-                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                .where(gameTeam.game.id.eq(gameId))
-                .where(booleanBuilder
-                        .and(() -> cheerTalk.createdAt.loe(getCursorCreatedAt(cursor)))
-                        .and(() -> cheerTalk.id.lt(cursor))
-                        .build()
-                )
-                .orderBy(cheerTalk.createdAt.desc(), cheerTalk.id.desc())
-                .limit(size)
-                .fetch();
+
+        return applyPagination(
+                queryFactory.selectFrom(cheerTalk)
+                        .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                        .where(gameTeam.game.id.eq(gameId))
+                        .where(booleanBuilder.build()),
+                cursor,
+                size
+        );
     }
 
     @Override
     public List<CheerTalk> findReportedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-        return queryFactory.selectFrom(cheerTalk)
-                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                .join(report).on(report.cheerTalk.eq(cheerTalk))
-                .where(report.state.eq(ReportState.PENDING))
-                .where(gameTeam.game.league.id.eq(leagueId))
-                .where(booleanBuilder
-                        .and(() -> cheerTalk.createdAt.loe(getCursorCreatedAt(cursor)))
-                        .and(() -> cheerTalk.id.lt(cursor))
-                        .build()
-                )
+
+        return applyPagination(
+                queryFactory.selectFrom(cheerTalk)
+                        .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                        .join(report).on(report.cheerTalk.eq(cheerTalk))
+                        .where(report.state.eq(ReportState.PENDING))
+                        .where(gameTeam.game.league.id.eq(leagueId))
+                        .where(booleanBuilder.build()),
+                cursor,
+                size
+        );
+    }
+
+    private List<CheerTalk> applyPagination(JPAQuery<CheerTalk> query, Long cursor, Integer size) {
+        return query
+                .where(getPaginationConditions(cursor))
                 .orderBy(cheerTalk.createdAt.desc(), cheerTalk.id.desc())
                 .limit(size)
                 .fetch();
+    }
+
+    private BooleanExpression getPaginationConditions(Long cursor) {
+        if (cursor == null) {
+            return null;
+        }
+        return cheerTalk.createdAt.loe(getCursorCreatedAt(cursor))
+                .and(cheerTalk.id.lt(cursor));
     }
 
     private LocalDateTime getCursorCreatedAt(final Long cursor) {
