@@ -38,6 +38,10 @@ operation::game-query-controller-test/응원_횟수를_조회한다[snippets='ht
 
 operation::game-query-controller-test/라인업을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 게임 출전 선수 조회
+
+operation::game-query-controller-test/출전_선수를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
 === 게임 등록
 
 operation::game-controller-test/경기를_등록한다[snippets='http-request,path-parameters,http-response']
@@ -98,6 +102,10 @@ operation::league-query-controller-test/리그의_해당하는_스포츠_전체�
 
 operation::league-query-controller-test/리그의_모든_리그팀을_라운드별로_조회한다[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
 
+=== 리그에 해당하는 선수 전체 조회
+
+operation::league-query-controller-test/리그팀의_모든_선수를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
 === 리그팀 등록
 
 operation::league-team-controller-test/리그팀을_등록한다[snippets='http-request,request-fields,http-response']
@@ -123,6 +131,8 @@ operation::league-query-controller-test/매니저가_생성한_모든_리그를_
 operation::league-controller-test/리그를_삭제한다[snippets='http-request,path-parameters,http-response']
 
 === 리그팀 상세 조회
+
+operation::league-query-controller-test/리그팀을_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 리그의 정보와 리그에 해당하는 경기 전체 조회
 

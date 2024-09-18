@@ -245,4 +245,59 @@ class GameQueryControllerTest extends DocumentationTest {
                         )
                 ));
     }
+
+    @Test
+    void 출전_선수를_조회한다() throws Exception {
+        // given
+        Long gameId = 1L;
+        List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
+                new LineupPlayerResponse.PlayerResponse(1L, "선수A", "탑", 1, true, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수B", "미드", 2, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수C", "정글", 3, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수D", "원딜", 4, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수E", "서폿", 5, false, LineupPlayerState.STARTER)
+        );
+        List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
+                new LineupPlayerResponse.PlayerResponse(1L, "선수F", "탑", 1, true, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수G", "미드", 2, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수H", "정글", 3, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수I", "원딜", 4, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수J", "서폿", 5, false, LineupPlayerState.STARTER)
+        );
+
+        given(lineupPlayerQueryService.getPlayingLineup(gameId))
+                .willReturn(List.of(
+                        new LineupPlayerResponse(1L, "팀A", playersA),
+                        new LineupPlayerResponse(2L, "팀B", playersB)
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/lineup/playing", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
+                                fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
+                                fieldWithPath("[].gameTeamPlayers[].id").type(JsonFieldType.NUMBER)
+                                        .description("선수 ID"),
+                                fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING)
+                                        .description("선수 이름"),
+                                fieldWithPath("[].gameTeamPlayers[].description").type(JsonFieldType.STRING)
+                                        .description("선수 설명"),
+                                fieldWithPath("[].gameTeamPlayers[].number").type(JsonFieldType.NUMBER)
+                                        .description("선수의 등번호"),
+                                fieldWithPath("[].gameTeamPlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
+                                        .description("선수가 주장인지에 대한 정보"),
+                                fieldWithPath("[].gameTeamPlayers[].state").type(JsonFieldType.STRING)
+                                        .description("선수의 선발 상태 ")
+                        )
+                ));
+    }
 }
