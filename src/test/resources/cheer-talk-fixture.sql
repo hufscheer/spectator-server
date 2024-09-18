@@ -10,8 +10,8 @@ VALUES (1, 1, 'john@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iER
         '2024-06-15 09:30:00');
 
 INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
-                   state)
-VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED');
+                   state, round)
+VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED', '16강');
 
 INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
 VALUES (1, 1, 1, 0), -- 팀 A의 정보
@@ -35,15 +35,15 @@ VALUES (1, '2023-01-01 12:30:00', '응원톡1', false, 1), -- 신고된 응원�
        (14, '2023-01-02 16:00:00', '블락된 응원톡', true, 1);
 
 INSERT INTO leagues (id, manager_id, organization_id, name, start_at, end_at, is_deleted, max_round, in_progress_round)
-VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false, '16강', '8강'),
-       (2, 1, 1, '농구대잔치', '2023-11-10 00:00:00', '2023-11-15 00:00:00', false, '8강', '결승');
+VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false, '8강', '8강'),
+       (2, 1, 1, '농구대잔치', '2023-11-10 00:00:00', '2023-11-15 00:00:00', false, '16강', '16강');
 
 -- 축구 응원톡 픽스처 (game_id=2) (game_id=1로 조회할 때 나오면 안되는 데이터)
 INSERT
 INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
-            state)
-VALUES (2, 1, 1, 1, '축구 대전', '2023-11-10T10:00:00', 'abc321', '2023-11-15T10:15:00', '전반전', 'SCHEDULED'),
-       (3, 1, 1, 2, '농구 대전', '2023-11-10T10:00:00', 'abc321', '2023-11-15T10:15:00', '전반전', 'SCHEDULED');
+            state, round)
+VALUES (2, 1, 1, 1, '축구 대전', '2023-11-10T10:00:00', 'abc321', '2023-11-15T10:15:00', '전반전', 'SCHEDULED', '8강'),
+       (3, 1, 1, 2, '농구 대전', '2023-11-10T10:00:00', 'abc321', '2023-11-15T10:15:00', '전반전', 'SCHEDULED', '8강');
 
 INSERT
 INTO game_teams (game_id, league_team_id, cheer_count, score)
