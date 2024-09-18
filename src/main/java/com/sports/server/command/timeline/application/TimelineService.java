@@ -5,6 +5,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.command.timeline.mapper.TimelineMapper;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -25,6 +26,8 @@ public class TimelineService {
         Game game = checkPermissionAndGet(gameId, member);
 
         Timeline timeline = timelineMapper.toEntity(game, request);
+        timeline.apply();
+
         timelineRepository.save(timeline);
     }
 
@@ -32,8 +35,8 @@ public class TimelineService {
         Game game = checkPermissionAndGet(gameId, member);
 
         Timeline timeline = getLastTimeline(timelineId, game);
-
         timeline.rollback();
+
         timelineRepository.delete(timeline);
     }
 

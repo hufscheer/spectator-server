@@ -27,8 +27,8 @@ public class ReplacementTimeline extends Timeline {
     private LineupPlayer replacedLineupPlayer;
 
     @Override
-    public String getType() {
-        return "REPLACEMENT";
+    public TimelineType getType() {
+        return TimelineType.REPLACEMENT;
     }
 
     public ReplacementTimeline(
@@ -42,9 +42,6 @@ public class ReplacementTimeline extends Timeline {
 
         validatePlayers(originLineupPlayer, replacedLineupPlayer);
 
-        originLineupPlayer.deactivatePlayerInGame();
-        replacedLineupPlayer.activatePlayerInGame();
-
         this.originLineupPlayer = originLineupPlayer;
         this.replacedLineupPlayer = replacedLineupPlayer;
     }
@@ -53,6 +50,12 @@ public class ReplacementTimeline extends Timeline {
         if (!originLineupPlayer.isSameTeam(replacedLineupPlayer)) {
             throw new IllegalArgumentException("다른 팀의 선수끼리 교체할 수 없습니다.");
         }
+    }
+
+    @Override
+    public void apply() {
+        originLineupPlayer.deactivatePlayerInGame();
+        replacedLineupPlayer.activatePlayerInGame();
     }
 
     @Override

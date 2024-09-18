@@ -27,7 +27,7 @@ public abstract class Timeline extends BaseEntity<Timeline> {
     @Column(name = "recorded_at", nullable = false)
     protected Integer recordedAt;
 
-    public abstract String getType();
+    public abstract TimelineType getType();
 
     protected Timeline(
             Game game,
@@ -46,6 +46,8 @@ public abstract class Timeline extends BaseEntity<Timeline> {
             throw new IllegalArgumentException("시간은 0 이상이어야 합니다.");
         }
     }
+
+    public abstract void apply();
 
     public abstract void rollback();
 }
