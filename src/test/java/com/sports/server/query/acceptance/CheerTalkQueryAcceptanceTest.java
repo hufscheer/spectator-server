@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -154,5 +155,35 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .map(CheerTalkResponse::content)
                     .containsOnlyNulls();
         }
+    }
+
+    @Test
+    void 리그의_신고된_응원톡을_조회한다() {
+
+        // given
+        Long leagueId = 1L;
+
+        configureMockJwtForEmail("john@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/{leagueId}/cheer-talks", leagueId)
+                .then().log().all()
+                .extract();
+
+        // then
+        List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse::cheerTalkId)
+                        .containsExactly(1L),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse::content)
+                        .containsExactly("응원톡1")
+        );
     }
 }
