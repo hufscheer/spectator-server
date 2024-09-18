@@ -33,9 +33,5 @@ public class GameRequestDto {
             LocalDateTime startTime,
             String videoId
     ) {
-        public Game toEntity(Sport sport, Member manager, League league) {
-            return new Game(sport, manager, league, name, startTime, videoId, quarter, GameState.from(state),
-                    Round.from(round));
-        }
     }
 }

@@ -79,9 +79,11 @@ public class GameService {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
         Game game = entityUtils.getEntity(gameId, Game.class);
-        Sport sport = sportRepository.findByName(NAME_OF_SPORT)
-                .orElseThrow(() -> new NotFoundException("해당 이름을 가진 스포츠가 존재하지 않습니다."));
-        Game updatedGame = request.toEntity(sport, manager, league);
-        game.updateAll(updatedGame);
+        game.updateName(request.name());
+        game.updateStartTime(request.startTime());
+        game.updateVideoId(request.videoId());
+        game.updateGameQuarter(request.quarter());
+        game.updateState(GameState.from(request.state()));
+        game.updateRound(Round.from(request.round()));
     }
 }

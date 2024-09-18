@@ -1,5 +1,6 @@
 package com.sports.server.command.game.domain;
 
+import com.sports.server.command.game.dto.GameRequestDto;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
@@ -145,14 +146,6 @@ public class Game extends BaseEntity<Game> {
         this.round = round;
     }
 
-    public void updateAll(Game updatedGame) {
-        updateName(updatedGame.name);
-        updateStartTime(updatedGame.startTime);
-        updateVideoId(updatedGame.videoId);
-        updateGameQuarter(updatedGame.gameQuarter);
-        updateState(updatedGame.state);
-        updateRound(updatedGame.round);
-    }
 
     public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round) {
