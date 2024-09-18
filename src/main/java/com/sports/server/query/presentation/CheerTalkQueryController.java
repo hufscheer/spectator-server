@@ -1,5 +1,6 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.CheerTalkQueryService;
 import com.sports.server.query.dto.response.CheerTalkResponse;
@@ -26,7 +27,8 @@ public class CheerTalkQueryController {
 
     @GetMapping("/leagues/{leagueId}/cheer-talks")
     public ResponseEntity<List<CheerTalkResponse>> getAllReportedCheerTalks(@PathVariable final Long leagueId,
-                                                                            @ModelAttribute final PageRequestDto pageRequest) {
-        return ResponseEntity.ok(cheerTalkQueryService.getReportedCheerTalksByLeagueId(leagueId, pageRequest));
+                                                                            @ModelAttribute final PageRequestDto pageRequest,
+                                                                            Member member) {
+        return ResponseEntity.ok(cheerTalkQueryService.getReportedCheerTalksByLeagueId(leagueId, pageRequest, member));
     }
 }
