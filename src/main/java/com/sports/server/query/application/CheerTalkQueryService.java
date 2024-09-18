@@ -8,7 +8,9 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.query.dto.response.CheerTalkResponse;
+import com.sports.server.query.dto.response.ReportedCheerTalkResponse;
 import com.sports.server.query.repository.CheerTalkDynamicRepository;
+import com.sports.server.query.repository.GameQueryRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CheerTalkQueryService {
 
     private final CheerTalkDynamicRepository cheerTalkDynamicRepository;
+
+    private final GameQueryRepository gameQueryRepository;
 
     private final EntityUtils entityUtils;
 
@@ -38,9 +42,9 @@ public class CheerTalkQueryService {
         return responses;
     }
 
-    public List<CheerTalkResponse> getReportedCheerTalksByLeagueId(final Long leagueId,
-                                                                   final PageRequestDto pageRequest,
-                                                                   final Member manager) {
+    public List<ReportedCheerTalkResponse> getReportedCheerTalksByLeagueId(final Long leagueId,
+                                                                           final PageRequestDto pageRequest,
+                                                                           final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
         if (!league.isManagedBy(manager)) {
@@ -51,7 +55,9 @@ public class CheerTalkQueryService {
                 leagueId, pageRequest.cursor(), pageRequest.size()
         );
 
-        return reportedCheerTalks.stream().map(CheerTalkResponse::new).toList();
+        return reportedCheerTalks.stream()
+                .map(cheerTalk -> new ReportedCheerTalkResponse(cheerTalk,
+                        gameQueryRepository.findByIdWithLeague(cheerTalk.getGameTeamId()))).toList();
     }
 
 }
