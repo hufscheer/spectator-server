@@ -9,9 +9,8 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.UnauthorizedException;
-import com.sports.server.query.dto.response.CheerTalkResponse;
+import com.sports.server.query.dto.response.ReportedCheerTalkResponse;
 import com.sports.server.support.ServiceTest;
-import com.sports.server.support.fixture.CheerTalkFixtureRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,9 +24,6 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 
     @Autowired
     private CheerTalkQueryService cheerTalkQueryService;
-
-    @Autowired
-    private CheerTalkFixtureRepository cheerTalkFixtureRepository;
 
     @Autowired
     private EntityUtils entityUtils;
@@ -55,7 +51,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
             Long reportedCheerTalkId = 1L;
 
             // when
-            List<CheerTalkResponse> results = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
+            List<ReportedCheerTalkResponse> results = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
                     leagueId, pageRequestDto, manager);
 
             // then
@@ -71,14 +67,13 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
             Long leagueId = 1L;
 
             // when
-            List<Long> cheerTalkIds = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
-                            leagueId, pageRequestDto, manager).stream()
-                    .map(CheerTalkResponse::cheerTalkId).toList();
+            List<ReportedCheerTalkResponse> responses = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
+                    leagueId, pageRequestDto, manager);
 
             // then
             assertThat(
-                    cheerTalkIds.stream()
-                            .map(id -> cheerTalkFixtureRepository.findLeagueByCheerTalkId(id).getId()).toList()
+                    responses.stream()
+                            .map(ReportedCheerTalkResponse::leagueId).toList()
             ).containsOnly(leagueId);
         }
 
