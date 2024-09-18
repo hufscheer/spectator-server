@@ -97,7 +97,7 @@ VALUES (1, 1, '선수1', '센터', 1, false, 1, 'CANDIDATE', false),
        (2, 1, '선수2', '파워 포워드', 2, false, 2, 'STARTER', false),
        (3, 1, '선수3', '슈팅 가드', 3, false, 3, 'STARTER', false),
        (4, 1, '선수4', '포인트 가드', 4, false, 4, 'STARTER', false),
-       (5, 1, '선수5', '스몰 포워드', 5, false, 5, 'STARTER', false);
+       (5, 1, '선수5', '스몰 포워드', 5, false, 5, 'STARTER', true);
 
 
 -- 농구 대전(game_id = 1) B팀 선수
@@ -107,7 +107,7 @@ VALUES (6, 2, '선수6', '센터', 1, true, 1, 'CANDIDATE', false),
        (7, 2, '선수7', '파워 포워드', 2, false, 1, 'STARTER', false),
        (8, 2, '선수8', '슈팅 가드', 3, false, 1, 'STARTER', false),
        (9, 2, '선수9', '포인트 가드', 4, false, 1, 'STARTER', false),
-       (10, 2, '선수10', '스몰 포워드', 5, false, 1, 'STARTER', false);
+       (10, 2, '선수10', '스몰 포워드', 5, false, 1, 'STARTER', true);
 
 -- 농구 대전 (game_id = 1) A팀 vs B팀
 -- User
