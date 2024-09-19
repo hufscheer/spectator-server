@@ -1,9 +1,7 @@
 package com.sports.server.query.acceptance;
 
-import com.sports.server.query.dto.response.RecordResponse;
-import com.sports.server.query.dto.response.ReplacementRecordResponse;
-import com.sports.server.query.dto.response.ScoreRecordResponse;
-import com.sports.server.query.dto.response.TimelineResponse;
+import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -32,6 +30,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
 
     private static final String SCORE_TYPE = "SCORE";
     private static final String REPLACEMENT_TYPE = "REPLACEMENT";
+    private static final String PROGRESS_TYPE = "GAME_PROGRESS";
 
     @Test
     void 게임의_타임라인을_조회한다() {
@@ -50,61 +49,88 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
         List<TimelineResponse> actual = toResponses(response, TimelineResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+
                 () -> assertThat(actual).isEqualTo(List.of(
                         new TimelineResponse(
                                 QUARTER2, List.of(
                                 new RecordResponse(
-                                        null, 4L, SCORE_TYPE,
+                                        null, 6L, PROGRESS_TYPE,
+                                        20,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        new ProgressRecordResponse(GameProgressType.GAME_END)
+                                ),
+                                new RecordResponse(
+                                        null, 5L, SCORE_TYPE,
                                         13,
                                         "선수10",
                                         2L,
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
-                                        new ScoreRecordResponse(4L, 3, List.of(
+                                        new ScoreRecordResponse(5L, 3, List.of(
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
                                         )),
+                                        null,
                                         null
                                 ),
                                 new RecordResponse(
-                                        null, 3L, REPLACEMENT_TYPE,
+                                        null, 4L, REPLACEMENT_TYPE,
                                         10,
                                         "선수2",
                                         1L,
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse(3L,"선수3")
+                                        new ReplacementRecordResponse(4L, "선수3"),
+                                        null
                                 )
                         )),
                         new TimelineResponse(
                                 QUARTER1, List.of(
                                 new RecordResponse(
-                                        null, 2L, REPLACEMENT_TYPE,
+                                        null, 3L, REPLACEMENT_TYPE,
                                         24,
                                         "선수6",
                                         2L,
                                         TEAM_B,
                                         TEAM_B_IMAGE_URL,
                                         null,
-                                        new ReplacementRecordResponse(2L,"선수7")
+                                        new ReplacementRecordResponse(3L, "선수7"),
+                                        null
                                 ),
                                 new RecordResponse(
-                                        null, 1L, SCORE_TYPE,
+                                        null, 2L, SCORE_TYPE,
                                         22,
                                         "선수2",
                                         1L,
                                         TEAM_A,
                                         TEAM_A_IMAGE_URL,
-                                        new ScoreRecordResponse(1L, 2, List.of(
+                                        new ScoreRecordResponse(2L, 2, List.of(
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
                                         )),
+                                        null,
                                         null
+                                ),
+                                new RecordResponse(
+                                        null, 1L, PROGRESS_TYPE,
+                                        0,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        new ProgressRecordResponse(GameProgressType.GAME_START)
                                 )
                         ))
                 ))
