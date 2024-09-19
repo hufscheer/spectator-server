@@ -30,7 +30,7 @@ class LeagueControllerTest extends DocumentationTest {
 	@Test
 	void 리그를_생성한다() throws Exception {
 		// given
-		LeagueRequestDto.Register request = new LeagueRequestDto.Register(1L, "우물정 제기차기 대회", "4강", LocalDateTime.now(), LocalDateTime.now());
+		LeagueRequestDto.Register request = new LeagueRequestDto.Register("우물정 제기차기 대회", "4강", LocalDateTime.now(), LocalDateTime.now());
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequestDto.Register.class));
 
@@ -44,7 +44,6 @@ class LeagueControllerTest extends DocumentationTest {
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                                 requestFields(
-                                        fieldWithPath("organizationId").type(JsonFieldType.NUMBER).description("조직 id"),
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("대회 이름"),
                                         fieldWithPath("maxRound").type(JsonFieldType.STRING).description("대회 진행 라운드 수"),
                                         fieldWithPath("startAt").type(JsonFieldType.STRING).description("대회 시작 시간"),
