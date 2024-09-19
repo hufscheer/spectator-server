@@ -6,20 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.query.dto.response.LeagueResponseWithGames;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
-import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
-import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse.LeagueTeamPlayerResponse;
-import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.ServiceTest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -55,7 +53,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("매니저가 생성한 리그만을 조회할 때")
+    @DisplayName("매니저가 생성한 리그만을 조회할 때(홈화면)")
     class LeaguesByManagerTest {
 
         private Member manager;
@@ -141,6 +139,52 @@ public class LeagueQueryServiceTest extends ServiceTest {
             assertThat(idsOfGameTeamsOfFirstGame).isEqualTo(List.of(1L, 2L));
         }
     }
+
+    @Nested
+    @DisplayName("매니저가 생성한 리그만을 조회할 때(대회 관리 화면)")
+    class LeaguesByManagerToManageTest {
+
+        private Member manager;
+        private List<LeagueResponseToManage> response;
+
+        @BeforeEach
+        void setUp() {
+            manager = entityUtils.getEntity(1L, Member.class);
+            response = leagueQueryService.findLeaguesByManagerToManage(manager);
+        }
+
+        @Test
+        void 다른_매니저가_생성한_리그는_조회되지_않는다() {
+            // then
+            List<Long> ids = response.stream()
+                    .map(LeagueResponseToManage::id)
+                    .toList();
+            assertFalse(ids.contains(8L), "다른 매니저가 생성한 리그는 조회 되어서는 안됩니다.");
+        }
+
+        @Test
+        void 리그가_진행중_시작전_종료_순으로_조회된다() {
+            // given
+            Map<String, Integer> orderMap = new HashMap<>();
+            orderMap.put(LeagueProgress.IN_PROGRESS.getDescription(), 1);
+            orderMap.put(LeagueProgress.BEFORE_START.getDescription(), 2);
+            orderMap.put(LeagueProgress.FINISHED.getDescription(), 3);
+
+            Comparator<String> comparator = Comparator.comparingInt(orderMap::get);
+
+            // then
+            assertAll(
+                    () -> {
+                        List<String> gameProgresses = response
+                                .stream()
+                                .map(LeagueResponseToManage::leagueProgress)
+                                .toList();
+                        assertThat(gameProgresses).isSortedAccordingTo(comparator);
+                    }
+            );
+        }
+    }
+
 
     @Nested
     @DisplayName("리그팀의 상세 정보를 조회할 때")
