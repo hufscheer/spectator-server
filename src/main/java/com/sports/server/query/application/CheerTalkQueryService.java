@@ -8,7 +8,7 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.query.dto.response.CheerTalkResponse;
-import com.sports.server.query.dto.response.CheerTalkResponseForManager;
+import com.sports.server.query.dto.response.ReportedCheerTalkResponse;
 import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import com.sports.server.query.repository.GameQueryRepository;
 import java.util.Collections;
@@ -42,9 +42,9 @@ public class CheerTalkQueryService {
         return responses;
     }
 
-    public List<CheerTalkResponseForManager> getReportedCheerTalksByLeagueId(final Long leagueId,
-                                                                             final PageRequestDto pageRequest,
-                                                                             final Member manager) {
+    public List<ReportedCheerTalkResponse> getReportedCheerTalksByLeagueId(final Long leagueId,
+                                                                           final PageRequestDto pageRequest,
+                                                                           final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
         if (!league.isManagedBy(manager)) {
@@ -56,7 +56,7 @@ public class CheerTalkQueryService {
         );
 
         return reportedCheerTalks.stream()
-                .map(cheerTalk -> new CheerTalkResponseForManager(cheerTalk,
+                .map(cheerTalk -> new ReportedCheerTalkResponse(cheerTalk,
                         gameQueryRepository.findByIdWithLeague(cheerTalk.getGameTeamId()))).toList();
     }
 

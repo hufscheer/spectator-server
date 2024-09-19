@@ -4,7 +4,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.CheerTalkQueryService;
 import com.sports.server.query.dto.response.CheerTalkResponse;
-import com.sports.server.query.dto.response.CheerTalkResponseForManager;
+import com.sports.server.query.dto.response.ReportedCheerTalkResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +27,9 @@ public class CheerTalkQueryController {
     }
 
     @GetMapping("/leagues/{leagueId}/cheer-talks")
-    public ResponseEntity<List<CheerTalkResponseForManager>> getAllReportedCheerTalks(@PathVariable final Long leagueId,
-                                                                                      @ModelAttribute final PageRequestDto pageRequest,
-                                                                                      Member member) {
+    public ResponseEntity<List<ReportedCheerTalkResponse>> getAllReportedCheerTalks(@PathVariable final Long leagueId,
+                                                                                    @ModelAttribute final PageRequestDto pageRequest,
+                                                                                    Member member) {
         return ResponseEntity.ok(cheerTalkQueryService.getReportedCheerTalksByLeagueId(leagueId, pageRequest, member));
     }
 }
