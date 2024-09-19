@@ -1,9 +1,7 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.query.dto.response.RecordResponse;
-import com.sports.server.query.dto.response.ReplacementRecordResponse;
-import com.sports.server.query.dto.response.ScoreRecordResponse;
-import com.sports.server.query.dto.response.TimelineResponse;
+import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -54,7 +52,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
                                         )),
-                                        new ReplacementRecordResponse(1L, "선수3")
+                                        new ReplacementRecordResponse(1L, "선수3"),
+                                        new ProgressRecordResponse(GameProgressType.QUARTER_START)
                                 ),
                                 new RecordResponse(
                                         null, 1L,  REPLACEMENT_TYPE,
@@ -69,7 +68,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
                                         )),
-                                        new ReplacementRecordResponse(1L, "선수3")
+                                        new ReplacementRecordResponse(1L, "선수3"),
+                                        new ProgressRecordResponse(GameProgressType.QUARTER_END)
                                 )
                         ))
                 ));
@@ -106,7 +106,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].replacementRecord.replacementRecordId").type(JsonFieldType.NUMBER)
                                         .description("REPLACEMENT 타입 기록의  ID"),
                                 fieldWithPath("[].records[].replacementRecord.replacedPlayerName").type(JsonFieldType.STRING)
-                                        .description("REPLACEMENT 타입일 때 교체되어 IN 되는 선수")
+                                        .description("REPLACEMENT 타입일 때 교체되어 IN 되는 선수"),
+                                fieldWithPath("[].records[].progressRecord.gameProgressType").type(JsonFieldType.STRING)
+                                        .description("PROGRESS 타입일 때 게임 진행 상태 타입 (GAME_START, QUARTER_START, QUARTER_END, GAME_END)")
                         )
                 ));
 

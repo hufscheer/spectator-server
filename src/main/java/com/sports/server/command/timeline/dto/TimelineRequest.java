@@ -1,17 +1,23 @@
 package com.sports.server.command.timeline.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.TimelineType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class TimelineRequest {
-    private final Long gameTeamId;
+public abstract class TimelineRequest {
     private final Long recordedQuarterId;
     private final Integer recordedAt;
 
+    @JsonIgnore
+    public abstract TimelineType getType();
+
     @Getter
     public static class RegisterScore extends TimelineRequest {
+        private final Long gameTeamId;
         private final Long scoreLineupPlayerId;
 
         public RegisterScore(
@@ -20,13 +26,20 @@ public class TimelineRequest {
                 Long scoreLineupPlayerId,
                 Integer recordedAt
         ) {
-            super(gameTeamId, recordedQuarterId, recordedAt);
+            super(recordedQuarterId, recordedAt);
+            this.gameTeamId = gameTeamId;
             this.scoreLineupPlayerId = scoreLineupPlayerId;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.SCORE;
         }
     }
 
     @Getter
     public static class RegisterReplacement extends TimelineRequest {
+        private final Long gameTeamId;
         private final Long originLineupPlayerId;
         private final Long replacementLineupPlayerId;
 
@@ -37,9 +50,34 @@ public class TimelineRequest {
                 Long replacementLineupPlayerId,
                 Integer recordedAt
         ) {
-            super(gameTeamId, recordedQuarterId, recordedAt);
+            super(recordedQuarterId, recordedAt);
+            this.gameTeamId = gameTeamId;
             this.originLineupPlayerId = originLineupPlayerId;
             this.replacementLineupPlayerId = replacementLineupPlayerId;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.REPLACEMENT;
+        }
+    }
+
+    @Getter
+    public static class RegisterProgress extends TimelineRequest {
+        private final GameProgressType gameProgressType;
+
+        public RegisterProgress(
+                Integer recordedAt,
+                Long recordedQuarterId,
+                GameProgressType gameProgressType
+        ) {
+            super(recordedQuarterId, recordedAt);
+            this.gameProgressType = gameProgressType;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.GAME_PROGRESS;
         }
     }
 }
