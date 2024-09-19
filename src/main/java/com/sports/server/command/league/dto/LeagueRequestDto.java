@@ -9,14 +9,13 @@ import com.sports.server.command.organization.domain.Organization;
 
 public class LeagueRequestDto {
 	public record Register(
-		Long organizationId,
 		String name,
 		String maxRound,
 		LocalDateTime startAt,
 		LocalDateTime endAt
 	) {
-		public League toEntity(final Member manager, final Organization organization) {
-			return new League(manager, organization, name, startAt, endAt, Round.from(maxRound));
+		public League toEntity(final Member manager) {
+			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.from(maxRound));
 		}
 	}
 
