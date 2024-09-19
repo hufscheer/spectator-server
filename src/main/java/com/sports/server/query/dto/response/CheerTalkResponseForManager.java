@@ -4,7 +4,7 @@ import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.game.domain.Game;
 import java.time.LocalDateTime;
 
-public record ReportedCheerTalkResponse(
+public record CheerTalkResponseForManager(
         Long cheerTalkId,
         Long gameId,
         Long leagueId,
@@ -15,7 +15,7 @@ public record ReportedCheerTalkResponse(
         String gameName,
         String leagueName
 ) {
-    public ReportedCheerTalkResponse(CheerTalk cheerTalk, Game game) {
+    public CheerTalkResponseForManager(CheerTalk cheerTalk, Game game) {
         this(
                 cheerTalk.getId(),
                 game.getId(),

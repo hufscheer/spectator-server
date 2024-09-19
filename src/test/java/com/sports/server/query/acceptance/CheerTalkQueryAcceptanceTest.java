@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.query.dto.response.CheerTalkResponse;
-import com.sports.server.query.dto.response.ReportedCheerTalkResponse;
+import com.sports.server.query.dto.response.CheerTalkResponseForManager;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -176,14 +176,14 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<ReportedCheerTalkResponse> actual = toResponses(response, ReportedCheerTalkResponse.class);
+        List<CheerTalkResponseForManager> actual = toResponses(response, CheerTalkResponseForManager.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
-                        .map(ReportedCheerTalkResponse::cheerTalkId)
+                        .map(CheerTalkResponseForManager::cheerTalkId)
                         .containsExactly(1L),
                 () -> assertThat(actual)
-                        .map(ReportedCheerTalkResponse::content)
+                        .map(CheerTalkResponseForManager::content)
                         .containsExactly("응원톡1")
         );
     }
