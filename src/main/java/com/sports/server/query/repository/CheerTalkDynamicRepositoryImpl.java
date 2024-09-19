@@ -22,13 +22,10 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
 
     @Override
     public List<CheerTalk> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size) {
-        DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-
         return applyPagination(
                 queryFactory.selectFrom(cheerTalk)
                         .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                        .where(gameTeam.game.id.eq(gameId))
-                        .where(booleanBuilder.build()),
+                        .where(gameTeam.game.id.eq(gameId)),
                 cursor,
                 size
         );
@@ -36,15 +33,12 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
 
     @Override
     public List<CheerTalk> findReportedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
-        DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder();
-
         return applyPagination(
                 queryFactory.selectFrom(cheerTalk)
                         .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
                         .join(report).on(report.cheerTalk.eq(cheerTalk))
                         .where(report.state.eq(ReportState.PENDING))
-                        .where(gameTeam.game.league.id.eq(leagueId))
-                        .where(booleanBuilder.build()),
+                        .where(gameTeam.game.league.id.eq(leagueId)),
                 cursor,
                 size
         );
