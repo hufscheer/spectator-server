@@ -16,8 +16,8 @@ public record LeagueResponseToManage(
         LocalDateTime startAt,
         LocalDateTime endAt
 ) {
-    public LeagueResponseToManage(League league) {
-        this(
+    public static LeagueResponseToManage of(League league) {
+        return new LeagueResponseToManage(
             league.getId(),
             league.getName(),
             LeagueProgress.getProgressDescription(LocalDateTime.now(), league),

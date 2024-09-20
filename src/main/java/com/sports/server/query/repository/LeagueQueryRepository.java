@@ -21,7 +21,8 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
 
     @Query(
             "SELECT l FROM League l "
-            + "WHERE l.manager =:member"
+                    + "LEFT JOIN FETCH l.leagueTeams "
+                    + "WHERE l.manager =:member"
     )
     List<League> findByManagerToManage(Member member);
 

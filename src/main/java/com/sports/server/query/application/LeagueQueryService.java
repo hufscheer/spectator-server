@@ -117,7 +117,7 @@ public class LeagueQueryService {
 
         return leagues.stream()
                 .sorted(comparator)
-                .map(LeagueResponseToManage::new)
+                .map(LeagueResponseToManage::of)
                 .toList();
     }
 
