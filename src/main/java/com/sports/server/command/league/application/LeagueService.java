@@ -25,8 +25,7 @@ public class LeagueService {
     private final LeagueRepository leagueRepository;
 
 	public void register(final Member manager, final LeagueRequestDto.Register request) {
-		Organization organization = entityUtils.getEntity(request.organizationId(), Organization.class);
-		leagueRepository.save(request.toEntity(manager, organization));
+		leagueRepository.save(request.toEntity(manager));
 	}
 
 	public void update(final Member manager, final LeagueRequestDto.Update request, final Long leagueId) {
