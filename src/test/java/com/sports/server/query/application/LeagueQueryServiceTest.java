@@ -1,5 +1,6 @@
 package com.sports.server.query.application;
 
+import static com.sports.server.query.application.LeagueQueryService.leagueProgressOrderMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -165,12 +166,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 리그가_진행중_시작전_종료_순으로_조회된다() {
             // given
-            Map<String, Integer> orderMap = new HashMap<>();
-            orderMap.put(LeagueProgress.IN_PROGRESS.getDescription(), 1);
-            orderMap.put(LeagueProgress.BEFORE_START.getDescription(), 2);
-            orderMap.put(LeagueProgress.FINISHED.getDescription(), 3);
-
-            Comparator<String> comparator = Comparator.comparingInt(orderMap::get);
+            Comparator<String> comparator = Comparator.comparingInt(leagueProgressOrderMap::get);
 
             // then
             assertAll(

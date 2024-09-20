@@ -112,17 +112,18 @@ public class LeagueQueryService {
     public List<LeagueResponseToManage> findLeaguesByManagerToManage(final Member manager) {
         List<League> leagues = leagueQueryRepository.findByManagerToManage(manager);
 
-        Map<String, Integer> orderMap = new HashMap<>();
-        orderMap.put(LeagueProgress.IN_PROGRESS.getDescription(), 1);
-        orderMap.put(LeagueProgress.BEFORE_START.getDescription(), 2);
-        orderMap.put(LeagueProgress.FINISHED.getDescription(), 3);
-
         Comparator<League> comparator = Comparator.comparing(
-                league -> orderMap.get(LeagueProgress.getProgressDescription(LocalDateTime.now(), league)));
+                league -> leagueProgressOrderMap.get(LeagueProgress.getProgressDescription(LocalDateTime.now(), league)));
 
         return leagues.stream()
                 .sorted(comparator)
                 .map(LeagueResponseToManage::new)
                 .toList();
     }
+
+    public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
+            Map.entry(LeagueProgress.IN_PROGRESS.getDescription(), 1),
+            Map.entry(LeagueProgress.BEFORE_START.getDescription(), 2),
+            Map.entry(LeagueProgress.FINISHED.getDescription(), 3)
+    );
 }
