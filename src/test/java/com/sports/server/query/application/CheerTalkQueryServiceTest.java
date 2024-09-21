@@ -9,7 +9,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.UnauthorizedException;
-import com.sports.server.query.dto.response.ReportedCheerTalkResponse;
+import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.ServiceTest;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
             Long reportedCheerTalkId = 1L;
 
             // when
-            List<ReportedCheerTalkResponse> results = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
+            List<CheerTalkResponse.Reported> results = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
                     leagueId, pageRequestDto, manager);
 
             // then
@@ -67,13 +67,13 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
             Long leagueId = 1L;
 
             // when
-            List<ReportedCheerTalkResponse> responses = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
+            List<CheerTalkResponse.Reported> responses = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
                     leagueId, pageRequestDto, manager);
 
             // then
             assertThat(
                     responses.stream()
-                            .map(ReportedCheerTalkResponse::leagueId).toList()
+                            .map(CheerTalkResponse.Reported::leagueId).toList()
             ).containsOnly(leagueId);
         }
 
