@@ -451,7 +451,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_응원톡_저장">응원톡 저장</a></li>
 <li><a href="#_응원톡_조회">응원톡 조회</a></li>
-<li><a href="#_신고된_리그의_응원톡_전체_조회">신고된 리그의 응원톡 전체 조회</a></li>
 </ul>
 </li>
 <li><a href="#_게임_api">게임 API</a>
@@ -713,166 +712,6 @@ Content-Length: 273
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].isBlocked</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">응원톡의 블락 여부</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_신고된_리그의_응원톡_전체_조회"><a class="link" href="#_신고된_리그의_응원톡_전체_조회">신고된 리그의 응원톡 전체 조회</a></h3>
-<div class="sect3">
-<h4 id="_신고된_리그의_응원톡_전체_조회_http_request"><a class="link" href="#_신고된_리그의_응원톡_전체_조회_http_request">HTTP request</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/1/cheer-talks?cursor=1&amp;size=2 HTTP/1.1
-Content-Type: application/json
-Host: www.api.hufstreaming.site
-Cookie: HCC_SES=temp-cookie</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_신고된_리그의_응원톡_전체_조회_query_parameters"><a class="link" href="#_신고된_리그의_응원톡_전체_조회_query_parameters">Query parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cursor</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">마지막 응원톡의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">조회하고자 하는 응원톡의 개수</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_신고된_리그의_응원톡_전체_조회_path_parameters"><a class="link" href="#_신고된_리그의_응원톡_전체_조회_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /leagues/{leagueId}/cheer-talks</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>leagueId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_신고된_리그의_응원톡_전체_조회_http_response"><a class="link" href="#_신고된_리그의_응원톡_전체_조회_http_response">HTTP response</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Content-Type: application/json
-Content-Length: 473
-
-[ {
-  "cheerTalkId" : 2,
-  "gameId" : 1,
-  "leagueId" : 1,
-  "content" : "응원해요",
-  "gameTeamId" : 1,
-  "createdAt" : "2024-01-21T11:46:00",
-  "isBlocked" : false,
-  "gameName" : "게임 이름",
-  "leagueName" : "리그 이름"
-}, {
-  "cheerTalkId" : 3,
-  "gameId" : 1,
-  "leagueId" : 1,
-  "content" : "파이팅",
-  "gameTeamId" : 2,
-  "createdAt" : "2024-01-21T11:46:00",
-  "isBlocked" : false,
-  "gameName" : "게임 이름",
-  "leagueName" : "리그 이름"
-} ]</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_신고된_리그의_응원톡_전체_조회_response_fields"><a class="link" href="#_신고된_리그의_응원톡_전체_조회_response_fields">Response fields</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].cheerTalkId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡이 등록된 게임의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].leagueId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡이 등록된 리그의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].content</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡의 내용</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡에 해당하는 게임팀의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].createdAt</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">생성된 날짜 및 시각</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].isBlocked</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡의 블락 여부</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡이 등록된 게임의 이름</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].leagueName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응원톡이 등록된 리그의 이름</p></td>
 </tr>
 </tbody>
 </table>
@@ -1762,7 +1601,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "경기전",
   "state" : "SCHEDULED",
-  "startTime" : "2024-09-18T16:43:37.938873",
+  "startTime" : "2024-09-18T18:41:01.634111",
   "idOfTeam1" : 1,
   "idOfTeam2" : 2,
   "videoId" : "videoId"
@@ -2077,8 +1916,8 @@ Cookie: HCC_SES=temp-cookie
   "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
   "maxRound" : "4강",
-  "startAt" : "2024-09-18T16:43:38.439745",
-  "endAt" : "2024-09-18T16:43:38.439752"
+  "startAt" : "2024-09-18T18:41:01.840974",
+  "endAt" : "2024-09-18T18:41:01.840975"
 }</code></pre>
 </div>
 </div>
@@ -2147,14 +1986,14 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /leagues/5124 HTTP/1.1
 Content-Type: application/json
-Content-Length: 165
+Content-Length: 166
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "훕치치배 망고 빨리먹기 대회",
-  "startAt" : "2024-09-18T14:45:04.67925",
-  "endAt" : "2024-09-18T14:45:04.679256",
+  "startAt" : "2024-09-18T18:41:01.856257",
+  "endAt" : "2024-09-18T18:41:01.856261",
   "maxRound" : "16강"
 }</code></pre>
 </div>
@@ -3034,12 +2873,12 @@ Content-Length: 633
   "state" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-18T14:45:10.841857",
-  "endAt" : "2024-09-18T14:45:10.841858",
+  "startAt" : "2024-09-18T18:41:05.056959",
+  "endAt" : "2024-09-18T18:41:05.056959",
   "inProgressGames" : [ {
     "id" : 1,
     "state" : "PLAYING",
-    "startTime" : "2024-09-18T14:45:10.841843",
+    "startTime" : "2024-09-18T18:41:05.056951",
     "gameTeams" : [ {
       "gameTeamId" : 1,
       "gameTeamName" : "경영 야생마",
@@ -3599,9 +3438,9 @@ Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "gameTeamId" : 1,
   "recordedQuarterId" : 2,
   "recordedAt" : 10,
+  "gameTeamId" : 1,
   "scoreLineupPlayerId" : 1
 }</code></pre>
 </div>
@@ -3625,6 +3464,45 @@ Cookie: HCC_SES=temp-cookie
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_득점_타임라인_생성_request_fields"><a class="link" href="#_득점_타임라인_생성_request_fields">Request fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 Id</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarterId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 Id</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>scoreLineupPlayerId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">득점 선수 Id</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">득점 시간</p></td>
 </tr>
 </tbody>
 </table>
@@ -3655,9 +3533,9 @@ Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "gameTeamId" : 1,
   "recordedQuarterId" : 1,
   "recordedAt" : 5,
+  "gameTeamId" : 1,
   "originLineupPlayerId" : 2,
   "replacementLineupPlayerId" : 3
 }</code></pre>
@@ -3744,6 +3622,95 @@ Location:</code></pre>
 </div>
 </div>
 <div class="sect2">
+<h3 id="_게임_진행_타임라인_생성"><a class="link" href="#_게임_진행_타임라인_생성">게임 진행 타임라인 생성</a></h3>
+<div class="sect3">
+<h4 id="_게임_진행_타임라인_생성_http_request"><a class="link" href="#_게임_진행_타임라인_생성_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/progress HTTP/1.1
+Content-Type: application/json
+Content-Length: 90
+Host: www.api.hufstreaming.site
+Cookie: HCC_SES=temp-cookie
+
+{
+  "recordedQuarterId" : 1,
+  "recordedAt" : 10,
+  "gameProgressType" : "QUARTER_START"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_게임_진행_타임라인_생성_path_parameters"><a class="link" href="#_게임_진행_타임라인_생성_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /games/{gameId}/timelines/progress</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_게임_진행_타임라인_생성_request_fields"><a class="link" href="#_게임_진행_타임라인_생성_request_fields">Request fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarterId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 Id</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체 시간</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameProgressType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">변경할 게임 진행 상황</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_게임_진행_타임라인_생성_http_response"><a class="link" href="#_게임_진행_타임라인_생성_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Location:</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_게임의_타임라인_조회"><a class="link" href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></h3>
 <div class="sect3">
 <h4 id="_게임의_타임라인_조회_http_request"><a class="link" href="#_게임의_타임라인_조회_http_request">HTTP request</a></h4>
@@ -3786,7 +3753,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1344
+Content-Length: 1492
 
 [ {
   "gameQuarter" : "2쿼터",
@@ -3814,6 +3781,9 @@ Content-Length: 1344
     "replacementRecord" : {
       "replacementRecordId" : 1,
       "replacedPlayerName" : "선수3"
+    },
+    "progressRecord" : {
+      "gameProgressType" : "QUARTER_START"
     }
   }, {
     "recordId" : 1,
@@ -4147,7 +4117,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 25 Sep 2024 05:44:52 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 25 Sep 2024 09:40:56 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -4221,7 +4191,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-18 14:43:19 +0900
+Last updated 2024-09-18 18:40:18 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
