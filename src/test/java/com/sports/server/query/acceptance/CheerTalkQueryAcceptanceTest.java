@@ -171,7 +171,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/cheer-talks", leagueId)
+                .get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
                 .then().log().all()
                 .extract();
 

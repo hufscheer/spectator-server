@@ -26,7 +26,7 @@ public class CheerTalkQueryController {
         return ResponseEntity.ok(cheerTalkQueryService.getCheerTalksByGameId(gameId, pageRequest));
     }
 
-    @GetMapping("/leagues/{leagueId}/cheer-talks")
+    @GetMapping("/leagues/{leagueId}/cheer-talks/reported")
     public ResponseEntity<List<ReportedCheerTalkResponse>> getAllReportedCheerTalks(@PathVariable final Long leagueId,
                                                                                     @ModelAttribute final PageRequestDto pageRequest,
                                                                                     Member member) {

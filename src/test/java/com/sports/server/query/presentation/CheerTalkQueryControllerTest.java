@@ -99,7 +99,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
         ).willReturn(response);
 
         // when
-        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/cheer-talks", leagueId)
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
                 .queryParam("cursor", String.valueOf(1))
                 .queryParam("size", String.valueOf(2))
                 .contentType(MediaType.APPLICATION_JSON)

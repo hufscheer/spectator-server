@@ -48,7 +48,7 @@ public class SecurityConfig {
                                 mvc.pattern(HttpMethod.PUT, "/leagues/{leagueId}/teams/{teamId}"),
                                 mvc.pattern(HttpMethod.DELETE, "/leagues/{leagueId}/teams/{teamId}"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams/{teamId}/delete-logo"),
-                                mvc.pattern(HttpMethod.GET, "/leagues/{leagueId}/cheer-talks"),
+                                mvc.pattern(HttpMethod.GET, "/leagues/{leagueId}/cheer-talks/reported"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/games"),
                                 mvc.pattern(HttpMethod.POST, "/games/*/timelines/**"),
                                 mvc.pattern(HttpMethod.POST, "/games/{gameId}/lineup-players/{lineupPlayerId}/**")
