@@ -20,7 +20,7 @@ public class CheerTalkQueryController {
     private final CheerTalkQueryService cheerTalkQueryService;
 
     @GetMapping("games/{gameId}/cheer-talks")
-    public ResponseEntity<List<CheerTalkResponse>> getAllCheerTalks(@PathVariable final Long gameId,
+    public ResponseEntity<List<CheerTalkResponse.ForSpectator>> getAllCheerTalks(@PathVariable final Long gameId,
                                                                     @ModelAttribute final PageRequestDto pageRequest) {
 
         return ResponseEntity.ok(cheerTalkQueryService.getCheerTalksByGameId(gameId, pageRequest));

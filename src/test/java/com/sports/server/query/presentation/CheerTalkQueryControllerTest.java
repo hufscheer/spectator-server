@@ -36,11 +36,11 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
         PageRequestDto pageRequestDto = new PageRequestDto(1L, 2);
 
         LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
-        List<CheerTalkResponse> response = List.of(
-                new CheerTalkResponse(
+        List<CheerTalkResponse.ForSpectator> response = List.of(
+                new CheerTalkResponse.ForSpectator(
                         2L, "응원해요", 1L, createdAt, false
                 ),
-                new CheerTalkResponse(
+                new CheerTalkResponse.ForSpectator(
                         3L, "파이팅", 2L, createdAt, false
                 )
         );
