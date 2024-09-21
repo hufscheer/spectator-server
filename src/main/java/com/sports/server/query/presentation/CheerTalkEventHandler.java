@@ -30,7 +30,7 @@ public class CheerTalkEventHandler {
 
         messagingTemplate.convertAndSend(
                 DESTINATION + game.getId(),
-                new CheerTalkResponse(cheerTalk)
+                new CheerTalkResponse.ForSpectator(cheerTalk)
         );
 
     }
