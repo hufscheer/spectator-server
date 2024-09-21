@@ -3,7 +3,6 @@ package com.sports.server.command.report.application;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.common.application.TextFileProcessor;
-import java.io.IOException;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class ReportProcessor {
 
     private Set<String> cachedBadWords;
 
-    public void check(CheerTalk cheerTalk, Report report) throws IOException {
+    public void check(CheerTalk cheerTalk, Report report) {
 
         if (cachedBadWords == null) {
             cachedBadWords = textFileProcessor.readFile(FILE_NAME, DELIM);

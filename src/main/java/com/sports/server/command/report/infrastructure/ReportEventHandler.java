@@ -4,7 +4,6 @@ import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.report.application.ReportProcessor;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportEvent;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -18,14 +17,14 @@ public class ReportEventHandler {
 
     @TransactionalEventListener
     @Async("asyncThreadPool")
-    public void handle(ReportEvent event) throws IOException {
+    public void handle(ReportEvent event) {
         Report report = event.report();
         if (report.isUnchecked()) {
             checkReport(report);
         }
     }
 
-    private void checkReport(Report report) throws IOException {
+    private void checkReport(Report report) {
         CheerTalk cheerTalk = report.getCheerTalk();
         reportProcessor.check(cheerTalk, report);
     }

@@ -8,7 +8,6 @@ import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportState;
 import com.sports.server.support.ServiceTest;
-import java.io.IOException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ public class ReportProcessorTest extends ServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"개같아", "뒤질", "ezr"})
-    void 욕설이_포함된_댓글인_경우_신고의_상태가_VALID가_되고_댓글이_블락된다(String badWord) throws IOException {
+    void 욕설이_포함된_댓글인_경우_신고의_상태가_VALID가_되고_댓글이_블락된다(String badWord) {
 
         // given
         CheerTalk cheerTalk = entityBuilder(CheerTalk.class)
@@ -43,7 +42,7 @@ public class ReportProcessorTest extends ServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"욕이 아님", "욕아님"})
-    void 욕설이_포함되지_않은_경우_신고의_상태가_PENDING이_된다(String badWord) throws IOException {
+    void 욕설이_포함되지_않은_경우_신고의_상태가_PENDING이_된다(String badWord) {
 
         // given
         CheerTalk cheerTalk = entityBuilder(CheerTalk.class)

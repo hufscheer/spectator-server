@@ -11,7 +11,6 @@ import com.sports.server.command.report.application.ReportProcessor;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportEvent;
 import com.sports.server.support.ServiceTest;
-import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -51,7 +50,7 @@ class ReportEventHandlerTest extends ServiceTest {
         }
 
         @Test
-        void 아직_검사가_안된_신고는_검사를_요청한다() throws IOException {
+        void 아직_검사가_안된_신고는_검사를_요청한다() {
             // given
             given(report.isUnchecked()).willReturn(true);
             ReportEvent reportEvent = new ReportEvent(report);
@@ -66,7 +65,7 @@ class ReportEventHandlerTest extends ServiceTest {
         }
 
         @Test
-        void 이미_검사된_신고는_검사를_요청하지_않는다() throws IOException {
+        void 이미_검사된_신고는_검사를_요청하지_않는다() {
             // given
             given(report.isUnchecked()).willReturn(false);
             ReportEvent reportEvent = new ReportEvent(report);
@@ -80,7 +79,7 @@ class ReportEventHandlerTest extends ServiceTest {
 
 
         // 추후 람다로 이전 시 필요
-        void 아직_검사가_안된_신고는_검사를_람다_서버로_요청한다() throws IOException {
+        void 아직_검사가_안된_신고는_검사를_람다_서버로_요청한다() {
             // given
             given(report.isUnchecked()).willReturn(true);
             given(reportCheckClient.check(any()))
@@ -96,7 +95,7 @@ class ReportEventHandlerTest extends ServiceTest {
         }
 
         // 추후 람다로 이전 시 필요
-        void 이미_검사된_신고는_람다_서버로_검사를_요청하지_않는다() throws IOException {
+        void 이미_검사된_신고는_람다_서버로_검사를_요청하지_않는다() {
             // given
             given(report.isUnchecked()).willReturn(false);
             given(reportCheckClient.check(any()))
