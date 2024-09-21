@@ -27,7 +27,6 @@ public class ReportProcessor {
 
         if (cachedBadWords.contains(cheerTalk.getContent())) {
             report.updateToValid();
-            cheerTalk.block();
             return;
         }
         report.updateToPending();
