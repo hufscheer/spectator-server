@@ -18,10 +18,15 @@ public class ReportProcessor {
     private static final String FILE_NAME = "static/extra_bad_words.txt";
     private static final String DELIM = ",";
 
-    public void check(CheerTalk cheerTalk, Report report) throws IOException {
-        Set<String> badWords = textFileProcessor.readFile(FILE_NAME, DELIM);
+    private Set<String> cachedBadWords;
 
-        if (badWords.contains(cheerTalk.getContent())) {
+    public void check(CheerTalk cheerTalk, Report report) throws IOException {
+
+        if (cachedBadWords == null) {
+            cachedBadWords = textFileProcessor.readFile(FILE_NAME, DELIM);
+        }
+
+        if (cachedBadWords.contains(cheerTalk.getContent())) {
             report.updateToValid();
             cheerTalk.block();
             return;
