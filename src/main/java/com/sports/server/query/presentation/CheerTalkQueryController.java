@@ -31,4 +31,12 @@ public class CheerTalkQueryController {
                                                                                     Member member) {
         return ResponseEntity.ok(cheerTalkQueryService.getReportedCheerTalksByLeagueId(leagueId, pageRequest, member));
     }
+
+    @GetMapping("/leagues/{leagueId}/cheer-talks/blocked")
+    public ResponseEntity<List<CheerTalkResponse.Blocked>> getAllBlockedCheerTalks(
+        @PathVariable final Long leagueId,
+        @ModelAttribute final PageRequestDto pageable,
+        Member member) {
+        return ResponseEntity.ok(cheerTalkQueryService.getBlockedCheerTalksByLeagueId(leagueId, pageable, member));
+    }
 }
