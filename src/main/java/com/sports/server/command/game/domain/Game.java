@@ -142,4 +142,9 @@ public class Game extends BaseEntity<Game> {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
         }
     }
+
+    public void play() {
+        this.state = GameState.PLAYING;
+        this.gameQuarter = sport.getAfterStartQuarter().getName();
+    }
 }

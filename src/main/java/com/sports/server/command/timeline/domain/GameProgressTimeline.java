@@ -34,7 +34,9 @@ public class GameProgressTimeline extends Timeline {
 
     @Override
     public void apply() {
-        // TODO Game 상태 변경
+        if (gameProgressType == GameProgressType.GAME_START) {
+            game.play();
+        }
     }
 
     @Override
