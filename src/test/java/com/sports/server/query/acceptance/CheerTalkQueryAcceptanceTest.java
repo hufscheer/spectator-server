@@ -187,4 +187,40 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly("응원톡1")
         );
     }
+
+    @Test
+    void 리그의_차단되지_않은_응원톡을_모두_조회한다() {
+
+        // given
+        Long leagueId = 1L;
+
+        configureMockJwtForEmail("john@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/{leagueId}/cheer-talks", leagueId)
+                .then().log().all()
+                .extract();
+
+        // then
+        List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse.ForManager::cheerTalkId)
+                        .containsExactly(13L, 12L, 11L, 10L, 9L, 8L, 7L, 6L, 5L, 4L),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse.ForManager::content)
+                        .containsExactly(
+                                "응원톡13", "응원톡12", "응원톡11", "응원톡10", "응원톡9", "응원톡8",
+                                "응원톡7", "응원톡6", "응원톡5", "응원톡4"
+                        ),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse.ForManager::isBlocked)
+                        .containsOnly(false)
+        );
+    }
 }
