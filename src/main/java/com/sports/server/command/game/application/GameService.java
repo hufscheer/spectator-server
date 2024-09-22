@@ -1,6 +1,5 @@
 package com.sports.server.command.game.application;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
 import com.sports.server.command.game.domain.GameTeam;
@@ -11,8 +10,8 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.command.sport.domain.SportRepository;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.NotFoundException;
-import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +23,7 @@ public class GameService {
     private final EntityUtils entityUtils;
     private final GameRepository gameRepository;
     private final SportRepository sportRepository;
+    private final PermissionValidator permissionValidator;
     private static final String NAME_OF_SPORT = "축구";
 
     @Transactional
@@ -45,28 +45,18 @@ public class GameService {
         game.addTeam(gameTeam1);
         game.addTeam(gameTeam2);
 
-        leagueTeam1.getLeagueTeamPlayers().stream()
+        leagueTeam1.getLeagueTeamPlayers()
                 .forEach(gameTeam1::registerLineup);
-        leagueTeam2.getLeagueTeamPlayers().stream()
+        leagueTeam2.getLeagueTeamPlayers()
                 .forEach(gameTeam2::registerLineup);
     }
 
     private Game saveGame(Long leagueId, Member manager, GameRequestDto.Register requestDto) {
         Sport sport = sportRepository.findByName(NAME_OF_SPORT)
                 .orElseThrow(() -> new NotFoundException("해당 이름을 가진 스포츠가 존재하지 않습니다."));
-        League league = getLeagueAndCheckPermission(leagueId, manager);
+        League league = permissionValidator.checkPermissionAndGet(leagueId, manager, League.class);
         Game game = requestDto.toEntity(sport, manager, league);
         gameRepository.save(game);
         return game;
-    }
-
-    private League getLeagueAndCheckPermission(final Long leagueId, final Member manager) {
-        League league = entityUtils.getEntity(leagueId, League.class);
-
-        if (!league.isManagedBy(manager)) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-        }
-
-        return league;
     }
 }

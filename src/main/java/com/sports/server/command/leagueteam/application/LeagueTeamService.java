@@ -1,6 +1,5 @@
 package com.sports.server.command.leagueteam.application;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
@@ -10,8 +9,8 @@ import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.NotFoundException;
-import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,10 @@ public class LeagueTeamService {
     private final LeagueTeamRepository leagueTeamRepository;
     private final LeagueTeamPlayerRepository leagueTeamPlayerRepository;
     private final EntityUtils entityUtils;
+    private final PermissionValidator permissionValidator;
 
     public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
-        League league = getLeagueAndCheckPermission(leagueId, manager);
+        League league = permissionValidator.checkPermissionAndGet(leagueId, manager, League.class);
 
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
@@ -46,7 +46,7 @@ public class LeagueTeamService {
     }
 
     public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
-        getLeagueAndCheckPermission(leagueId, manager);
+        permissionValidator.checkPermission(leagueId, manager, League.class);
         LeagueTeam leagueTeam = getLeagueTeam(teamId);
 
         leagueTeam.updateInfo(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
@@ -57,7 +57,7 @@ public class LeagueTeamService {
     }
 
     public void delete(Long leagueId, Member manager, Long teamId) {
-        League league = getLeagueAndCheckPermission(leagueId, manager);
+        League league = permissionValidator.checkPermissionAndGet(leagueId, manager, League.class);
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         leagueTeam.isParticipate(league);
 
@@ -102,7 +102,7 @@ public class LeagueTeamService {
     }
 
     public void deleteLogoImage(Long leagueId, Member manager, Long teamId) {
-        getLeagueAndCheckPermission(leagueId, manager);
+        permissionValidator.checkPermission(leagueId, manager, League.class);
 
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         leagueTeam.deleteLogoImageUrl();
@@ -115,13 +115,4 @@ public class LeagueTeamService {
         return logoImageUrl.replace(originPrefix, replacePrefix);
     }
 
-    private League getLeagueAndCheckPermission(final Long leagueId, final Member manager) {
-        League league = entityUtils.getEntity(leagueId, League.class);
-
-        if (!league.isManagedBy(manager)) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-        }
-
-        return league;
-    }
 }
