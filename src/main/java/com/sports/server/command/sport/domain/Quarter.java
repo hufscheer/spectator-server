@@ -25,4 +25,8 @@ public class Quarter extends BaseEntity<Quarter> {
     public boolean isOrder(Integer order) {
         return this.order.equals(order);
     }
+
+    public boolean isPreviousThan(Quarter other) {
+        return this.order < other.order;
+    }
 }

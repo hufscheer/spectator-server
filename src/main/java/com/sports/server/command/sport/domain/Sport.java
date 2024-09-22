@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -31,5 +32,11 @@ public class Sport extends BaseEntity<Sport> {
                 .filter(quarter -> quarter.isOrder(AFTER_START_QUARTER_ORDER))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("경기 시작 후의 쿼터가 존재하지 않습니다."));
+    }
+
+    public Quarter getEndQuarter() {
+        return quarters.stream()
+                .max(Comparator.comparing(Quarter::getOrder))
+                .orElseThrow(() -> new IllegalArgumentException("최종 쿼터가 존재하지 않습니다."));
     }
 }

@@ -3,6 +3,7 @@ package com.sports.server.command.game.domain;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
@@ -145,6 +146,24 @@ public class Game extends BaseEntity<Game> {
 
     public void play() {
         this.state = GameState.PLAYING;
-        this.gameQuarter = sport.getAfterStartQuarter().getName();
+        updateQuarter(sport.getAfterStartQuarter());
+    }
+
+    public void end() {
+        this.state = GameState.FINISHED;
+        updateQuarter(sport.getEndQuarter());
+    }
+
+    public void updateQuarter(Quarter quarter) {
+        this.gameQuarter = quarter.getName();
+        this.quarterChangedAt = LocalDateTime.now();
+    }
+
+    public Quarter getQuarter() {
+        return sport.getQuarters()
+                .stream()
+                .filter(quarter -> quarter.getName().equals(gameQuarter))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 쿼터가 존재하지 않습니다."));
     }
 }

@@ -2,10 +2,12 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @DiscriminatorValue("GAME_PROGRESS")
@@ -25,6 +27,16 @@ public class GameProgressTimeline extends Timeline {
     ) {
         super(game, quarter, recordedAt);
         this.gameProgressType = gameProgressType;
+
+        validateQuarter(game, quarter);
+    }
+
+    private void validateQuarter(Game game, Quarter quarter) {
+        Quarter nowQuarter = game.getQuarter();
+
+        if (quarter.isPreviousThan(nowQuarter)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이전 쿼터로의 진행은 불가능합니다.");
+        }
     }
 
     @Override
@@ -36,6 +48,14 @@ public class GameProgressTimeline extends Timeline {
     public void apply() {
         if (gameProgressType == GameProgressType.GAME_START) {
             game.play();
+        }
+
+        if (gameProgressType == GameProgressType.QUARTER_START) {
+            game.updateQuarter(recordedQuarter);
+        }
+
+        if (gameProgressType == GameProgressType.GAME_END) {
+            game.end();
         }
     }
 
