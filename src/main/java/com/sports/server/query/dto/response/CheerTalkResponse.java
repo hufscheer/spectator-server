@@ -59,7 +59,7 @@ public class CheerTalkResponse {
 	public record Blocked(
 		Long cheerTalkId,
 		Long gameId,
-		Long LeagueId,
+		Long leagueId,
 		String content,
 		LocalDateTime createdAt,
 		String gameName,
