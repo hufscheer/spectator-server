@@ -96,7 +96,7 @@ public class LeagueQueryService {
     private Map<League, List<Game>> getGamesForLeague(List<League> leagues) {
         return leagues.stream()
                 .collect(toMap(league -> league,
-                        league -> gameQueryRepository.findPlayingGamesByLeagueWithGameTeams(league)));
+                        gameQueryRepository::findPlayingGamesByLeagueWithGameTeams));
     }
 
 
