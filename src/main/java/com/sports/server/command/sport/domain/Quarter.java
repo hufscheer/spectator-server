@@ -18,4 +18,7 @@ public class Quarter extends BaseEntity<Quarter> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sports_id")
     private Sport sport;
+
+    @Column(name = "_order")
+    private Integer order;
 }
