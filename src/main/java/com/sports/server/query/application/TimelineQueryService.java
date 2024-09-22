@@ -28,7 +28,7 @@ public class TimelineQueryService {
 
         return timelines.keySet()
                 .stream()
-                .sorted(comparingLong(Quarter::getId).reversed())
+                .sorted(comparingLong(Quarter::getOrder).reversed().thenComparing(Quarter::getId).reversed())
                 .map(quarter -> TimelineResponse.of(
                         quarter.getName(),
                         timelines.get(quarter)

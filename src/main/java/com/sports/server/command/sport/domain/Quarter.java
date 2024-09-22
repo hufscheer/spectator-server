@@ -19,6 +19,6 @@ public class Quarter extends BaseEntity<Quarter> {
     @JoinColumn(name = "sports_id")
     private Sport sport;
 
-    @Column(name = "_order")
-    private Integer order;
+    @Column(name = "_order", nullable = false)
+    private Integer order = 0;
 }

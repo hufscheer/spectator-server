@@ -1,1 +1,1 @@
-ALTER TABLE quarters ADD COLUMN _order INT;
+ALTER TABLE quarters ADD COLUMN _order INT DEFAULT 0;
