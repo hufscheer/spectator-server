@@ -51,7 +51,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
             Long reportedCheerTalkId = 1L;
 
             // when
-            List<CheerTalkResponse.Reported> results = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
+            List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
                     leagueId, pageRequestDto, manager);
 
             // then
@@ -67,13 +67,13 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
             Long leagueId = 1L;
 
             // when
-            List<CheerTalkResponse.Reported> responses = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
+            List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getReportedCheerTalksByLeagueId(
                     leagueId, pageRequestDto, manager);
 
             // then
             assertThat(
                     responses.stream()
-                            .map(CheerTalkResponse.Reported::leagueId).toList()
+                            .map(CheerTalkResponse.ForManager::leagueId).toList()
             ).containsOnly(leagueId);
         }
 
