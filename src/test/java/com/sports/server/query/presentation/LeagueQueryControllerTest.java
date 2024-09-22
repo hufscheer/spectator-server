@@ -229,8 +229,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         );
 
         List<LeagueResponseWithInProgressGames> responses = List.of(
-                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now(), inProgressGames));
+                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", inProgressGames));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -253,10 +252,6 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].state").type(JsonFieldType.STRING)
                                         .description("리그의 진행 상태 ex. 진행 중, 종료"),
-                                fieldWithPath("[].sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀의 수"),
-                                fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
-                                fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
-                                fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
                                 fieldWithPath("[].inProgressGames").type(JsonFieldType.ARRAY).description("진행 중인 게임들"),
                                 fieldWithPath("[].inProgressGames[].id").type(JsonFieldType.NUMBER)
                                         .description("진행 중인 게임의 ID"),
