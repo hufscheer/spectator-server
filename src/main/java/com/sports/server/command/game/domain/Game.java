@@ -144,6 +144,10 @@ public class Game extends BaseEntity<Game> {
         }
     }
 
+    public void updateState(GameState state) {
+        this.state = state;
+    }
+
     public void play() {
         this.state = GameState.PLAYING;
         updateQuarter(sport.getAfterStartQuarter());
@@ -157,6 +161,11 @@ public class Game extends BaseEntity<Game> {
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.getName();
         this.quarterChangedAt = LocalDateTime.now();
+    }
+
+    public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
+        this.gameQuarter = quarter.getName();
+        this.quarterChangedAt = changedAt;
     }
 
     public Quarter getQuarter() {

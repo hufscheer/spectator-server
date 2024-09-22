@@ -21,10 +21,11 @@ class GameProgressTimelineTest {
     private Quarter 경기전;
     private Quarter 전반전;
     private Quarter 후반전;
+    private Quarter 연장전;
     private Quarter 승부차기;
     private Quarter 경기후;
 
-    private Sport sport;
+    private Game game;
 
     @BeforeEach
     void setUp() {
@@ -43,36 +44,36 @@ class GameProgressTimelineTest {
                 .set("order", 3)
                 .sample();
 
+        연장전 = entityBuilder(Quarter.class)
+                .set("name", "연장전")
+                .set("order", 4)
+                .sample();
+
         승부차기 = entityBuilder(Quarter.class)
                 .set("name", "승부차기")
-                .set("order", 4)
+                .set("order", 5)
                 .sample();
 
         경기후 = entityBuilder(Quarter.class)
                 .set("name", "경기후")
-                .set("order", 5)
+                .set("order", 6)
                 .sample();
 
-        sport = entityBuilder(Sport.class)
+        Sport sport = entityBuilder(Sport.class)
                 .set("name", "축구")
                 .set("quarters", List.of(경기전, 전반전, 후반전, 승부차기, 경기후))
+                .sample();
+
+        game = entityBuilder(Game.class)
+                .set("teams", new ArrayList<>())
+                .set("gameQuarter", 경기전.getName())
+                .set("state", GameState.SCHEDULED)
+                .set("sport", sport)
                 .sample();
     }
 
     @Nested
     class ApplyTest {
-        private Game game;
-
-        @BeforeEach
-        void setUp() {
-            game = entityBuilder(Game.class)
-                    .set("teams", new ArrayList<>())
-                    .set("gameQuarter", 경기전.getName())
-                    .set("state", GameState.SCHEDULED)
-                    .set("sport", sport)
-                    .sample();
-        }
-
         @Test
         void 경기_시작_타임라인을_생성한다() {
             // when
@@ -188,7 +189,7 @@ class GameProgressTimelineTest {
             // when
             GameProgressTimeline timeline = new GameProgressTimeline(
                     game,
-                    후반전,
+                    경기후,
                     90,
                     GameProgressType.GAME_END
             );
@@ -215,6 +216,196 @@ class GameProgressTimelineTest {
                     GameProgressType.QUARTER_START)
             ).isInstanceOf(CustomException.class)
                     .hasMessage("이전 쿼터로의 진행은 불가능합니다.");
+        }
+    }
+
+    @Nested
+    class RollbackTest {
+        @Test
+        void 경기_시작_타임라인을_롤백한다() {
+            // given
+            GameProgressTimeline timeline = new GameProgressTimeline(
+                    game,
+                    경기전,
+                    0,
+                    GameProgressType.GAME_START
+            );
+
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(경기전.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.SCHEDULED)
+            );
+        }
+
+        @Test
+        void 전반전_시작_타임라인을_롤백한다() {
+            // given
+            new GameProgressTimeline(
+                    game,
+                    경기전,
+                    0,
+                    GameProgressType.GAME_START
+            ).apply();
+
+            GameProgressTimeline timeline = new GameProgressTimeline(
+                    game,
+                    전반전,
+                    0,
+                    GameProgressType.QUARTER_START
+            );
+
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 전반전_종료_타임라인을_롤백한다() {
+            // given
+            new GameProgressTimeline(
+                    game,
+                    경기전,
+                    0,
+                    GameProgressType.GAME_START
+            ).apply();
+
+            new GameProgressTimeline(
+                    game,
+                    전반전,
+                    0,
+                    GameProgressType.QUARTER_START
+            ).apply();
+
+            GameProgressTimeline timeline = new GameProgressTimeline(
+                    game,
+                    전반전,
+                    45,
+                    GameProgressType.QUARTER_END
+            );
+
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 후반전_시작_타임라인을_롤백한다() {
+            // given
+            new GameProgressTimeline(
+                    game,
+                    경기전,
+                    0,
+                    GameProgressType.GAME_START
+            ).apply();
+
+            new GameProgressTimeline(
+                    game,
+                    전반전,
+                    0,
+                    GameProgressType.QUARTER_START
+            ).apply();
+
+            new GameProgressTimeline(
+                    game,
+                    전반전,
+                    45,
+                    GameProgressType.QUARTER_END
+            ).apply();
+
+            GameProgressTimeline timeline = new GameProgressTimeline(
+                    game,
+                    후반전,
+                    50,
+                    GameProgressType.QUARTER_START
+            );
+
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 경기_종료_타임라인을_롤백한다() {
+            // given
+            new GameProgressTimeline(
+                    game,
+                    경기전,
+                    0,
+                    GameProgressType.GAME_START
+            ).apply();
+
+            new GameProgressTimeline(
+                    game,
+                    전반전,
+                    0,
+                    GameProgressType.QUARTER_START
+            ).apply();
+
+            new GameProgressTimeline(
+                    game,
+                    전반전,
+                    45,
+                    GameProgressType.QUARTER_END
+            ).apply();
+
+            new GameProgressTimeline(
+                    game,
+                    후반전,
+                    50,
+                    GameProgressType.QUARTER_START
+            ).apply();
+
+            new GameProgressTimeline(
+                    game,
+                    후반전,
+                    90,
+                    GameProgressType.QUARTER_END
+            ).apply();
+
+            GameProgressTimeline timeline = new GameProgressTimeline(
+                    game,
+                    경기후,
+                    90,
+                    GameProgressType.GAME_END
+            );
+
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(후반전.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
         }
     }
 }

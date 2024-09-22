@@ -1,6 +1,7 @@
 package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
@@ -8,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+
+import java.time.LocalDateTime;
 
 @Entity
 @DiscriminatorValue("GAME_PROGRESS")
@@ -19,6 +22,12 @@ public class GameProgressTimeline extends Timeline {
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "previous_quarter_id")
+    private Quarter previousQuarter;
+
+    private LocalDateTime previousQuarterChangedAt;
+
     public GameProgressTimeline(
             Game game,
             Quarter quarter,
@@ -27,14 +36,14 @@ public class GameProgressTimeline extends Timeline {
     ) {
         super(game, quarter, recordedAt);
         this.gameProgressType = gameProgressType;
+        this.previousQuarter = game.getQuarter();
+        this.previousQuarterChangedAt = game.getQuarterChangedAt();
 
-        validateQuarter(game, quarter);
+        validateQuarter();
     }
 
-    private void validateQuarter(Game game, Quarter quarter) {
-        Quarter nowQuarter = game.getQuarter();
-
-        if (quarter.isPreviousThan(nowQuarter)) {
+    private void validateQuarter() {
+        if (recordedQuarter.isPreviousThan(previousQuarter)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이전 쿼터로의 진행은 불가능합니다.");
         }
     }
@@ -61,6 +70,14 @@ public class GameProgressTimeline extends Timeline {
 
     @Override
     public void rollback() {
-        // TODO 게임 상태 변경 타임라인 생성 로직 구현 이후 구현 예정
+        game.updateQuarter(previousQuarter, previousQuarterChangedAt);
+
+        if (gameProgressType == GameProgressType.GAME_START) {
+            game.updateState(GameState.SCHEDULED);
+        }
+
+        if (gameProgressType == GameProgressType.GAME_END) {
+            game.updateState(GameState.PLAYING);
+        }
     }
 }
