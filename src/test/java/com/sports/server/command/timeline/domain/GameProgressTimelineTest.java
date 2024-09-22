@@ -77,12 +77,7 @@ class GameProgressTimelineTest {
         @Test
         void 경기_시작_타임라인을_생성한다() {
             // when
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    경기전,
-                    0,
-                    GameProgressType.GAME_START
-            );
+            GameProgressTimeline timeline = 경기_시작_타임라인_생성(game);
 
             timeline.apply();
 
@@ -96,15 +91,10 @@ class GameProgressTimelineTest {
         @Test
         void 전반전_시작_타임라인을_생성한다() {
             // given
-            경기_시작_타임라인을_생성한다();
+            경기_시작_타임라인_생성(game).apply();
 
             // when
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    전반전,
-                    0,
-                    GameProgressType.QUARTER_START
-            );
+            GameProgressTimeline timeline = 전반전_시작_타임라인_생성(game);
 
             timeline.apply();
 
@@ -118,15 +108,11 @@ class GameProgressTimelineTest {
         @Test
         void 전반전_종료_타임라인을_생성한다() {
             // given
-            전반전_시작_타임라인을_생성한다();
+            경기_시작_타임라인_생성(game).apply();
+            전반전_시작_타임라인_생성(game).apply();
 
             // when
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    전반전,
-                    45,
-                    GameProgressType.QUARTER_END
-            );
+            GameProgressTimeline timeline = 전반전_종료_타임라인_생성(game);
 
             timeline.apply();
 
@@ -140,15 +126,12 @@ class GameProgressTimelineTest {
         @Test
         void 후반전_시작_타임라인을_생성한다() {
             // given
-            전반전_종료_타임라인을_생성한다();
+            경기_시작_타임라인_생성(game).apply();
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
 
             // when
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    후반전,
-                    50,
-                    GameProgressType.QUARTER_START
-            );
+            GameProgressTimeline timeline = 후반전_시작_타임라인_생성(game);
 
             timeline.apply();
 
@@ -162,15 +145,13 @@ class GameProgressTimelineTest {
         @Test
         void 후반전_종료_타임라인을_생성한다() {
             // given
-            후반전_시작_타임라인을_생성한다();
+            경기_시작_타임라인_생성(game).apply();
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
 
             // when
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    후반전,
-                    90,
-                    GameProgressType.QUARTER_END
-            );
+            GameProgressTimeline timeline = 후반전_종료_타임라인_생성(game);
 
             timeline.apply();
 
@@ -184,15 +165,13 @@ class GameProgressTimelineTest {
         @Test
         void 경기_종료_타임라인을_생성한다() {
             // given
-            후반전_종료_타임라인을_생성한다();
+            경기_시작_타임라인_생성(game).apply();
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
 
             // when
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    경기후,
-                    90,
-                    GameProgressType.GAME_END
-            );
+            GameProgressTimeline timeline = 경기_종료_타임라인_생성(game);
 
             timeline.apply();
 
@@ -206,7 +185,7 @@ class GameProgressTimelineTest {
         @Test
         void 쿼터_순서를_오름차순으로만_생성할_수_있다() {
             // given
-            후반전_시작_타임라인을_생성한다();
+            후반전_시작_타임라인_생성(game).apply();
 
             // when then
             assertThatThrownBy(() -> new GameProgressTimeline(
@@ -224,12 +203,7 @@ class GameProgressTimelineTest {
         @Test
         void 경기_시작_타임라인을_롤백한다() {
             // given
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    경기전,
-                    0,
-                    GameProgressType.GAME_START
-            );
+            GameProgressTimeline timeline = 경기_시작_타임라인_생성(GameProgressTimelineTest.this.game);
 
             timeline.apply();
 
@@ -246,20 +220,9 @@ class GameProgressTimelineTest {
         @Test
         void 전반전_시작_타임라인을_롤백한다() {
             // given
-            new GameProgressTimeline(
-                    game,
-                    경기전,
-                    0,
-                    GameProgressType.GAME_START
-            ).apply();
+            경기_시작_타임라인_생성(game).apply();
 
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    전반전,
-                    0,
-                    GameProgressType.QUARTER_START
-            );
-
+            GameProgressTimeline timeline = 전반전_시작_타임라인_생성(game);
             timeline.apply();
 
             // when
@@ -275,26 +238,10 @@ class GameProgressTimelineTest {
         @Test
         void 전반전_종료_타임라인을_롤백한다() {
             // given
-            new GameProgressTimeline(
-                    game,
-                    경기전,
-                    0,
-                    GameProgressType.GAME_START
-            ).apply();
+            경기_시작_타임라인_생성(game).apply();
+            전반전_시작_타임라인_생성(game).apply();
 
-            new GameProgressTimeline(
-                    game,
-                    전반전,
-                    0,
-                    GameProgressType.QUARTER_START
-            ).apply();
-
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    전반전,
-                    45,
-                    GameProgressType.QUARTER_END
-            );
+            GameProgressTimeline timeline = 전반전_종료_타임라인_생성(game);
 
             timeline.apply();
 
@@ -311,34 +258,11 @@ class GameProgressTimelineTest {
         @Test
         void 후반전_시작_타임라인을_롤백한다() {
             // given
-            new GameProgressTimeline(
-                    game,
-                    경기전,
-                    0,
-                    GameProgressType.GAME_START
-            ).apply();
+            경기_시작_타임라인_생성(game).apply();
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
 
-            new GameProgressTimeline(
-                    game,
-                    전반전,
-                    0,
-                    GameProgressType.QUARTER_START
-            ).apply();
-
-            new GameProgressTimeline(
-                    game,
-                    전반전,
-                    45,
-                    GameProgressType.QUARTER_END
-            ).apply();
-
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    후반전,
-                    50,
-                    GameProgressType.QUARTER_START
-            );
-
+            GameProgressTimeline timeline = 후반전_시작_타임라인_생성(game);
             timeline.apply();
 
             // when
@@ -354,47 +278,13 @@ class GameProgressTimelineTest {
         @Test
         void 경기_종료_타임라인을_롤백한다() {
             // given
-            new GameProgressTimeline(
-                    game,
-                    경기전,
-                    0,
-                    GameProgressType.GAME_START
-            ).apply();
+            경기_시작_타임라인_생성(game).apply();
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
 
-            new GameProgressTimeline(
-                    game,
-                    전반전,
-                    0,
-                    GameProgressType.QUARTER_START
-            ).apply();
-
-            new GameProgressTimeline(
-                    game,
-                    전반전,
-                    45,
-                    GameProgressType.QUARTER_END
-            ).apply();
-
-            new GameProgressTimeline(
-                    game,
-                    후반전,
-                    50,
-                    GameProgressType.QUARTER_START
-            ).apply();
-
-            new GameProgressTimeline(
-                    game,
-                    후반전,
-                    90,
-                    GameProgressType.QUARTER_END
-            ).apply();
-
-            GameProgressTimeline timeline = new GameProgressTimeline(
-                    game,
-                    경기후,
-                    90,
-                    GameProgressType.GAME_END
-            );
+            GameProgressTimeline timeline = 경기_종료_타임라인_생성(game);
 
             timeline.apply();
 
@@ -407,5 +297,59 @@ class GameProgressTimelineTest {
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
+    }
+
+    private GameProgressTimeline 전반전_시작_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                전반전,
+                0,
+                GameProgressType.QUARTER_START
+        );
+    }
+
+    private GameProgressTimeline 경기_시작_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                경기전,
+                0,
+                GameProgressType.GAME_START
+        );
+    }
+
+    private GameProgressTimeline 전반전_종료_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                전반전,
+                45,
+                GameProgressType.QUARTER_END
+        );
+    }
+
+    private GameProgressTimeline 후반전_시작_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                후반전,
+                50,
+                GameProgressType.QUARTER_START
+        );
+    }
+
+    private GameProgressTimeline 후반전_종료_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                후반전,
+                50,
+                GameProgressType.QUARTER_END
+        );
+    }
+
+    private GameProgressTimeline 경기_종료_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                경기후,
+                50,
+                GameProgressType.GAME_END
+        );
     }
 }
