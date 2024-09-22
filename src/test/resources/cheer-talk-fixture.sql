@@ -4,7 +4,7 @@ SET foreign_key_checks = 0;
 -- 농구 게임 (game_id = 1) 응원톡 픽스처
 
 INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
-VALUES (1, 1, 'john@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
+VALUES (1, 1, 'john.doe@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-15 10:00:00'),
        (2, 1, 'jane@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
         '2024-06-15 09:30:00');

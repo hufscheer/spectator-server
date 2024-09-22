@@ -163,7 +163,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
         // given
         Long leagueId = 1L;
 
-        configureMockJwtForEmail("john@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -184,6 +184,32 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual)
                         .map(CheerTalkResponse.Reported::content)
                         .containsExactly("응원톡1")
+        );
+    }
+
+    @Test
+    void 리그의_가려진_응원톡을_조회한다() throws Exception {
+    	// given
+    	Long leagueId = 1L;
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+    	// when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .cookie(COOKIE_NAME, mockToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .get("/leagues/{leagueId}/cheer-talks/blocked", leagueId)
+            .then().log().all()
+            .extract();
+
+        // then
+        List<CheerTalkResponse.Blocked> actual = toResponses(response, CheerTalkResponse.Blocked.class);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actual).map(CheerTalkResponse.Blocked::cheerTalkId)
+                .containsExactly(19L, 14L),
+            () -> assertThat(actual).map(CheerTalkResponse.Blocked::content).containsExactly("응원톡17", "블락된 응원톡")
         );
     }
 }
