@@ -1,14 +1,9 @@
 package com.sports.server.command.timeline.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
-import com.sports.server.command.timeline.domain.ReplacementTimeline;
-import com.sports.server.command.timeline.domain.ScoreTimeline;
+import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
@@ -20,6 +15,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/timeline-fixture.sql")
 class TimelineServiceTest extends ServiceTest {
@@ -187,6 +186,27 @@ class TimelineServiceTest extends ServiceTest {
             // when then
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("게임 진행 타임라인을")
+    class GameProgressTimelineTest {
+        @Test
+        void 생성한다() {
+            // given
+            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
+                    10,
+                    3L,
+                    GameProgressType.QUARTER_START
+            );
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertThat(actual).isInstanceOf(GameProgressTimeline.class);
         }
     }
 
