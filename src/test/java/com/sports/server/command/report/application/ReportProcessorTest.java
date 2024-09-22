@@ -23,6 +23,7 @@ public class ReportProcessorTest extends ServiceTest {
 
         // given
         CheerTalk cheerTalk = entityBuilder(CheerTalk.class)
+                .set("is_blocked", false)
                 .set("content", badWord).sample();
 
         Report report = entityBuilder(Report.class)
@@ -36,7 +37,7 @@ public class ReportProcessorTest extends ServiceTest {
         // then
         assertAll(
                 () -> assertThat(report.getState()).isEqualTo(ReportState.VALID),
-                () -> assertThat(cheerTalk.isBlocked()).isEqualTo(true)
+                () -> assertThat(report.getCheerTalk().isBlocked()).isEqualTo(true)
         );
     }
 
@@ -46,6 +47,7 @@ public class ReportProcessorTest extends ServiceTest {
 
         // given
         CheerTalk cheerTalk = entityBuilder(CheerTalk.class)
+                .set("is_blocked", false)
                 .set("content", badWord).sample();
 
         Report report = entityBuilder(Report.class)
