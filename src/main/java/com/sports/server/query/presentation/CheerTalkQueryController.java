@@ -34,10 +34,10 @@ public class CheerTalkQueryController {
     }
 
     @GetMapping("/leagues/{leagueId}/cheer-talks")
-    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllCheerTalksOfLeague(
+    public ResponseEntity<List<CheerTalkResponse.ForManager>> getUnblockedCheerTalksOfLeague(
             @PathVariable final Long leagueId,
             @ModelAttribute final PageRequestDto pageRequest, Member
                     member) {
-        return ResponseEntity.ok(cheerTalkQueryService.getAllCheerTalksByLeagueId(leagueId, pageRequest, member));
+        return ResponseEntity.ok(cheerTalkQueryService.getUnblockedCheerTalksByLeagueId(leagueId, pageRequest, member));
     }
 }

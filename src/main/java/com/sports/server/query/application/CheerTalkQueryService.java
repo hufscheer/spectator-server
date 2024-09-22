@@ -57,11 +57,12 @@ public class CheerTalkQueryService {
                         gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
     }
 
-    public List<CheerTalkResponse.ForManager> getAllCheerTalksByLeagueId(Long leagueId, PageRequestDto pageRequest,
-                                                                         Member manager) {
+    public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(Long leagueId,
+                                                                               PageRequestDto pageRequest,
+                                                                               Member manager) {
         checkPermission(leagueId, manager);
 
-        List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findCheerTalksByLeagueId(
+        List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
                 leagueId, pageRequest.cursor(), pageRequest.size()
         );
 

@@ -45,12 +45,12 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
     }
 
     @Override
-    public List<CheerTalk> findCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+    public List<CheerTalk> findUnblockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
         return applyPagination(
                 queryFactory.selectFrom(cheerTalk)
                         .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                        .join(report).on(report.cheerTalk.eq(cheerTalk))
-                        .where(gameTeam.game.league.id.eq(leagueId)),
+                        .where(gameTeam.game.league.id.eq(leagueId))
+                        .where(cheerTalk.isBlocked.eq(false)),
                 cursor,
                 size
         );
