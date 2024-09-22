@@ -44,6 +44,18 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
         );
     }
 
+    @Override
+    public List<CheerTalk> findBlockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+        return applyPagination(
+            queryFactory.selectFrom(cheerTalk)
+                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                .where(cheerTalk.isBlocked.eq(true))
+                .where(gameTeam.game.league.id.eq(leagueId)),
+            cursor,
+            size
+        );
+    }
+
     private List<CheerTalk> applyPagination(JPAQuery<CheerTalk> query, Long cursor, Integer size) {
         return query
                 .where(getPaginationConditions(cursor))
