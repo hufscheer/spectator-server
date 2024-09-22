@@ -97,14 +97,20 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 	@Nested
 	@DisplayName("가려진 응원톡 전체 조회")
 	class TestFindBlockedCheerTalksByLeagueId {
-		private PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
-		private Member manager = entityUtils.getEntity(1L, Member.class);
+		private PageRequestDto pageRequestDto;
+		private Member manager;
+
+		@BeforeEach
+		void setUp() {
+			pageRequestDto = new PageRequestDto(null, 10);
+			manager = entityUtils.getEntity(1L, Member.class);
+		}
 
 		@Test
 		void 가려진_응원톡만_조회된다() throws Exception {
 			// given
 			Long leagueId = 1L;
-			Long blockedCheerTalkId = 19L;
+			List<Long> blockedCheerTalkIds = List.of(19L, 14L);
 
 			// when
 			List<CheerTalkResponse.Blocked> responses = cheerTalkQueryService.getBlockedCheerTalksByLeagueId(
@@ -112,10 +118,9 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 
 			// then
 			assertAll(
-				() -> assertThat(responses.size()).isEqualTo(1),
+				() -> assertThat(responses.size()).isEqualTo(2),
 				() -> assertThat(
-					responses.stream().map(CheerTalkResponse.Blocked::cheerTalkId).toList()).containsExactly(
-					blockedCheerTalkId)
+					responses.stream().map(CheerTalkResponse.Blocked::cheerTalkId).toList()).containsAll(blockedCheerTalkIds)
 			);
 		}
 
