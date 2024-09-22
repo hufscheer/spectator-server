@@ -56,7 +56,8 @@ INSERT INTO `cheer_talks` (id, `created_at`, `content`, `is_blocked`, `game_team
 VALUES (15, '2023-01-01 12:30:00', '응원톡15', false, 3),
        (16, '2023-01-01 12:30:00', '응원톡16', false, 4),
        (17, '2023-01-01 12:30:00', '응원톡16', false, 5),
-       (18, '2023-01-01 12:30:00', '응원톡16', false, 6); -- 신고된 응원톡
+       (18, '2023-01-01 12:30:00', '응원톡16', false, 6), -- 신고된 응원톡
+       (19, '2032-01-01 12:30:12', '응원톡17', true, 3);
 
 
 INSERT INTO reports(id, cheer_talk_id, reported_at, state)
