@@ -60,7 +60,13 @@ public class Report extends BaseEntity<Report> {
         cheerTalk.block();
     }
 
+    public void updateToInvalid() {
+        this.state = ReportState.INVALID;
+        cheerTalk.unblock();
+    }
+
     public void updateToPending() {
         this.state = ReportState.PENDING;
     }
+
 }

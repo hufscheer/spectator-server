@@ -2,15 +2,28 @@ package com.sports.server.command.cheertalk.application;
 
 import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages.CHEER_TALK_CONTAINS_BAD_WORD;
 
+import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.command.cheertalk.domain.LanguageFilter;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
+import com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages;
+import com.sports.server.command.league.domain.League;
+import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.report.domain.Report;
+import com.sports.server.command.report.domain.ReportRepository;
+import com.sports.server.command.report.domain.ReportState;
+import com.sports.server.command.report.exception.ReportErrorMessage;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.UnauthorizedException;
+import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.Key;
 
 @Service
 @Transactional
@@ -18,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class CheerTalkService {
 
     private final CheerTalkRepository cheerTalkRepository;
+    private final ReportRepository reportRepository;
     private final LanguageFilter languageFilter;
+    private final EntityUtils entityUtils;
 
     public void register(final CheerTalkRequest cheerTalkRequest) {
         validateContent(cheerTalkRequest.content());
@@ -30,5 +45,57 @@ public class CheerTalkService {
         if (languageFilter.containsBadWord(content)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, CHEER_TALK_CONTAINS_BAD_WORD);
         }
+    }
+
+    public void block(final Long leagueId, final Long cheerTalkId, final Member manager) {
+        checkPermission(leagueId, manager);
+
+        CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
+        if (cheerTalk.isBlocked()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, CheerTalkErrorMessages.CHEER_TALK_ALREADY_BLOCKED);
+        }
+
+        Report report = checkReportPendingAndGetReport(cheerTalk);
+        report.updateToValid(); // 해당 cheerTalk도 같이 block
+
+    }
+
+    public void unblock(final Long leagueId, final Long cheerTalkId, final Member manager) {
+        checkPermission(leagueId, manager);
+
+        CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
+        if (!cheerTalk.isBlocked()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, CheerTalkErrorMessages.CHEER_TALK_ALREADY_UNBLOCKED);
+        }
+
+        Report report = checkReportValidAndGetReport(cheerTalk);
+        report.updateToInvalid(); // 해당 cheerTalk도 같이 unblock
+    }
+
+    private void checkPermission(final Long leagueId, final Member manager) {
+
+        League league = entityUtils.getEntity(leagueId, League.class);
+
+        if (!league.isManagedBy(manager)) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+        }
+    }
+
+    private Report checkReportPendingAndGetReport(CheerTalk cheerTalk) {
+        Report report = reportRepository.findByCheerTalk(cheerTalk)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ReportErrorMessage.REPORT_NOT_EXIST));
+        if (!report.getState().equals(ReportState.PENDING)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ReportErrorMessage.REPORT_NOT_PENDING);
+        }
+        return report;
+    }
+
+    private Report checkReportValidAndGetReport(CheerTalk cheerTalk) {
+        Report report = reportRepository.findByCheerTalk(cheerTalk)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ReportErrorMessage.REPORT_NOT_EXIST));
+        if (!report.getState().equals(ReportState.VALID)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ReportErrorMessage.REPORT_NOT_VALID);
+        }
+        return report;
     }
 }

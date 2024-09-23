@@ -35,6 +35,10 @@ public class CheerTalk extends BaseEntity<CheerTalk> {
         this.isBlocked = true;
     }
 
+    public void unblock() {
+        this.isBlocked = false;
+    }
+
     public CheerTalk(final String content, final Long gameTeamId) {
         this.createdAt = LocalDateTime.now();
         this.content = content;
