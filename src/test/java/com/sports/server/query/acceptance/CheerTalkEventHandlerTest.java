@@ -29,7 +29,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
 
     private String URL;
 
-    private final CompletableFuture<CheerTalkResponse> completableFuture = new CompletableFuture<>();
+    private final CompletableFuture<CheerTalkResponse.ForSpectator> completableFuture = new CompletableFuture<>();
 
     @Autowired
     private CheerTalkService cheerTalkService;
@@ -57,19 +57,19 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 1L));
 
         //then
-        CheerTalkResponse actual = completableFuture.get(10, SECONDS);
+        CheerTalkResponse.ForSpectator actual = completableFuture.get(10, SECONDS);
         assertThat(actual.content()).isEqualTo("응원톡입니다.");
     }
 
     private class CommentStompFrameHandler implements StompFrameHandler {
         @Override
         public Type getPayloadType(StompHeaders stompHeaders) {
-            return CheerTalkResponse.class;
+            return CheerTalkResponse.ForSpectator.class;
         }
 
         @Override
         public void handleFrame(StompHeaders stompHeaders, Object o) {
-            completableFuture.complete((CheerTalkResponse) o);
+            completableFuture.complete((CheerTalkResponse.ForSpectator) o);
         }
     }
 }

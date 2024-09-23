@@ -1,5 +1,12 @@
 package com.sports.server.command.report.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+
 import com.sports.server.command.report.dto.ReportRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -11,13 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 
 @Sql(scripts = "/report-fixture.sql")
 class ReportAcceptanceTest extends AcceptanceTest {
@@ -37,7 +37,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                    () -> verify(reportCheckClient).check(any())
+                    () -> verify(reportProcessor).check(any(), any())
             );
         }
 
@@ -53,7 +53,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
-                    () -> verify(reportCheckClient, never()).check(any())
+                    () -> verify(reportProcessor, never()).check(any(), any())
             );
         }
 
@@ -69,7 +69,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                    () -> verify(reportCheckClient, never()).check(any())
+                    () -> verify(reportProcessor, never()).check(any(), any())
             );
         }
 
@@ -86,7 +86,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                    () -> verify(reportCheckClient, times(2)).check(any())
+                    () -> verify(reportProcessor, times(2)).check(any(), any())
             );
         }
     }
