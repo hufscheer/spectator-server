@@ -3,9 +3,12 @@ package com.sports.server.command.game.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.league.domain.Round;
+import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.AcceptanceTest;
@@ -160,6 +163,52 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 경기_정보를_수정한_후_다시_가져와_확인한다() throws Exception {
+
+        // given
+        Long leagueId = 1L;
+        Long gameId = 1L;
+        String name = "경기 이름";
+        String round = "16강";
+        String quarter = "후반전";
+        String state = "PLAYING";
+        LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+        String videoId = "videoId";
+        GameRequestDto.Update request = new GameRequestDto.Update(name, round, quarter, state, fixedLocalDateTime, videoId);
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> putResponse = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .pathParam("leagueId", leagueId)
+                .pathParam("gameId", gameId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .put("/leagues/{leagueId}/{gameId}")
+                .then().log().all()
+                .extract();
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/games/{gameId}", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        GameDetailResponse updatedGame = toResponse(getResponse, GameDetailResponse.class);
+        assertAll(
+                () -> assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(updatedGame.gameQuarter()).isEqualTo(quarter),
+                () -> assertThat(updatedGame.round()).isEqualTo(Round.from(round).name()),
+                () -> assertThat(updatedGame.gameName()).isEqualTo(name),
+                () -> assertThat(updatedGame.startTime()).isEqualTo(fixedLocalDateTime),
+                () -> assertThat(updatedGame.state()).isEqualTo(state),
+                () -> assertThat(updatedGame.videoId()).isEqualTo(videoId)
+        );
+    }
+
+    @Test
     void 라인업_선수를_주장으로_등록한다() throws Exception {
 
         //given
@@ -238,5 +287,4 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(false)
         );
     }
-
 }

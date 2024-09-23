@@ -462,6 +462,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_게임_라인업_조회">게임 라인업 조회</a></li>
 <li><a href="#_게임_출전_선수_조회">게임 출전 선수 조회</a></li>
 <li><a href="#_게임_등록">게임 등록</a></li>
+<li><a href="#_게임_수정">게임 수정</a></li>
 </ul>
 </li>
 <li><a href="#_라인업_api">라인업 API</a>
@@ -765,13 +766,13 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 403
+Content-Length: 431
 
 {
   "startTime" : "2024-01-19T13:00:00",
   "videoId" : "videoId",
   "gameQuarter" : "전반전",
-  "gameName" : "4강",
+  "gameName" : "여름축구",
   "sportName" : "축구",
   "gameTeams" : [ {
     "gameTeamId" : 1,
@@ -784,7 +785,8 @@ Content-Length: 403
     "logoImageUrl" : "logo.com",
     "score" : 1
   } ],
-  "state" : "PLAYING"
+  "state" : "PLAYING",
+  "round" : "4강"
 }</code></pre>
 </div>
 </div>
@@ -831,9 +833,9 @@ Content-Length: 403
 <td class="tableblock halign-left valign-top"><p class="tableblock">종목</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sportName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">종목</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 라운드</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].gameTeamId</code></p></td>
@@ -1640,6 +1642,67 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Location:</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_게임_수정"><a class="link" href="#_게임_수정">게임 수정</a></h3>
+<div class="sect3">
+<h4 id="_게임_수정_http_request"><a class="link" href="#_게임_수정_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /leagues/1/1 HTTP/1.1
+Content-Type: application/json
+Content-Length: 172
+Host: www.api.hufstreaming.site
+Cookie: HCC_SES=temp-cookie
+
+{
+  "name" : "게임 이름",
+  "round" : "16강",
+  "quarter" : "전반전",
+  "state" : "PLAYING",
+  "startTime" : "2024-09-14T01:15:12.238992",
+  "videoId" : "videoId"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_게임_수정_path_parameters"><a class="link" href="#_게임_수정_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /leagues/{leagueId}/{gameId}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>leagueId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_게임_수정_http_response"><a class="link" href="#_게임_수정_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 </div>
@@ -2865,7 +2928,11 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
+<<<<<<< HEAD
+Content-Length: 629
+=======
 Content-Length: 633
+>>>>>>> 841548f ([DOCS] 문서화 테스트 추가 #215)
 
 [ {
   "id" : 1,
