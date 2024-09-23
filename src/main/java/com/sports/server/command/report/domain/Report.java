@@ -63,4 +63,8 @@ public class Report extends BaseEntity<Report> {
     public void updateToPending() {
         this.state = ReportState.PENDING;
     }
+
+    public void cancel() {
+        this.state = ReportState.INVALID;
+    }
 }
