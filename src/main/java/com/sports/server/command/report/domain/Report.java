@@ -54,4 +54,13 @@ public class Report extends BaseEntity<Report> {
     public boolean isUnchecked() {
         return this.state == ReportState.UNCHECKED;
     }
+
+    public void updateToValid() {
+        this.state = ReportState.VALID;
+        cheerTalk.block();
+    }
+
+    public void updateToPending() {
+        this.state = ReportState.PENDING;
+    }
 }

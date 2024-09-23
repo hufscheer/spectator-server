@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -37,11 +38,11 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
+            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
                     () -> assertThat(actual.get(0))
-                            .isEqualTo(new CheerTalkResponse(
+                            .isEqualTo(new CheerTalkResponse.ForSpectator(
                                     5L,
                                     "응원톡5",
                                     1L,
@@ -49,7 +50,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     false
                             )),
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::cheerTalkId)
+                            .map(CheerTalkResponse.ForSpectator::cheerTalkId)
                             .containsExactly(5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L)
             );
         }
@@ -70,12 +71,12 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
+            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
 
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::cheerTalkId)
+                            .map(CheerTalkResponse.ForSpectator::cheerTalkId)
                             .containsExactly(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L)
             );
         }
@@ -96,12 +97,12 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
+            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(size),
 
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::cheerTalkId)
+                            .map(CheerTalkResponse.ForSpectator::cheerTalkId)
                             .containsExactly(10L, 11L, 12L, 13L, 14L)
             );
         }
@@ -124,12 +125,12 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
+            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(size),
 
                     () -> assertThat(actual)
-                            .map(CheerTalkResponse::cheerTalkId)
+                            .map(CheerTalkResponse.ForSpectator::cheerTalkId)
                             .containsExactly(3L, 4L, 5L, 6L, 7L)
             );
         }
@@ -148,11 +149,41 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse> actual = toResponses(response, CheerTalkResponse.class);
+            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
             assertThat(actual)
-                    .filteredOn(CheerTalkResponse::isBlocked)
-                    .map(CheerTalkResponse::content)
+                    .filteredOn(CheerTalkResponse.ForSpectator::isBlocked)
+                    .map(CheerTalkResponse.ForSpectator::content)
                     .containsOnlyNulls();
         }
+    }
+
+    @Test
+    void 리그의_신고된_응원톡을_조회한다() {
+
+        // given
+        Long leagueId = 1L;
+
+        configureMockJwtForEmail("john@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
+                .then().log().all()
+                .extract();
+
+        // then
+        List<CheerTalkResponse.Reported> actual = toResponses(response, CheerTalkResponse.Reported.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse.Reported::cheerTalkId)
+                        .containsExactly(1L),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse.Reported::content)
+                        .containsExactly("응원톡1")
+        );
     }
 }

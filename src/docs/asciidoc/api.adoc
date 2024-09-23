@@ -16,6 +16,10 @@ operation::cheer-talk-controller-test/응원톡을_저장한다[snippets='http-r
 
 operation::cheer-talk-query-controller-test/응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
 
+=== 신고된 리그의 응원톡 전체 조회
+
+operation::cheer-talk-query-controller-test/리그의_신고된_응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+
 == 게임 API
 
 === 게임 상세 조회
@@ -45,6 +49,10 @@ operation::game-query-controller-test/출전_선수를_조회한다[snippets='ht
 === 게임 등록
 
 operation::game-controller-test/경기를_등록한다[snippets='http-request,path-parameters,http-response']
+
+=== 게임 수정
+
+operation::game-controller-test/경기를_수정한다[snippets='http-request,path-parameters,http-response']
 
 == 라인업 API
 
