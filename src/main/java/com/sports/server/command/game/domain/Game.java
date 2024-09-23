@@ -1,6 +1,5 @@
 package com.sports.server.command.game.domain;
 
-import com.sports.server.command.game.dto.GameRequestDto;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
@@ -24,8 +23,8 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -103,6 +102,15 @@ public class Game extends BaseEntity<Game> {
         scoredTeam.score();
     }
 
+    public void scoreInPk(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(scorer::isInTeam)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 승부차기에서 득점할 수 없습니다."));
+
+        scoredTeam.scoreInPk();
+    }
+
     public boolean isMangedBy(Member member) {
         return manager.equals(member);
     }
@@ -114,6 +122,15 @@ public class Game extends BaseEntity<Game> {
                 .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
 
         scoredTeam.cancelScore();
+    }
+
+    public void cancelPkScore(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(scorer::isInTeam)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
+
+        scoredTeam.cancelPkScore();
     }
 
     public void updateName(String name) {

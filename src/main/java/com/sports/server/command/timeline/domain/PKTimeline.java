@@ -1,10 +1,20 @@
 package com.sports.server.command.timeline.domain;
 
+import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
-import jakarta.persistence.*;
+import com.sports.server.command.sport.domain.Quarter;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DiscriminatorValue("PK")
 @Getter
 public class PKTimeline extends Timeline {
@@ -21,11 +31,21 @@ public class PKTimeline extends Timeline {
         return TimelineType.PK;
     }
 
+    public PKTimeline(Game game,
+                      Quarter recordedQuarter, Integer recordedAt,
+                      LineupPlayer scorer, Boolean isSuccess) {
+        super(game, recordedQuarter, recordedAt);
+        this.scorer = scorer;
+        this.isSuccess = isSuccess;
+    }
+
     @Override
     public void apply() {
+        game.scoreInPk(scorer);
     }
 
     @Override
     public void rollback() {
+        game.cancelPkScore(scorer);
     }
 }
