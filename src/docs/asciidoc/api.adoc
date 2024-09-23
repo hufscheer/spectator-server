@@ -84,6 +84,10 @@ operation::game-controller-test/응원_횟수를_업데이트한다[snippets='ht
 
 operation::report-controller-test/응원톡을_신고한다[snippets='http-request,request-fields,http-response']
 
+=== 응원톡 신고 무효처리(신고 취소)
+
+operation::report-controller-test/신고된_응원톡을_무효처리한다[snippets='http-request,path-parameters,http-response']
+
 == 리그 API
 
 === 리그 생성
