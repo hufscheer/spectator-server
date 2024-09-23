@@ -2,14 +2,8 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.application.LeagueQueryService;
-import com.sports.server.query.dto.response.LeagueDetailResponse;
-import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueResponseWithGames;
-import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
-import com.sports.server.query.dto.response.LeagueSportResponse;
-import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
-import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
-import com.sports.server.query.dto.response.LeagueTeamResponse;
+import com.sports.server.query.dto.response.*;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -66,5 +60,10 @@ public class LeagueQueryController {
     @GetMapping("/{leagueId}/games")
     public ResponseEntity<LeagueResponseWithGames> findLeagueAndGames(@PathVariable final Long leagueId) {
         return ResponseEntity.ok(leagueQueryService.findLeagueAndGames(leagueId));
+    }
+
+    @GetMapping("/manager/manage")
+    public ResponseEntity<List<LeagueResponseToManage>> findLeaguesByManagerToManage(final Member manager) {
+        return ResponseEntity.ok(leagueQueryService.findLeaguesByManagerToManage(manager));
     }
 }
