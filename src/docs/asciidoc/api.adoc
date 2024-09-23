@@ -16,6 +16,10 @@ operation::cheer-talk-controller-test/응원톡을_저장한다[snippets='http-r
 
 operation::cheer-talk-query-controller-test/응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
 
+=== 신고된 리그의 응원톡 전체 조회
+
+operation::cheer-talk-query-controller-test/리그의_신고된_응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+
 == 게임 API
 
 === 게임 상세 조회
@@ -142,11 +146,15 @@ operation::league-query-controller-test/리그의_정보와_리그에_속한_모
 
 === 득점 타임라인 생성
 
-operation::timeline-controller-test/득점_타임라인을_생성한다[snippets='http-request,path-parameters,http-response']
+operation::timeline-controller-test/득점_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 === 교체 타임라인 생성
 
-operation::timeline-controller-test/교체_타임라인을_생성한다[snippets='http-request,path-parameters,http-response']
+operation::timeline-controller-test/교체_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+=== 게임 진행 타임라인 생성
+
+operation::timeline-controller-test/게임_진행_변경_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 === 게임의 타임라인 조회
 

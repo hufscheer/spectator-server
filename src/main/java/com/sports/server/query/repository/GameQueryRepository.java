@@ -22,4 +22,11 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "WHERE g.league=:league"
     )
     List<Game> findByLeagueWithGameTeams(@Param("league") League league);
+
+    @Query(
+            "SELECT g FROM Game g "
+                    + "JOIN FETCH g.league "
+                    + "WHERE g.id=:id"
+    )
+    Game findByIdWithLeague(@Param("id") Long id);
 }
