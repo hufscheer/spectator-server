@@ -23,7 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Key;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -55,9 +55,9 @@ public class CheerTalkService {
             throw new CustomException(HttpStatus.BAD_REQUEST, CheerTalkErrorMessages.CHEER_TALK_ALREADY_BLOCKED);
         }
 
-        Report report = checkReportPendingAndGetReport(cheerTalk);
-        report.updateToValid(); // 해당 cheerTalk도 같이 block
-
+        Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
+        report.ifPresent(Report::updateToValid);
+        cheerTalk.block();
     }
 
     public void unblock(final Long leagueId, final Long cheerTalkId, final Member manager) {
@@ -68,8 +68,9 @@ public class CheerTalkService {
             throw new CustomException(HttpStatus.BAD_REQUEST, CheerTalkErrorMessages.CHEER_TALK_ALREADY_UNBLOCKED);
         }
 
-        Report report = checkReportValidAndGetReport(cheerTalk);
-        report.updateToInvalid(); // 해당 cheerTalk도 같이 unblock
+        Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
+        report.ifPresent(Report::updateToInvalid);
+        cheerTalk.unblock();
     }
 
     private void checkPermission(final Long leagueId, final Member manager) {
@@ -79,23 +80,5 @@ public class CheerTalkService {
         if (!league.isManagedBy(manager)) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
-    }
-
-    private Report checkReportPendingAndGetReport(CheerTalk cheerTalk) {
-        Report report = reportRepository.findByCheerTalk(cheerTalk)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ReportErrorMessage.REPORT_NOT_EXIST));
-        if (!report.getState().equals(ReportState.PENDING)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ReportErrorMessage.REPORT_NOT_PENDING);
-        }
-        return report;
-    }
-
-    private Report checkReportValidAndGetReport(CheerTalk cheerTalk) {
-        Report report = reportRepository.findByCheerTalk(cheerTalk)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ReportErrorMessage.REPORT_NOT_EXIST));
-        if (!report.getState().equals(ReportState.VALID)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ReportErrorMessage.REPORT_NOT_VALID);
-        }
-        return report;
     }
 }
