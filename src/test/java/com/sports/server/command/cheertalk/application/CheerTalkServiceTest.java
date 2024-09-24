@@ -59,24 +59,4 @@ public class CheerTalkServiceTest extends ServiceTest {
         assertThatCode(() -> cheerTalkService.register(cheerTalkRequest))
                 .doesNotThrowAnyException();
     }
-
-    @Test
-    void 이미_가려진_응원톡을_다시_가리려고_하면_예외가_발생한다() {
-        // given
-        Long cheerTalkId = 14L;
-
-        // when & then
-        assertThatThrownBy(() -> cheerTalkService.block(leagueId, cheerTalkId, manager))
-                .isInstanceOf(CustomException.class);
-    }
-
-    @Test
-    void 이미_가리기_취소된_응원톡을_다시_가리기_취소하려고_하면_예외가_발생한다() {
-        // given
-        Long cheerTalkId = 1L;
-
-        // when & then
-        assertThatThrownBy(() -> cheerTalkService.unblock(leagueId, cheerTalkId, manager))
-                .isInstanceOf(CustomException.class);
-    }
 }

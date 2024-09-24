@@ -37,7 +37,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 신고_대기중인_응원톡을_가린다() {
+    void 응원톡을_가린다() {
         // given
         Long leagueId = 1L;
         Long cheerTalkId = 1L;
