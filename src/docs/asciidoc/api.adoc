@@ -20,9 +20,9 @@ operation::cheer-talk-query-controller-test/응원톡을_조회한다[snippets='
 
 operation::cheer-talk-query-controller-test/리그의_신고된_응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
 
-=== 신고된 응원톡 가리기
+=== 응원톡 가리기
 
-operation::cheer-talk-controller-test/신고된_응원톡을_가린다[snippets='http-request,path-parameters,http-response']
+operation::cheer-talk-controller-test/응원톡을_가린다[snippets='http-request,path-parameters,http-response']
 
 === 가려진 응원톡을 가리기 취소하기
 

@@ -29,7 +29,7 @@ public class CheerTalkController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/cheer-talks/{leagueId}/{cheerTalkId}/unblock")
+    @PatchMapping("{leagueId}/{cheerTalkId}/unblock")
     public ResponseEntity<Void> unblock(@PathVariable Long leagueId,
                                         @PathVariable Long cheerTalkId,
                                         final Member manager) {

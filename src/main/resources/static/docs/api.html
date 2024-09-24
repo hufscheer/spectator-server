@@ -452,7 +452,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_응원톡_저장">응원톡 저장</a></li>
 <li><a href="#_응원톡_조회">응원톡 조회</a></li>
 <li><a href="#_신고된_리그의_응원톡_전체_조회">신고된 리그의 응원톡 전체 조회</a></li>
-<li><a href="#_신고된_응원톡_가리기">신고된 응원톡 가리기</a></li>
+<li><a href="#_응원톡_가리기">응원톡 가리기</a></li>
 <li><a href="#_가려진_응원톡을_가리기_취소하기">가려진 응원톡을 가리기 취소하기</a></li>
 </ul>
 </li>
@@ -881,9 +881,9 @@ Content-Length: 473
 </div>
 </div>
 <div class="sect2">
-<h3 id="_신고된_응원톡_가리기"><a class="link" href="#_신고된_응원톡_가리기">신고된 응원톡 가리기</a></h3>
+<h3 id="_응원톡_가리기"><a class="link" href="#_응원톡_가리기">응원톡 가리기</a></h3>
 <div class="sect3">
-<h4 id="_신고된_응원톡_가리기_http_request"><a class="link" href="#_신고된_응원톡_가리기_http_request">HTTP request</a></h4>
+<h4 id="_응원톡_가리기_http_request"><a class="link" href="#_응원톡_가리기_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /cheer-talks/1/1/block HTTP/1.1
@@ -894,7 +894,7 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_신고된_응원톡_가리기_path_parameters"><a class="link" href="#_신고된_응원톡_가리기_path_parameters">Path parameters</a></h4>
+<h4 id="_응원톡_가리기_path_parameters"><a class="link" href="#_응원톡_가리기_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. /cheer-talks/{leagueId}/{cheerTalkId}/block</caption>
 <colgroup>
@@ -920,7 +920,7 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_신고된_응원톡_가리기_http_response"><a class="link" href="#_신고된_응원톡_가리기_http_response">HTTP response</a></h4>
+<h4 id="_응원톡_가리기_http_response"><a class="link" href="#_응원톡_가리기_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1866,7 +1866,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "경기전",
   "state" : "SCHEDULED",
-  "startTime" : "2024-09-22T18:02:36.462061",
+  "startTime" : "2024-09-24T22:21:56.384144",
   "idOfTeam1" : 1,
   "idOfTeam2" : 2,
   "videoId" : "videoId"
@@ -2173,15 +2173,15 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
 Content-Type: application/json
-Content-Length: 150
+Content-Length: 149
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "우물정 제기차기 대회",
   "maxRound" : 4,
-  "startAt" : "2024-09-22T18:02:36.821885",
-  "endAt" : "2024-09-22T18:02:36.821889"
+  "startAt" : "2024-09-24T22:21:56.77009",
+  "endAt" : "2024-09-24T22:21:56.770093"
 }</code></pre>
 </div>
 </div>
@@ -2245,14 +2245,14 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /leagues/5124 HTTP/1.1
 Content-Type: application/json
-Content-Length: 165
+Content-Length: 166
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "훕치치배 망고 빨리먹기 대회",
-  "startAt" : "2024-09-22T18:02:36.84967",
-  "endAt" : "2024-09-22T18:02:36.849675",
+  "startAt" : "2024-09-24T22:21:56.796529",
+  "endAt" : "2024-09-24T22:21:56.796533",
   "maxRound" : "16강"
 }</code></pre>
 </div>
@@ -3132,12 +3132,12 @@ Content-Length: 633
   "state" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-22T18:02:43.111131",
-  "endAt" : "2024-09-22T18:02:43.111132",
+  "startAt" : "2024-09-24T22:22:04.148625",
+  "endAt" : "2024-09-24T22:22:04.148625",
   "inProgressGames" : [ {
     "id" : 1,
     "state" : "PLAYING",
-    "startTime" : "2024-09-22T18:02:43.111123",
+    "startTime" : "2024-09-24T22:22:04.148617",
     "gameTeams" : [ {
       "gameTeamId" : 1,
       "gameTeamName" : "경영 야생마",
@@ -4376,7 +4376,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 29 Sep 2024 09:02:28 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 1 Oct 2024 13:21:47 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -4450,7 +4450,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-22 18:01:56 +0900
+Last updated 2024-09-24 22:05:26 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

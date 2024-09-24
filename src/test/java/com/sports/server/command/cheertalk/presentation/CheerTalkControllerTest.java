@@ -39,7 +39,7 @@ class CheerTalkControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 신고된_응원톡을_가린다() throws Exception {
+    void 응원톡을_가린다() throws Exception {
         // given
         Long leagueId = 1L;
         Long cheerTalkId = 1L;
