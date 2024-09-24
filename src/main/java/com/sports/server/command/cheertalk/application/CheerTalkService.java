@@ -51,9 +51,6 @@ public class CheerTalkService {
         checkPermission(leagueId, manager);
 
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
-        if (cheerTalk.isBlocked()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, CheerTalkErrorMessages.CHEER_TALK_ALREADY_BLOCKED);
-        }
 
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         report.ifPresent(Report::updateToValid);
@@ -64,9 +61,6 @@ public class CheerTalkService {
         checkPermission(leagueId, manager);
 
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
-        if (!cheerTalk.isBlocked()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, CheerTalkErrorMessages.CHEER_TALK_ALREADY_UNBLOCKED);
-        }
 
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         report.ifPresent(Report::updateToInvalid);
