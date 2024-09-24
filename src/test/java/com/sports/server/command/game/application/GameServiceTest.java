@@ -1,10 +1,10 @@
 package com.sports.server.command.game.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.dto.GameRequestDto;
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.K;
 
 @Sql("/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -136,5 +137,52 @@ public class GameServiceTest extends ServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("게임을 수정할 때")
+    class updateGameTest {
+
+        private GameRequestDto.Update updateDto;
+        private Long leagueId;
+        private Long gameId;
+        private Member manager;
+
+        @BeforeEach
+        void setUp() {
+            LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+            updateDto = new GameRequestDto.Update(nameOfGame, "8강", "후반전", "PLAYING",
+                    fixedLocalDateTime, "videoId");
+            leagueId = 1L;
+            gameId = 1L;
+            manager = entityUtils.getEntity(1L, Member.class);
+        }
+
+        @Test
+        void 정상적으로_게임이_수정된다() {
+            // when
+            gameService.updateGame(leagueId, gameId, updateDto, manager);
+
+            // then
+            Game game = entityUtils.getEntity(gameId, Game.class);
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(updateDto.quarter()),
+                    () -> assertThat(game.getRound()).isEqualTo(Round.from(updateDto.round())),
+                    () -> assertThat(game.getName()).isEqualTo(updateDto.name()),
+                    () -> assertThat(game.getStartTime()).isEqualTo(updateDto.startTime()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.from(updateDto.state())),
+                    () -> assertThat(game.getVideoId()).isEqualTo(updateDto.videoId())
+            );
+        }
+
+        @Test
+        void 게임이_속한_리그의_매니저가_아닌_회원이_게임을_수정하려고_하면_예외가_발생한다() {
+            // given
+            Member nonManager = entityUtils.getEntity(2L, Member.class);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.updateGame(leagueId, gameId, updateDto, nonManager))
+                    .isInstanceOf(UnauthorizedException.class);
+        }
+
+    }
 
 }

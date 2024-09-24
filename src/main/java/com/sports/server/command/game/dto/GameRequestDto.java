@@ -24,4 +24,14 @@ public class GameRequestDto {
                     Round.from(round));
         }
     }
+
+    public record Update(
+            String name,
+            String round,
+            String quarter,
+            String state,
+            LocalDateTime startTime,
+            String videoId
+    ) {
+    }
 }

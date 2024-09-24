@@ -28,7 +28,7 @@ public enum Round {
                 });
     }
 
-    public static Round fromNumber(int number) {
+    public static Round from(int number) {
         return Stream.of(Round.values())
                 .filter(round -> round.number == number)
                 .findAny()
