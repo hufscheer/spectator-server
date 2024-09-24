@@ -10,17 +10,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/cheer-talks")
 public class CheerTalkController {
 
     private final CheerTalkService cheerTalkService;
 
-    @PostMapping("/cheer-talks")
+    @PostMapping
     public ResponseEntity<Void> register(@RequestBody @Valid final CheerTalkRequest cheerTalkRequest) {
         cheerTalkService.register(cheerTalkRequest);
         return ResponseEntity.ok(null);
     }
 
-    @PatchMapping("/cheer-talks/{leagueId}/{cheerTalkId}/block")
+    @PatchMapping("/{leagueId}/{cheerTalkId}/block")
     public ResponseEntity<Void> block(@PathVariable Long leagueId,
                                       @PathVariable Long cheerTalkId,
                                       final Member manager) {
