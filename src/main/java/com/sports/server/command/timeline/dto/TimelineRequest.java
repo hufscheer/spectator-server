@@ -80,4 +80,31 @@ public abstract class TimelineRequest {
             return TimelineType.GAME_PROGRESS;
         }
     }
+
+    @Getter
+    public static class RegisterPk extends TimelineRequest {
+        private final Long gameTeamId;
+        private final Long scorerId;
+        private final Boolean isSuccess;
+
+        public RegisterPk(
+                Integer recordedAt,
+                Long recordedQuarterId,
+                Long gameTeamId,
+                Long scorerId,
+                boolean isSuccess
+        ) {
+            super(recordedQuarterId, recordedAt);
+            this.gameTeamId = gameTeamId;
+            this.scorerId = scorerId;
+            this.isSuccess = isSuccess;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.PK;
+        }
+    }
+
+
 }
