@@ -3,6 +3,7 @@ package com.sports.server.command.game.domain;
 import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ class GameTest {
             game.addTeam(entityBuilder(GameTeam.class)
                     .set("game", game)
                     .set("score", 0)
+                    .set("pkScore", 0)
                     .sample());
         }
     }
@@ -42,8 +44,10 @@ class GameTest {
             game.score(scorer);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(1);
-            assertThat(game.getTeam2().getScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(1),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -57,8 +61,10 @@ class GameTest {
             game.score(scorer);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(1);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(1)
+            );
         }
 
         @Test
@@ -74,6 +80,40 @@ class GameTest {
             // when then
             assertThatThrownBy(() -> game.score(scorer))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void team1이_승부차기에서_득점한다() {
+            // given
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", game.getTeam1())
+                    .sample();
+
+            // when
+            game.scoreInPk(scorer);
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(1),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+            );
+        }
+
+        @Test
+        void team2가_승부차기에서_득점한다() {
+            // given
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", game.getTeam2())
+                    .sample();
+
+            // when
+            game.scoreInPk(scorer);
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(1)
+            );
         }
     }
 
@@ -103,8 +143,40 @@ class GameTest {
             game.cancelScore(team1Player);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+            );
+        }
+
+        @Test
+        void team1의_승부차기_득점을_취소한다() {
+            // given
+            game.scoreInPk(team1Player);
+
+            // when
+            game.cancelPkScore(team1Player);
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+            );
+        }
+
+        @Test
+        void team2의__승부차기_득점을_취소한다() {
+            // given
+            game.scoreInPk(team2Player);
+
+            // when
+            game.cancelPkScore(team2Player);
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -116,8 +188,10 @@ class GameTest {
             game.cancelScore(team2Player);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -130,8 +204,10 @@ class GameTest {
             game.cancelScore(team1Player);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(1);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(1)
+            );
         }
 
         @Test
@@ -146,6 +222,21 @@ class GameTest {
 
             // when then
             assertThatThrownBy(() -> game.cancelScore(scorer))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 참여하지_않는_선수는_승부차기_득점을_취소할_수_없다() {
+            // given
+            GameTeam otherTeam = entityBuilder(GameTeam.class)
+                    .sample();
+
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", otherTeam)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> game.cancelPkScore(scorer))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -167,5 +258,6 @@ class GameTest {
 
 
     }
+
 
 }

@@ -29,6 +29,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
     private static final int MAXIMUM_OF_TOTAL_CHEER_COUNT = 100_000_000;
     private static final int MINIMUM_OF_CHEER_COUNT = 0;
     private static final int SCORE_VALUE = 1;
+    private static final int PK_SCORE_VALUE = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -46,6 +47,9 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     @Column(name = "score", nullable = false)
     private int score;
+
+    @Column(name = "pk_score", nullable = false)
+    private int pkScore;
 
     public void validateCheerCountOfGameTeam(final int cheerCount) {
         if (cheerCount >= MAXIMUM_OF_CHEER_COUNT || cheerCount <= MINIMUM_OF_CHEER_COUNT) {
@@ -78,9 +82,19 @@ public class GameTeam extends BaseEntity<GameTeam> {
         this.score += SCORE_VALUE;
     }
 
+    public void scoreInPk() {
+        this.pkScore += PK_SCORE_VALUE;
+    }
+
     public void cancelScore() {
         if (this.score > 0) {
             this.score -= SCORE_VALUE;
+        }
+    }
+
+    public void cancelPkScore() {
+        if (this.pkScore > 0) {
+            this.pkScore -= PK_SCORE_VALUE;
         }
     }
 

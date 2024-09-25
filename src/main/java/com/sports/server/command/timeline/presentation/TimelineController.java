@@ -1,14 +1,18 @@
 package com.sports.server.command.timeline.presentation;
 
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.application.TimelineService;
+import com.sports.server.command.timeline.dto.TimelineRequest;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/games/{gameId}/timelines")
@@ -36,6 +40,14 @@ public class TimelineController {
     public ResponseEntity<Void> createProgressTimeline(@PathVariable Long gameId,
                                                        @RequestBody TimelineRequest.RegisterProgress request,
                                                        Member member) {
+        timelineService.register(member, gameId, request);
+        return ResponseEntity.created(URI.create("")).build();
+    }
+
+    @PostMapping("/pk")
+    public ResponseEntity<Void> createPkTimeline(@PathVariable Long gameId,
+                                                 @RequestBody TimelineRequest.RegisterPk request,
+                                                 Member member) {
         timelineService.register(member, gameId, request);
         return ResponseEntity.created(URI.create("")).build();
     }
