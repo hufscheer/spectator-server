@@ -26,7 +26,7 @@ VALUES (2, '2023-11-11 00:00:00', '이미 블락된 댓글이야', true, 1);
 
 INSERT INTO cheer_talks (id, created_at, content, is_blocked, game_team_id)
 VALUES (3, '2023-11-11 00:00:00', '이미 신고된 댓글이야', false, 1),
-       (4, '2023-11-11 00:00:00', '신고대기중인 댓글이야', false, 1);
+       (4, '2023-11-11 00:00:00', '신고 확인 대기 중인 댓글이야', false, 1);
 
 -- 신고
 INSERT INTO reports (id, cheer_talk_id, reported_at, state)
