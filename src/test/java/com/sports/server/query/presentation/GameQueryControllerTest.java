@@ -38,7 +38,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(
-                startTime, "videoId", "전반전", "4강", "축구", gameTeams, "PLAYING"
+                startTime, "videoId", "전반전", "여름축구", "축구", gameTeams, "PLAYING", "4강"
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);
@@ -60,7 +60,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
-                                fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
+                                fieldWithPath("round").type(JsonFieldType.STRING).description("게임의 라운드"),
                                 fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
                                 fieldWithPath("gameTeams[].gameTeamName").type(JsonFieldType.STRING)

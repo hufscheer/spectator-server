@@ -15,7 +15,7 @@ public class LeagueRequestDto {
 		LocalDateTime endAt
 	) {
 		public League toEntity(final Member manager) {
-			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.fromNumber(maxRound));
+			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.from(maxRound));
 		}
 	}
 

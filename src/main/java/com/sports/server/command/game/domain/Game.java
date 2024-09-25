@@ -1,5 +1,6 @@
 package com.sports.server.command.game.domain;
 
+import com.sports.server.command.game.dto.GameRequestDto;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
@@ -24,6 +25,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 import org.springframework.http.HttpStatus;
 
 @Entity
@@ -110,6 +112,37 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
         scoredTeam.cancelScore();
     }
+
+    public void updateName(String name) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+    }
+
+    public void updateStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void updateVideoId(String videoId) {
+        if (StringUtils.hasText(videoId)) {
+            this.videoId = videoId;
+        }
+    }
+
+    public void updateGameQuarter(String gameQuarter) {
+        if (StringUtils.hasText(gameQuarter)) {
+            this.gameQuarter = gameQuarter;
+        }
+    }
+
+    public void updateState(GameState state) {
+        this.state = state;
+    }
+
+    public void updateRound(Round round) {
+        this.round = round;
+    }
+
 
     public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round) {
