@@ -54,7 +54,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        // 가려진 응원톡 전체조회 기능 머지 후 테스트 추가 예정
+        // todo : 가려진 응원톡 전체조회 기능 머지 후 테스트 추가 예정
 //        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
 //                .when()
 //                .contentType(MediaType.APPLICATION_JSON_VALUE)
