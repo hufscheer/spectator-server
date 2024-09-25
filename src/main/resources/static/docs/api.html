@@ -510,6 +510,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_득점_타임라인_생성">득점 타임라인 생성</a></li>
 <li><a href="#_교체_타임라인_생성">교체 타임라인 생성</a></li>
 <li><a href="#_게임_진행_타임라인_생성">게임 진행 타임라인 생성</a></li>
+<li><a href="#_승부차기_타임라인_생성">승부차기 타임라인 생성</a></li>
 <li><a href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></li>
 <li><a href="#_타임라인_삭제">타임라인 삭제</a></li>
 </ul>
@@ -1860,7 +1861,7 @@ Content-Length: 1620
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues/1/games HTTP/1.1
 Content-Type: application/json
-Content-Length: 212
+Content-Length: 205
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -1869,7 +1870,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "경기전",
   "state" : "SCHEDULED",
-  "startTime" : "2024-09-25T18:00:35.715548",
+  "startTime" : "2024-09-11T12:00:00",
   "idOfTeam1" : 1,
   "idOfTeam2" : 2,
   "videoId" : "videoId"
@@ -1920,7 +1921,7 @@ Location:</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /leagues/1/1 HTTP/1.1
 Content-Type: application/json
-Content-Length: 172
+Content-Length: 165
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -1929,7 +1930,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "전반전",
   "state" : "PLAYING",
-  "startTime" : "2024-09-25T18:00:35.733036",
+  "startTime" : "2024-09-11T12:00:00",
   "videoId" : "videoId"
 }</code></pre>
 </div>
@@ -2040,66 +2041,18 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h3 id="_라인업_선수_주장으로_등록"><a class="link" href="#_라인업_선수_주장으로_등록">라인업 선수 주장으로 등록</a></h3>
 <div class="sect3">
 <h4 id="_라인업_선수_주장으로_등록_path_parameters"><a class="link" href="#_라인업_선수_주장으로_등록_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">라인업 선수의 ID</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Snippet path-parameters not found for operation::game-controller-test/라인업_선수를_주장으로_등록한다</p>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_라인업_선수_주장에서_해제"><a class="link" href="#_라인업_선수_주장에서_해제">라인업 선수 주장에서 해제</a></h3>
 <div class="sect3">
 <h4 id="_라인업_선수_주장에서_해제_path_parameters"><a class="link" href="#_라인업_선수_주장에서_해제_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">라인업 선수의 ID</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Snippet path-parameters not found for operation::game-controller-test/라인업_선수를_주장에서_해제한다</p>
+</div>
 </div>
 </div>
 </div>
@@ -2237,16 +2190,15 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
 Content-Type: application/json
-Content-Length: 150
+Content-Length: 136
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
   "maxRound" : 4,
-  "startAt" : "2024-09-25T18:00:36.111058",
-  "endAt" : "2024-09-25T18:00:36.111061"
+  "startAt" : "2024-09-11T12:00:00",
+  "endAt" : "2024-09-11T12:00:00"
 }</code></pre>
 </div>
 </div>
@@ -2268,19 +2220,14 @@ Cookie: HCC_SES=temp-cookie
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>organizationId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">조직 id</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">대회 이름</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>maxRound</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">대회 진행 라운드 수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대회 진행 라운드 수. 결승은 2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>startAt</code></p></td>
@@ -2315,14 +2262,14 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /leagues/5124 HTTP/1.1
 Content-Type: application/json
-Content-Length: 166
+Content-Length: 152
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "훕치치배 망고 빨리먹기 대회",
-  "startAt" : "2024-09-25T18:00:36.135448",
-  "endAt" : "2024-09-25T18:00:36.135453",
+  "startAt" : "2024-09-11T12:00:00",
+  "endAt" : "2024-09-11T12:00:00",
   "maxRound" : "16강"
 }</code></pre>
 </div>
@@ -3194,7 +3141,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 633
+Content-Length: 612
 
 [ {
   "id" : 1,
@@ -3202,12 +3149,12 @@ Content-Length: 633
   "state" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-25T18:00:41.10278",
-  "endAt" : "2024-09-25T18:00:41.10278",
+  "startAt" : "2024-09-11T12:00:00",
+  "endAt" : "2024-09-11T12:00:00",
   "inProgressGames" : [ {
     "id" : 1,
     "state" : "PLAYING",
-    "startTime" : "2024-09-25T18:00:41.102768",
+    "startTime" : "2024-09-11T12:00:00",
     "gameTeams" : [ {
       "gameTeamId" : 1,
       "gameTeamName" : "경영 야생마",
@@ -3346,7 +3293,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 437
+Content-Length: 409
 
 [ {
   "id" : 1,
@@ -3354,16 +3301,16 @@ Content-Length: 437
   "leagueProgress" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-25T18:00:41.175751",
-  "endAt" : "2024-09-25T18:00:41.175755"
+  "startAt" : "2024-09-11T12:00:00",
+  "endAt" : "2024-09-11T12:00:00"
 }, {
   "id" : 2,
   "name" : "탁구 대회",
   "leagueProgress" : "시작 전",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-25T18:00:41.175768",
-  "endAt" : "2024-09-25T18:00:41.175769"
+  "startAt" : "2024-09-11T12:00:00",
+  "endAt" : "2024-09-11T12:00:00"
 } ]</code></pre>
 </div>
 </div>
@@ -4646,7 +4593,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 2 Oct 2024 09:00:26 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 2 Oct 2024 13:24:26 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -4720,7 +4667,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-25 17:58:35 +0900
+Last updated 2024-09-25 22:08:26 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

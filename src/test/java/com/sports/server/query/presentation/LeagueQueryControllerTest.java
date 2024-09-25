@@ -216,14 +216,16 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new GameTeamResponse(2L, "서어 뼤데뻬", "이미지 이미지", 1)
         );
 
+        LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+
         // 진행 중인 경기만
         List<GameDetailResponse> inProgressGames = List.of(
-                new GameDetailResponse(1L, "PLAYING", LocalDateTime.now(), gameTeams)
+                new GameDetailResponse(1L, "PLAYING", fixedDateTime, gameTeams)
         );
 
         List<LeagueResponseWithInProgressGames> responses = List.of(
-                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now(), inProgressGames));
+                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", 2, "16강", fixedDateTime,
+                        fixedDateTime, inProgressGames));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -275,11 +277,12 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     void 매니저가_생성한_모든_리그를_조회한다() throws Exception {
 
         // given
+        LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         List<LeagueResponseToManage> responses = List.of(
-                new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now()),
-                new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now()));
+                new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, "16강", fixedDateTime,
+                        fixedDateTime),
+                new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, "16강", fixedDateTime,
+                        fixedDateTime));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
