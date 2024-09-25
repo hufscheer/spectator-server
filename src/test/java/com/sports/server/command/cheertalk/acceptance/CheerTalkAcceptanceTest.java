@@ -67,7 +67,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 가려진_응원톡을_가리기_취소한다() {
+    void 응원톡을_가리기_취소한다() {
         // given
         Long leagueId = 1L;
         Long cheerTalkId = 14L;

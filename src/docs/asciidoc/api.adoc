@@ -24,9 +24,9 @@ operation::cheer-talk-query-controller-test/리그의_신고된_응원톡을_조
 
 operation::cheer-talk-controller-test/응원톡을_가린다[snippets='http-request,path-parameters,http-response']
 
-=== 가려진 응원톡을 가리기 취소하기
+=== 응원톡을 가리기 취소하기
 
-operation::cheer-talk-controller-test/가려진_응원톡을_가리기_취소한다[snippets='http-request,path-parameters,http-response']
+operation::cheer-talk-controller-test/응원톡을_가리기_취소한다[snippets='http-request,path-parameters,http-response']
 
 == 게임 API
 

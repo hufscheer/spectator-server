@@ -453,7 +453,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_응원톡_조회">응원톡 조회</a></li>
 <li><a href="#_신고된_리그의_응원톡_전체_조회">신고된 리그의 응원톡 전체 조회</a></li>
 <li><a href="#_응원톡_가리기">응원톡 가리기</a></li>
-<li><a href="#_가려진_응원톡을_가리기_취소하기">가려진 응원톡을 가리기 취소하기</a></li>
+<li><a href="#_응원톡을_가리기_취소하기">응원톡을 가리기 취소하기</a></li>
 </ul>
 </li>
 <li><a href="#_게임_api">게임 API</a>
@@ -934,9 +934,9 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_가려진_응원톡을_가리기_취소하기"><a class="link" href="#_가려진_응원톡을_가리기_취소하기">가려진 응원톡을 가리기 취소하기</a></h3>
+<h3 id="_응원톡을_가리기_취소하기"><a class="link" href="#_응원톡을_가리기_취소하기">응원톡을 가리기 취소하기</a></h3>
 <div class="sect3">
-<h4 id="_가려진_응원톡을_가리기_취소하기_http_request"><a class="link" href="#_가려진_응원톡을_가리기_취소하기_http_request">HTTP request</a></h4>
+<h4 id="_응원톡을_가리기_취소하기_http_request"><a class="link" href="#_응원톡을_가리기_취소하기_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /cheer-talks/1/1/unblock HTTP/1.1
@@ -947,7 +947,7 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_가려진_응원톡을_가리기_취소하기_path_parameters"><a class="link" href="#_가려진_응원톡을_가리기_취소하기_path_parameters">Path parameters</a></h4>
+<h4 id="_응원톡을_가리기_취소하기_path_parameters"><a class="link" href="#_응원톡을_가리기_취소하기_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. /cheer-talks/{leagueId}/{cheerTalkId}/unblock</caption>
 <colgroup>
@@ -973,7 +973,7 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_가려진_응원톡을_가리기_취소하기_http_response"><a class="link" href="#_가려진_응원톡을_가리기_취소하기_http_response">HTTP response</a></h4>
+<h4 id="_응원톡을_가리기_취소하기_http_response"><a class="link" href="#_응원톡을_가리기_취소하기_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1869,7 +1869,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "경기전",
   "state" : "SCHEDULED",
-  "startTime" : "2024-09-24T22:21:56.384144",
+  "startTime" : "2024-09-25T18:00:35.715548",
   "idOfTeam1" : 1,
   "idOfTeam2" : 2,
   "videoId" : "videoId"
@@ -1929,7 +1929,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "전반전",
   "state" : "PLAYING",
-  "startTime" : "2024-09-23T15:31:00.616265",
+  "startTime" : "2024-09-25T18:00:35.733036",
   "videoId" : "videoId"
 }</code></pre>
 </div>
@@ -2189,15 +2189,15 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
 Content-Type: application/json
-Content-Length: 149
+Content-Length: 150
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "우물정 제기차기 대회",
   "maxRound" : 4,
-  "startAt" : "2024-09-24T22:21:56.77009",
-  "endAt" : "2024-09-24T22:21:56.770093"
+  "startAt" : "2024-09-25T18:00:36.111058",
+  "endAt" : "2024-09-25T18:00:36.111061"
 }</code></pre>
 </div>
 </div>
@@ -2261,14 +2261,14 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /leagues/5124 HTTP/1.1
 Content-Type: application/json
-Content-Length: 165
+Content-Length: 166
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "훕치치배 망고 빨리먹기 대회",
-  "startAt" : "2024-09-24T22:21:56.796529",
-  "endAt" : "2024-09-24T22:21:56.796533",
+  "startAt" : "2024-09-25T18:00:36.135448",
+  "endAt" : "2024-09-25T18:00:36.135453",
   "maxRound" : "16강"
 }</code></pre>
 </div>
@@ -3148,12 +3148,12 @@ Content-Length: 631
   "state" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-24T22:22:04.148625",
-  "endAt" : "2024-09-24T22:22:04.148625",
+  "startAt" : "2024-09-25T18:00:41.10278",
+  "endAt" : "2024-09-25T18:00:41.10278",
   "inProgressGames" : [ {
     "id" : 1,
     "state" : "PLAYING",
-    "startTime" : "2024-09-24T22:22:04.148617",
+    "startTime" : "2024-09-25T18:00:41.102768",
     "gameTeams" : [ {
       "gameTeamId" : 1,
       "gameTeamName" : "경영 야생마",
@@ -3292,7 +3292,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 436
+Content-Length: 437
 
 [ {
   "id" : 1,
@@ -3300,16 +3300,16 @@ Content-Length: 436
   "leagueProgress" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-23T15:31:10.47193",
-  "endAt" : "2024-09-23T15:31:10.471935"
+  "startAt" : "2024-09-25T18:00:41.175751",
+  "endAt" : "2024-09-25T18:00:41.175755"
 }, {
   "id" : 2,
   "name" : "탁구 대회",
   "leagueProgress" : "시작 전",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-23T15:31:10.471949",
-  "endAt" : "2024-09-23T15:31:10.471949"
+  "startAt" : "2024-09-25T18:00:41.175768",
+  "endAt" : "2024-09-25T18:00:41.175769"
 } ]</code></pre>
 </div>
 </div>
@@ -4491,7 +4491,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 1 Oct 2024 13:21:47 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 2 Oct 2024 09:00:26 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -4565,7 +4565,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-24 22:05:26 +0900
+Last updated 2024-09-25 17:58:35 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
