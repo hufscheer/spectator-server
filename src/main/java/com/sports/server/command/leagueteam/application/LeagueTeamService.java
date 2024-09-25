@@ -33,7 +33,8 @@ public class LeagueTeamService {
     private final PermissionValidator permissionValidator;
 
     public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
-        League league = permissionValidator.checkPermissionAndGet(leagueId, manager, League.class);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        permissionValidator.checkPermission(league, manager);
 
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
@@ -46,7 +47,9 @@ public class LeagueTeamService {
     }
 
     public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
-        permissionValidator.checkPermission(leagueId, manager, League.class);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        permissionValidator.checkPermission(league, manager);
+
         LeagueTeam leagueTeam = getLeagueTeam(teamId);
 
         leagueTeam.updateInfo(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
@@ -57,7 +60,9 @@ public class LeagueTeamService {
     }
 
     public void delete(Long leagueId, Member manager, Long teamId) {
-        League league = permissionValidator.checkPermissionAndGet(leagueId, manager, League.class);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        permissionValidator.checkPermission(league, manager);
+
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         leagueTeam.isParticipate(league);
 
@@ -102,7 +107,8 @@ public class LeagueTeamService {
     }
 
     public void deleteLogoImage(Long leagueId, Member manager, Long teamId) {
-        permissionValidator.checkPermission(leagueId, manager, League.class);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        permissionValidator.checkPermission(league, manager);
 
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         leagueTeam.deleteLogoImageUrl();

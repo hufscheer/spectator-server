@@ -3,6 +3,7 @@ package com.sports.server.query.application;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.response.CheerTalkResponse;
@@ -27,6 +28,8 @@ public class CheerTalkQueryService {
 
     private final PermissionValidator permissionValidator;
 
+    private final EntityUtils entityUtils;
+
     public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId,
                                                                       final PageRequestDto pageRequest) {
         List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
@@ -44,7 +47,8 @@ public class CheerTalkQueryService {
     public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId,
                                                                               final PageRequestDto pageRequest,
                                                                               final Member manager) {
-        permissionValidator.checkPermission(leagueId, manager, League.class);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        permissionValidator.checkPermission(league, manager);
 
         List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
                 leagueId, pageRequest.cursor(), pageRequest.size()
@@ -58,7 +62,8 @@ public class CheerTalkQueryService {
     public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(Long leagueId,
                                                                                PageRequestDto pageRequest,
                                                                                Member manager) {
-        permissionValidator.checkPermission(leagueId, manager, League.class);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        permissionValidator.checkPermission(league, manager);
 
         List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
                 leagueId, pageRequest.cursor(), pageRequest.size()

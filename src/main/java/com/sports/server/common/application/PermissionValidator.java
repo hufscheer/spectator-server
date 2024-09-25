@@ -11,25 +11,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PermissionValidator {
 
-    private final EntityUtils entityUtils;
-
-    public <T extends ManagedEntity> void checkPermission(final Long id, final Member manager,
-                                                          final Class<T> entityType) {
-        T target = entityUtils.getEntity(id, entityType);
-
-        if (!target.isManagedBy(manager)) {
+    public <T extends ManagedEntity> void checkPermission(final T entity, final Member manager) {
+        if (!entity.isManagedBy(manager)) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
-    }
-
-    public <T extends ManagedEntity> T checkPermissionAndGet(final Long id, final Member manager,
-                                                             final Class<T> entityType) {
-        T target = entityUtils.getEntity(id, entityType);
-
-        if (!target.isManagedBy(manager)) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-        }
-
-        return target;
     }
 }
