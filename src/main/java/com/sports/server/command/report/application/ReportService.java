@@ -34,10 +34,6 @@ public class ReportService {
         checkPermission(leagueId, manager);
 
         Report report = reportRepository.findByCheerTalkId(cheerTalkId);
-        // 신고된 응원톡 가리기/가리기 해제에서 구현한 커스텀 에러 끌어다 사용할 예정입니당
-        if (!report.getState().equals(ReportState.PENDING)) {
-            throw new CustomException();
-        }
         report.cancel();
     }
 
