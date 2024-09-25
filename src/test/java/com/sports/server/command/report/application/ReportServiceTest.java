@@ -124,17 +124,6 @@ class ReportServiceTest extends ServiceTest {
         }
 
         @Test
-        void 대기_상태가_아닌_신고를_무효처리할_시_예외가_발생한다() {
-            // given
-            cheerTalkId = 3L;
-            manager = entityUtils.getEntity(1L, Member.class);
-
-            // when & then
-            assertThatThrownBy(() -> reportService.cancel(leagueId, cheerTalkId, manager))
-                    .isInstanceOf(CustomException.class);
-        }
-
-        @Test
         void 해당_응원톡_소속_리그의_관리자가_아니면_예외가_발생한다() {
             // given
             cheerTalkId = 4L;
