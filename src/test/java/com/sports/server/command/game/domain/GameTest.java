@@ -3,6 +3,7 @@ package com.sports.server.command.game.domain;
 import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
@@ -43,8 +44,10 @@ class GameTest {
             game.score(scorer);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(1);
-            assertThat(game.getTeam2().getScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(1),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -58,8 +61,10 @@ class GameTest {
             game.score(scorer);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(1);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(1)
+            );
         }
 
         @Test
@@ -88,8 +93,10 @@ class GameTest {
             game.scoreInPk(scorer);
 
             // then
-            assertThat(game.getTeam1().getPkScore()).isEqualTo(1);
-            assertThat(game.getTeam2().getPkScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(1),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -103,8 +110,10 @@ class GameTest {
             game.scoreInPk(scorer);
 
             // then
-            assertThat(game.getTeam1().getPkScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getPkScore()).isEqualTo(1);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(1)
+            );
         }
     }
 
@@ -134,8 +143,10 @@ class GameTest {
             game.cancelScore(team1Player);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -147,8 +158,10 @@ class GameTest {
             game.cancelPkScore(team1Player);
 
             // then
-            assertThat(game.getTeam1().getPkScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getPkScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -160,8 +173,10 @@ class GameTest {
             game.cancelPkScore(team2Player);
 
             // then
-            assertThat(game.getTeam1().getPkScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getPkScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -173,8 +188,10 @@ class GameTest {
             game.cancelScore(team2Player);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(0);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+            );
         }
 
         @Test
@@ -187,8 +204,10 @@ class GameTest {
             game.cancelScore(team1Player);
 
             // then
-            assertThat(game.getTeam1().getScore()).isEqualTo(0);
-            assertThat(game.getTeam2().getScore()).isEqualTo(1);
+            assertAll(
+                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
+                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(1)
+            );
         }
 
         @Test
