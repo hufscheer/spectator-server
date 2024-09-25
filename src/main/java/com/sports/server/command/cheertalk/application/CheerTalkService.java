@@ -54,7 +54,7 @@ public class CheerTalkService {
 
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         if (report.isPresent()) {
-            report.get().updateToValid();
+            report.get().accept();
         } else {
             cheerTalk.block();
         }
@@ -66,11 +66,8 @@ public class CheerTalkService {
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
 
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
-        if (report.isPresent()) {
-            report.get().updateToInvalid();
-        } else {
-            cheerTalk.unblock();
-        }
+        report.ifPresent(Report::cancel);
+        cheerTalk.unblock();
     }
 
     private void checkPermission(final Long leagueId, final Member manager) {
