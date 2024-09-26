@@ -48,7 +48,7 @@ public class CheerTalkQueryService {
                                                                               final PageRequestDto pageRequest,
                                                                               final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        permissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, manager);
 
         List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
                 leagueId, pageRequest.cursor(), pageRequest.size()
@@ -63,7 +63,7 @@ public class CheerTalkQueryService {
                                                                                PageRequestDto pageRequest,
                                                                                Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        permissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, manager);
 
         List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
                 leagueId, pageRequest.cursor(), pageRequest.size()

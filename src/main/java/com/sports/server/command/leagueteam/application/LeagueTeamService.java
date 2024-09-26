@@ -30,11 +30,10 @@ public class LeagueTeamService {
     private final LeagueTeamRepository leagueTeamRepository;
     private final LeagueTeamPlayerRepository leagueTeamPlayerRepository;
     private final EntityUtils entityUtils;
-    private final PermissionValidator permissionValidator;
 
     public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        permissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, manager);
 
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
@@ -61,7 +60,7 @@ public class LeagueTeamService {
 
     public void delete(Long leagueId, Member manager, Long teamId) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        permissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, manager);
 
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         leagueTeam.isParticipate(league);
@@ -108,7 +107,7 @@ public class LeagueTeamService {
 
     public void deleteLogoImage(Long leagueId, Member manager, Long teamId) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        permissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, manager);
 
         LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
         leagueTeam.deleteLogoImageUrl();

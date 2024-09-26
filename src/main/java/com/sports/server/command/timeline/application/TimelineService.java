@@ -25,7 +25,7 @@ public class TimelineService {
 
     public void register(Member manager, Long gameId, TimelineRequest request) {
         Game game = entityUtils.getEntity(gameId, Game.class);
-        permissionValidator.checkPermission(game, manager);
+        PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = timelineMapper.toEntity(game, request);
         timeline.apply();
@@ -35,7 +35,7 @@ public class TimelineService {
 
     public void deleteTimeline(Member manager, Long gameId, Long timelineId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
-        permissionValidator.checkPermission(game, manager);
+        PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = getLastTimeline(timelineId, game);
         timeline.rollback();
