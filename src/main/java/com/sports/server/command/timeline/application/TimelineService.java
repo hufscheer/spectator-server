@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TimelineService {
     private final TimelineRepository timelineRepository;
-    private final PermissionValidator permissionValidator;
     private final TimelineMapper timelineMapper;
     private final EntityUtils entityUtils;
 

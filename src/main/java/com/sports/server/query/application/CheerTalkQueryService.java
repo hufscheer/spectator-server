@@ -26,8 +26,6 @@ public class CheerTalkQueryService {
 
     private final GameQueryRepository gameQueryRepository;
 
-    private final PermissionValidator permissionValidator;
-
     private final EntityUtils entityUtils;
 
     public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId,
