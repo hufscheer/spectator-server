@@ -4,13 +4,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
+import com.sports.server.common.application.S3Service;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -21,6 +24,9 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
 
     @Value("${image.origin-prefix}")
     private String originPrefix;
+
+    @MockBean
+    private S3Service s3Service;
 
     @Test
     void 리그팀이_저장된다() {
