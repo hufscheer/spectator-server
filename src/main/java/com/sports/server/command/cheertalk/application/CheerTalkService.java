@@ -15,6 +15,7 @@ import com.sports.server.command.report.domain.ReportRepository;
 import com.sports.server.command.report.domain.ReportState;
 import com.sports.server.command.report.exception.ReportErrorMessage;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.query.repository.CheerTalkDynamicRepository;
@@ -48,7 +49,8 @@ public class CheerTalkService {
     }
 
     public void block(final Long leagueId, final Long cheerTalkId, final Member manager) {
-        checkPermission(leagueId, manager);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        PermissionValidator.checkPermission(league, manager);
 
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
 
@@ -61,21 +63,13 @@ public class CheerTalkService {
     }
 
     public void unblock(final Long leagueId, final Long cheerTalkId, final Member manager) {
-        checkPermission(leagueId, manager);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        PermissionValidator.checkPermission(league, manager);
 
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
 
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         report.ifPresent(Report::cancel);
         cheerTalk.unblock();
-    }
-
-    private void checkPermission(final Long leagueId, final Member manager) {
-
-        League league = entityUtils.getEntity(leagueId, League.class);
-
-        if (!league.isManagedBy(manager)) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-        }
     }
 }
