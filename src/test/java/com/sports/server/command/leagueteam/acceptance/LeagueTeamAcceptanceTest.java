@@ -60,7 +60,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
                 new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0)
         );
         LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
-                "name", originPrefix + "image", playerRegisterRequests, playerUpdateRequests, List.of(1L, 2L));
+                "name", originPrefix + "image", playerRegisterRequests, playerUpdateRequests, List.of(4L));
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

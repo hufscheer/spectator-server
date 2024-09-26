@@ -101,7 +101,7 @@ public class LeagueTeamService {
                         leagueTeam.validateLeagueTeamPlayer(lgp);
                         return lgp;
                     })
-                    .forEach(lgp -> leagueTeamPlayerRepository.delete(lgp));
+                    .forEach(leagueTeam::deletePlayer);
         }
     }
 

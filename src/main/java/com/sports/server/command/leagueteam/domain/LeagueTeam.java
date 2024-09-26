@@ -81,6 +81,10 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         registerEvent(new LogoImageDeletedEvent(logoImageUrl));
     }
 
+    public void deletePlayer(LeagueTeamPlayer leagueTeamPlayer) {
+        this.leagueTeamPlayers.remove(leagueTeamPlayer);
+    }
+
     public void isParticipate(League league) {
         if (!this.league.equals(league)) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
