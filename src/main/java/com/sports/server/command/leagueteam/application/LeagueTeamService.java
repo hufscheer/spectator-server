@@ -47,7 +47,7 @@ public class LeagueTeamService {
 
     public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        permissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, manager);
 
         LeagueTeam leagueTeam = getLeagueTeam(teamId);
 
