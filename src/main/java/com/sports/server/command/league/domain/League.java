@@ -4,6 +4,7 @@ import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.domain.ManagedEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +29,7 @@ import org.hibernate.annotations.Where;
 @SQLDelete(sql = "UPDATE leagues SET is_deleted = 1 WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class League extends BaseEntity<League> {
+public class League extends BaseEntity<League> implements ManagedEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
@@ -86,6 +87,7 @@ public class League extends BaseEntity<League> {
         this.maxRound = maxRound;
     }
 
+    @Override
     public boolean isManagedBy(Member manager) {
         return this.manager.equals(manager);
     }
