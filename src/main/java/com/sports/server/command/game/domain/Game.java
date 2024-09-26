@@ -5,6 +5,7 @@ import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,7 +31,7 @@ import org.springframework.util.StringUtils;
 @Getter
 @Table(name = "games")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Game extends BaseEntity<Game> {
+public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_id")
@@ -191,5 +192,10 @@ public class Game extends BaseEntity<Game> {
         if (!teams.contains(gameTeam)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
         }
+    }
+
+    @Override
+    public boolean isManagedBy(Member manager) {
+        return manager.equals(manager);
     }
 }

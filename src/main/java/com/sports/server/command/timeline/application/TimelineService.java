@@ -7,8 +7,8 @@ import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.mapper.TimelineMapper;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.CustomException;
-import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,11 +19,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TimelineService {
     private final TimelineRepository timelineRepository;
-    private final EntityUtils entityUtils;
     private final TimelineMapper timelineMapper;
+    private final EntityUtils entityUtils;
 
-    public void register(Member member, Long gameId, TimelineRequest request) {
-        Game game = checkPermissionAndGet(gameId, member);
+    public void register(Member manager, Long gameId, TimelineRequest request) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = timelineMapper.toEntity(game, request);
         timeline.apply();
@@ -31,23 +32,14 @@ public class TimelineService {
         timelineRepository.save(timeline);
     }
 
-    public void deleteTimeline(Member member, Long gameId, Long timelineId) {
-        Game game = checkPermissionAndGet(gameId, member);
+    public void deleteTimeline(Member manager, Long gameId, Long timelineId) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = getLastTimeline(timelineId, game);
         timeline.rollback();
 
         timelineRepository.delete(timeline);
-    }
-
-    private Game checkPermissionAndGet(Long gameId, Member member) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
-
-        if (!game.isMangedBy(member)) {
-            throw new UnauthorizedException("타임라인 조작 권한이 없습니다.");
-        }
-
-        return game;
     }
 
     private Timeline getLastTimeline(Long timelineId, Game game) {

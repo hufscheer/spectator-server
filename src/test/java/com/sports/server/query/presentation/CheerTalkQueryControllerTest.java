@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.response.CheerTalkResponse;
+import com.sports.server.query.dto.response.CheerTalkResponse.ForManager;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
@@ -82,11 +83,11 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
         PageRequestDto pageRequestDto = new PageRequestDto(1L, 2);
 
         LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
-        List<CheerTalkResponse.Reported> response = List.of(
-                new CheerTalkResponse.Reported(
+        List<CheerTalkResponse.ForManager> response = List.of(
+                new CheerTalkResponse.ForManager(
                         2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"
                 ),
-                new CheerTalkResponse.Reported(
+                new CheerTalkResponse.ForManager(
                         3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름"
                 )
         );
