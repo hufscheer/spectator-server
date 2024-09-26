@@ -509,7 +509,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_득점_타임라인_생성">득점 타임라인 생성</a></li>
 <li><a href="#_교체_타임라인_생성">교체 타임라인 생성</a></li>
 <li><a href="#_게임_진행_타임라인_생성">게임 진행 타임라인 생성</a></li>
-<li><a href="#_승부차기_타임라인_생성">승부차기 타임라인 생성</a></li>
 <li><a href="#_게임의_타임라인_조회">게임의 타임라인 조회</a></li>
 <li><a href="#_타임라인_삭제">타임라인 삭제</a></li>
 </ul>
@@ -880,39 +879,6 @@ Content-Length: 473
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_응원톡_관리_화면에서의_응원톡_전체_조회"><a class="link" href="#_응원톡_관리_화면에서의_응원톡_전체_조회">응원톡 관리 화면에서의 응원톡 전체 조회</a></h3>
-<div class="sect3">
-<h4 id="_응원톡_관리_화면에서의_응원톡_전체_조회_http_request"><a class="link" href="#_응원톡_관리_화면에서의_응원톡_전체_조회_http_request">HTTP request</a></h4>
-<div class="paragraph">
-<p>Snippet http-request not found for operation::cheer-talk-query-controller-test/리그의_차단되지_않은_응원톡을_조회한다</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_응원톡_관리_화면에서의_응원톡_전체_조회_query_parameters"><a class="link" href="#_응원톡_관리_화면에서의_응원톡_전체_조회_query_parameters">Query parameters</a></h4>
-<div class="paragraph">
-<p>Snippet query-parameters not found for operation::cheer-talk-query-controller-test/리그의_차단되지_않은_응원톡을_조회한다</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_응원톡_관리_화면에서의_응원톡_전체_조회_path_parameters"><a class="link" href="#_응원톡_관리_화면에서의_응원톡_전체_조회_path_parameters">Path parameters</a></h4>
-<div class="paragraph">
-<p>Snippet path-parameters not found for operation::cheer-talk-query-controller-test/리그의_차단되지_않은_응원톡을_조회한다</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_응원톡_관리_화면에서의_응원톡_전체_조회_http_response"><a class="link" href="#_응원톡_관리_화면에서의_응원톡_전체_조회_http_response">HTTP response</a></h4>
-<div class="paragraph">
-<p>Snippet http-response not found for operation::cheer-talk-query-controller-test/리그의_차단되지_않은_응원톡을_조회한다</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_응원톡_관리_화면에서의_응원톡_전체_조회_response_fields"><a class="link" href="#_응원톡_관리_화면에서의_응원톡_전체_조회_response_fields">Response fields</a></h4>
-<div class="paragraph">
-<p>Snippet response-fields not found for operation::cheer-talk-query-controller-test/리그의_차단되지_않은_응원톡을_조회한다</p>
-</div>
 </div>
 </div>
 </div>
@@ -1800,7 +1766,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "경기전",
   "state" : "SCHEDULED",
-  "startTime" : "2024-09-25T10:50:31.159077",
+  "startTime" : "2024-09-18T18:41:01.634111",
   "idOfTeam1" : 1,
   "idOfTeam2" : 2,
   "videoId" : "videoId"
@@ -1860,7 +1826,7 @@ Cookie: HCC_SES=temp-cookie
   "round" : "16강",
   "quarter" : "전반전",
   "state" : "PLAYING",
-  "startTime" : "2024-09-25T10:50:31.197746",
+  "startTime" : "2024-09-14T01:15:12.238992",
   "videoId" : "videoId"
 }</code></pre>
 </div>
@@ -1971,9 +1937,33 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h3 id="_라인업_선수_주장으로_등록"><a class="link" href="#_라인업_선수_주장으로_등록">라인업 선수 주장으로 등록</a></h3>
 <div class="sect3">
 <h4 id="_라인업_선수_주장으로_등록_path_parameters"><a class="link" href="#_라인업_선수_주장으로_등록_path_parameters">Path parameters</a></h4>
-<div class="paragraph">
-<p>Snippet path-parameters not found for operation::game-controller-test/라인업_선수를_주장으로_등록한다</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">라인업 선수의 ID</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -2120,15 +2110,16 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues HTTP/1.1
 Content-Type: application/json
-Content-Length: 150
+Content-Length: 179
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
+  "organizationId" : 1,
   "name" : "우물정 제기차기 대회",
-  "maxRound" : 4,
-  "startAt" : "2024-09-25T10:50:31.897139",
-  "endAt" : "2024-09-25T10:50:31.897146"
+  "maxRound" : "4강",
+  "startAt" : "2024-09-18T18:41:01.840974",
+  "endAt" : "2024-09-18T18:41:01.840975"
 }</code></pre>
 </div>
 </div>
@@ -2150,14 +2141,19 @@ Cookie: HCC_SES=temp-cookie
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>organizationId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">조직 id</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">대회 이름</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>maxRound</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">대회 진행 라운드 수. 결승은 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대회 진행 라운드 수</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>startAt</code></p></td>
@@ -2198,8 +2194,8 @@ Cookie: HCC_SES=temp-cookie
 
 {
   "name" : "훕치치배 망고 빨리먹기 대회",
-  "startAt" : "2024-09-25T10:50:31.945523",
-  "endAt" : "2024-09-25T10:50:31.945531",
+  "startAt" : "2024-09-18T18:41:01.856257",
+  "endAt" : "2024-09-18T18:41:01.856261",
   "maxRound" : "16강"
 }</code></pre>
 </div>
@@ -3079,12 +3075,12 @@ Content-Length: 633
   "state" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-25T10:50:40.970863",
-  "endAt" : "2024-09-25T10:50:40.970863",
+  "startAt" : "2024-09-18T18:41:05.056959",
+  "endAt" : "2024-09-18T18:41:05.056959",
   "inProgressGames" : [ {
     "id" : 1,
     "state" : "PLAYING",
-    "startTime" : "2024-09-25T10:50:40.970846",
+    "startTime" : "2024-09-18T18:41:05.056951",
     "gameTeams" : [ {
       "gameTeamId" : 1,
       "gameTeamName" : "경영 야생마",
@@ -3231,16 +3227,16 @@ Content-Length: 437
   "leagueProgress" : "진행 중",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-25T10:50:41.130852",
-  "endAt" : "2024-09-25T10:50:41.130857"
+  "startAt" : "2024-09-19T22:48:29.959422",
+  "endAt" : "2024-09-19T22:48:29.959426"
 }, {
   "id" : 2,
   "name" : "탁구 대회",
   "leagueProgress" : "시작 전",
   "sizeOfLeagueTeams" : 2,
   "maxRound" : "16강",
-  "startAt" : "2024-09-25T10:50:41.130873",
-  "endAt" : "2024-09-25T10:50:41.130874"
+  "startAt" : "2024-09-19T22:48:29.959436",
+  "endAt" : "2024-09-19T22:48:29.959436"
 } ]</code></pre>
 </div>
 </div>
@@ -4523,7 +4519,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 2 Oct 2024 01:50:18 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Wed, 25 Sep 2024 09:40:56 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -4597,7 +4593,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-25 10:46:55 +0900
+Last updated 2024-09-18 18:40:18 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
