@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
+import com.sports.server.command.timeline.domain.PKTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
@@ -187,6 +188,42 @@ class TimelineServiceTest extends ServiceTest {
             // when then
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @DisplayName("승부차기 타임라인을")
+    @Nested
+    class PkTest {
+
+        @Test
+        void 생성한다() {
+            // given
+            Long teamId = 1L;
+            Long teamPlayerId = 1L;
+            int recordedAt = 10;
+
+            TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
+                    recordedAt,
+                    quarterId,
+                    teamId,
+                    teamPlayerId,
+                    true
+            );
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            PKTimeline actual = (PKTimeline) timelineFixtureRepository.findAllLatest(gameId)
+                    .get(0);
+
+            assertAll(
+                    () -> assertThat(actual.getScorer().getId()).isEqualTo(teamPlayerId),
+                    () -> assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId),
+                    () -> assertThat(actual.getRecordedAt()).isEqualTo(recordedAt),
+                    () -> assertThat(actual.getIsSuccess()).isEqualTo(true)
+            );
+
         }
     }
 

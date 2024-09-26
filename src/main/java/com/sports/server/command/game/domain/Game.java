@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -101,6 +102,15 @@ public class Game extends BaseEntity<Game> {
         scoredTeam.score();
     }
 
+    public void scoreInPk(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(scorer::isInTeam)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 승부차기에서 득점할 수 없습니다."));
+
+        scoredTeam.scoreInPk();
+    }
+
     public boolean isMangedBy(Member member) {
         return manager.equals(member);
     }
@@ -113,6 +123,46 @@ public class Game extends BaseEntity<Game> {
 
         scoredTeam.cancelScore();
     }
+
+    public void cancelPkScore(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(scorer::isInTeam)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
+
+        scoredTeam.cancelPkScore();
+    }
+
+    public void updateName(String name) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+    }
+
+    public void updateStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void updateVideoId(String videoId) {
+        if (StringUtils.hasText(videoId)) {
+            this.videoId = videoId;
+        }
+    }
+
+    public void updateGameQuarter(String gameQuarter) {
+        if (StringUtils.hasText(gameQuarter)) {
+            this.gameQuarter = gameQuarter;
+        }
+    }
+
+    public void updateState(GameState state) {
+        this.state = state;
+    }
+
+    public void updateRound(Round round) {
+        this.round = round;
+    }
+
 
     public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round) {

@@ -50,6 +50,10 @@ operation::game-query-controller-test/출전_선수를_조회한다[snippets='ht
 
 operation::game-controller-test/경기를_등록한다[snippets='http-request,path-parameters,http-response']
 
+=== 게임 수정
+
+operation::game-controller-test/경기를_수정한다[snippets='http-request,path-parameters,http-response']
+
 == 라인업 API
 
 === 라인업 선수 선발로 변경
@@ -122,7 +126,11 @@ operation::league-team-controller-test/리그팀을_삭제한다[snippets='http-
 
 operation::league-query-controller-test/리그를_하나_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
-=== 매니저가 생성한 리그 전체 조회
+=== 매니저가 생성한 리그 전체 조회(홈 화면)
+
+operation::league-query-controller-test/매니저가_생성한_모든_리그와_진행중_경기를_조회한다[snippets='http-request,http-response,response-fields']
+
+=== 매니저가 생성한 리그 전체 조회(대회 관리 화면)
 
 operation::league-query-controller-test/매니저가_생성한_모든_리그를_조회한다[snippets='http-request,http-response,response-fields']
 
@@ -151,6 +159,10 @@ operation::timeline-controller-test/교체_타임라인을_생성한다[snippets
 === 게임 진행 타임라인 생성
 
 operation::timeline-controller-test/게임_진행_변경_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+=== 승부차기 타임라인 생성
+
+operation::timeline-controller-test/게임_승부차기_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 === 게임의 타임라인 조회
 
