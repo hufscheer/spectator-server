@@ -59,6 +59,18 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                         new TimelineResponse(
                                 QUARTER2, List.of(
                                 new RecordResponse(
+                                        null, 7L, PK_TYPE,
+                                        10,
+                                        "선수10",
+                                        2L,
+                                        TEAM_B,
+                                        TEAM_B_IMAGE_URL,
+                                        null,
+                                        null,
+                                        null,
+                                        new PkRecordResponse(7L, true)
+                                ),
+                                new RecordResponse(
                                         null, 6L, PROGRESS_TYPE,
                                         20,
                                         null,
@@ -126,18 +138,6 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         )),
                                         null,
                                         null, null
-                                ),
-                                new RecordResponse(
-                                        null, 7L, PK_TYPE,
-                                        0,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        new PkRecordResponse(7L, true)
                                 ),
                                 new RecordResponse(
                                         null, 1L, PROGRESS_TYPE,
