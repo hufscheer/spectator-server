@@ -3,13 +3,13 @@ package com.sports.server.command.leagueteam.application;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
-import com.sports.server.command.leagueteam.domain.LeagueTeamPlayerRepository;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
+import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,14 +28,15 @@ public class LeagueTeamService {
     private String replacePrefix;
 
     private final LeagueTeamRepository leagueTeamRepository;
-    private final LeagueTeamPlayerRepository leagueTeamPlayerRepository;
     private final EntityUtils entityUtils;
+    private final S3Service s3Service;
 
     public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
+        s3Service.doesFileExist(imgUrl);
         LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
 
         for (LeagueTeamPlayerRequest.Register player : request.players()) {
@@ -51,7 +52,8 @@ public class LeagueTeamService {
 
         LeagueTeam leagueTeam = getLeagueTeam(teamId);
 
-        leagueTeam.updateInfo(request.name(), changeLogoImageUrlToBeSaved(request.logoImageUrl()));
+        leagueTeam.updateInfo(request.name(), request.logoImageUrl(), originPrefix, replacePrefix);
+        s3Service.doesFileExist(leagueTeam.getLogoImageUrl());
 
         addPlayers(request, leagueTeam);
         updatePlayers(request, leagueTeam);
@@ -101,7 +103,7 @@ public class LeagueTeamService {
                         leagueTeam.validateLeagueTeamPlayer(lgp);
                         return lgp;
                     })
-                    .forEach(lgp -> leagueTeamPlayerRepository.delete(lgp));
+                    .forEach(leagueTeam::deletePlayer);
         }
     }
 
@@ -119,5 +121,4 @@ public class LeagueTeamService {
         }
         return logoImageUrl.replace(originPrefix, replacePrefix);
     }
-
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Getter
@@ -63,11 +64,20 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         this.league = league;
     }
 
-    public void updateInfo(String name, String logoImageUrl) {
+    public void updateInfo(String name, String logoImageUrl, String originPrefix, String replacePrefix) {
         this.name = name;
         if (logoImageUrl != null) {
-            this.logoImageUrl = logoImageUrl;
+            if (!logoImageUrl.equals(this.logoImageUrl)) {
+                this.logoImageUrl = changeLogoImageUrlToBeSaved(logoImageUrl, originPrefix, replacePrefix);
+            }
         }
+    }
+
+    private String changeLogoImageUrlToBeSaved(String logoImageUrl, String originPrefix, String replacePrefix) {
+        if (!logoImageUrl.contains(originPrefix)) {
+            throw new IllegalStateException("잘못된 이미지 url 입니다.");
+        }
+        return logoImageUrl.replace(originPrefix, replacePrefix);
     }
 
     public void validateLeagueTeamPlayer(LeagueTeamPlayer leagueTeamPlayer) {
@@ -79,6 +89,10 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     public void deleteLogoImageUrl() {
         this.logoImageUrl = "";
         registerEvent(new LogoImageDeletedEvent(logoImageUrl));
+    }
+
+    public void deletePlayer(LeagueTeamPlayer leagueTeamPlayer) {
+        this.leagueTeamPlayers.remove(leagueTeamPlayer);
     }
 
     public void isParticipate(League league) {
