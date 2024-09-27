@@ -67,9 +67,7 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     public void updateInfo(String name, String logoImageUrl, String originPrefix, String replacePrefix) {
         this.name = name;
         if (logoImageUrl != null) {
-            if (logoImageUrl.equals(this.logoImageUrl)) {
-                this.logoImageUrl = logoImageUrl;
-            } else {
+            if (!logoImageUrl.equals(this.logoImageUrl)) {
                 this.logoImageUrl = changeLogoImageUrlToBeSaved(logoImageUrl, originPrefix, replacePrefix);
             }
         }
