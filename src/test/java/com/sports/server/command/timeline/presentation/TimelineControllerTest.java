@@ -1,14 +1,5 @@
 package com.sports.server.command.timeline.presentation;
 
-import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.command.timeline.dto.TimelineRequest;
-import com.sports.server.support.DocumentationTest;
-import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.ResultActions;
-
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -18,6 +9,15 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.support.DocumentationTest;
+import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.ResultActions;
 
 public class TimelineControllerTest extends DocumentationTest {
     @Test
@@ -82,8 +82,10 @@ public class TimelineControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
                                 fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
-                                fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER).description("기존 선수 Id"),
-                                fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER).description("교체 선수 Id"),
+                                fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER)
+                                        .description("기존 선수 Id"),
+                                fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER)
+                                        .description("교체 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("교체 시간")
                         ),
                         requestCookies(
@@ -116,6 +118,43 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("교체 시간"),
                                 fieldWithPath("gameProgressType").type(JsonFieldType.STRING).description("변경할 게임 진행 상황")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 게임_승부차기_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
+                10,
+                2L,
+                1L,
+                1L,
+                true
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/pk", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
+                                fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
+                                fieldWithPath("scorerId").type(JsonFieldType.NUMBER).description("승부차기 득점 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
+                                fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("승부차기 득점 성공 여부")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

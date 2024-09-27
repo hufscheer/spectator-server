@@ -30,7 +30,7 @@ public class CheerTalkResponse {
         }
     }
 
-    public record Reported(
+    public record ForManager(
             Long cheerTalkId,
             Long gameId,
             Long leagueId,
@@ -41,7 +41,7 @@ public class CheerTalkResponse {
             String gameName,
             String leagueName
     ) {
-        public Reported(CheerTalk cheerTalk, Game game) {
+        public ForManager(CheerTalk cheerTalk, Game game) {
             this(
                     cheerTalk.getId(),
                     game.getId(),

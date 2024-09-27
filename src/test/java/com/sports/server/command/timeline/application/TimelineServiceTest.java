@@ -4,6 +4,9 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
 import com.sports.server.command.timeline.domain.*;
+import com.sports.server.command.timeline.domain.PKTimeline;
+import com.sports.server.command.timeline.domain.ReplacementTimeline;
+import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
@@ -199,6 +202,24 @@ class TimelineServiceTest extends ServiceTest {
                     10,
                     3L,
                     GameProgressType.QUARTER_START
+
+    @DisplayName("승부차기 타임라인을")
+    @Nested
+    class PkTest {
+
+        @Test
+        void 생성한다() {
+            // given
+            Long teamId = 1L;
+            Long teamPlayerId = 1L;
+            int recordedAt = 10;
+
+            TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
+                    recordedAt,
+                    quarterId,
+                    teamId,
+                    teamPlayerId,
+                    true
             );
 
             // when
@@ -207,6 +228,7 @@ class TimelineServiceTest extends ServiceTest {
             // then
             Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
             assertThat(actual).isInstanceOf(GameProgressTimeline.class);
+
         }
     }
 

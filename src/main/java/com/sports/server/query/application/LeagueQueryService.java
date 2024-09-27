@@ -10,20 +10,15 @@ import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
-import com.sports.server.query.dto.response.LeagueDetailResponse;
-import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueResponseWithGames;
-import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
-import com.sports.server.query.dto.response.LeagueSportResponse;
-import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
-import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
-import com.sports.server.query.dto.response.LeagueTeamResponse;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.query.repository.GameQueryRepository;
 import com.sports.server.query.repository.LeagueQueryRepository;
 import com.sports.server.query.repository.LeagueSportQueryRepository;
 import com.sports.server.query.repository.LeagueTeamDynamicRepository;
 import com.sports.server.query.repository.LeagueTeamPlayerQueryRepository;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -96,7 +91,7 @@ public class LeagueQueryService {
     private Map<League, List<Game>> getGamesForLeague(List<League> leagues) {
         return leagues.stream()
                 .collect(toMap(league -> league,
-                        league -> gameQueryRepository.findPlayingGamesByLeagueWithGameTeams(league)));
+                        gameQueryRepository::findPlayingGamesByLeagueWithGameTeams));
     }
 
 
@@ -113,4 +108,22 @@ public class LeagueQueryService {
         List<Game> games = gameQueryRepository.findByLeagueWithGameTeams(league);
         return LeagueResponseWithGames.of(league, games);
     }
+
+    public List<LeagueResponseToManage> findLeaguesByManagerToManage(final Member manager) {
+        List<League> leagues = leagueQueryRepository.findByManagerToManage(manager);
+
+        Comparator<League> comparator = Comparator.comparing(
+                league -> leagueProgressOrderMap.get(LeagueProgress.getProgressDescription(LocalDateTime.now(), league)));
+
+        return leagues.stream()
+                .sorted(comparator)
+                .map(LeagueResponseToManage::of)
+                .toList();
+    }
+
+    public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
+            Map.entry(LeagueProgress.IN_PROGRESS.getDescription(), 1),
+            Map.entry(LeagueProgress.BEFORE_START.getDescription(), 2),
+            Map.entry(LeagueProgress.FINISHED.getDescription(), 3)
+    );
 }
