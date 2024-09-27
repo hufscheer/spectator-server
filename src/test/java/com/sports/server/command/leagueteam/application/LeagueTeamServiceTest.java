@@ -1,6 +1,5 @@
 package com.sports.server.command.leagueteam.application;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -110,7 +109,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
     }
 
     @Test
-    void S3으로부터_받아오지_않은_이미지_url을_등록할_경우_예외가_발생한다() {
+    void origin_prefix가_포함되지_않은_이미지_url을_등록할_경우_예외가_발생한다() {
         // given
         Long leagueId = 1L;
         Member manager = entityUtils.getEntity(1L, Member.class);
@@ -222,11 +221,4 @@ public class LeagueTeamServiceTest extends ServiceTest {
         leagueTeamPlayerIds.stream()
                 .forEach(id -> assertThat(leagueTeamPlayerFixtureRepository.findById(id)).isEmpty());
     }
-
-//    @Test
-//    void S3_validator() {
-//        assertThatCode(() -> s3Service.doesFileExist("https://images.hufstreaming.site/18660afb-6996-4fd4-8355-98960b1950c4.gif")).doesNotThrowAnyException();
-//    }
-
-
 }
