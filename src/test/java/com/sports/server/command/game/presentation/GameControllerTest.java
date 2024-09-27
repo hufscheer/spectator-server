@@ -108,7 +108,7 @@ public class GameControllerTest extends DocumentationTest {
         Long idOfTeam1 = 1L;
         Long idOfTeam2 = 2L;
         GameRequestDto.Register requestDto = new GameRequestDto.Register("경기 이름", "16강", "경기전", "SCHEDULED",
-                LocalDateTime.now(), idOfTeam1, idOfTeam2, "videoId");
+                LocalDateTime.of(2024, 9, 11, 12, 0, 0), idOfTeam1, idOfTeam2, "videoId");
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -151,7 +151,7 @@ public class GameControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         Long gameId = 1L;
         GameRequestDto.Update requestDto = new GameRequestDto.Update(
-                "게임 이름", "16강", "전반전", "PLAYING", LocalDateTime.now(), "videoId"
+                "게임 이름", "16강", "전반전", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
         );
 
         doNothing().when(gameService).updateGame(anyLong(), anyLong(), any(GameRequestDto.Update.class), any(Member.class));
