@@ -129,7 +129,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        List<CheerTalkResponse.Reported> reportedList = toResponses(getResponse, CheerTalkResponse.Reported.class).stream()
+        List<CheerTalkResponse.ForManager> reportedList = toResponses(getResponse, CheerTalkResponse.ForManager.class).stream()
                 .filter(reported -> reported.cheerTalkId().equals(cheerTalkId))
                 .toList();;
         assertAll(
