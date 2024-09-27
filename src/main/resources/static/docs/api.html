@@ -485,6 +485,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_신고_api">신고 API</a>
 <ul class="sectlevel2">
 <li><a href="#_응원톡_신고">응원톡 신고</a></li>
+<li><a href="#_응원톡_신고_무효처리신고_취소">응원톡 신고 무효처리(신고 취소)</a></li>
 </ul>
 </li>
 <li><a href="#_리그_api">리그 API</a>
@@ -1015,6 +1016,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 </div>
+>>>>>>> ed5ef235f14ee2e34f1c326eecd1a866386a0ee9
 </div>
 </div>
 <div class="sect1">
@@ -2200,6 +2202,57 @@ Host: www.api.hufstreaming.site
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_응원톡_신고_무효처리신고_취소"><a class="link" href="#_응원톡_신고_무효처리신고_취소">응원톡 신고 무효처리(신고 취소)</a></h3>
+<div class="sect3">
+<h4 id="_응원톡_신고_무효처리신고_취소_http_request"><a class="link" href="#_응원톡_신고_무효처리신고_취소_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /reports/1/4/cancel HTTP/1.1
+Content-Type: application/json
+Host: www.api.hufstreaming.site
+Cookie: HCC_SES=temp-cookie</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_응원톡_신고_무효처리신고_취소_path_parameters"><a class="link" href="#_응원톡_신고_무효처리신고_취소_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /reports/{leagueId}/{cheerTalkId}/cancel</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>leagueId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대회의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cheerTalkId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">신고된 응원톡의 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_응원톡_신고_무효처리신고_취소_http_response"><a class="link" href="#_응원톡_신고_무효처리신고_취소_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers</code></pre>
