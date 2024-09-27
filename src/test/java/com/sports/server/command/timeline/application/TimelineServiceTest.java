@@ -11,7 +11,9 @@ import com.sports.server.command.timeline.domain.PKTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +35,9 @@ class TimelineServiceTest extends ServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private EntityUtils entityUtils;
+
     private final Long gameId = 1L;
     private final Long quarterId = 3L;
     private Member manager;
@@ -41,6 +46,26 @@ class TimelineServiceTest extends ServiceTest {
     void setUp() {
         manager = memberRepository.findMemberByEmail("john.doe@example.com")
                 .orElseThrow();
+    }
+
+    @Test
+    void 경기의_매니저가_아닌_회원이_타임라인을_등록하려고_하면_예외가_발생한다() {
+        // given
+        Member nonManager = entityUtils.getEntity(2L, Member.class);
+        Long team1Id = 1L;
+        Long team1PlayerId = 1L;
+
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+                team1Id,
+                quarterId,
+                team1PlayerId,
+                3
+        );
+
+        // when & then
+        assertThatThrownBy(() -> timelineService.register(nonManager, gameId, request))
+                .isInstanceOf(UnauthorizedException.class);
+
     }
 
     @DisplayName("득점 타임라인을")
