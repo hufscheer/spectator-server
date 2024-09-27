@@ -202,6 +202,16 @@ class TimelineServiceTest extends ServiceTest {
                     10,
                     3L,
                     GameProgressType.QUARTER_START
+            );
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertThat(actual).isInstanceOf(GameProgressTimeline.class);
+        }
+    }
 
     @DisplayName("승부차기 타임라인을")
     @Nested

@@ -113,10 +113,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         scoredTeam.scoreInPk();
     }
 
-    public boolean isMangedBy(Member member) {
-        return manager.equals(member);
-    }
-
     public void cancelScore(LineupPlayer scorer) {
         GameTeam scoredTeam = teams.stream()
                 .filter(scorer::isInTeam)
@@ -155,10 +151,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         if (StringUtils.hasText(gameQuarter)) {
             this.gameQuarter = gameQuarter;
         }
-    }
-
-    public void updateState(GameState state) {
-        this.state = state;
     }
 
     public void updateRound(Round round) {
@@ -225,8 +217,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
                 .filter(quarter -> quarter.getName().equals(gameQuarter))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿼터가 존재하지 않습니다."));
+    }
 
-      @Override
+    @Override
     public boolean isManagedBy(Member manager) {
         return manager.equals(manager);
     }
