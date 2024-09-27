@@ -1,13 +1,13 @@
 package com.sports.server.query.application;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.dto.PageRequestDto;
-import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.query.dto.response.CheerTalkResponse;
+import com.sports.server.query.dto.response.CheerTalkResponse.ForManager;
 import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import com.sports.server.query.repository.GameQueryRepository;
 import java.util.Collections;
@@ -42,22 +42,35 @@ public class CheerTalkQueryService {
         return responses;
     }
 
-    public List<CheerTalkResponse.Reported> getReportedCheerTalksByLeagueId(final Long leagueId,
-                                                                           final PageRequestDto pageRequest,
-                                                                           final Member manager) {
+    public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId,
+                                                                              final PageRequestDto pageRequest,
+                                                                              final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
-
-        if (!league.isManagedBy(manager)) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-        }
+        PermissionValidator.checkPermission(league, manager);
 
         List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
                 leagueId, pageRequest.cursor(), pageRequest.size()
         );
 
         return reportedCheerTalks.stream()
-                .map(cheerTalk -> new CheerTalkResponse.Reported(cheerTalk,
-                        gameQueryRepository.findByIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+                .map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+                        gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
     }
+
+    public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(Long leagueId,
+                                                                               PageRequestDto pageRequest,
+                                                                               Member manager) {
+        League league = entityUtils.getEntity(leagueId, League.class);
+        PermissionValidator.checkPermission(league, manager);
+
+        List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
+                leagueId, pageRequest.cursor(), pageRequest.size()
+        );
+
+        return cheerTalks.stream()
+                .map(cheerTalk -> new ForManager(cheerTalk,
+                        gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+    }
+
 
 }

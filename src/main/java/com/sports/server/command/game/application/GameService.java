@@ -47,9 +47,9 @@ public class GameService {
         game.addTeam(gameTeam1);
         game.addTeam(gameTeam2);
 
-        leagueTeam1.getLeagueTeamPlayers().stream()
+        leagueTeam1.getLeagueTeamPlayers()
                 .forEach(gameTeam1::registerLineup);
-        leagueTeam2.getLeagueTeamPlayers().stream()
+        leagueTeam2.getLeagueTeamPlayers()
                 .forEach(gameTeam2::registerLineup);
     }
 

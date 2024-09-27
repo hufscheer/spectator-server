@@ -216,14 +216,15 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new GameTeamResponse(2L, "서어 뼤데뻬", "이미지 이미지", 1)
         );
 
+        LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+
         // 진행 중인 경기만
         List<GameDetailResponse> inProgressGames = List.of(
-                new GameDetailResponse(1L, "PLAYING", LocalDateTime.now(), gameTeams)
+                new GameDetailResponse(1L, "PLAYING", fixedDateTime, gameTeams)
         );
 
         List<LeagueResponseWithInProgressGames> responses = List.of(
-                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now(), inProgressGames));
+                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", inProgressGames));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -246,10 +247,6 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].state").type(JsonFieldType.STRING)
                                         .description("리그의 진행 상태 ex. 진행 중, 종료"),
-                                fieldWithPath("[].sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀의 수"),
-                                fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
-                                fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
-                                fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
                                 fieldWithPath("[].inProgressGames").type(JsonFieldType.ARRAY).description("진행 중인 게임들"),
                                 fieldWithPath("[].inProgressGames[].id").type(JsonFieldType.NUMBER)
                                         .description("진행 중인 게임의 ID"),
@@ -275,11 +272,12 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     void 매니저가_생성한_모든_리그를_조회한다() throws Exception {
 
         // given
+        LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         List<LeagueResponseToManage> responses = List.of(
-                new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now()),
-                new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now()));
+                new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, "16강", fixedDateTime,
+                        fixedDateTime),
+                new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, "16강", fixedDateTime,
+                        fixedDateTime));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 

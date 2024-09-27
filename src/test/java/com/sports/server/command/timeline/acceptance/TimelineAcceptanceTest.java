@@ -1,5 +1,7 @@
 package com.sports.server.command.timeline.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.AcceptanceTest;
@@ -11,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(scripts = "/timeline-fixture.sql")
 public class TimelineAcceptanceTest extends AcceptanceTest {
@@ -91,6 +91,31 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .post("/games/{gameId}/timelines/progress", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 승부차기_타임라인을_생성한다() {
+        // given
+        TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
+                10,
+                quarterId,
+                team1Id,
+                team1PlayerId,
+                true
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/pk", gameId)
                 .then().log().all()
                 .extract();
 
