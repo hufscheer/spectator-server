@@ -3,7 +3,6 @@ package com.sports.server.command.leagueteam.application;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
-import com.sports.server.command.leagueteam.domain.LeagueTeamPlayerRepository;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
@@ -53,14 +52,8 @@ public class LeagueTeamService {
 
         LeagueTeam leagueTeam = getLeagueTeam(teamId);
 
-        String imageUrl;
-        if (!request.logoImageUrl().equals(leagueTeam.getLogoImageUrl())) {
-            imageUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
-        } else {
-            imageUrl = leagueTeam.getLogoImageUrl();
-        }
-        s3Service.doesFileExist(imageUrl);
-        leagueTeam.updateInfo(request.name(), imageUrl);
+        leagueTeam.updateInfo(request.name(), request.logoImageUrl(), originPrefix, replacePrefix);
+        s3Service.doesFileExist(leagueTeam.getLogoImageUrl());
 
         addPlayers(request, leagueTeam);
         updatePlayers(request, leagueTeam);
