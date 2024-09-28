@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 import com.sports.server.command.report.dto.ReportRequest;
+import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
 
 @Sql(scripts = "/report-fixture.sql")
 class ReportAcceptanceTest extends AcceptanceTest {
@@ -99,5 +102,39 @@ class ReportAcceptanceTest extends AcceptanceTest {
                 .post("/reports")
                 .then().log().all()
                 .extract();
+    }
+
+    @Test
+    void 신고를_무효처리한다() {
+        // given
+        Long leagueId = 1L;
+        Long cheerTalkId = 4L;
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> patchResponse = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .patch("/reports/{leagueId}/{cheerTalkId}/cancel", leagueId, cheerTalkId)
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
+                .then().log().all()
+                .extract();
+
+        List<CheerTalkResponse.ForManager> reportedList = toResponses(getResponse, CheerTalkResponse.ForManager.class).stream()
+                .filter(reported -> reported.cheerTalkId().equals(cheerTalkId))
+                .toList();;
+        assertAll(
+                () -> assertThat(patchResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(reportedList.size()).isEqualTo(0)
+        );
     }
 }

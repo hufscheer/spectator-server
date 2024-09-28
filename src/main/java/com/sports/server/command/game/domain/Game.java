@@ -221,6 +221,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     @Override
     public boolean isManagedBy(Member manager) {
-        return manager.equals(manager);
+        return this.manager.equals(manager);
     }
 }

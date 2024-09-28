@@ -55,7 +55,7 @@ public class Report extends BaseEntity<Report> {
         return this.state == ReportState.UNCHECKED;
     }
 
-    public void updateToValid() {
+    public void accept() {
         this.state = ReportState.VALID;
         cheerTalk.block();
     }
@@ -63,4 +63,9 @@ public class Report extends BaseEntity<Report> {
     public void updateToPending() {
         this.state = ReportState.PENDING;
     }
+
+    public void cancel() {
+        this.state = ReportState.INVALID;
+    }
+
 }
