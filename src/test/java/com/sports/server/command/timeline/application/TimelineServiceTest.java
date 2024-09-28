@@ -275,7 +275,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 마지막_타임라인을_차례로_삭제한다() {
             // given
-            long lastId = 6L;
+            long lastId = 7L;
 
             // when
             for (long i = lastId; i > 0; i--) {
