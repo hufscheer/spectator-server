@@ -1,12 +1,18 @@
 package com.sports.server.command.timeline.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
-import com.sports.server.command.timeline.domain.*;
+import com.sports.server.command.timeline.domain.GameProgressTimeline;
+import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.PKTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
+import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
@@ -18,10 +24,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Sql(scripts = "/timeline-fixture.sql")
 class TimelineServiceTest extends ServiceTest {
@@ -237,7 +239,7 @@ class TimelineServiceTest extends ServiceTest {
 
             // then
             Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
-            assertThat(actual).isInstanceOf(GameProgressTimeline.class);
+            assertThat(actual).isInstanceOf(PKTimeline.class);
 
         }
     }
