@@ -1,18 +1,19 @@
 package com.sports.server.query.application;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.groupingBy;
+
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.query.repository.TimelineQueryRepository;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,6 +25,8 @@ public class TimelineQueryService {
     public List<TimelineResponse> getTimelines(final Long gameId) {
         Map<Quarter, List<Timeline>> timelines = timelineQueryRepository.findByGameId(gameId)
                 .stream()
+                .sorted(comparingInt(Timeline::getRecordedAt).reversed()
+                        .thenComparing(Timeline::getId, reverseOrder()))
                 .collect(groupingBy(Timeline::getRecordedQuarter));
 
         return timelines.keySet()
