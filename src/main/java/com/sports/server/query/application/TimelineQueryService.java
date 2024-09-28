@@ -1,7 +1,5 @@
 package com.sports.server.query.application;
 
-import static java.util.Collections.reverseOrder;
-import static java.util.Comparator.comparingInt;
 import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -25,8 +23,6 @@ public class TimelineQueryService {
     public List<TimelineResponse> getTimelines(final Long gameId) {
         Map<Quarter, List<Timeline>> timelines = timelineQueryRepository.findByGameId(gameId)
                 .stream()
-                .sorted(comparingInt(Timeline::getRecordedAt).reversed()
-                        .thenComparing(Timeline::getId, reverseOrder()))
                 .collect(groupingBy(Timeline::getRecordedQuarter));
 
         return timelines.keySet()

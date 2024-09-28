@@ -39,27 +39,30 @@ public record LeagueResponseWithGames(
             Long id,
             String state,
             LocalDateTime startTime,
+            boolean isPkTaken,
             List<GameTeam> gameTeams
     ) {
         public record GameTeam(
                 Long gameTeamId,
                 String gameTeamName,
                 String logoImageUrl,
-                Integer score
+                Integer score,
+                Integer pkScore
         ) {
             public static GameTeam of(com.sports.server.command.game.domain.GameTeam gameTeam) {
                 return new GameTeam(
                         gameTeam.getId(),
                         gameTeam.getLeagueTeam().getName(),
                         gameTeam.getLeagueTeam().getLogoImageUrl(),
-                        gameTeam.getScore()
+                        gameTeam.getScore(),
+                        gameTeam.getPkScore()
                 );
             }
         }
 
         public static GameDetail of(final Game game) {
             return new GameDetail(
-                    game.getId(), game.getState().name(), game.getStartTime(),
+                    game.getId(), game.getState().name(), game.getStartTime(), game.getIsPkTaken(),
                     game.getTeams().stream()
                             .map(GameTeam::of)
                             .toList()

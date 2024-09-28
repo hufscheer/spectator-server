@@ -1,21 +1,20 @@
 package com.sports.server.command.timeline.domain;
 
+import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.exception.CustomException;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class GameProgressTimelineTest {
     private Quarter 경기전;
@@ -24,8 +23,8 @@ class GameProgressTimelineTest {
     private Quarter 연장전;
     private Quarter 승부차기;
     private Quarter 경기후;
-
     private Game game;
+    private Sport sport;
 
     @BeforeEach
     void setUp() {
@@ -59,7 +58,7 @@ class GameProgressTimelineTest {
                 .set("order", 6)
                 .sample();
 
-        Sport sport = entityBuilder(Sport.class)
+        sport = entityBuilder(Sport.class)
                 .set("name", "축구")
                 .set("quarters", List.of(경기전, 전반전, 후반전, 승부차기, 경기후))
                 .sample();
@@ -69,6 +68,7 @@ class GameProgressTimelineTest {
                 .set("gameQuarter", 경기전.getName())
                 .set("state", GameState.SCHEDULED)
                 .set("sport", sport)
+                .set("is_pk_taken", false)
                 .sample();
     }
 
@@ -196,6 +196,18 @@ class GameProgressTimelineTest {
             ).isInstanceOf(CustomException.class)
                     .hasMessage("이전 쿼터로의 진행은 불가능합니다.");
         }
+
+        @Test
+        void 승부차기_시작_타임라인을_등록하는_경우_game의_승부차기_진행_여부_필드가_true가_된다() {
+            // given
+            GameProgressTimeline timeline = 승부차기_시작_타임라인_생성(game);
+
+            // when
+            timeline.apply();
+
+            // then
+            assertThat(game.getIsPkTaken()).isEqualTo(true);
+        }
     }
 
     @Nested
@@ -276,6 +288,19 @@ class GameProgressTimelineTest {
         }
 
         @Test
+        void 승부차기_시작_타임라인을_롤백하는_경우_game의_승부차기_진행_여부_필드가_false가_된다() {
+            // given
+            GameProgressTimeline timeline = 승부차기_시작_타임라인_생성(game);
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertThat(game.getIsPkTaken()).isEqualTo(false);
+        }
+
+        @Test
         void 경기_종료_타임라인을_롤백한다() {
             // given
             경기_시작_타임라인_생성(game).apply();
@@ -341,6 +366,12 @@ class GameProgressTimelineTest {
                 후반전,
                 50,
                 GameProgressType.QUARTER_END
+        );
+    }
+
+    private GameProgressTimeline 승부차기_시작_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game, 승부차기, 50, GameProgressType.QUARTER_START
         );
     }
 
