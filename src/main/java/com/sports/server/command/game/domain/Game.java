@@ -34,6 +34,8 @@ import org.springframework.util.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game extends BaseEntity<Game> implements ManagedEntity {
 
+    private static final String NAME_OF_PK_QUARTER = "승부차기";
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_id")
     private Sport sport;
@@ -206,12 +208,29 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.getName();
+
+        if (gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+            startPk();
+        }
+
         this.quarterChangedAt = LocalDateTime.now();
     }
 
     public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
+        if (this.gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+            cancelPk();
+        }
+
         this.gameQuarter = quarter.getName();
         this.quarterChangedAt = changedAt;
+    }
+
+    private void startPk() {
+        this.isPkTaken = true;
+    }
+
+    private void cancelPk() {
+        this.isPkTaken = false;
     }
 
     public Quarter getQuarter() {
