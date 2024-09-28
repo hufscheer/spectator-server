@@ -51,4 +51,12 @@ public class S3Service {
         return Date.from(now.toInstant());
     }
 
+    public void doesFileExist(String key) {
+        try {
+            amazonS3.doesObjectExist(bucketName, key);
+        } catch (Exception e) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "S3에 해당 파일이 존재하지 않습니다.");
+        }
+    }
+
 }
