@@ -57,21 +57,9 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
 
                 () -> assertThat(actual).isEqualTo(List.of(
                         new TimelineResponse(
-                                QUARTER2, List.of(
+                                "2쿼터", List.of(
                                 new RecordResponse(
-                                        null, 7L, PK_TYPE,
-                                        10,
-                                        "선수10",
-                                        2L,
-                                        TEAM_B,
-                                        TEAM_B_IMAGE_URL,
-                                        null,
-                                        null,
-                                        null,
-                                        new PkRecordResponse(7L, true)
-                                ),
-                                new RecordResponse(
-                                        null, 6L, PROGRESS_TYPE,
+                                        null, 6L, "GAME_PROGRESS",
                                         20,
                                         null,
                                         null,
@@ -83,64 +71,76 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         null
                                 ),
                                 new RecordResponse(
-                                        null, 5L, SCORE_TYPE,
+                                        null, 5L, "SCORE",
                                         13,
                                         "선수10",
                                         2L,
-                                        TEAM_B,
-                                        TEAM_B_IMAGE_URL,
+                                        "팀B",
+                                        "http://example.com/logo_b.png",
                                         new ScoreRecordResponse(5L, 3, List.of(
                                                 new ScoreRecordResponse.Snapshot(
-                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        "팀A", "http://example.com/logo_a.png", 2),
                                                 new ScoreRecordResponse.Snapshot(
-                                                        TEAM_B, TEAM_B_IMAGE_URL, 3)
+                                                        "팀B", "http://example.com/logo_b.png", 3)
                                         )),
                                         null,
                                         null, null
                                 ),
                                 new RecordResponse(
-                                        null, 4L, REPLACEMENT_TYPE,
+                                        null, 7L, "PK",
+                                        10,
+                                        "선수10",
+                                        2L,
+                                        "팀B",
+                                        "http://example.com/logo_b.png",
+                                        null,
+                                        null,
+                                        null,
+                                        new PkRecordResponse(7L, true)
+                                ),
+                                new RecordResponse(
+                                        null, 4L, "REPLACEMENT",
                                         10,
                                         "선수2",
                                         1L,
-                                        TEAM_A,
-                                        TEAM_A_IMAGE_URL,
+                                        "팀A",
+                                        "http://example.com/logo_a.png",
                                         null,
                                         new ReplacementRecordResponse(4L, "선수3"),
                                         null, null
                                 )
                         )),
                         new TimelineResponse(
-                                QUARTER1, List.of(
+                                "1쿼터", List.of(
                                 new RecordResponse(
-                                        null, 3L, REPLACEMENT_TYPE,
+                                        null, 3L, "REPLACEMENT",
                                         24,
                                         "선수6",
                                         2L,
-                                        TEAM_B,
-                                        TEAM_B_IMAGE_URL,
+                                        "팀B",
+                                        "http://example.com/logo_b.png",
                                         null,
                                         new ReplacementRecordResponse(3L, "선수7"),
                                         null, null
                                 ),
                                 new RecordResponse(
-                                        null, 2L, SCORE_TYPE,
+                                        null, 2L, "SCORE",
                                         22,
                                         "선수2",
                                         1L,
-                                        TEAM_A,
-                                        TEAM_A_IMAGE_URL,
+                                        "팀A",
+                                        "http://example.com/logo_a.png",
                                         new ScoreRecordResponse(2L, 2, List.of(
                                                 new ScoreRecordResponse.Snapshot(
-                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        "팀A", "http://example.com/logo_a.png", 2),
                                                 new ScoreRecordResponse.Snapshot(
-                                                        TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                                        "팀B", "http://example.com/logo_b.png", 0)
                                         )),
                                         null,
                                         null, null
                                 ),
                                 new RecordResponse(
-                                        null, 1L, PROGRESS_TYPE,
+                                        null, 1L, "GAME_PROGRESS",
                                         0,
                                         null,
                                         null,
@@ -154,4 +154,5 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                 ))
         );
     }
+
 }
