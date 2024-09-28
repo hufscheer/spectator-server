@@ -71,6 +71,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     @Column(name = "round", nullable = false)
     private Round round;
 
+    @Column(name = "is_pk_taken", nullable = false)
+    private Boolean isPkTaken;
+
     public void registerStarter(final LineupPlayer lineupPlayer) {
         this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));
     }
