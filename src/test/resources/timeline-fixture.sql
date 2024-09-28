@@ -53,9 +53,10 @@ VALUES (6, 2, '선수6', '센터', true, 6, 1, false),
 INSERT INTO timelines(type,
                       game_id,
                       recorded_quarter_id,
+                      previous_quarter_id,
                       recorded_at,
                       game_progress_type)
-VALUES ('GAME_PROGRESS', 1, 1, 0, 'GAME_START');
+VALUES ('GAME_PROGRESS', 1, 1, 1, 0, 'GAME_START');
 
 -- A팀 선수 2의 2득점
 INSERT INTO timelines (type,
@@ -141,9 +142,10 @@ VALUES ('SCORE', -- type
 INSERT INTO timelines(type,
                       game_id,
                       recorded_quarter_id,
+                      previous_quarter_id,
                       recorded_at,
                       game_progress_type)
-VALUES ('GAME_PROGRESS', 1, 2, 20, 'GAME_END');
+VALUES ('GAME_PROGRESS', 1, 2, 2, 20, 'GAME_END');
 
 SET
 foreign_key_checks = 1;

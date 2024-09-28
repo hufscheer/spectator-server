@@ -18,4 +18,15 @@ public class Quarter extends BaseEntity<Quarter> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sports_id")
     private Sport sport;
+
+    @Column(name = "_order", nullable = false)
+    private Integer order = 0;
+
+    public boolean isOrder(Integer order) {
+        return this.order.equals(order);
+    }
+
+    public boolean isPreviousThan(Quarter other) {
+        return this.order < other.order;
+    }
 }

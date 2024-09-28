@@ -16,5 +16,4 @@ public enum GameState {
                 .findFirst().orElseThrow(
                         () -> new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.STATE_NOT_FOUND_EXCEPTION));
     }
-
 }

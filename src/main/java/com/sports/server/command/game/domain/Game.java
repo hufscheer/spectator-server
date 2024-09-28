@@ -3,6 +3,7 @@ package com.sports.server.command.game.domain;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
@@ -112,10 +113,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         scoredTeam.scoreInPk();
     }
 
-    public boolean isMangedBy(Member member) {
-        return manager.equals(member);
-    }
-
     public void cancelScore(LineupPlayer scorer) {
         GameTeam scoredTeam = teams.stream()
                 .filter(scorer::isInTeam)
@@ -156,10 +153,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
-    public void updateState(GameState state) {
-        this.state = state;
-    }
-
     public void updateRound(Round round) {
         this.round = round;
     }
@@ -192,6 +185,38 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         if (!teams.contains(gameTeam)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
         }
+    }
+
+    public void updateState(GameState state) {
+        this.state = state;
+    }
+
+    public void play() {
+        this.state = GameState.PLAYING;
+        updateQuarter(sport.getAfterStartQuarter());
+    }
+
+    public void end() {
+        this.state = GameState.FINISHED;
+        updateQuarter(sport.getEndQuarter());
+    }
+
+    public void updateQuarter(Quarter quarter) {
+        this.gameQuarter = quarter.getName();
+        this.quarterChangedAt = LocalDateTime.now();
+    }
+
+    public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
+        this.gameQuarter = quarter.getName();
+        this.quarterChangedAt = changedAt;
+    }
+
+    public Quarter getQuarter() {
+        return sport.getQuarters()
+                .stream()
+                .filter(quarter -> quarter.getName().equals(gameQuarter))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 쿼터가 존재하지 않습니다."));
     }
 
     @Override

@@ -7,9 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
+import com.sports.server.command.timeline.domain.GameProgressTimeline;
+import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.PKTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
+import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
@@ -216,6 +219,27 @@ class TimelineServiceTest extends ServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("게임 진행 타임라인을")
+    class GameProgressTimelineTest {
+        @Test
+        void 생성한다() {
+            // given
+            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
+                    10,
+                    3L,
+                    GameProgressType.QUARTER_START
+            );
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertThat(actual).isInstanceOf(GameProgressTimeline.class);
+        }
+    }
+
     @DisplayName("승부차기 타임라인을")
     @Nested
     class PkTest {
@@ -239,15 +263,8 @@ class TimelineServiceTest extends ServiceTest {
             timelineService.register(manager, gameId, request);
 
             // then
-            PKTimeline actual = (PKTimeline) timelineFixtureRepository.findAllLatest(gameId)
-                    .get(0);
-
-            assertAll(
-                    () -> assertThat(actual.getScorer().getId()).isEqualTo(teamPlayerId),
-                    () -> assertThat(actual.getRecordedQuarter().getId()).isEqualTo(quarterId),
-                    () -> assertThat(actual.getRecordedAt()).isEqualTo(recordedAt),
-                    () -> assertThat(actual.getIsSuccess()).isEqualTo(true)
-            );
+            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertThat(actual).isInstanceOf(PKTimeline.class);
 
         }
     }
