@@ -1,5 +1,5 @@
 SET
-foreign_key_checks = 0;
+    foreign_key_checks = 0;
 
 INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
 VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'),
@@ -70,16 +70,16 @@ INSERT INTO timelines (type,
                        game_team2_id,
                        snapshot_score2)
 VALUES ('SCORE', -- type
-    1,           -- game_id
-    1,           -- recorded_quarter_id
-    22,          -- recorded_at (UNIX timestamp)
-    2,           -- scorer_id
-    2,           -- score
-    1,           -- game_team1_id
-    2,           -- snapshot_score1
-    2,           -- game_team2_id
-    0            -- snapshot_score2
-    );
+        1, -- game_id
+        1, -- recorded_quarter_id
+        22, -- recorded_at (UNIX timestamp)
+        2, -- scorer_id
+        2, -- score
+        1, -- game_team1_id
+        2, -- snapshot_score1
+        2, -- game_team2_id
+        0 -- snapshot_score2
+       );
 
 
 -- B팀 6선수 OUT 7선수 IN
@@ -147,5 +147,13 @@ INSERT INTO timelines(type,
                       game_progress_type)
 VALUES ('GAME_PROGRESS', 1, 2, 2, 20, 'GAME_END');
 
+INSERT INTO timelines(type,
+                      game_id,
+                      recorded_quarter_id,
+                      recorded_at,
+                      scorer_id,
+                      is_success)
+VALUES ('PK', 1, 2, 10, 10, true);
+
 SET
-foreign_key_checks = 1;
+    foreign_key_checks = 1;
