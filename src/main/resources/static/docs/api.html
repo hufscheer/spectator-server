@@ -2172,7 +2172,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect3">
 <h4 id="_라인업_선수_선발로_변경_path_parameters"><a class="link" href="#_라인업_선수_선발로_변경_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/lineup-players/{lineupPlayerId}/starter</caption>
+<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/starter</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2187,6 +2187,10 @@ Vary: Access-Control-Request-Headers</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
@@ -2201,7 +2205,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect3">
 <h4 id="_라인업_선수_후보로_변경_path_parameters"><a class="link" href="#_라인업_선수_후보로_변경_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/lineup-players/{lineupPlayerId}/candidate</caption>
+<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/candidate</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2216,6 +2220,10 @@ Vary: Access-Control-Request-Headers</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
@@ -4913,7 +4921,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 6 Oct 2024 07:13:32 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 6 Oct 2024 12:31:24 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -4987,7 +4995,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-29 16:10:12 +0900
+Last updated 2024-09-29 17:27:18 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
