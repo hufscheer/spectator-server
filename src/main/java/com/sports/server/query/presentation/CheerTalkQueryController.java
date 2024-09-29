@@ -42,7 +42,7 @@ public class CheerTalkQueryController {
     }
 
     @GetMapping("/leagues/{leagueId}/cheer-talks/blocked")
-    public ResponseEntity<List<CheerTalkResponse.Blocked>> getAllBlockedCheerTalks(
+    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllBlockedCheerTalks(
         @PathVariable final Long leagueId,
         @ModelAttribute final PageRequestDto pageable,
         Member member) {
