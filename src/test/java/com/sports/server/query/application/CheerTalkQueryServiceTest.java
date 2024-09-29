@@ -97,14 +97,6 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 	@Nested
 	@DisplayName("가려진 응원톡 전체 조회")
 	class TestFindBlockedCheerTalksByLeagueId {
-		private PageRequestDto pageRequestDto;
-		private Member manager;
-
-		@BeforeEach
-		void setUp() {
-			pageRequestDto = new PageRequestDto(null, 10);
-			manager = entityUtils.getEntity(1L, Member.class);
-		}
 
 		@Test
 		void 가려진_응원톡만_조회된다() throws Exception {
@@ -113,8 +105,45 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 			List<Long> blockedCheerTalkIds = List.of(19L, 14L);
 
 			// when
-			List<CheerTalkResponse.Blocked> responses = cheerTalkQueryService.getBlockedCheerTalksByLeagueId(
+			List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getBlockedCheerTalksByLeagueId(
 				leagueId, pageRequestDto, manager);
+
+			// then
+			assertAll(
+				() -> assertThat(responses.size()).isEqualTo(2),
+				() -> assertThat(
+					responses.stream().map(CheerTalkResponse.ForManager::cheerTalkId).toList()).containsAll(blockedCheerTalkIds)
+			);
+		}
+
+		@Test
+		void 해당_리그의_응원톡만_조회된다() {
+			// given
+			Long leagueId = 1L;
+
+			// when
+			List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getBlockedCheerTalksByLeagueId(
+				leagueId, pageRequestDto, manager);
+
+			// then
+			assertThat(responses.stream().map(CheerTalkResponse.ForManager::leagueId).toList()).containsOnly(leagueId);
+		}
+
+		@Test
+		void 리그의_매니저가_아닌_경우_예외가_발생한다() {
+			// given
+			Long leagueId = 1L;
+			Member invalidManager = entityUtils.getEntity(2L, Member.class);
+
+			// when
+			ThrowableAssert.ThrowingCallable actual = () -> cheerTalkQueryService.getBlockedCheerTalksByLeagueId(
+				leagueId, pageRequestDto, invalidManager);
+
+			// when & then
+			assertThatThrownBy(actual)
+				.isInstanceOf(UnauthorizedException.class);
+		}
+	}
     @Nested
     @DisplayName("블락되지 않은 리그의 응원톡을 전체 조회 할 때")
     class TestFindUnblockedCheerTalksByLeagueId {
@@ -173,43 +202,4 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
             ).containsOnly(leagueId);
         }
     }
-
-
-			// then
-			assertAll(
-				() -> assertThat(responses.size()).isEqualTo(2),
-				() -> assertThat(
-					responses.stream().map(CheerTalkResponse.Blocked::cheerTalkId).toList()).containsAll(blockedCheerTalkIds)
-			);
-		}
-
-		@Test
-		void 해당_리그의_응원톡만_조회된다() {
-			// given
-			Long leagueId = 1L;
-
-			// when
-			List<CheerTalkResponse.Blocked> responses = cheerTalkQueryService.getBlockedCheerTalksByLeagueId(
-				leagueId, pageRequestDto, manager);
-
-			// then
-			assertThat(responses.stream().map(CheerTalkResponse.Blocked::leagueId).toList()).containsOnly(leagueId);
-		}
-
-		@Test
-		void 리그의_매니저가_아닌_경우_예외가_발생한다() {
-			// given
-			Long leagueId = 1L;
-			Member invalidManager = entityUtils.getEntity(2L, Member.class);
-
-			// when
-			ThrowableAssert.ThrowingCallable actual = () -> cheerTalkQueryService.getBlockedCheerTalksByLeagueId(
-				leagueId, pageRequestDto, invalidManager);
-
-			// when & then
-			assertThatThrownBy(actual)
-				.isInstanceOf(UnauthorizedException.class)
-				.hasMessage(AuthorizationErrorMessages.PERMISSION_DENIED);
-		}
-	}
 }

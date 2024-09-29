@@ -194,7 +194,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
         // given
         Long leagueId = 1L;
 
-        configureMockJwtForEmail("john@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -241,12 +241,12 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // then
-        List<CheerTalkResponse.Blocked> actual = toResponses(response, CheerTalkResponse.Blocked.class);
+        List<CheerTalkResponse.ForManager> actual = toResponses(response, CheerTalkResponse.ForManager.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(actual).map(CheerTalkResponse.Blocked::cheerTalkId)
+            () -> assertThat(actual).map(CheerTalkResponse.ForManager::cheerTalkId)
                 .containsExactly(19L, 14L),
-            () -> assertThat(actual).map(CheerTalkResponse.Blocked::content).containsExactly("응원톡17", "블락된 응원톡")
+            () -> assertThat(actual).map(CheerTalkResponse.ForManager::content).containsExactly("응원톡17", "블락된 응원톡")
         );
     }
 }
