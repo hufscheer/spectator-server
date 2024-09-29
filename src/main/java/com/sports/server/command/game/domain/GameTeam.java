@@ -75,10 +75,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
         this.lineupPlayers.stream()
                 .filter(lp -> lp.equals(lineupPlayer))
                 .findAny()
-                .ifPresent(lp -> {
-                    lp.changeStateToCandidate();
-                    if (lp.isCaptain()) {lp.revokeCaptainFromPlayer();}
-                    });
+                .ifPresent(LineupPlayer::changeStateToCandidate);
     }
 
     public void score() {

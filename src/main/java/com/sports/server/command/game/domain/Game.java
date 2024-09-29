@@ -190,7 +190,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     private void validateGameTeam(final GameTeam gameTeam) {
-        if (!teams.contains(gameTeam)) {
+        if (!this.teams.contains(gameTeam)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
         }
     }
