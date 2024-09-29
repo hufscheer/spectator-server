@@ -21,7 +21,7 @@ public class GameRequestDto {
     ) {
         public Game toEntity(Sport sport, Member manager, League league) {
             return new Game(sport, manager, league, name, startTime, videoId, quarter, GameState.from(state),
-                    Round.from(round));
+                    Round.from(round), false);
         }
     }
 
