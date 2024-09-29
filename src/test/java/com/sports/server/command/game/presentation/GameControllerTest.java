@@ -5,6 +5,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -140,6 +142,9 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
+                        responseHeaders(
+                                headerWithName("Location").description("새로 생성된 리소스의 URL")
                         )
                 ));
     }
@@ -154,7 +159,8 @@ public class GameControllerTest extends DocumentationTest {
                 "게임 이름", "16강", "전반전", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
         );
 
-        doNothing().when(gameService).updateGame(anyLong(), anyLong(), any(GameRequestDto.Update.class), any(Member.class));
+        doNothing().when(gameService)
+                .updateGame(anyLong(), anyLong(), any(GameRequestDto.Update.class), any(Member.class));
 
         // when
         ResultActions result = mockMvc.perform(put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
@@ -171,7 +177,8 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
-                                fieldWithPath("round").type(JsonFieldType.STRING).description("변경할 경기의 라운드 ex. 16강, 결승"),
+                                fieldWithPath("round").type(JsonFieldType.STRING)
+                                        .description("변경할 경기의 라운드 ex. 16강, 결승"),
                                 fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작 날짜 및 시각"),

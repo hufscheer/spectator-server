@@ -10,7 +10,12 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,11 +47,11 @@ public class GameController {
     }
 
     @PostMapping("/leagues/{leagueId}/games")
-    public ResponseEntity<Void> registerGame(@PathVariable final Long leagueId,
+    public ResponseEntity<Long> registerGame(@PathVariable final Long leagueId,
                                              @RequestBody final GameRequestDto.Register requestDto,
                                              final Member member) {
-        gameService.register(leagueId, requestDto, member);
-        return ResponseEntity.created(URI.create("")).build();
+        Long gameId = gameService.register(leagueId, requestDto, member);
+        return ResponseEntity.created(URI.create("/games/" + gameId)).body(gameId);
     }
 
     @PutMapping("/leagues/{leagueId}/{gameId}")
