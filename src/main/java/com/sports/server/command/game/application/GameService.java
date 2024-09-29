@@ -29,11 +29,12 @@ public class GameService {
     private static final String NAME_OF_SPORT = "축구";
 
     @Transactional
-    public void register(final Long leagueId,
+    public Long register(final Long leagueId,
                          final GameRequestDto.Register requestDto,
                          final Member manager) {
         Game game = saveGame(leagueId, manager, requestDto);
         saveGameTeams(game, requestDto);
+        return game.getId();
     }
 
     private void saveGameTeams(Game game, GameRequestDto.Register requestDto) {
