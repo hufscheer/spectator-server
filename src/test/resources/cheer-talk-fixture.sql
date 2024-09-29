@@ -4,7 +4,7 @@ SET foreign_key_checks = 0;
 -- 농구 게임 (game_id = 1) 응원톡 픽스처
 
 INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
-VALUES (1, 1, 'john@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
+VALUES (1, 1, 'john.doe@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-15 10:00:00'),
        (2, 1, 'jane@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
         '2024-06-15 09:30:00');
@@ -56,7 +56,8 @@ INSERT INTO `cheer_talks` (id, `created_at`, `content`, `is_blocked`, `game_team
 VALUES (15, '2023-01-01 12:30:00', '응원톡15', false, 3),
        (16, '2023-01-01 12:30:00', '응원톡16', false, 4),
        (17, '2023-01-01 12:30:00', '응원톡16', false, 5),
-       (18, '2023-01-01 12:30:00', '응원톡16', false, 6); -- 신고된 응원톡
+       (18, '2023-01-01 12:30:00', '응원톡16', false, 6), -- 신고된 응원톡
+       (19, '2032-01-01 12:30:12', '응원톡17', true, 3);
 
 
 INSERT INTO reports(id, cheer_talk_id, reported_at, state)

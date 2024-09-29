@@ -42,7 +42,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
         Long cheerTalkId = 1L;
 
-        configureMockJwtForEmail("john@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         ExtractableResponse<Response> patchResponse = RestAssured.given().log().all()
@@ -72,7 +72,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
         Long cheerTalkId = 14L;
 
-        configureMockJwtForEmail("john@example.com");
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         ExtractableResponse<Response> patchResponse = RestAssured.given().log().all()
