@@ -209,6 +209,28 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 경기를_삭제한다() {
+        // given
+        Long leagueId = 1L;
+        Long gameId = 1L;
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .pathParam("leagueId", leagueId)
+                .pathParam("gameId", gameId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/leagues/{leagueId}/{gameId}")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
     void 라인업_선수를_주장으로_등록한다() throws Exception {
 
         //given
