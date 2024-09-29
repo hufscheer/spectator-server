@@ -7,10 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
+import com.sports.server.command.timeline.domain.GameProgressTimeline;
+import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.PKTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
+import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +38,9 @@ class TimelineServiceTest extends ServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private EntityUtils entityUtils;
+
     private final Long gameId = 1L;
     private final Long quarterId = 3L;
     private Member manager;
@@ -40,6 +49,26 @@ class TimelineServiceTest extends ServiceTest {
     void setUp() {
         manager = memberRepository.findMemberByEmail("john.doe@example.com")
                 .orElseThrow();
+    }
+
+    @Test
+    void 경기의_매니저가_아닌_회원이_타임라인을_등록하려고_하면_예외가_발생한다() {
+        // given
+        Member nonManager = entityUtils.getEntity(2L, Member.class);
+        Long team1Id = 1L;
+        Long team1PlayerId = 1L;
+
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+                team1Id,
+                quarterId,
+                team1PlayerId,
+                3
+        );
+
+        // when & then
+        assertThatThrownBy(() -> timelineService.register(nonManager, gameId, request))
+                .isInstanceOf(UnauthorizedException.class);
+
     }
 
     @DisplayName("득점 타임라인을")
@@ -190,13 +219,63 @@ class TimelineServiceTest extends ServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("게임 진행 타임라인을")
+    class GameProgressTimelineTest {
+        @Test
+        void 생성한다() {
+            // given
+            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
+                    10,
+                    3L,
+                    GameProgressType.QUARTER_START
+            );
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertThat(actual).isInstanceOf(GameProgressTimeline.class);
+        }
+    }
+
+    @DisplayName("승부차기 타임라인을")
+    @Nested
+    class PkTest {
+
+        @Test
+        void 생성한다() {
+            // given
+            Long teamId = 1L;
+            Long teamPlayerId = 1L;
+            int recordedAt = 10;
+
+            TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
+                    recordedAt,
+                    quarterId,
+                    teamId,
+                    teamPlayerId,
+                    true
+            );
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertThat(actual).isInstanceOf(PKTimeline.class);
+
+        }
+    }
+
     @DisplayName("타임라인을 삭제할 때")
     @Nested
     class DeleteTest {
         @Test
         void 마지막_타임라인을_차례로_삭제한다() {
             // given
-            long lastId = 6L;
+            long lastId = 7L;
 
             // when
             for (long i = lastId; i > 0; i--) {

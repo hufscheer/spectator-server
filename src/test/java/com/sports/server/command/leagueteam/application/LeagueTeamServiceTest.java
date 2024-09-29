@@ -1,10 +1,13 @@
 package com.sports.server.command.leagueteam.application;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
@@ -14,6 +17,7 @@ import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.LeagueTeamPlayerFixtureRepository;
@@ -23,11 +27,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/league-fixture.sql")
+@ExtendWith(MockitoExtension.class)
 public class LeagueTeamServiceTest extends ServiceTest {
 
     @Value("${image.origin-prefix}")
@@ -35,6 +43,9 @@ public class LeagueTeamServiceTest extends ServiceTest {
 
     @Value("${image.replaced-prefix}")
     private String replacePrefix;
+
+    @MockBean
+    private S3Service s3Service;
 
     @Autowired
     private EntityUtils entityUtils;
@@ -48,14 +59,14 @@ public class LeagueTeamServiceTest extends ServiceTest {
     @Autowired
     private LeagueTeamPlayerFixtureRepository leagueTeamPlayerFixtureRepository;
 
-    private String validLogoImageUrl;
+    private String imageUrl;
 
     private Member manager;
 
     @BeforeEach
     void setUp() {
-        validLogoImageUrl = originPrefix + "image.png";
         manager = entityUtils.getEntity(1L, Member.class);
+        imageUrl = originPrefix + "image_url.png";
     }
 
     @Test
@@ -63,7 +74,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         // given
         Long leagueId = 1L;
         Member nonManager = entityUtils.getEntity(2L, Member.class);
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register("name", validLogoImageUrl, List.of());
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register("name", imageUrl, List.of());
+
 
         // when & then
         assertThrows(UnauthorizedException.class, () -> {
@@ -81,8 +93,9 @@ public class LeagueTeamServiceTest extends ServiceTest {
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
                 new LeagueTeamPlayerRequest.Register("name-a", 1),
                 new LeagueTeamPlayerRequest.Register("name-b", 2));
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, validLogoImageUrl,
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, imageUrl,
                 playerRegisterRequests);
+        doNothing().when(s3Service).doesFileExist(anyString());
 
         // when
         leagueTeamService.register(leagueId, manager, request);
@@ -97,7 +110,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
     }
 
     @Test
-    void 유효하지_않은_이미지_url을_등록하려고_하는_경우_예외가_발생한다() {
+    void origin_prefix가_포함되지_않은_이미지_url을_등록할_경우_예외가_발생한다() {
         // given
         Long leagueId = 1L;
         Member manager = entityUtils.getEntity(1L, Member.class);
@@ -127,6 +140,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
             leagueId = 1L;
             teamId = 3L;
             manager = entityUtils.getEntity(1L, Member.class);
+            doNothing().when(s3Service).doesFileExist(anyString());
         }
 
         @Test
@@ -137,7 +151,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
                     new LeagueTeamPlayerRequest.Register("name-b", 2));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
-                    "name", validLogoImageUrl, playerRegisterRequests, playerUpdateRequests, List.of(5L));
+                    "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(5L));
+            doNothing().when(s3Service).doesFileExist(anyString());
 
             // when & then
             assertThatThrownBy(() -> leagueTeamService.update(leagueId, request, manager, teamId))
@@ -151,11 +166,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
                     new LeagueTeamPlayerRequest.Register("name-a", 1),
                     new LeagueTeamPlayerRequest.Register("name-b", 2));
-            List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-
-            );
+            List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
-                    "name", validLogoImageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
+                    "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
+            doNothing().when(s3Service).doesFileExist(anyString());
 
             // when
             leagueTeamService.update(leagueId, request, manager, teamId);
@@ -163,8 +177,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
             // then
             LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
             assertThat(leagueTeam.getName()).isEqualTo(request.name());
-            assertThat(leagueTeam.getLogoImageUrl()).isEqualTo(
-                    request.logoImageUrl().replace(originPrefix, replacePrefix));
+            assertThat(leagueTeam.getLogoImageUrl())
+                    .isEqualTo(request.logoImageUrl().replace(originPrefix, replacePrefix));
         }
 
         @Test
@@ -179,7 +193,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
                     new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0)
             );
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
-                    "name", validLogoImageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
+                    "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
+            doNothing().when(s3Service).doesFileExist(anyString());
 
             // when
             leagueTeamService.update(leagueId, request, manager, teamId);
@@ -207,5 +222,4 @@ public class LeagueTeamServiceTest extends ServiceTest {
         leagueTeamPlayerIds.stream()
                 .forEach(id -> assertThat(leagueTeamPlayerFixtureRepository.findById(id)).isEmpty());
     }
-
 }

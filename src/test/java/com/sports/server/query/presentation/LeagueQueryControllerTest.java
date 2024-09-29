@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
+import com.sports.server.query.dto.response.LeagueResponseToManage;
 import com.sports.server.query.dto.response.LeagueResponseWithGames;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.GameTeam;
@@ -215,7 +216,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 매니저가_생성한_모든_리그를_조회한다() throws Exception {
+    void 매니저가_생성한_모든_리그와_진행중_경기를_조회한다() throws Exception {
 
         // given
         List<GameTeamResponse> gameTeams = List.of(
@@ -223,14 +224,15 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new GameTeamResponse(2L, "서어 뼤데뻬", "이미지 이미지", 1)
         );
 
+        LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+
         // 진행 중인 경기만
         List<GameDetailResponse> inProgressGames = List.of(
-                new GameDetailResponse(1L, "PLAYING", LocalDateTime.now(), gameTeams)
+                new GameDetailResponse(1L, "PLAYING", fixedDateTime, gameTeams)
         );
 
         List<LeagueResponseWithInProgressGames> responses = List.of(
-                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", 2, "16강", LocalDateTime.now(),
-                        LocalDateTime.now(), inProgressGames));
+                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", inProgressGames));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -253,10 +255,6 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].state").type(JsonFieldType.STRING)
                                         .description("리그의 진행 상태 ex. 진행 중, 종료"),
-                                fieldWithPath("[].sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀의 수"),
-                                fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
-                                fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
-                                fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
                                 fieldWithPath("[].inProgressGames").type(JsonFieldType.ARRAY).description("진행 중인 게임들"),
                                 fieldWithPath("[].inProgressGames[].id").type(JsonFieldType.NUMBER)
                                         .description("진행 중인 게임의 ID"),
@@ -277,6 +275,47 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         )
                 ));
     }
+
+    @Test
+    void 매니저가_생성한_모든_리그를_조회한다() throws Exception {
+
+        // given
+        LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+        List<LeagueResponseToManage> responses = List.of(
+                new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, "16강", fixedDateTime,
+                        fixedDateTime),
+                new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, "16강", fixedDateTime,
+                        fixedDateTime));
+
+        Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+        given(leagueQueryService.findLeaguesByManagerToManage(any(Member.class)))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/manager/manage")
+                .cookie(cookie)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("리그의 ID"),
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
+                                fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING)
+                                        .description("리그의 진행 상태 ex. 진행 중, 종료"),
+                                fieldWithPath("[].sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀의 수"),
+                                fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
+                                fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
+                                fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜")
+                        )
+                ));
+    }
+
 
     @Test
     void 리그팀을_상세_조회한다() throws Exception {
@@ -324,27 +363,27 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
 
         List<LeagueResponseWithGames.GameDetail.GameTeam> playingGameTeams = List.of(
-                new GameTeam(1L, "게임팀1", "이미지url", 1),
-                new GameTeam(2L, "게임팀2", "이미지url", 1)
+                new GameTeam(1L, "게임팀1", "이미지url", 1, 0),
+                new GameTeam(2L, "게임팀2", "이미지url", 1, 0)
         );
         List<LeagueResponseWithGames.GameDetail.GameTeam> scheduledGameTeams = List.of(
-                new GameTeam(3L, "게임팀3", "이미지url", 1),
-                new GameTeam(4L, "게임팀4", "이미지url", 1)
+                new GameTeam(3L, "게임팀3", "이미지url", 1, 0),
+                new GameTeam(4L, "게임팀4", "이미지url", 1, 0)
         );
         List<LeagueResponseWithGames.GameDetail.GameTeam> finishedGameTeams = List.of(
-                new GameTeam(5L, "게임팀5", "이미지url", 1),
-                new GameTeam(6L, "게임팀6", "이미지url", 1)
+                new GameTeam(5L, "게임팀5", "이미지url", 1, 0),
+                new GameTeam(6L, "게임팀6", "이미지url", 1, 0)
         );
         List<LeagueResponseWithGames.GameDetail> playingGames = List.of(
-                new GameDetail(1L, "PLAYING", LocalDateTime.of(2024, 8, 11, 13, 30),
+                new GameDetail(1L, "PLAYING", LocalDateTime.of(2024, 8, 11, 13, 30), false,
                         playingGameTeams)
         );
         List<LeagueResponseWithGames.GameDetail> finishedGames = List.of(
-                new GameDetail(2L, "FINISHED", LocalDateTime.of(2024, 8, 11, 13, 30),
+                new GameDetail(2L, "FINISHED", LocalDateTime.of(2024, 8, 11, 13, 30), false,
                         finishedGameTeams)
         );
         List<LeagueResponseWithGames.GameDetail> scheduledGames = List.of(
-                new GameDetail(3L, "SCHEDULED", LocalDateTime.of(2024, 8, 11, 13, 30),
+                new GameDetail(3L, "SCHEDULED", LocalDateTime.of(2024, 8, 11, 13, 30), false,
                         scheduledGameTeams)
         );
         LeagueResponseWithGames response = new LeagueResponseWithGames(
@@ -377,6 +416,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("playingGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
                                 fieldWithPath("playingGames[].startTime").type(JsonFieldType.STRING)
                                         .description("경기 시작 시간"),
+                                fieldWithPath("playingGames[].isPkTaken").type(JsonFieldType.BOOLEAN)
+                                        .description("승부차기 진출 여부"),
                                 fieldWithPath("playingGames[].gameTeams").type(JsonFieldType.ARRAY)
                                         .description("경기 팀 목록"),
                                 fieldWithPath("playingGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
@@ -387,12 +428,16 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("경기 팀 로고 이미지 URL"),
                                 fieldWithPath("playingGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
                                         .description("경기 팀 점수"),
+                                fieldWithPath("playingGames[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 승부차기 점수"),
 
                                 fieldWithPath("scheduledGames").type(JsonFieldType.ARRAY).description("예정된 경기 목록"),
                                 fieldWithPath("scheduledGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("scheduledGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
                                 fieldWithPath("scheduledGames[].startTime").type(JsonFieldType.STRING)
                                         .description("경기 시작 시간"),
+                                fieldWithPath("scheduledGames[].isPkTaken").type(JsonFieldType.BOOLEAN)
+                                        .description("승부차기 진출 여부"),
                                 fieldWithPath("scheduledGames[].gameTeams").type(JsonFieldType.ARRAY)
                                         .description("경기 팀 목록"),
                                 fieldWithPath("scheduledGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
@@ -403,12 +448,16 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("경기 팀 로고 이미지 URL"),
                                 fieldWithPath("scheduledGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
                                         .description("경기 팀 점수"),
+                                fieldWithPath("scheduledGames[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 승부차기 점수"),
 
                                 fieldWithPath("finishedGames").type(JsonFieldType.ARRAY).description("완료된 경기 목록"),
                                 fieldWithPath("finishedGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("finishedGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
                                 fieldWithPath("finishedGames[].startTime").type(JsonFieldType.STRING)
                                         .description("경기 시작 시간"),
+                                fieldWithPath("finishedGames[].isPkTaken").type(JsonFieldType.BOOLEAN)
+                                        .description("승부차기 진출 여부"),
                                 fieldWithPath("finishedGames[].gameTeams").type(JsonFieldType.ARRAY)
                                         .description("경기 팀 목록"),
                                 fieldWithPath("finishedGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
@@ -418,7 +467,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("finishedGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
                                         .description("경기 팀 로고 이미지 URL"),
                                 fieldWithPath("finishedGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
-                                        .description("경기 팀 점수")
+                                        .description("경기 팀 점수"),
+                                fieldWithPath("finishedGames[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
+                                        .description("경기 팀 승부차기 점수")
                         )
                 ));
     }

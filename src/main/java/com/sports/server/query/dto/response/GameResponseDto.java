@@ -15,7 +15,8 @@ public record GameResponseDto(
         String descriptionOfRound,
         String videoId,
         List<TeamResponse> gameTeams,
-        String sportsName
+        String sportsName,
+        boolean isPkTaken
 ) {
     public GameResponseDto(final Game game, final List<GameTeam> gameTeams, final Sport sport) {
         this(
@@ -29,7 +30,8 @@ public record GameResponseDto(
                         .sorted(Comparator.comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
                         .toList(),
-                sport.getName()
+                sport.getName(),
+                game.getIsPkTaken()
         );
     }
 
@@ -37,14 +39,16 @@ public record GameResponseDto(
             Long gameTeamId,
             String gameTeamName,
             String logoImageUrl,
-            Integer score
+            Integer score,
+            Integer pkScore
     ) {
         public TeamResponse(GameTeam gameTeam) {
             this(
                     gameTeam.getId(),
                     gameTeam.getLeagueTeam().getName(),
                     gameTeam.getLeagueTeam().getLogoImageUrl(),
-                    gameTeam.getScore()
+                    gameTeam.getScore(),
+                    gameTeam.getPkScore()
             );
         }
     }

@@ -1,11 +1,22 @@
 package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.sport.domain.Quarter;
-import jakarta.persistence.*;
+import com.sports.server.common.exception.CustomException;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @DiscriminatorValue("GAME_PROGRESS")
@@ -17,6 +28,12 @@ public class GameProgressTimeline extends Timeline {
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "previous_quarter_id")
+    private Quarter previousQuarter;
+
+    private LocalDateTime previousQuarterChangedAt;
+
     public GameProgressTimeline(
             Game game,
             Quarter quarter,
@@ -25,6 +42,16 @@ public class GameProgressTimeline extends Timeline {
     ) {
         super(game, quarter, recordedAt);
         this.gameProgressType = gameProgressType;
+        this.previousQuarter = game.getQuarter();
+        this.previousQuarterChangedAt = game.getQuarterChangedAt();
+
+        validateQuarter();
+    }
+
+    private void validateQuarter() {
+        if (recordedQuarter.isPreviousThan(previousQuarter)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이전 쿼터로의 진행은 불가능합니다.");
+        }
     }
 
     @Override
@@ -34,11 +61,29 @@ public class GameProgressTimeline extends Timeline {
 
     @Override
     public void apply() {
-        // TODO Game 상태 변경
+        if (gameProgressType == GameProgressType.GAME_START) {
+            game.play();
+        }
+
+        if (gameProgressType == GameProgressType.QUARTER_START) {
+            game.updateQuarter(recordedQuarter);
+        }
+
+        if (gameProgressType == GameProgressType.GAME_END) {
+            game.end();
+        }
     }
 
     @Override
     public void rollback() {
-        // TODO 게임 상태 변경 타임라인 생성 로직 구현 이후 구현 예정
+        game.updateQuarter(previousQuarter, previousQuarterChangedAt);
+
+        if (gameProgressType == GameProgressType.GAME_START) {
+            game.updateState(GameState.SCHEDULED);
+        }
+
+        if (gameProgressType == GameProgressType.GAME_END) {
+            game.updateState(GameState.PLAYING);
+        }
     }
 }

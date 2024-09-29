@@ -30,7 +30,8 @@ class LeagueControllerTest extends DocumentationTest {
 	@Test
 	void 리그를_생성한다() throws Exception {
 		// given
-		LeagueRequestDto.Register request = new LeagueRequestDto.Register("우물정 제기차기 대회", 4, LocalDateTime.now(), LocalDateTime.now());
+		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+		LeagueRequestDto.Register request = new LeagueRequestDto.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime);
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequestDto.Register.class));
 
@@ -85,8 +86,9 @@ class LeagueControllerTest extends DocumentationTest {
 	void 리그를_수정한다() throws Exception {
 		// given
 		Long leagueId = 5124L;
-		LeagueRequestDto.Update request = new LeagueRequestDto.Update("훕치치배 망고 빨리먹기 대회", LocalDateTime.now(),
-			LocalDateTime.now(), "16강");
+		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
+		LeagueRequestDto.Update request = new LeagueRequestDto.Update("훕치치배 망고 빨리먹기 대회", fixedDateTime,
+			fixedDateTime, "16강");
 
 		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequestDto.Update.class), anyLong());
 

@@ -1,0 +1,2 @@
+ALTER TABLE game_teams
+    ADD COLUMN pk_score INT NOT NULL DEFAULT 0;

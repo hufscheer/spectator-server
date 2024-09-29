@@ -62,5 +62,6 @@ VALUES (15, '2023-01-01 12:30:00', '응원톡15', false, 3),
 
 INSERT INTO reports(id, cheer_talk_id, reported_at, state)
 VALUES (1, 1, '2023-01-01 12:30:00', 'PENDING'),
-       (2, 18, '2023-01-01 12:30:00', 'PENDING');
+       (2, 18, '2023-01-01 12:30:00', 'PENDING'),
+       (3, 14, '2023-01-01 12:30:00', 'VALID');
 SET foreign_key_checks = 1;

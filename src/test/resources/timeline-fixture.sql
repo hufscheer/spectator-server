@@ -1,8 +1,9 @@
 SET
-foreign_key_checks = 0;
+    foreign_key_checks = 0;
 
 INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
-VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00');
+VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'),
+       (2, 2, 'non.manager@example.com', 'password123', FALSE, '2024-07-01 10:00:00');
 
 -- 스포츠
 INSERT INTO sports (id, name)
@@ -26,9 +27,9 @@ VALUES ('팀A', 'http://example.com/logo_a.png', 1, 1, 1),
 
 -- 경기의 팀
 -- 농구 대전 (game_id = 1) A팀 vs B팀
-INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
-VALUES (1, 1, 1, 15), -- 팀 A의 정보
-       (1, 2, 2, 10);
+INSERT INTO game_teams (game_id, league_team_id, cheer_count, score, pk_score)
+VALUES (1, 1, 1, 15, 0), -- 팀 A의 정보
+       (1, 2, 2, 10, 0);
 -- 팀 B의 정보
 
 -- 농구 대전(game_id = 1) A팀(game_team_id = 1) 선수
@@ -52,9 +53,10 @@ VALUES (6, 2, '선수6', '센터', true, 6, 1, false),
 INSERT INTO timelines(type,
                       game_id,
                       recorded_quarter_id,
+                      previous_quarter_id,
                       recorded_at,
                       game_progress_type)
-VALUES ('GAME_PROGRESS', 1, 1, 0, 'GAME_START');
+VALUES ('GAME_PROGRESS', 1, 1, 1, 0, 'GAME_START');
 
 -- A팀 선수 2의 2득점
 INSERT INTO timelines (type,
@@ -68,16 +70,16 @@ INSERT INTO timelines (type,
                        game_team2_id,
                        snapshot_score2)
 VALUES ('SCORE', -- type
-    1,           -- game_id
-    1,           -- recorded_quarter_id
-    22,          -- recorded_at (UNIX timestamp)
-    2,           -- scorer_id
-    2,           -- score
-    1,           -- game_team1_id
-    2,           -- snapshot_score1
-    2,           -- game_team2_id
-    0            -- snapshot_score2
-    );
+        1, -- game_id
+        1, -- recorded_quarter_id
+        22, -- recorded_at (UNIX timestamp)
+        2, -- scorer_id
+        2, -- score
+        1, -- game_team1_id
+        2, -- snapshot_score1
+        2, -- game_team2_id
+        0 -- snapshot_score2
+       );
 
 
 -- B팀 6선수 OUT 7선수 IN
@@ -140,9 +142,18 @@ VALUES ('SCORE', -- type
 INSERT INTO timelines(type,
                       game_id,
                       recorded_quarter_id,
+                      previous_quarter_id,
                       recorded_at,
                       game_progress_type)
-VALUES ('GAME_PROGRESS', 1, 2, 20, 'GAME_END');
+VALUES ('GAME_PROGRESS', 1, 2, 2, 20, 'GAME_END');
+
+INSERT INTO timelines(type,
+                      game_id,
+                      recorded_quarter_id,
+                      recorded_at,
+                      scorer_id,
+                      is_success)
+VALUES ('PK', 1, 2, 10, 10, true);
 
 SET
-foreign_key_checks = 1;
+    foreign_key_checks = 1;

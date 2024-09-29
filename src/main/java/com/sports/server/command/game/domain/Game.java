@@ -3,8 +3,10 @@ package com.sports.server.command.game.domain;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,12 +26,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
 @Table(name = "games")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Game extends BaseEntity<Game> {
+public class Game extends BaseEntity<Game> implements ManagedEntity {
+
+    private static final String NAME_OF_PK_QUARTER = "승부차기";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_id")
@@ -68,6 +73,9 @@ public class Game extends BaseEntity<Game> {
     @Column(name = "round", nullable = false)
     private Round round;
 
+    @Column(name = "is_pk_taken", nullable = false)
+    private Boolean isPkTaken;
+
     public void registerStarter(final LineupPlayer lineupPlayer) {
         this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));
     }
@@ -101,8 +109,13 @@ public class Game extends BaseEntity<Game> {
         scoredTeam.score();
     }
 
-    public boolean isMangedBy(Member member) {
-        return manager.equals(member);
+    public void scoreInPk(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(scorer::isInTeam)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 승부차기에서 득점할 수 없습니다."));
+
+        scoredTeam.scoreInPk();
     }
 
     public void cancelScore(LineupPlayer scorer) {
@@ -114,8 +127,44 @@ public class Game extends BaseEntity<Game> {
         scoredTeam.cancelScore();
     }
 
+    public void cancelPkScore(LineupPlayer scorer) {
+        GameTeam scoredTeam = teams.stream()
+                .filter(scorer::isInTeam)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
+
+        scoredTeam.cancelPkScore();
+    }
+
+    public void updateName(String name) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+    }
+
+    public void updateStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void updateVideoId(String videoId) {
+        if (StringUtils.hasText(videoId)) {
+            this.videoId = videoId;
+        }
+    }
+
+    public void updateGameQuarter(String gameQuarter) {
+        if (StringUtils.hasText(gameQuarter)) {
+            this.gameQuarter = gameQuarter;
+        }
+    }
+
+    public void updateRound(Round round) {
+        this.round = round;
+    }
+
+
     public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
-                String videoId, String gameQuarter, GameState state, Round round) {
+                String videoId, String gameQuarter, GameState state, Round round, boolean isPkTaken) {
         this.sport = sport;
         this.manager = manager;
         this.league = league;
@@ -125,6 +174,7 @@ public class Game extends BaseEntity<Game> {
         this.gameQuarter = gameQuarter;
         this.state = state;
         this.round = round;
+        this.isPkTaken = isPkTaken;
     }
 
     public void changePlayerToCaptain(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
@@ -141,5 +191,59 @@ public class Game extends BaseEntity<Game> {
         if (!teams.contains(gameTeam)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
         }
+    }
+
+    public void updateState(GameState state) {
+        this.state = state;
+    }
+
+    public void play() {
+        this.state = GameState.PLAYING;
+        updateQuarter(sport.getAfterStartQuarter());
+    }
+
+    public void end() {
+        this.state = GameState.FINISHED;
+        updateQuarter(sport.getEndQuarter());
+    }
+
+    public void updateQuarter(Quarter quarter) {
+        this.gameQuarter = quarter.getName();
+
+        if (gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+            startPk();
+        }
+
+        this.quarterChangedAt = LocalDateTime.now();
+    }
+
+    public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
+        if (this.gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+            cancelPk();
+        }
+
+        this.gameQuarter = quarter.getName();
+        this.quarterChangedAt = changedAt;
+    }
+
+    private void startPk() {
+        this.isPkTaken = true;
+    }
+
+    private void cancelPk() {
+        this.isPkTaken = false;
+    }
+
+    public Quarter getQuarter() {
+        return sport.getQuarters()
+                .stream()
+                .filter(quarter -> quarter.getName().equals(gameQuarter))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 쿼터가 존재하지 않습니다."));
+    }
+
+    @Override
+    public boolean isManagedBy(Member manager) {
+        return this.manager.equals(manager);
     }
 }

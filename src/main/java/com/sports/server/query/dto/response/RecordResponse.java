@@ -6,10 +6,10 @@ import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
+import com.sports.server.command.timeline.domain.PKTimeline;
 import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
-
 import java.util.Optional;
 
 public record RecordResponse(
@@ -24,7 +24,8 @@ public record RecordResponse(
         String teamImageUrl,
         ScoreRecordResponse scoreRecord,
         ReplacementRecordResponse replacementRecord,
-        ProgressRecordResponse progressRecord
+        ProgressRecordResponse progressRecord,
+        PkRecordResponse pkRecord
 ) {
     public static RecordResponse from(Timeline timeline) {
         Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
@@ -45,7 +46,9 @@ public record RecordResponse(
                 timeline instanceof ReplacementTimeline replacementTimeline
                         ? ReplacementRecordResponse.from(replacementTimeline) : null,
                 timeline instanceof GameProgressTimeline progressTimeline
-                        ? ProgressRecordResponse.from(progressTimeline) : null
+                        ? ProgressRecordResponse.from(progressTimeline) : null,
+                timeline instanceof PKTimeline pkTimeline
+                        ? PkRecordResponse.from(pkTimeline) : null
         );
     }
 
@@ -54,6 +57,8 @@ public record RecordResponse(
             return Optional.of(scoreTimeline.getScorer());
         } else if (timeline instanceof ReplacementTimeline replacementTimeline) {
             return Optional.of(replacementTimeline.getOriginLineupPlayer());
+        } else if (timeline instanceof PKTimeline pkTimeline) {
+            return Optional.of(pkTimeline.getScorer());
         }
         return Optional.empty();
     }
