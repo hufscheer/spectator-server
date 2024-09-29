@@ -8,11 +8,13 @@ import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.GameFixtureRepository;
@@ -182,7 +184,22 @@ public class GameServiceTest extends ServiceTest {
             assertThatThrownBy(() -> gameService.updateGame(leagueId, gameId, updateDto, nonManager))
                     .isInstanceOf(UnauthorizedException.class);
         }
+    }
 
+    @Test
+    void 정상적으로_게임이_삭제된다() {
+        // given
+        Long leagueId = 1L;
+        Long gameId = 1L;
+        Member manager = entityUtils.getEntity(1L, Member.class);
+
+        // when
+        gameService.deleteGame(leagueId, gameId, manager);
+
+        // then
+        assertThatThrownBy(
+                () -> entityUtils.getEntity(gameId, Game.class))
+                .isInstanceOf(NotFoundException.class);
     }
 
 }
