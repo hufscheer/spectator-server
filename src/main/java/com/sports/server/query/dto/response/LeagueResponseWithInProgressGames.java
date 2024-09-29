@@ -27,20 +27,23 @@ public record LeagueResponseWithInProgressGames(
             Long id,
             String state,
             LocalDateTime startTime,
+            boolean isPkTaken,
             List<GameTeamResponse> gameTeams
     ) {
         public record GameTeamResponse(
                 Long gameTeamId,
                 String gameTeamName,
                 String logoImageUrl,
-                Integer score
+                Integer score,
+                Integer pkScore
         ) {
             public static GameTeamResponse of(GameTeam gameTeam) {
                 return new GameTeamResponse(
                         gameTeam.getId(),
                         gameTeam.getLeagueTeam().getName(),
                         gameTeam.getLeagueTeam().getLogoImageUrl(),
-                        gameTeam.getScore()
+                        gameTeam.getScore(),
+                        gameTeam.getPkScore()
                 );
             }
         }
@@ -48,6 +51,7 @@ public record LeagueResponseWithInProgressGames(
         public static GameDetailResponse of(final Game game) {
             return new GameDetailResponse(
                     game.getId(), game.getState().name(), game.getStartTime(),
+                    game.getIsPkTaken(),
                     game.getTeams().stream()
                             .map(GameTeamResponse::of)
                             .toList()
