@@ -76,12 +76,14 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     @Column(name = "is_pk_taken", nullable = false)
     private Boolean isPkTaken;
 
-    public void registerStarter(final LineupPlayer lineupPlayer) {
-        this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));
+    public void registerStarter(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        validateGameTeam(gameTeam);
+        gameTeam.registerStarter(lineupPlayer);
     }
 
-    public void rollbackToCandidate(final LineupPlayer lineupPlayer) {
-        this.teams.forEach(gameTeam -> gameTeam.rollbackToCandidate(lineupPlayer));
+    public void rollbackToCandidate(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+        validateGameTeam(gameTeam);
+        gameTeam.rollbackToCandidate(lineupPlayer);
     }
 
     public GameTeam getTeam1() {

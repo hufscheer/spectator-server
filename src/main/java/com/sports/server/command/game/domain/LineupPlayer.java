@@ -100,11 +100,10 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         this.isCaptain = true;
     }
 
-    public void revokeCaptainFromPlayer(LineupPlayer lineupPlayer) {
-        if (!isCaptain) {
+    public void revokeCaptainFromPlayer() {
+        if (!this.isCaptain) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 선수는 주장이 아닙니다.");
         }
-
         this.isCaptain = false;
     }
 }

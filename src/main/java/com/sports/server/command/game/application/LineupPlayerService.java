@@ -14,16 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineupPlayerService {
     private final EntityUtils entityUtils;
 
-    public void changePlayerStateToStarter(final Long gameId, final Long lineupPlayerId) {
+    public void changePlayerStateToStarter(final Long gameId, final Long gameTeamId, final Long lineupPlayerId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+        GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
-        game.registerStarter(lineupPlayer);
+        game.registerStarter(gameTeam, lineupPlayer);
     }
 
-    public void changePlayerStateToCandidate(final Long gameId, final Long lineupPlayerId) {
+    public void changePlayerStateToCandidate(final Long gameId, final Long gameTeamId, final Long lineupPlayerId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+        GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
-        game.rollbackToCandidate(lineupPlayer);
+        game.rollbackToCandidate(gameTeam, lineupPlayer);
     }
 
     public void changePlayerToCaptain(final Long gameId, final Long gameTeamId, final Long lineupPlayerId) {

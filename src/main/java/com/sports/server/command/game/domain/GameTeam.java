@@ -75,7 +75,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
         this.lineupPlayers.stream()
                 .filter(lp -> lp.equals(lineupPlayer))
                 .findAny()
-                .ifPresent(LineupPlayer::changeStateToCandidate);
+                .ifPresent(lp -> {
+                    lp.changeStateToCandidate();
+                    if (lp.isCaptain()) {lp.revokeCaptainFromPlayer();}
+                    });
     }
 
     public void score() {
@@ -125,7 +128,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     public void revokeCaptainFromPlayer(final LineupPlayer lineupPlayer) {
         validateLineupPlayer(lineupPlayer);
-        lineupPlayer.revokeCaptainFromPlayer(lineupPlayer);
+        lineupPlayer.revokeCaptainFromPlayer();
     }
 
     private void validateLineupPlayer(final LineupPlayer lineupPlayer) {

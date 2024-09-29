@@ -32,17 +32,19 @@ public class GameController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/starter")
+    @PatchMapping("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/starter")
     public ResponseEntity<Void> changePlayerStateToStarter(@PathVariable final Long gameId,
+                                                           @PathVariable final Long gameTeamId,
                                                            @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.changePlayerStateToStarter(gameId, lineupPlayerId);
+        lineupPlayerService.changePlayerStateToStarter(gameId, gameTeamId, lineupPlayerId);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate")
+    @PatchMapping("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/candidate")
     public ResponseEntity<Void> changePlayerStateToCandidate(@PathVariable final Long gameId,
+                                                             @PathVariable final Long gameTeamId,
                                                              @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
+        lineupPlayerService.changePlayerStateToCandidate(gameId, gameTeamId, lineupPlayerId);
         return ResponseEntity.ok().build();
     }
 
