@@ -164,7 +164,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
 
     public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
-                String videoId, String gameQuarter, GameState state, Round round) {
+                String videoId, String gameQuarter, GameState state, Round round, boolean isPkTaken) {
         this.sport = sport;
         this.manager = manager;
         this.league = league;
@@ -174,6 +174,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.gameQuarter = gameQuarter;
         this.state = state;
         this.round = round;
+        this.isPkTaken = isPkTaken;
     }
 
     public void changePlayerToCaptain(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
