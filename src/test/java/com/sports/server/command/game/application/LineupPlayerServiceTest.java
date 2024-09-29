@@ -25,11 +25,10 @@ public class LineupPlayerServiceTest extends ServiceTest {
     void 선수를_주장으로_등록한다() {
         // given
         Long gameId = 1L;
-        Long gameTeamId = 1L;
         Long lineupPlayerId = 1L;
 
         // when
-        lineupPlayerService.changePlayerToCaptain(gameId, gameTeamId, lineupPlayerId);
+        lineupPlayerService.changePlayerToCaptain(gameId, lineupPlayerId);
 
         // then
         LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -40,11 +39,10 @@ public class LineupPlayerServiceTest extends ServiceTest {
     void 선수를_주장에서_해제한다() {
         // given
         Long gameId = 1L;
-        Long gameTeamId = 2L;
         Long lineupPlayerId = 6L;
 
         // when
-        lineupPlayerService.revokeCaptainFromPlayer(gameId, gameTeamId, lineupPlayerId);
+        lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId);
 
         // then
         LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -55,11 +53,10 @@ public class LineupPlayerServiceTest extends ServiceTest {
     void 주장으로_등록된_선수를_후보로_변경한다() {
         // given
         Long gameId = 1L;
-        Long gameTeamId = 2L;
         Long lineupPlayerId = 6L;
 
         // when
-        lineupPlayerService.changePlayerStateToCandidate(gameId, gameTeamId, lineupPlayerId);
+        lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
 
         // then
         LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
