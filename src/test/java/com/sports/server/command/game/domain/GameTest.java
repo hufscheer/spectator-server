@@ -249,14 +249,13 @@ class GameTest {
                 .sample();
 
         LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
+                .set("gameTeam", gameTeam)
                 .sample();
 
         // when & then
-        assertThatThrownBy(() -> game.changePlayerToCaptain(gameTeam, lineupPlayer))
+        assertThatThrownBy(() -> game.changePlayerToCaptain(lineupPlayer))
                 .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
                 .isInstanceOf(CustomException.class);
-
-
     }
 
 

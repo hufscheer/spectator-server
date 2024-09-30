@@ -77,11 +77,15 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     private Boolean isPkTaken;
 
     public void registerStarter(final LineupPlayer lineupPlayer) {
-        this.teams.forEach(gameTeam -> gameTeam.registerStarter(lineupPlayer));
+        GameTeam gameTeam = lineupPlayer.getGameTeam();
+        validateGameTeam(gameTeam);
+        gameTeam.registerStarter(lineupPlayer);
     }
 
     public void rollbackToCandidate(final LineupPlayer lineupPlayer) {
-        this.teams.forEach(gameTeam -> gameTeam.rollbackToCandidate(lineupPlayer));
+        GameTeam gameTeam = lineupPlayer.getGameTeam();
+        validateGameTeam(gameTeam);
+        gameTeam.rollbackToCandidate(lineupPlayer);
     }
 
     public GameTeam getTeam1() {
@@ -177,18 +181,20 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.isPkTaken = isPkTaken;
     }
 
-    public void changePlayerToCaptain(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+    public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
+        GameTeam gameTeam = lineupPlayer.getGameTeam();
         validateGameTeam(gameTeam);
         gameTeam.changePlayerToCaptain(lineupPlayer);
     }
 
-    public void revokeCaptainFromPlayer(final GameTeam gameTeam, final LineupPlayer lineupPlayer) {
+    public void revokeCaptainFromPlayer(final LineupPlayer lineupPlayer) {
+        GameTeam gameTeam = lineupPlayer.getGameTeam();
         validateGameTeam(gameTeam);
         gameTeam.revokeCaptainFromPlayer(lineupPlayer);
     }
 
     private void validateGameTeam(final GameTeam gameTeam) {
-        if (!teams.contains(gameTeam)) {
+        if (this.teams.stream().noneMatch(team -> team.getId().equals(gameTeam.getId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
         }
     }

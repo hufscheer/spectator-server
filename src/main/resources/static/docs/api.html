@@ -1357,7 +1357,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 454
+Content-Length: 492
 
 {
   "startTime" : "2024-01-19T13:00:00",
@@ -1369,12 +1369,14 @@ Content-Length: 454
     "gameTeamId" : 1,
     "gameTeamName" : "A팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2
+    "score" : 2,
+    "pkScore" : 0
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo.com",
-    "score" : 1
+    "score" : 1,
+    "pkScore" : 0
   } ],
   "state" : "PLAYING",
   "round" : "4강",
@@ -1443,6 +1445,11 @@ Content-Length: 454
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].logoImageUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 이미지 URL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].pkScore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 승부차기 점수</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].score</code></p></td>
@@ -2398,7 +2405,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect3">
 <h4 id="_라인업_선수_주장으로_등록_path_parameters"><a class="link" href="#_라인업_선수_주장으로_등록_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register</caption>
+<caption class="title">Table 1. /games/{gameId}/lineup-players/{lineupPlayerId}/captain/register</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2413,10 +2420,6 @@ Vary: Access-Control-Request-Headers</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
@@ -2431,7 +2434,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect3">
 <h4 id="_라인업_선수_주장에서_해제_path_parameters"><a class="link" href="#_라인업_선수_주장에서_해제_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke</caption>
+<caption class="title">Table 1. /games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2446,10 +2449,6 @@ Vary: Access-Control-Request-Headers</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
@@ -3596,7 +3595,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 489
+Content-Length: 556
 
 [ {
   "id" : 1,
@@ -3606,16 +3605,19 @@ Content-Length: 489
     "id" : 1,
     "state" : "PLAYING",
     "startTime" : "2024-09-11T12:00:00",
+    "isPkTaken" : false,
     "gameTeams" : [ {
       "gameTeamId" : 1,
       "gameTeamName" : "경영 야생마",
       "logoImageUrl" : "이미지 이미지",
-      "score" : 1
+      "score" : 1,
+      "pkScore" : 0
     }, {
       "gameTeamId" : 2,
       "gameTeamName" : "서어 뼤데뻬",
       "logoImageUrl" : "이미지 이미지",
-      "score" : 1
+      "score" : 0,
+      "pkScore" : 0
     } ]
   } ]
 } ]</code></pre>
@@ -3674,6 +3676,11 @@ Content-Length: 489
 <td class="tableblock halign-left valign-top"><p class="tableblock">진행 중인 게임의 시작 시간</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inProgressGames[].isPkTaken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">승부차기 진출 여부</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inProgressGames[].gameTeams</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임에 속한 팀들</p></td>
@@ -3697,6 +3704,11 @@ Content-Length: 489
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inProgressGames[].gameTeams[].score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임 팀의 점수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inProgressGames[].gameTeams[].pkScore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임 팀의 승부차기 점수</p></td>
 </tr>
 </tbody>
 </table>
@@ -5081,7 +5093,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 6 Oct 2024 13:36:55 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 7 Oct 2024 02:46:09 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -5155,7 +5167,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-29 22:36:22 +0900
+Last updated 2024-09-30 01:51:36 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

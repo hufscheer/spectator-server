@@ -3,7 +3,6 @@ package com.sports.server.command.game.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequestDto;
@@ -91,9 +90,9 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
-                () -> assertThat(actual.get(0).state().equals(LineupPlayerState.STARTER))
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).state()).isEqualTo(LineupPlayerState.STARTER)
         );
     }
 
@@ -109,7 +108,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/starter", gameId, lineupPlayerId)
+                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate", gameId, lineupPlayerId)
                 .then().log().all()
                 .extract();
 
@@ -130,9 +129,9 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
-                () -> assertThat(actual.get(0).state().equals(LineupPlayerState.CANDIDATE))
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).state()).isEqualTo(LineupPlayerState.CANDIDATE)
         );
     }
 
@@ -242,8 +241,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
-                        gameTeamId,
+                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
                         lineupPlayerId)
                 .then().log().all()
                 .extract();
@@ -265,8 +263,8 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(true)
         );
     }
@@ -283,8 +281,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
-                        gameTeamId,
+                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
                         lineupPlayerId);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -304,8 +301,8 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(false)
         );
     }
