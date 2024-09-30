@@ -90,9 +90,9 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
-                () -> assertThat(actual.get(0).state().equals(LineupPlayerState.STARTER))
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).state()).isEqualTo(LineupPlayerState.STARTER)
         );
     }
 
@@ -129,9 +129,9 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
-                () -> assertThat(actual.get(0).state().equals(LineupPlayerState.CANDIDATE))
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).state()).isEqualTo(LineupPlayerState.CANDIDATE)
         );
     }
 
@@ -241,8 +241,8 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(true)
         );
     }
@@ -279,8 +279,8 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId().equals(gameTeamId)),
-                () -> assertThat(actual.get(0).id().equals(lineupPlayerId)),
+                () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
+                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(false)
         );
     }
