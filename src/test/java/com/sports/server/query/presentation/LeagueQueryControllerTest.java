@@ -220,15 +220,15 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // given
         List<GameTeamResponse> gameTeams = List.of(
-                new GameTeamResponse(1L, "경영 야생마", "이미지 이미지", 1),
-                new GameTeamResponse(2L, "서어 뼤데뻬", "이미지 이미지", 1)
+                new GameTeamResponse(1L, "경영 야생마", "이미지 이미지", 1, 0),
+                new GameTeamResponse(2L, "서어 뼤데뻬", "이미지 이미지", 0, 0)
         );
 
         LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
 
         // 진행 중인 경기만
         List<GameDetailResponse> inProgressGames = List.of(
-                new GameDetailResponse(1L, "PLAYING", fixedDateTime, gameTeams)
+                new GameDetailResponse(1L, "PLAYING", fixedDateTime, false, gameTeams)
         );
 
         List<LeagueResponseWithInProgressGames> responses = List.of(
@@ -262,6 +262,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("진행 중인 게임의 상태"),
                                 fieldWithPath("[].inProgressGames[].startTime").type(JsonFieldType.STRING)
                                         .description("진행 중인 게임의 시작 시간"),
+                                fieldWithPath("[].inProgressGames[].isPkTaken").type(JsonFieldType.BOOLEAN)
+                                        .description("승부차기 진출 여부"),
                                 fieldWithPath("[].inProgressGames[].gameTeams").type(JsonFieldType.ARRAY)
                                         .description("게임에 속한 팀들"),
                                 fieldWithPath("[].inProgressGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
@@ -271,7 +273,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].inProgressGames[].gameTeams[].logoImageUrl").type(
                                         JsonFieldType.STRING).description("게임 팀의 로고 이미지 URL"),
                                 fieldWithPath("[].inProgressGames[].gameTeams[].score").type(JsonFieldType.NUMBER)
-                                        .description("게임 팀의 점수")
+                                        .description("게임 팀의 점수"),
+                                fieldWithPath("[].inProgressGames[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
+                                        .description("게임 팀의 승부차기 점수")
                         )
                 ));
     }
