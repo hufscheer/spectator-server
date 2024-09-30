@@ -61,9 +61,6 @@ public class GameProgressTimeline extends Timeline {
 
     @Override
     public void apply() {
-        if (gameProgressType == GameProgressType.GAME_START) {
-            game.play();
-        }
 
         if (gameProgressType == GameProgressType.QUARTER_START) {
             game.updateQuarter(recordedQuarter);
@@ -78,7 +75,7 @@ public class GameProgressTimeline extends Timeline {
     public void rollback() {
         game.updateQuarter(previousQuarter, previousQuarterChangedAt);
 
-        if (gameProgressType == GameProgressType.GAME_START) {
+        if (gameProgressType == GameProgressTypeGM.GAME_START) {
             game.updateState(GameState.SCHEDULED);
         }
 
