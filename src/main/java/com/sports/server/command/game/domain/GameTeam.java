@@ -65,11 +65,17 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
     public void registerStarter(final LineupPlayer lineupPlayer) {
-        lineupPlayer.changeStateToStarter();
+        this.lineupPlayers.stream()
+                .filter(lp -> lp.equals(lineupPlayer))
+                .findAny()
+                .ifPresent(LineupPlayer::changeStateToStarter);
     }
 
     public void rollbackToCandidate(final LineupPlayer lineupPlayer) {
-        lineupPlayer.changeStateToCandidate();
+        this.lineupPlayers.stream()
+                .filter(lp -> lp.equals(lineupPlayer))
+                .findAny()
+                .ifPresent(LineupPlayer::changeStateToCandidate);
     }
 
     public void score() {
@@ -119,7 +125,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     public void revokeCaptainFromPlayer(final LineupPlayer lineupPlayer) {
         validateLineupPlayer(lineupPlayer);
-        lineupPlayer.revokeCaptainFromPlayer();
+        lineupPlayer.revokeCaptainFromPlayer(lineupPlayer);
     }
 
     private void validateLineupPlayer(final LineupPlayer lineupPlayer) {

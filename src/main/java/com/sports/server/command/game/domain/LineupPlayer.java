@@ -64,9 +64,6 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 후보로 등록된 선수입니다.");
         }
         this.state = CANDIDATE;
-        if (this.isCaptain) {
-            this.isCaptain = false;
-        }
         deactivatePlayerInGame();
     }
 
@@ -103,10 +100,11 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         this.isCaptain = true;
     }
 
-    public void revokeCaptainFromPlayer() {
-        if (!this.isCaptain) {
+    public void revokeCaptainFromPlayer(LineupPlayer lineupPlayer) {
+        if (!isCaptain) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "해당 선수는 주장이 아닙니다.");
         }
+
         this.isCaptain = false;
     }
 }

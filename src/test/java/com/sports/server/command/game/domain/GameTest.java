@@ -245,11 +245,14 @@ class GameTest {
     @Test
     void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
         // given
+        GameTeam gameTeam = entityBuilder(GameTeam.class)
+                .sample();
+
         LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
                 .sample();
 
         // when & then
-        assertThatThrownBy(() -> game.changePlayerToCaptain(lineupPlayer))
+        assertThatThrownBy(() -> game.changePlayerToCaptain(gameTeam, lineupPlayer))
                 .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
                 .isInstanceOf(CustomException.class);
 

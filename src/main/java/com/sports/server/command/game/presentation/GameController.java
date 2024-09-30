@@ -63,17 +63,19 @@ public class GameController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register")
+    @PatchMapping("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register")
     public ResponseEntity<Void> changePlayerToCaptain(@PathVariable final Long gameId,
-                                                      @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.changePlayerToCaptain(gameId, lineupPlayerId);
+                                                      @PathVariable final Long lineupPlayerId,
+                                                      @PathVariable final Long gameTeamId) {
+        lineupPlayerService.changePlayerToCaptain(gameId, gameTeamId, lineupPlayerId);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke")
+    @PatchMapping("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke")
     public ResponseEntity<Void> revokeCaptainFromPlayer(@PathVariable final Long gameId,
-                                                        @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId);
+                                                        @PathVariable final Long lineupPlayerId,
+                                                        @PathVariable final Long gameTeamId) {
+        lineupPlayerService.revokeCaptainFromPlayer(gameId, gameTeamId, lineupPlayerId);
         return ResponseEntity.ok().build();
     }
 }
