@@ -196,13 +196,11 @@ public class GameControllerTest extends DocumentationTest {
 
         //given
         Long gameId = 1L;
-        Long gameTeamId = 1L;
         Long lineupPlayerId = 1L;
 
         //when
         ResultActions result = mockMvc.perform(
-                patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
-                        gameTeamId,
+                patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
                         lineupPlayerId)
                         .contentType(MediaType.APPLICATION_JSON)
         );
@@ -212,7 +210,6 @@ public class GameControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID"),
-                                parameterWithName("gameTeamId").description("게임팀의 ID"),
                                 parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
                         )
                 ));
@@ -223,13 +220,11 @@ public class GameControllerTest extends DocumentationTest {
 
         //given
         Long gameId = 1L;
-        Long gameTeamId = 1L;
         Long lineupPlayerId = 1L;
 
         //when
         ResultActions result = mockMvc.perform(
-                patch("/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
-                        gameTeamId,
+                patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
                         lineupPlayerId)
                         .contentType(MediaType.APPLICATION_JSON)
         );
@@ -239,7 +234,6 @@ public class GameControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID"),
-                                parameterWithName("gameTeamId").description("게임팀의 ID"),
                                 parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
                         )
                 ));
