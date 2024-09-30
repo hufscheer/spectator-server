@@ -39,14 +39,17 @@ public record GameDetailResponse(
             Long gameTeamId,
             String gameTeamName,
             String logoImageUrl,
-            Integer score
+            Integer score,
+            Integer pkScore
+
     ) {
         public TeamResponse(GameTeam gameTeam) {
             this(
                     gameTeam.getId(),
                     gameTeam.getLeagueTeam().getName(),
                     gameTeam.getLeagueTeam().getLogoImageUrl(),
-                    gameTeam.getScore()
+                    gameTeam.getScore(),
+                    gameTeam.getPkScore()
             );
         }
     }

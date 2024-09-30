@@ -1356,7 +1356,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 454
+Content-Length: 492
 
 {
   "startTime" : "2024-01-19T13:00:00",
@@ -1368,12 +1368,14 @@ Content-Length: 454
     "gameTeamId" : 1,
     "gameTeamName" : "A팀",
     "logoImageUrl" : "logo.com",
-    "score" : 2
+    "score" : 2,
+    "pkScore" : 0
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo.com",
-    "score" : 1
+    "score" : 1,
+    "pkScore" : 0
   } ],
   "state" : "PLAYING",
   "round" : "4강",
@@ -1442,6 +1444,11 @@ Content-Length: 454
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].logoImageUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 이미지 URL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].pkScore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 승부차기 점수</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].score</code></p></td>
@@ -5079,7 +5086,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 6 Oct 2024 17:00:06 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 7 Oct 2024 02:46:09 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>

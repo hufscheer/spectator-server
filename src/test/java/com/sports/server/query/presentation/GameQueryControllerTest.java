@@ -32,9 +32,9 @@ class GameQueryControllerTest extends DocumentationTest {
         Long gameId = 1L;
         List<GameDetailResponse.TeamResponse> gameTeams = List.of(
                 new GameDetailResponse.TeamResponse(
-                        1L, "A팀", "logo.com", 2),
+                        1L, "A팀", "logo.com", 2, 0),
                 new GameDetailResponse.TeamResponse(
-                        2L, "B팀", "logo.com", 1)
+                        2L, "B팀", "logo.com", 1, 0)
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(
@@ -67,6 +67,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .description("게임팀의 이름"),
                                 fieldWithPath("gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
                                         .description("게임팀의 이미지 URL"),
+                                fieldWithPath("gameTeams[].pkScore").type(JsonFieldType.NUMBER)
+                                        .description("게임팀의 승부차기 점수"),
                                 fieldWithPath("gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("게임 상태"),
                                 fieldWithPath("isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부")
