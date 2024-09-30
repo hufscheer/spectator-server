@@ -13,6 +13,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.command.sport.domain.SportRepository;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,9 @@ public class GameService {
     public Long register(final Long leagueId,
                          final GameRequestDto.Register requestDto,
                          final Member manager) {
+        League league = entityUtils.getEntity(leagueId, League.class);
+        PermissionValidator.checkPermission(league, manager);
+
         Game game = saveGame(leagueId, manager, requestDto);
         saveGameTeams(game, requestDto);
         return game.getId();
@@ -57,28 +61,19 @@ public class GameService {
     private Game saveGame(Long leagueId, Member manager, GameRequestDto.Register requestDto) {
         Sport sport = sportRepository.findByName(NAME_OF_SPORT)
                 .orElseThrow(() -> new NotFoundException("해당 이름을 가진 스포츠가 존재하지 않습니다."));
-        League league = getLeagueAndCheckPermission(leagueId, manager);
+        League league = entityUtils.getEntity(leagueId, League.class);
+        PermissionValidator.checkPermission(league, manager);
+
         Game game = requestDto.toEntity(sport, manager, league);
         gameRepository.save(game);
         return game;
     }
 
-    private League getLeagueAndCheckPermission(final Long leagueId, final Member manager) {
-        League league = entityUtils.getEntity(leagueId, League.class);
-
-        if (!league.isManagedBy(manager)) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-        }
-
-        return league;
-    }
-
     @Transactional
     public void updateGame(Long leagueId, Long gameId, GameRequestDto.Update request, Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        if (!league.isManagedBy(manager)) {
-            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
-        }
+        PermissionValidator.checkPermission(league, manager);
+
         Game game = entityUtils.getEntity(gameId, Game.class);
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
@@ -86,5 +81,14 @@ public class GameService {
         game.updateGameQuarter(request.quarter());
         game.updateState(GameState.from(request.state()));
         game.updateRound(Round.from(request.round()));
+    }
+
+    @Transactional
+    public void deleteGame(Long leagueId, Long gameId, final Member manager) {
+        League league = entityUtils.getEntity(leagueId, League.class);
+        PermissionValidator.checkPermission(league, manager);
+
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        gameRepository.delete(game);
     }
 }

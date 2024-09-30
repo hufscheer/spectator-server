@@ -7,9 +7,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -159,9 +157,6 @@ public class GameControllerTest extends DocumentationTest {
                 "게임 이름", "16강", "전반전", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
         );
 
-        doNothing().when(gameService)
-                .updateGame(anyLong(), anyLong(), any(GameRequestDto.Update.class), any(Member.class));
-
         // when
         ResultActions result = mockMvc.perform(put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -187,6 +182,27 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 경기를_삭제한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+        Long gameId = 1L;
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/leagues/{leagueId}/{gameId}", leagueId, gameId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID"),
+                                parameterWithName("gameId").description("게임의 ID")
                         )
                 ));
     }

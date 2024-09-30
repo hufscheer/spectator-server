@@ -10,12 +10,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,6 +55,14 @@ public class GameController {
                                            @RequestBody final GameRequestDto.Update requestDto,
                                            final Member member) {
         gameService.updateGame(leagueId, gameId, requestDto, member);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/leagues/{leagueId}/{gameId}")
+    public ResponseEntity<Void> deleteGame(@PathVariable final Long leagueId,
+                                           @PathVariable final Long gameId,
+                                           final Member manager) {
+        gameService.deleteGame(leagueId, gameId, manager);
         return ResponseEntity.ok().build();
     }
 
