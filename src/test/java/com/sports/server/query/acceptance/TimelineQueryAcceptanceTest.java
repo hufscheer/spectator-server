@@ -148,7 +148,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         null,
                                         null,
                                         null,
-                                        new ProgressRecordResponse(GameProgressType.GAME_START), null
+                                        new ProgressRecordResponse(GameProgressType.QUARTER_START), null
                                 )
                         ))
                 ))

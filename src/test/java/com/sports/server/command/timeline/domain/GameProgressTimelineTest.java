@@ -74,25 +74,9 @@ class GameProgressTimelineTest {
 
     @Nested
     class ApplyTest {
-        @Test
-        void 경기_시작_타임라인을_생성한다() {
-            // when
-            GameProgressTimeline timeline = 경기_시작_타임라인_생성(game);
-
-            timeline.apply();
-
-            // then
-            assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
-                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
-            );
-        }
 
         @Test
         void 전반전_시작_타임라인을_생성한다() {
-            // given
-            경기_시작_타임라인_생성(game).apply();
-
             // when
             GameProgressTimeline timeline = 전반전_시작_타임라인_생성(game);
 
@@ -108,7 +92,6 @@ class GameProgressTimelineTest {
         @Test
         void 전반전_종료_타임라인을_생성한다() {
             // given
-            경기_시작_타임라인_생성(game).apply();
             전반전_시작_타임라인_생성(game).apply();
 
             // when
@@ -126,7 +109,6 @@ class GameProgressTimelineTest {
         @Test
         void 후반전_시작_타임라인을_생성한다() {
             // given
-            경기_시작_타임라인_생성(game).apply();
             전반전_시작_타임라인_생성(game).apply();
             전반전_종료_타임라인_생성(game).apply();
 
@@ -145,7 +127,6 @@ class GameProgressTimelineTest {
         @Test
         void 후반전_종료_타임라인을_생성한다() {
             // given
-            경기_시작_타임라인_생성(game).apply();
             전반전_시작_타임라인_생성(game).apply();
             전반전_종료_타임라인_생성(game).apply();
             후반전_시작_타임라인_생성(game).apply();
@@ -165,7 +146,6 @@ class GameProgressTimelineTest {
         @Test
         void 경기_종료_타임라인을_생성한다() {
             // given
-            경기_시작_타임라인_생성(game).apply();
             전반전_시작_타임라인_생성(game).apply();
             전반전_종료_타임라인_생성(game).apply();
             후반전_시작_타임라인_생성(game).apply();
@@ -212,11 +192,11 @@ class GameProgressTimelineTest {
 
     @Nested
     class RollbackTest {
-        @Test
-        void 경기_시작_타임라인을_롤백한다() {
-            // given
-            GameProgressTimeline timeline = 경기_시작_타임라인_생성(GameProgressTimelineTest.this.game);
 
+        @Test
+        void 전반전_시작_타임라인을_롤백한다() {
+            // given
+            GameProgressTimeline timeline = 전반전_시작_타임라인_생성(game);
             timeline.apply();
 
             // when
@@ -230,27 +210,8 @@ class GameProgressTimelineTest {
         }
 
         @Test
-        void 전반전_시작_타임라인을_롤백한다() {
-            // given
-            경기_시작_타임라인_생성(game).apply();
-
-            GameProgressTimeline timeline = 전반전_시작_타임라인_생성(game);
-            timeline.apply();
-
-            // when
-            timeline.rollback();
-
-            // then
-            assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
-                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
-            );
-        }
-
-        @Test
         void 전반전_종료_타임라인을_롤백한다() {
             // given
-            경기_시작_타임라인_생성(game).apply();
             전반전_시작_타임라인_생성(game).apply();
 
             GameProgressTimeline timeline = 전반전_종료_타임라인_생성(game);
@@ -270,7 +231,6 @@ class GameProgressTimelineTest {
         @Test
         void 후반전_시작_타임라인을_롤백한다() {
             // given
-            경기_시작_타임라인_생성(game).apply();
             전반전_시작_타임라인_생성(game).apply();
             전반전_종료_타임라인_생성(game).apply();
 
@@ -303,7 +263,6 @@ class GameProgressTimelineTest {
         @Test
         void 경기_종료_타임라인을_롤백한다() {
             // given
-            경기_시작_타임라인_생성(game).apply();
             전반전_시작_타임라인_생성(game).apply();
             전반전_종료_타임라인_생성(game).apply();
             후반전_시작_타임라인_생성(game).apply();
@@ -330,15 +289,6 @@ class GameProgressTimelineTest {
                 전반전,
                 0,
                 GameProgressType.QUARTER_START
-        );
-    }
-
-    private GameProgressTimeline 경기_시작_타임라인_생성(Game game) {
-        return new GameProgressTimeline(
-                game,
-                경기전,
-                0,
-                GameProgressType.GAME_START
         );
     }
 
