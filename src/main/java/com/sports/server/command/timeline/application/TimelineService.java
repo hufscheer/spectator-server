@@ -28,9 +28,7 @@ public class TimelineService {
 
     public void register(Member manager, Long gameId, TimelineRequest request) {
         Game game = entityUtils.getEntity(gameId, Game.class);
-        if (game.getState().equals(GameState.FINISHED)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GAME_ALREADY_FINISHED);
-        }
+        game.checkFinished();
         PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = timelineMapper.toEntity(game, request);

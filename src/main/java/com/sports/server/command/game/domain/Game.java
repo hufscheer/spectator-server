@@ -28,6 +28,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
+import static com.sports.server.command.timeline.exception.TimelineErrorMessage.GAME_ALREADY_FINISHED;
+
 @Entity
 @Getter
 @Table(name = "games")
@@ -246,6 +248,12 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
                 .filter(quarter -> quarter.getName().equals(gameQuarter))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿼터가 존재하지 않습니다."));
+    }
+
+    public void checkFinished() {
+        if (this.getState().equals(GameState.FINISHED)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GAME_ALREADY_FINISHED);
+        }
     }
 
     @Override
