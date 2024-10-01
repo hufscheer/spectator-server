@@ -294,4 +294,23 @@ class TimelineServiceTest extends ServiceTest {
                     .isInstanceOf(CustomException.class);
         }
     }
+
+    @Test
+    void 경기_종료_후_타임라인을_등록하려고_하면_에러가_발생한다() {
+        // given
+        Long team1Id = 1L;
+        Long team1PlayerId = 1L;
+        Long finishedGameId = 2L;
+
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+                team1Id,
+                quarterId,
+                team1PlayerId,
+                3
+        );
+
+        // when & then
+        assertThatThrownBy(() -> timelineService.register(manager, finishedGameId, request))
+                .isInstanceOf(CustomException.class);
+    }
 }
