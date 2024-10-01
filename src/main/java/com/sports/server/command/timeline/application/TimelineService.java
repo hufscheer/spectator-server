@@ -28,7 +28,7 @@ public class TimelineService {
 
     public void register(Member manager, Long gameId, TimelineRequest request) {
         Game game = entityUtils.getEntity(gameId, Game.class);
-        game.checkFinished();
+        game.checkStateForTimeline();
         PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = timelineMapper.toEntity(game, request);

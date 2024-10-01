@@ -250,7 +250,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿼터가 존재하지 않습니다."));
     }
 
-    public void checkFinished() {
+    public void checkStateForTimeline() {
         if (this.getState().equals(GameState.FINISHED)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, GAME_ALREADY_FINISHED);
         }
