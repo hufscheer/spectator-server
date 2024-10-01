@@ -142,7 +142,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
         Long idOfTeam1 = 1L;
         Long idOfTeam2 = 2L;
-        GameRequestDto.Register requestDto = new GameRequestDto.Register("경기 이름", "16강", "전반전", "SCHEDULED",
+        GameRequestDto.Register requestDto = new GameRequestDto.Register("경기 이름", 16, "전반전", "SCHEDULED",
                 LocalDateTime.now(), idOfTeam1, idOfTeam2, null);
 
         configureMockJwtForEmail("john.doe@example.com");
@@ -168,7 +168,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
         Long gameId = 1L;
         String name = "경기 이름";
-        String round = "16강";
+        int round = 16;
         String quarter = "후반전";
         String state = "PLAYING";
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
@@ -199,7 +199,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(updatedGame.gameQuarter()).isEqualTo(quarter),
-                () -> assertThat(updatedGame.round()).isEqualTo(Round.from(round).name()),
+                () -> assertThat(updatedGame.round()).isEqualTo(round),
                 () -> assertThat(updatedGame.gameName()).isEqualTo(name),
                 () -> assertThat(updatedGame.startTime()).isEqualTo(fixedLocalDateTime),
                 () -> assertThat(updatedGame.state()).isEqualTo(state),
