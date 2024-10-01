@@ -311,6 +311,7 @@ class TimelineServiceTest extends ServiceTest {
 
         // when & then
         assertThatThrownBy(() -> timelineService.register(manager, finishedGameId, request))
-                .isInstanceOf(CustomException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage("종료된 게임에 새로운 타임라인을 등록할 수 없습니다.");
     }
 }
