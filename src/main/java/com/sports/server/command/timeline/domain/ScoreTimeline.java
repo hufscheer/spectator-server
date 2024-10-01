@@ -4,7 +4,13 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.sport.domain.Quarter;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,21 +22,21 @@ public class ScoreTimeline extends Timeline {
 
     private static final int SCORE_VALUE = 1;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "scorer_id")
     private LineupPlayer scorer;
 
     @Column(name = "score")
     private Integer score;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "game_team1_id")
     private GameTeam gameTeam1;
 
     @Column(name = "snapshot_score1")
     private Integer snapshotScore1;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "game_team2_id")
     private GameTeam gameTeam2;
 
