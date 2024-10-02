@@ -37,6 +37,7 @@ import static com.sports.server.command.timeline.exception.TimelineErrorMessage.
 public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     private static final String NAME_OF_PK_QUARTER = "승부차기";
+    private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_id")
@@ -217,6 +218,10 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.getName();
+
+        if (gameQuarter.equals(NAME_OF_FIRST_HALF_QUARTER)) {
+            this.state = GameState.PLAYING;
+        }
 
         if (gameQuarter.equals(NAME_OF_PK_QUARTER)) {
             startPk();

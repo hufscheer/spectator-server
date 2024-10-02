@@ -11,6 +11,8 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @DiscriminatorValue("REPLACEMENT")
@@ -19,10 +21,12 @@ import lombok.NoArgsConstructor;
 public class ReplacementTimeline extends Timeline {
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "origin_lineup_player_id")
     private LineupPlayer originLineupPlayer;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "replaced_lineup_player_id")
     private LineupPlayer replacedLineupPlayer;
 

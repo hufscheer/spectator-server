@@ -57,7 +57,7 @@ INSERT INTO timelines(type,
                       previous_quarter_id,
                       recorded_at,
                       game_progress_type)
-VALUES ('GAME_PROGRESS', 1, 1, 1, 0, 'GAME_START');
+VALUES ('GAME_PROGRESS', 1, 1, 1, 0, 'QUARTER_START');
 
 -- A팀 선수 2의 2득점
 INSERT INTO timelines (type,
