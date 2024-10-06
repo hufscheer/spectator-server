@@ -14,6 +14,7 @@ import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -312,6 +313,6 @@ class TimelineServiceTest extends ServiceTest {
         // when & then
         assertThatThrownBy(() -> timelineService.register(manager, finishedGameId, request))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("종료된 게임에 새로운 타임라인을 등록할 수 없습니다.");
+                .hasMessage(TimelineErrorMessage.GAME_ALREADY_FINISHED);
     }
 }
