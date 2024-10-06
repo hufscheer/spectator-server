@@ -146,7 +146,7 @@ public class GameQueryServiceTest extends ServiceTest {
         //given
         PageRequestDto pageRequestDto = new PageRequestDto(1L, 12);
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L, 2L),
-                leagueTeamIds, 0);
+                leagueTeamIds, null);
 
         //when
         List<GameResponseDto> games = gameQueryService.getAllGames(queryRequestDto, pageRequestDto);
