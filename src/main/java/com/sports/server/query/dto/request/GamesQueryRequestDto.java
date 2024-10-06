@@ -7,15 +7,16 @@ import lombok.Getter;
 public class GamesQueryRequestDto {
 
     private static final String DEFAULT_STATE_VALUE = "PLAYING";
+    private static final int DEFAULT_ROUND_VALUE = 0;
 
     private Long leagueId;
     private String stateValue;
     private List<Long> sportIds;
     private List<Long> leagueTeamIds;
-    private int round;
+    private Integer round;
 
     public GamesQueryRequestDto(Long league_id, String state, List<Long> sport_id, List<Long> league_team_id,
-                                int round) {
+                                Integer round) {
         this.leagueId = league_id;
         this.stateValue = state;
         this.sportIds = sport_id;
@@ -29,6 +30,13 @@ public class GamesQueryRequestDto {
         }
 
         return stateValue;
+    }
+
+    public int getRound() {
+        if (round == null) {
+            return DEFAULT_ROUND_VALUE;
+        }
+        return round;
     }
 
 }

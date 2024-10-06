@@ -127,7 +127,6 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 .queryParam("size", lastPkOfFixtureFromFirstLeague)
                 .queryParam("sport_id", 1L)
                 .queryParam("sport_id", 2L)
-                .queryParam("round", 0)
                 .log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

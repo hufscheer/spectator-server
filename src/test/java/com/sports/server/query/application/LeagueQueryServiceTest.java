@@ -41,7 +41,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         Long leagueId = 1L;
 
         // when
-        List<LeagueTeamResponse> leagueTeams = leagueQueryService.findTeamsByLeagueRound(leagueId, 0);
+        List<LeagueTeamResponse> leagueTeams = leagueQueryService.findTeamsByLeagueRound(leagueId, null);
         LeagueTeamResponse leagueTeam = leagueTeams.stream().filter(team -> team.leagueTeamId().equals(3L)).findFirst()
                 .orElse(null);
 
