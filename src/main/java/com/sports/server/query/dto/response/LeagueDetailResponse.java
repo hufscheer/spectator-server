@@ -9,8 +9,8 @@ public record LeagueDetailResponse(
         String name,
         LocalDateTime startAt,
         LocalDateTime endAt,
-        String maxRound,
-        String inProgressRound,
+        int maxRound,
+        int inProgressRound,
         String leagueProgress,
         Integer leagueTeamCount
 ) {
@@ -19,8 +19,8 @@ public record LeagueDetailResponse(
 			league.getName(),
 			league.getStartAt(),
 			league.getEndAt(),
-			league.getMaxRound().getDescription(),
-			league.getInProgressRound().getDescription(),
+			league.getMaxRound().getNumber(),
+			league.getInProgressRound().getNumber(),
 			LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
 			leagueTeamCount
 		);

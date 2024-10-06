@@ -44,10 +44,10 @@ public class GamesQueryConditionMapper {
                 .and(() -> game.id.in(
                         gameTeamDynamicRepository.findAllByLeagueTeamIds(gamesQueryRequestDto.getLeagueTeamIds())));
 
-        String descriptionOfRound = gamesQueryRequestDto.getDescriptionOfRound();
+        int roundNumber = gamesQueryRequestDto.getRound();
 
-        if (Round.isValidDescription(descriptionOfRound)) {
-            Round round = Round.from(descriptionOfRound);
+        if (Round.isValidNumber(roundNumber)) {
+            Round round = Round.from(roundNumber);
             booleanBuilder.and(() -> game.round.eq(round));
         }
 

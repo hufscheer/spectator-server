@@ -8,16 +8,16 @@ import com.sports.server.command.league.domain.LeagueProgress;
 public record LeagueResponse(
 	Long leagueId,
 	String name,
-	String maxRound,
-	String inProgressRound,
+	int maxRound,
+	int inProgressRound,
 	String leagueProgress
 ) {
 	public LeagueResponse(League league) {
 		this(
 			league.getId(),
 			league.getName(),
-			league.getMaxRound().getDescription(),
-			league.getInProgressRound().getDescription(),
+			league.getMaxRound().getNumber(),
+			league.getInProgressRound().getNumber(),
 			LeagueProgress.getProgressDescription(LocalDateTime.now(), league)
 		);
 	}

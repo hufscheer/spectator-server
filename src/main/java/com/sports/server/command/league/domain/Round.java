@@ -40,4 +40,10 @@ public enum Round {
         return Stream.of(Round.values())
                 .anyMatch(round -> round.getDescription().equals(value));
     }
+
+    public static boolean isValidNumber(final Integer value) {
+        if (value == null) {return false;}
+        return Stream.of(Round.values())
+                .anyMatch(round -> round.getNumber() == value);
+    }
 }
