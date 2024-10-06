@@ -65,7 +65,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
                 "라임즙 많이 먹기 대회",
                 LocalDateTime.of(24, 12, 11, 0, 0, 0),
                 LocalDateTime.of(24, 12, 13, 0, 0, 0),
-                "16강");
+                16);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

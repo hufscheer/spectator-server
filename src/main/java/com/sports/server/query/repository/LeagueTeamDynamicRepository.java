@@ -18,12 +18,12 @@ public class LeagueTeamDynamicRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<LeagueTeam> findByLeagueAndRound(final League league, String descriptionOfRound) {
+    public List<LeagueTeam> findByLeagueAndRound(final League league, Integer roundNumber) {
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> leagueTeam.league.eq(league));
 
-        if (Round.isValidDescription(descriptionOfRound)) {
-            Round round = Round.from(descriptionOfRound);
+        if (Round.isValidNumber(roundNumber)) {
+            Round round = Round.from(roundNumber);
             booleanBuilder.and(() -> game.round.eq(round));
         }
 

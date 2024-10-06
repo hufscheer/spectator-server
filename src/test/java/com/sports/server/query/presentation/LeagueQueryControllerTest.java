@@ -42,8 +42,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // given
         List<LeagueResponse> responses = List.of(
-                new LeagueResponse(1L, "리그 첫번째", "16강", "4강", "종료"),
-                new LeagueResponse(2L, "리그 두번째", "32강", "32강", "진행 중")
+                new LeagueResponse(1L, "리그 첫번째", 16, 4, "종료"),
+                new LeagueResponse(2L, "리그 두번째", 32, 32, "진행 중")
         );
 
         int year = 2024;
@@ -65,8 +65,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
-                                fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
-                                fieldWithPath("[].inProgressRound").type(JsonFieldType.STRING)
+                                fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
+                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER)
                                         .description("현재 진행 중인 라운드"),
                                 fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태")
                         )
@@ -116,12 +116,12 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new LeagueTeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2", 6)
         );
 
-        given(leagueQueryService.findTeamsByLeagueRound(leagueId, "결승"))
+        given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/teams", leagueId)
-                .queryParam("descriptionOfRound", "결승")
+                .queryParam("round", "2")
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -132,7 +132,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 parameterWithName("leagueId").description("리그의 ID")
                         ),
                         queryParameters(
-                                parameterWithName("descriptionOfRound").description("라운드의 이름 ex. 4강, 결승")
+                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
                         ),
                         responseFields(
                                 fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 팀 ID"),
@@ -154,8 +154,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         "삼건물대회",
                         LocalDateTime.of(2024, 3, 25, 0, 0, 0),
                         LocalDateTime.of(2024, 3, 26, 0, 0, 0),
-                        "16강",
-                        "4강",
+                        16,
+                        4,
                         "진행 중",
                         3
                 ));
@@ -175,8 +175,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("리그 이름"),
                                 fieldWithPath("startAt").type(JsonFieldType.STRING).description("리그 시작 시간"),
                                 fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
-                                fieldWithPath("inProgressRound").type(JsonFieldType.STRING).description("리그의 현재 라운드"),
-                                fieldWithPath("maxRound").type(JsonFieldType.STRING).description("리그 총 라운드"),
+                                fieldWithPath("inProgressRound").type(JsonFieldType.NUMBER).description("리그의 현재 라운드"),
+                                fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("리그 총 라운드"),
                                 fieldWithPath("leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
                                 fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수")
                         )
@@ -286,9 +286,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // given
         LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         List<LeagueResponseToManage> responses = List.of(
-                new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, "16강", fixedDateTime,
+                new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, 16, fixedDateTime,
                         fixedDateTime),
-                new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, "16강", fixedDateTime,
+                new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, 16, fixedDateTime,
                         fixedDateTime));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
@@ -313,7 +313,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING)
                                         .description("리그의 진행 상태 ex. 진행 중, 종료"),
                                 fieldWithPath("[].sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀의 수"),
-                                fieldWithPath("[].maxRound").type(JsonFieldType.STRING).description("리그의 최대 라운드"),
+                                fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
                                 fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
                                 fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜")
                         )
@@ -391,7 +391,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         scheduledGameTeams)
         );
         LeagueResponseWithGames response = new LeagueResponseWithGames(
-                1L, "첫번째 리그", 6, "16강", LocalDateTime.of(2024, 8, 11, 13, 30), LocalDateTime.of(2024, 8, 30, 13, 30),
+                1L, "첫번째 리그", 6, 16, LocalDateTime.of(2024, 8, 11, 13, 30), LocalDateTime.of(2024, 8, 30, 13, 30),
                 playingGames, scheduledGames, finishedGames
         );
 
@@ -412,7 +412,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("리그 ID"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("리그 이름"),
                                 fieldWithPath("sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀 수"),
-                                fieldWithPath("maxRound").type(JsonFieldType.STRING).description("리그 최대 라운드"),
+                                fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("리그 최대 라운드"),
                                 fieldWithPath("startAt").type(JsonFieldType.STRING).description("리그 시작 시간"),
                                 fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
                                 fieldWithPath("playingGames").type(JsonFieldType.ARRAY).description("진행 중인 경기 목록"),

@@ -23,7 +23,7 @@ public class LeagueRequestDto {
 		String name,
 		LocalDateTime startAt,
 		LocalDateTime endAt,
-		String maxRound
+		int maxRound
 	) {
 	}
 }

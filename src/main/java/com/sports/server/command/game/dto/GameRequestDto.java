@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class GameRequestDto {
     public record Register(
             String name,
-            String round,
+            int round,
             String quarter,
             String state,
             LocalDateTime startTime,
@@ -27,7 +27,7 @@ public class GameRequestDto {
 
     public record Update(
             String name,
-            String round,
+            int round,
             String quarter,
             String state,
             LocalDateTime startTime,

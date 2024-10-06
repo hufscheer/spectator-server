@@ -107,7 +107,7 @@ public class GameControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         Long idOfTeam1 = 1L;
         Long idOfTeam2 = 2L;
-        GameRequestDto.Register requestDto = new GameRequestDto.Register("경기 이름", "16강", "경기전", "SCHEDULED",
+        GameRequestDto.Register requestDto = new GameRequestDto.Register("경기 이름", 16, "경기전", "SCHEDULED",
                 LocalDateTime.of(2024, 9, 11, 12, 0, 0), idOfTeam1, idOfTeam2, "videoId");
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
@@ -127,7 +127,7 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("경기의 이름"),
-                                fieldWithPath("round").type(JsonFieldType.STRING).description("라운드의 설명 ex. 4강, 결승"),
+                                fieldWithPath("round").type(JsonFieldType.NUMBER).description("라운드의 설명 ex. 4강->4, 결승->2"),
                                 fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작 날짜 및 시각"),
@@ -154,7 +154,7 @@ public class GameControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         Long gameId = 1L;
         GameRequestDto.Update requestDto = new GameRequestDto.Update(
-                "게임 이름", "16강", "전반전", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
+                "게임 이름", 16, "전반전", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
         );
 
         // when
@@ -172,8 +172,8 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
-                                fieldWithPath("round").type(JsonFieldType.STRING)
-                                        .description("변경할 경기의 라운드 ex. 16강, 결승"),
+                                fieldWithPath("round").type(JsonFieldType.NUMBER)
+                                        .description("변경할 경기의 라운드 ex. 16강->16, 결승->2"),
                                 fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작 날짜 및 시각"),

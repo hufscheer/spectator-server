@@ -77,7 +77,7 @@ class LeagueTest {
                         .ofMinLength(5).sample(),
                 LocalDateTime.of(20, 12, 11, 0, 0, 0),
                 LocalDateTime.of(20, 12, 12, 0, 0, 0),
-                Round.from("8강")
+                Round.from(8)
         );
 
         // when
@@ -94,7 +94,7 @@ class LeagueTest {
         String newName = "레몬즙 입에 물고 참기 대회";
         LocalDateTime startAt = LocalDateTime.of(20, 12, 20, 0, 0, 0);
         LocalDateTime endAt = LocalDateTime.of(20, 12, 21, 0, 0, 0);
-        String maxRound = "16강";
+        int maxRound = 16;
         return Stream.of(
                 leagueUpdateRequestArgument(
                         "이름이 빈 값이 아닐 경우, 대회 이름, 시작 시간, 종료 시간, 총 라운드 수를 수정한다.",
@@ -103,7 +103,7 @@ class LeagueTest {
                                 (league) -> () -> assertThat(league.getName()).isEqualTo(newName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
                                 (league) -> () -> assertThat(league.getEndAt()).isEqualTo(endAt),
-                                (league) -> () -> assertThat(league.getMaxRound().getDescription()).isEqualTo(maxRound)
+                                (league) -> () -> assertThat(league.getMaxRound().getNumber()).isEqualTo(maxRound)
                         )
                 ),
                 leagueUpdateRequestArgument(
@@ -113,7 +113,7 @@ class LeagueTest {
                                 (league) -> () -> assertThat(league.getName()).isNotEqualTo(emptyName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
                                 (league) -> () -> assertThat(league.getEndAt()).isEqualTo(endAt),
-                                (league) -> () -> assertThat(league.getMaxRound().getDescription()).isEqualTo(maxRound)
+                                (league) -> () -> assertThat(league.getMaxRound().getNumber()).isEqualTo(maxRound)
                         )
                 )
         );

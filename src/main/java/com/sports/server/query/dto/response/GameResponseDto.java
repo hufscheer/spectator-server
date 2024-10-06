@@ -12,7 +12,7 @@ public record GameResponseDto(
         LocalDateTime startTime,
         String gameQuarter,
         String gameName,
-        String descriptionOfRound,
+        int round,
         String videoId,
         List<TeamResponse> gameTeams,
         String sportsName,
@@ -24,7 +24,7 @@ public record GameResponseDto(
                 game.getStartTime(),
                 game.getGameQuarter(),
                 game.getName(),
-                game.getRound().getDescription(),
+                game.getRound().getNumber(),
                 game.getVideoId(),
                 gameTeams.stream()
                         .sorted(Comparator.comparingLong(GameTeam::getId))

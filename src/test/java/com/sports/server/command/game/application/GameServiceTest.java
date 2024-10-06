@@ -59,7 +59,7 @@ public class GameServiceTest extends ServiceTest {
         this.nameOfGame = "경기 이름";
         this.idOfTeam1 = 1L;
         this.idOfTeam2 = 2L;
-        this.requestDto = new GameRequestDto.Register(nameOfGame, "16강", "전반전", "SCHEDULED",
+        this.requestDto = new GameRequestDto.Register(nameOfGame, 16, "전반전", "SCHEDULED",
                 LocalDateTime.now(), idOfTeam1, idOfTeam2, null);
     }
 
@@ -105,7 +105,7 @@ public class GameServiceTest extends ServiceTest {
             assertAll(
                     () -> assertThat(game).isNotNull(),
                     () -> assertThat(game.getName()).isEqualTo(nameOfGame),
-                    () -> assertThat(game.getRound()).isEqualTo(Round.from("16강"))
+                    () -> assertThat(game.getRound()).isEqualTo(Round.from(16))
             );
 
         }
@@ -151,7 +151,7 @@ public class GameServiceTest extends ServiceTest {
         @BeforeEach
         void setUp() {
             LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-            updateDto = new GameRequestDto.Update(nameOfGame, "8강", "후반전", "PLAYING",
+            updateDto = new GameRequestDto.Update(nameOfGame, 8, "후반전", "PLAYING",
                     fixedLocalDateTime, "videoId");
             leagueId = 1L;
             gameId = 1L;

@@ -38,7 +38,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(
-                startTime, "videoId", "전반전", "여름축구", "축구", gameTeams, "PLAYING", "4강", false
+                startTime, "videoId", "전반전", "여름축구", "축구", gameTeams, "PLAYING", 4, false
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);
@@ -60,7 +60,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
-                                fieldWithPath("round").type(JsonFieldType.STRING).description("게임의 라운드"),
+                                fieldWithPath("round").type(JsonFieldType.NUMBER).description("게임의 라운드"),
                                 fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
                                 fieldWithPath("gameTeams[].gameTeamName").type(JsonFieldType.STRING)
@@ -113,8 +113,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2, 0)
         );
         List<GameResponseDto> responses = List.of(
-                new GameResponseDto(1L, startTime, "전반전", "4강", "4강", "abc123", gameTeams1, "축구", false),
-                new GameResponseDto(2L, startTime, "1쿼터", "결승전", "결승", "abc123", gameTeams2, "농구", false)
+                new GameResponseDto(1L, startTime, "전반전", "4강", 4, "abc123", gameTeams1, "축구", false),
+                new GameResponseDto(2L, startTime, "1쿼터", "결승전", 2, "abc123", gameTeams2, "농구", false)
         );
 
         given(gameQueryService.getAllGames(any(), any()))
@@ -126,7 +126,7 @@ class GameQueryControllerTest extends DocumentationTest {
                 .queryParam("state", "PLAYING")
                 .queryParam("sport_id", "1")
                 .queryParam("sport_id", "2")
-                .queryParam("description_of_round", "4강")
+                .queryParam("round", "4")
                 .queryParam("league_team_id", "1")
                 .queryParam("cursor", String.valueOf(12))
                 .queryParam("size", String.valueOf(10))
@@ -143,15 +143,15 @@ class GameQueryControllerTest extends DocumentationTest {
                                 parameterWithName("cursor").description("페이징 커서"),
                                 parameterWithName("size").description("페이징 사이즈"),
                                 parameterWithName("league_team_id").description("리그팀의 ID"),
-                                parameterWithName("description_of_round").description("라운드의 이름 ex. 4강, 결승")
+                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게임의 ID"),
                                 fieldWithPath("[].startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
                                 fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
-                                fieldWithPath("[].descriptionOfRound").type(JsonFieldType.STRING)
-                                        .description("게임 라운드의 이름 ex. 4강, 결승"),
+                                fieldWithPath("[].round").type(JsonFieldType.NUMBER)
+                                        .description("게임 라운드 ex. 4강->4, 결승->2"),
                                 fieldWithPath("[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
                                 fieldWithPath("[].sportsName").type(JsonFieldType.STRING).description("종목"),
                                 fieldWithPath("[].isPkTaken").type(JsonFieldType.BOOLEAN)

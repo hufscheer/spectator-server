@@ -48,13 +48,13 @@ public class LeagueTeamQueryAcceptanceTest extends AcceptanceTest {
     void 라운드에_진출한_리그팀만_조회한다() {
         // given
         Long threeBuildingCup = 1L;
-        String finalRound = "결승";
+        int finalRound = 2;
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .param("descriptionOfRound", finalRound)
+                .param("round", finalRound)
                 .get("/leagues/{leagueId}/teams", threeBuildingCup)
                 .then().log().all()
                 .extract();
