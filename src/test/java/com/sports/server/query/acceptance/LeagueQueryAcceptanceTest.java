@@ -42,10 +42,10 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly("축구 대회", "탁구 대회", "야구 대회", "롤 대회", "농구대잔치", "삼건물 대회", "롤 대회", "농구대잔치", "삼건물 대회"),
                 () -> assertThat(actual)
                         .map(LeagueResponse::maxRound)
-                        .containsExactly("16강", "16강", "16강", "8강", "8강", "16강", "8강", "8강", "16강"),
+                        .containsExactly(16, 16, 16, 8, 8, 16, 8, 8, 16),
                 () -> assertThat(actual)
                         .map(LeagueResponse::inProgressRound)
-                        .containsExactly("16강", "16강", "16강", "8강", "결승", "8강", "8강", "결승", "8강")
+                        .containsExactly(16, 16, 16, 8, 2, 8, 8, 2, 8)
         );
     }
 
@@ -115,8 +115,8 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.name()).isEqualTo("삼건물 대회"),
                 () -> assertThat(actual.startAt()).isEqualTo(LocalDateTime.of(2023, 11, 9, 0, 0, 0)),
                 () -> assertThat(actual.endAt()).isEqualTo(LocalDateTime.of(2023, 11, 20, 0, 0, 0)),
-                () -> assertThat(actual.inProgressRound()).isEqualTo("8강"),
-                () -> assertThat(actual.maxRound()).isEqualTo("16강"),
+                () -> assertThat(actual.inProgressRound()).isEqualTo(8),
+                () -> assertThat(actual.maxRound()).isEqualTo(16),
                 () -> assertThat(actual.leagueProgress()).isEqualTo(LeagueProgress.FINISHED.getDescription())
         );
     }

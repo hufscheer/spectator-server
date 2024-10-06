@@ -105,7 +105,7 @@ public class GameServiceTest extends ServiceTest {
             assertAll(
                     () -> assertThat(game).isNotNull(),
                     () -> assertThat(game.getName()).isEqualTo(nameOfGame),
-                    () -> assertThat(game.getRound()).isEqualTo(Round.from("16강"))
+                    () -> assertThat(game.getRound()).isEqualTo(Round.from(16))
             );
 
         }
