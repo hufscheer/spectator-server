@@ -14,7 +14,7 @@ public record GameDetailResponse(
         String sportName,
         List<TeamResponse> gameTeams,
         String state,
-        String round,
+        int round,
         boolean isPkTaken
 ) {
 
@@ -30,7 +30,7 @@ public record GameDetailResponse(
                         .map(TeamResponse::new)
                         .toList(),
                 game.getState().name(),
-                game.getRound().name(),
+                game.getRound().getNumber(),
                 game.getIsPkTaken()
         );
     }

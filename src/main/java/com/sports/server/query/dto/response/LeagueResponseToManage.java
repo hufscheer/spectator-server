@@ -12,7 +12,7 @@ public record LeagueResponseToManage(
         String name,
         String leagueProgress,
         int sizeOfLeagueTeams,
-        String maxRound,
+        int maxRound,
         LocalDateTime startAt,
         LocalDateTime endAt
 ) {
@@ -22,7 +22,7 @@ public record LeagueResponseToManage(
             league.getName(),
             LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
             league.getLeagueTeams().size(),
-            league.getMaxRound().getDescription(),
+            league.getMaxRound().getNumber(),
             league.getStartAt(),
             league.getEndAt()
         );

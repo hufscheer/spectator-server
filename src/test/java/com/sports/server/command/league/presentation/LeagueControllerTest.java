@@ -88,7 +88,7 @@ class LeagueControllerTest extends DocumentationTest {
 		Long leagueId = 5124L;
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
 		LeagueRequestDto.Update request = new LeagueRequestDto.Update("훕치치배 망고 빨리먹기 대회", fixedDateTime,
-			fixedDateTime, "16강");
+				fixedDateTime, 16);
 
 		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequestDto.Update.class), anyLong());
 
@@ -105,7 +105,7 @@ class LeagueControllerTest extends DocumentationTest {
 					fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 대회의 이름"),
 					fieldWithPath("startAt").type(JsonFieldType.STRING).description("변경할 대회 시작시간"),
 					fieldWithPath("endAt").type(JsonFieldType.STRING).description("변경할 대회 종료시간"),
-					fieldWithPath("maxRound").type(JsonFieldType.STRING).description("변경할 대회의 총 라운드 수")
+					fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("변경할 대회의 총 라운드 수")
 				),
 				requestCookies(
 					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

@@ -58,10 +58,10 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, String descriptionOfRound) {
+    public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
-        return leagueTeamDynamicRepository.findByLeagueAndRound(league, descriptionOfRound)
+        return leagueTeamDynamicRepository.findByLeagueAndRound(league, round)
                 .stream()
                 .map(LeagueTeamResponse::new)
                 .toList();
