@@ -14,6 +14,7 @@ import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -293,5 +294,25 @@ class TimelineServiceTest extends ServiceTest {
             assertThatThrownBy(() -> timelineService.deleteTimeline(manager, gameId, timelineId))
                     .isInstanceOf(CustomException.class);
         }
+    }
+
+    @Test
+    void 경기_종료_후_타임라인을_등록하려고_하면_에러가_발생한다() {
+        // given
+        Long team1Id = 1L;
+        Long team1PlayerId = 1L;
+        Long finishedGameId = 2L;
+
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+                team1Id,
+                quarterId,
+                team1PlayerId,
+                3
+        );
+
+        // when & then
+        assertThatThrownBy(() -> timelineService.register(manager, finishedGameId, request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(TimelineErrorMessage.GAME_ALREADY_FINISHED);
     }
 }
