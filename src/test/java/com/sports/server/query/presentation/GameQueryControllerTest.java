@@ -126,7 +126,7 @@ class GameQueryControllerTest extends DocumentationTest {
                 .queryParam("state", "PLAYING")
                 .queryParam("sport_id", "1")
                 .queryParam("sport_id", "2")
-                .queryParam("description_of_round", "4강")
+                .queryParam("round", "4")
                 .queryParam("league_team_id", "1")
                 .queryParam("cursor", String.valueOf(12))
                 .queryParam("size", String.valueOf(10))
@@ -143,7 +143,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 parameterWithName("cursor").description("페이징 커서"),
                                 parameterWithName("size").description("페이징 사이즈"),
                                 parameterWithName("league_team_id").description("리그팀의 ID"),
-                                parameterWithName("description_of_round").description("라운드의 이름 ex. 4강, 결승")
+                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게임의 ID"),
