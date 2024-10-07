@@ -1875,12 +1875,12 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1620
+Content-Length: 1674
 
 [ {
   "gameTeamId" : 1,
   "teamName" : "팀A",
-  "gameTeamPlayers" : [ {
+  "inGamePlayers" : [ {
     "id" : 1,
     "playerName" : "선수A",
     "description" : "탑",
@@ -1902,24 +1902,25 @@ Content-Length: 1620
     "isCaptain" : false,
     "state" : "STARTER"
   }, {
-    "id" : 4,
-    "playerName" : "선수D",
-    "description" : "원딜",
-    "number" : 4,
-    "isCaptain" : false,
-    "state" : "STARTER"
-  }, {
     "id" : 5,
     "playerName" : "선수E",
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false,
     "state" : "STARTER"
+  } ],
+  "candidatePlayers" : [ {
+    "id" : 4,
+    "playerName" : "선수D",
+    "description" : "원딜",
+    "number" : 4,
+    "isCaptain" : false,
+    "state" : "CANDIDATE"
   } ]
 }, {
   "gameTeamId" : 2,
   "teamName" : "팀B",
-  "gameTeamPlayers" : [ {
+  "inGamePlayers" : [ {
     "id" : 1,
     "playerName" : "선수F",
     "description" : "탑",
@@ -1947,13 +1948,14 @@ Content-Length: 1620
     "number" : 4,
     "isCaptain" : false,
     "state" : "STARTER"
-  }, {
+  } ],
+  "candidatePlayers" : [ {
     "id" : 5,
     "playerName" : "선수J",
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "CANDIDATE"
   } ]
 } ]</code></pre>
 </div>
@@ -1986,34 +1988,64 @@ Content-Length: 1620
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].id</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수 ID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].playerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].playerName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수 이름</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].description</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수 설명</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수 설명</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수의 등번호</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수의 등번호</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].isCaptain</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].isCaptain</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수가 주장인지에 대한 정보</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수가 주장인지에 대한 정보</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].state</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].state</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수의 선발 상태</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수의 선발 상태(STARTER)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].playerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수 설명</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수의 등번호</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].isCaptain</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수가 주장인지에 대한 정보</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].state</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수의 선발 상태(CANDIDATE)</p></td>
 </tr>
 </tbody>
 </table>
@@ -5093,7 +5125,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 13 Oct 2024 08:42:16 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 13 Oct 2024 12:14:00 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
