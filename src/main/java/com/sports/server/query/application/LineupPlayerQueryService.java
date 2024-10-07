@@ -4,7 +4,9 @@ import static java.util.stream.Collectors.groupingBy;
 
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
+import com.sports.server.query.dto.response.LineupPlayerResponseSeparated;
 import com.sports.server.query.repository.LineupPlayerQueryRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +23,7 @@ public class LineupPlayerQueryService {
 
     private final LineupPlayerQueryRepository lineupPlayerQueryRepository;
 
-    public List<LineupPlayerResponse> getLineup(final Long gameId) {
+    public List<LineupPlayerResponseSeparated> getLineup(final Long gameId) {
         Map<GameTeam, List<LineupPlayer>> groupByTeam = lineupPlayerQueryRepository.findPlayersByGameId(gameId)
                 .stream()
                 .collect(groupingBy(LineupPlayer::getGameTeam));
@@ -30,8 +32,14 @@ public class LineupPlayerQueryService {
 
         return gameTeams.stream()
                 .sorted(Comparator.comparingLong(GameTeam::getId))
-                .map(gameTeam -> new LineupPlayerResponse(gameTeam,
-                        groupByTeam.getOrDefault(gameTeam, new ArrayList<>())))
+                .map(gameTeam -> new LineupPlayerResponseSeparated(
+                        gameTeam,
+                        groupByTeam.getOrDefault(gameTeam, new ArrayList<>()).stream().filter(
+                                lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.STARTER)
+                        ).toList(),
+                        groupByTeam.getOrDefault(gameTeam, new ArrayList<>()).stream().filter(
+                                lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.CANDIDATE)
+                        ).toList()))
                 .toList();
     }
 
