@@ -1,6 +1,7 @@
 package com.sports.server.command.game.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.game.domain.Game;
@@ -8,12 +9,12 @@ import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.dto.GameRequestDto;
-import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
@@ -29,7 +30,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.K;
 
 @Sql("/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -136,6 +136,20 @@ public class GameServiceTest extends ServiceTest {
             // when & then
             assertThatThrownBy(() -> gameService.register(leagueId, requestDto, nonManager))
                     .isInstanceOf(UnauthorizedException.class);
+        }
+
+        @Test
+        void maxRound보다_큰_round의_경기를_등록할_수_없다() {
+            // given
+            Long leagueId = 1L;
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            GameRequestDto.Register requestDto = new GameRequestDto.Register(nameOfGame, 32, "전반전", "SCHEDULED",
+                    LocalDateTime.now(), idOfTeam1, idOfTeam2, null);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.register(leagueId, requestDto, manager))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage("최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
         }
     }
 
