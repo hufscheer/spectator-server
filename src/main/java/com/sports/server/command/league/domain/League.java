@@ -5,6 +5,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
+import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Table(name = "leagues")
@@ -98,5 +100,11 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     public String manager() {
         return manager.getEmail();
+    }
+
+    public void validateRoundWithinLimit(Integer round) {
+        if (maxRound.numberIsLessThan(round)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
+        }
     }
 }
