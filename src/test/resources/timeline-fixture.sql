@@ -9,11 +9,11 @@ VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'
 INSERT INTO sports (id, name)
 VALUES (1, '농구');
 -- 농구 쿼터
-INSERT INTO quarters (id, name, sports_id)
-VALUES (1, '1쿼터', 1),
-       (2, '2쿼터', 1),
-       (3, '3쿼터', 1),
-       (4, '4쿼터', 1);
+INSERT INTO quarters (id, name, sports_id, _order)
+VALUES (1, '1쿼터', 1, 1),
+       (2, '2쿼터', 1, 2),
+       (3, '3쿼터', 1, 3),
+       (4, '4쿼터', 1, 4);
 
 -- 경기
 INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at,
