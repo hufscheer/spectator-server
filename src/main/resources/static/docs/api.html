@@ -1875,12 +1875,12 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1674
+Content-Length: 1676
 
 [ {
   "gameTeamId" : 1,
   "teamName" : "팀A",
-  "inGamePlayers" : [ {
+  "starterPlayers" : [ {
     "id" : 1,
     "playerName" : "선수A",
     "description" : "탑",
@@ -1920,7 +1920,7 @@ Content-Length: 1674
 }, {
   "gameTeamId" : 2,
   "teamName" : "팀B",
-  "inGamePlayers" : [ {
+  "starterPlayers" : [ {
     "id" : 1,
     "playerName" : "선수F",
     "description" : "탑",
@@ -1988,34 +1988,34 @@ Content-Length: 1674
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].id</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수 ID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].playerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].playerName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수 이름</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].description</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].description</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수 설명</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수 설명</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수의 등번호</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수의 등번호</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].isCaptain</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].isCaptain</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수가 주장인지에 대한 정보</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수가 주장인지에 대한 정보</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].inGamePlayers[].state</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].state</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">출전 선수의 선발 상태(STARTER)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수의 선발 상태(STARTER)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].id</code></p></td>
@@ -5125,7 +5125,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 13 Oct 2024 12:14:00 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 15 Oct 2024 04:39:52 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>

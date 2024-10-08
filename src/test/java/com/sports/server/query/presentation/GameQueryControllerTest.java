@@ -237,18 +237,18 @@ class GameQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
-                                fieldWithPath("[].inGamePlayers[].id").type(JsonFieldType.NUMBER)
-                                        .description("출전 선수 ID"),
-                                fieldWithPath("[].inGamePlayers[].playerName").type(JsonFieldType.STRING)
-                                        .description("출전 선수 이름"),
-                                fieldWithPath("[].inGamePlayers[].description").type(JsonFieldType.STRING)
-                                        .description("출전 선수 설명"),
-                                fieldWithPath("[].inGamePlayers[].number").type(JsonFieldType.NUMBER)
-                                        .description("출전 선수의 등번호"),
-                                fieldWithPath("[].inGamePlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
-                                        .description("출전 선수가 주장인지에 대한 정보"),
-                                fieldWithPath("[].inGamePlayers[].state").type(JsonFieldType.STRING)
-                                        .description("출전 선수의 선발 상태(STARTER)"),
+                                fieldWithPath("[].starterPlayers[].id").type(JsonFieldType.NUMBER)
+                                        .description("선발 선수 ID"),
+                                fieldWithPath("[].starterPlayers[].playerName").type(JsonFieldType.STRING)
+                                        .description("선발 선수 이름"),
+                                fieldWithPath("[].starterPlayers[].description").type(JsonFieldType.STRING)
+                                        .description("선발 선수 설명"),
+                                fieldWithPath("[].starterPlayers[].number").type(JsonFieldType.NUMBER)
+                                        .description("선발 선수의 등번호"),
+                                fieldWithPath("[].starterPlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
+                                        .description("선발 선수가 주장인지에 대한 정보"),
+                                fieldWithPath("[].starterPlayers[].state").type(JsonFieldType.STRING)
+                                        .description("선발 선수의 선발 상태(STARTER)"),
                                 fieldWithPath("[].candidatePlayers[].id").type(JsonFieldType.NUMBER)
                                         .description("후보 선수 ID"),
                                 fieldWithPath("[].candidatePlayers[].playerName").type(JsonFieldType.STRING)
