@@ -33,13 +33,7 @@ public class LineupPlayerQueryService {
         return gameTeams.stream()
                 .sorted(Comparator.comparingLong(GameTeam::getId))
                 .map(gameTeam -> new LineupPlayerResponseSeparated(
-                        gameTeam,
-                        groupByTeam.getOrDefault(gameTeam, new ArrayList<>()).stream().filter(
-                                lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.STARTER)
-                        ).toList(),
-                        groupByTeam.getOrDefault(gameTeam, new ArrayList<>()).stream().filter(
-                                lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.CANDIDATE)
-                        ).toList()))
+                        gameTeam, groupByTeam.getOrDefault(gameTeam, new ArrayList<>())))
                 .toList();
     }
 

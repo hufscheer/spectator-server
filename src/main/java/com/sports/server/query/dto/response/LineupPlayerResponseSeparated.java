@@ -9,21 +9,21 @@ import java.util.List;
 public record LineupPlayerResponseSeparated(
 	Long gameTeamId,
 	String teamName,
-	List<PlayerResponse> inGamePlayers,
+	List<PlayerResponse> starterPlayers,
 	List<PlayerResponse> candidatePlayers
 
 ) {
 
-	public LineupPlayerResponseSeparated(GameTeam gameTeam,
-										 List<LineupPlayer> inGamePlayers,
-										 List<LineupPlayer> candidatePlayers) {
+	public LineupPlayerResponseSeparated(GameTeam gameTeam, List<LineupPlayer> lineupPlayers) {
 		this(
 			gameTeam.getId(),
 			gameTeam.getLeagueTeam().getName(),
-			inGamePlayers.stream()
-				.map(PlayerResponse::new)
-				.toList(),
-			candidatePlayers.stream()
+			lineupPlayers.stream()
+					.filter(lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.STARTER))
+					.map(PlayerResponse::new)
+					.toList(),
+			lineupPlayers.stream()
+					.filter(lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.CANDIDATE))
 					.map(PlayerResponse::new)
 					.toList()
 		);
