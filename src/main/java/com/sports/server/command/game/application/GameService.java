@@ -1,6 +1,5 @@
 package com.sports.server.command.game.application;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
 import com.sports.server.command.game.domain.GameState;
@@ -15,7 +14,6 @@ import com.sports.server.command.sport.domain.SportRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.NotFoundException;
-import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +33,7 @@ public class GameService {
                          final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
+        league.validateRoundWithinLimit(requestDto.round());
 
         Game game = saveGame(leagueId, manager, requestDto);
         saveGameTeams(game, requestDto);
@@ -73,6 +72,7 @@ public class GameService {
     public void updateGame(Long leagueId, Long gameId, GameRequestDto.Update request, Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
+        league.validateRoundWithinLimit(request.round());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
         game.updateName(request.name());
