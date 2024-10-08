@@ -32,7 +32,8 @@ public enum Round {
         return Stream.of(Round.values())
                 .filter(round -> round.number == number)
                 .findAny()
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.ROUND_NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST,
+                        LeagueErrorMessages.ROUND_NOT_FOUND_EXCEPTION));
     }
 
 
@@ -42,8 +43,14 @@ public enum Round {
     }
 
     public static boolean isValidNumber(final Integer value) {
-        if (value == null) {return false;}
+        if (value == null) {
+            return false;
+        }
         return Stream.of(Round.values())
                 .anyMatch(round -> round.getNumber() == value);
+    }
+
+    public boolean numberIsLessThan(Integer otherNumber) {
+        return this.number < otherNumber;
     }
 }
