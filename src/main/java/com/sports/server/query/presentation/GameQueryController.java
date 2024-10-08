@@ -5,11 +5,8 @@ import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
 import com.sports.server.query.application.LineupPlayerQueryService;
 import com.sports.server.query.dto.request.GamesQueryRequestDto;
-import com.sports.server.query.dto.response.GameDetailResponse;
-import com.sports.server.query.dto.response.GameResponseDto;
-import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
-import com.sports.server.query.dto.response.LineupPlayerResponse;
-import com.sports.server.query.dto.response.VideoResponse;
+import com.sports.server.query.dto.response.*;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -53,12 +50,12 @@ public class GameQueryController {
     }
 
     @GetMapping("/{gameId}/lineup")
-    public ResponseEntity<List<LineupPlayerResponse>> getGameLineup(@PathVariable final Long gameId) {
+    public ResponseEntity<List<LineupPlayerResponse.Separated>> getGameLineup(@PathVariable final Long gameId) {
         return ResponseEntity.ok(lineupPlayerQueryService.getLineup(gameId));
     }
 
     @GetMapping("/{gameId}/lineup/playing")
-    public ResponseEntity<List<LineupPlayerResponse>> getGamePlayingLineup(@PathVariable final Long gameId) {
+    public ResponseEntity<List<LineupPlayerResponse.Playing>> getGamePlayingLineup(@PathVariable final Long gameId) {
         return ResponseEntity.ok(lineupPlayerQueryService.getPlayingLineup(gameId));
     }
 }

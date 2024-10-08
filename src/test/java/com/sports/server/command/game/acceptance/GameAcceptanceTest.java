@@ -81,11 +81,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.class).stream()
+        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 
-        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).gameTeamPlayers().stream()
+        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).starterPlayers().stream()
                 .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
                 .toList();
 
@@ -120,11 +120,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.class).stream()
+        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 
-        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).gameTeamPlayers().stream()
+        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).candidatePlayers().stream()
                 .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
                 .toList();
 
@@ -254,11 +254,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.class).stream()
+        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 
-        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).gameTeamPlayers().stream()
+        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).starterPlayers().stream()
                 .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
                 .toList();
 
@@ -292,11 +292,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.class).stream()
+        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 
-        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).gameTeamPlayers().stream()
+        List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).starterPlayers().stream()
                 .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
                 .toList();
 
