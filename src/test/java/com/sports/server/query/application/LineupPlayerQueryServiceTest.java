@@ -31,10 +31,10 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
         Long gameId = 1L;
 
         // when
-        List<LineupPlayerResponseSeparated> responses = lineupPlayerQueryService.getLineup(gameId);
+        List<LineupPlayerResponse.Separated> responses = lineupPlayerQueryService.getLineup(gameId);
 
         // then
-        List<Long> gameTeamIds = responses.stream().map(LineupPlayerResponseSeparated::gameTeamId).toList();
+        List<Long> gameTeamIds = responses.stream().map(LineupPlayerResponse.Separated::gameTeamId).toList();
         List<Long> sortedGameTeamIds = gameTeamIds.stream()
                 .sorted(Comparator.comparingLong(Long::valueOf))
                 .collect(Collectors.toList());
@@ -52,7 +52,7 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
         Long gameId = 1L;
 
         // when
-        List<LineupPlayerResponse> responses = lineupPlayerQueryService.getPlayingLineup(gameId);
+        List<LineupPlayerResponse.Playing> responses = lineupPlayerQueryService.getPlayingLineup(gameId);
 
         // then
         List<LineupPlayer> lineupPlayers = responses.stream()

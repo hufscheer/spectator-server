@@ -198,27 +198,27 @@ class GameQueryControllerTest extends DocumentationTest {
     void 라인업을_조회한다() throws Exception {
         // given
         Long gameId = 1L;
-        List<LineupPlayerResponseSeparated.PlayerResponse> playersA = List.of(
-                new LineupPlayerResponseSeparated.PlayerResponse(1L, "선수A", "탑", 1, true, LineupPlayerState.STARTER),
-                new LineupPlayerResponseSeparated.PlayerResponse(2L, "선수B", "미드", 2, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponseSeparated.PlayerResponse(3L, "선수C", "정글", 3, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponseSeparated.PlayerResponse(4L, "선수D", "원딜", 4, false, LineupPlayerState.CANDIDATE),
-                new LineupPlayerResponseSeparated.PlayerResponse(5L, "선수E", "서폿", 5, false, LineupPlayerState.STARTER)
+        List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
+                new LineupPlayerResponse.PlayerResponse(1L, "선수A", "탑", 1, true, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수B", "미드", 2, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수C", "정글", 3, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수D", "원딜", 4, false, LineupPlayerState.CANDIDATE),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수E", "서폿", 5, false, LineupPlayerState.STARTER)
         );
-        List<LineupPlayerResponseSeparated.PlayerResponse> playersB = List.of(
-                new LineupPlayerResponseSeparated.PlayerResponse(1L, "선수F", "탑", 1, true, LineupPlayerState.STARTER),
-                new LineupPlayerResponseSeparated.PlayerResponse(2L, "선수G", "미드", 2, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponseSeparated.PlayerResponse(3L, "선수H", "정글", 3, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponseSeparated.PlayerResponse(4L, "선수I", "원딜", 4, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponseSeparated.PlayerResponse(5L, "선수J", "서폿", 5, false, LineupPlayerState.CANDIDATE)
+        List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
+                new LineupPlayerResponse.PlayerResponse(1L, "선수F", "탑", 1, true, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수G", "미드", 2, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수H", "정글", 3, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수I", "원딜", 4, false, LineupPlayerState.STARTER),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수J", "서폿", 5, false, LineupPlayerState.CANDIDATE)
         );
 
         given(lineupPlayerQueryService.getLineup(gameId))
                 .willReturn(List.of(
-                        new LineupPlayerResponseSeparated(1L, "팀A",
+                        new LineupPlayerResponse.Separated(1L, "팀A",
                                 playersA.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.STARTER)).toList(),
                                 playersA.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.CANDIDATE)).toList()),
-                        new LineupPlayerResponseSeparated(2L, "팀B",
+                        new LineupPlayerResponse.Separated(2L, "팀B",
                                 playersB.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.STARTER)).toList(),
                                 playersB.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.CANDIDATE)).toList())
                 ));
@@ -286,8 +286,8 @@ class GameQueryControllerTest extends DocumentationTest {
 
         given(lineupPlayerQueryService.getPlayingLineup(gameId))
                 .willReturn(List.of(
-                        new LineupPlayerResponse(1L, "팀A", playersA),
-                        new LineupPlayerResponse(2L, "팀B", playersB)
+                        new LineupPlayerResponse.Playing(1L, "팀A", playersA),
+                        new LineupPlayerResponse.Playing(2L, "팀B", playersB)
                 ));
 
         // when
