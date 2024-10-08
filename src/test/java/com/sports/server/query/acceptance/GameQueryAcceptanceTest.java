@@ -170,10 +170,10 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 .get(0);
         List<LineupPlayerResponseSeparated.PlayerResponse> teamAPlayers = Stream.concat(
                 teamA.candidatePlayers().stream(),
-                teamA.inGamePlayers().stream()
+                teamA.starterPlayers().stream()
         ).toList();
         List<LineupPlayerResponseSeparated.PlayerResponse> teamBPlayers = Stream.concat(
-                teamB.inGamePlayers().stream(),
+                teamB.starterPlayers().stream(),
                 teamB.candidatePlayers().stream()
         ).toList();
         assertAll(
