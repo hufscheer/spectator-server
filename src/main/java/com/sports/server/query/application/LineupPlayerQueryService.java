@@ -4,9 +4,7 @@ import static java.util.stream.Collectors.groupingBy;
 
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
-import com.sports.server.query.dto.response.LineupPlayerResponseSeparated;
 import com.sports.server.query.repository.LineupPlayerQueryRepository;
 import java.util.ArrayList;
 import java.util.Comparator;

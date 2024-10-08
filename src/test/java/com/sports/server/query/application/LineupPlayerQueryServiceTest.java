@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
-import com.sports.server.query.dto.response.LineupPlayerResponseSeparated;
 import com.sports.server.support.ServiceTest;
 import java.util.Comparator;
 import java.util.List;
