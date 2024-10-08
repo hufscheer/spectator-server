@@ -23,7 +23,7 @@ public class LineupPlayerQueryService {
 
     private final LineupPlayerQueryRepository lineupPlayerQueryRepository;
 
-    public List<LineupPlayerResponseSeparated> getLineup(final Long gameId) {
+    public List<LineupPlayerResponse.Separated> getLineup(final Long gameId) {
         Map<GameTeam, List<LineupPlayer>> groupByTeam = lineupPlayerQueryRepository.findPlayersByGameId(gameId)
                 .stream()
                 .collect(groupingBy(LineupPlayer::getGameTeam));
@@ -32,12 +32,12 @@ public class LineupPlayerQueryService {
 
         return gameTeams.stream()
                 .sorted(Comparator.comparingLong(GameTeam::getId))
-                .map(gameTeam -> new LineupPlayerResponseSeparated(
+                .map(gameTeam -> new LineupPlayerResponse.Separated(
                         gameTeam, groupByTeam.getOrDefault(gameTeam, new ArrayList<>())))
                 .toList();
     }
 
-    public List<LineupPlayerResponse> getPlayingLineup(final Long gameId) {
+    public List<LineupPlayerResponse.Playing> getPlayingLineup(final Long gameId) {
         Map<GameTeam, List<LineupPlayer>> groupByTeam = lineupPlayerQueryRepository.findPlayingPlayersByGameId(gameId)
                 .stream()
                 .collect(groupingBy(LineupPlayer::getGameTeam));
@@ -46,7 +46,7 @@ public class LineupPlayerQueryService {
 
         return gameTeams.stream()
                 .sorted(Comparator.comparingLong(GameTeam::getId))
-                .map(gameTeam -> new LineupPlayerResponse(gameTeam,
+                .map(gameTeam -> new LineupPlayerResponse.Playing(gameTeam,
                         groupByTeam.getOrDefault(gameTeam, new ArrayList<>())))
                 .toList();
     }
