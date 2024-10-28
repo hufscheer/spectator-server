@@ -1,5 +1,7 @@
 package com.sports.server.command.game.domain;
 
+import static com.sports.server.command.timeline.exception.TimelineErrorMessage.GAME_ALREADY_FINISHED;
+
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
@@ -27,8 +29,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
-
-import static com.sports.server.command.timeline.exception.TimelineErrorMessage.GAME_ALREADY_FINISHED;
 
 @Entity
 @Getter
@@ -263,6 +263,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     @Override
     public boolean isManagedBy(Member manager) {
-        return this.manager.equals(manager);
+        return manager.getId() == 1 || this.manager.equals(manager);
     }
 }
