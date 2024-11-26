@@ -27,9 +27,9 @@ import com.sports.server.support.fixture.LeagueTeamPlayerFixtureRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-import org.apache.catalina.Manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -71,7 +71,11 @@ public class GameServiceTest extends ServiceTest {
         this.idOfTeam2 = 2L;
         this.requestDto = new GameRequestDto.Register(nameOfGame, 16, "전반전", "SCHEDULED", LocalDateTime.now(),
                 idOfTeam1, idOfTeam2, null);
-        when(clock.instant()).thenReturn(Instant.parse("2024-11-26T00:00:00Z"));
+        LocalDateTime fixedNow = LocalDateTime.of(2024, 11, 26, 0, 0, 0, 0);
+        Clock fixedClock = Clock.fixed(fixedNow.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
     }
 
     @Nested
@@ -226,7 +230,7 @@ public class GameServiceTest extends ServiceTest {
         @DisplayName("정상적으로 시작한지 5시간이 지난 게임의 상태가 FINISHED로 변경된다")
         void updateGamesOlderThanFiveHoursToFinished() {
             // given
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now(clock);
 
             Sport sport = entityUtils.getEntity(1L, Sport.class);
             League league = entityUtils.getEntity(1L, League.class);
@@ -245,7 +249,7 @@ public class GameServiceTest extends ServiceTest {
             gameFixtureRepository.save(oldGame2);
 
             // when
-            gameService.updateGameStatusToFinish();
+            gameService.updateGameStatusToFinish(now);
 
             // then
             assertAll(
