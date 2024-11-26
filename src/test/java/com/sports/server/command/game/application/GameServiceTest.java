@@ -3,6 +3,7 @@ package com.sports.server.command.game.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.when;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
@@ -23,6 +24,8 @@ import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.GameFixtureRepository;
 import com.sports.server.support.fixture.GameTeamFixtureRepository;
 import com.sports.server.support.fixture.LeagueTeamPlayerFixtureRepository;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/game-fixture.sql")
@@ -52,6 +56,9 @@ public class GameServiceTest extends ServiceTest {
     @Autowired
     private LeagueTeamPlayerFixtureRepository leagueTeamPlayerFixtureRepository;
 
+    @MockBean
+    private Clock clock;
+
     private GameRequestDto.Register requestDto;
     private String nameOfGame;
     private Long idOfTeam1;
@@ -64,6 +71,7 @@ public class GameServiceTest extends ServiceTest {
         this.idOfTeam2 = 2L;
         this.requestDto = new GameRequestDto.Register(nameOfGame, 16, "전반전", "SCHEDULED", LocalDateTime.now(),
                 idOfTeam1, idOfTeam2, null);
+        when(clock.instant()).thenReturn(Instant.parse("2024-11-26T00:00:00Z"));
     }
 
     @Nested
