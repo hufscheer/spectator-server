@@ -14,6 +14,8 @@ import com.sports.server.command.sport.domain.SportRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.NotFoundException;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +30,7 @@ public class GameService {
     private static final String NAME_OF_SPORT = "축구";
 
     @Transactional
-    public Long register(final Long leagueId,
-                         final GameRequestDto.Register requestDto,
-                         final Member manager) {
+    public Long register(final Long leagueId, final GameRequestDto.Register requestDto, final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
         league.validateRoundWithinLimit(requestDto.round());
@@ -38,6 +38,13 @@ public class GameService {
         Game game = saveGame(leagueId, manager, requestDto);
         saveGameTeams(game, requestDto);
         return game.getId();
+    }
+
+    @Transactional
+    public void updateGameStatusToFinish() {
+        LocalDateTime cutoffTime = LocalDateTime.now().minusHours(5);
+        List<Game> games = gameRepository.findGamesOlderThanFiveHours(cutoffTime);
+        games.forEach(game -> game.updateState(GameState.FINISHED));
     }
 
     private void saveGameTeams(Game game, GameRequestDto.Register requestDto) {
@@ -51,10 +58,8 @@ public class GameService {
         game.addTeam(gameTeam1);
         game.addTeam(gameTeam2);
 
-        leagueTeam1.getLeagueTeamPlayers()
-                .forEach(gameTeam1::registerLineup);
-        leagueTeam2.getLeagueTeamPlayers()
-                .forEach(gameTeam2::registerLineup);
+        leagueTeam1.getLeagueTeamPlayers().forEach(gameTeam1::registerLineup);
+        leagueTeam2.getLeagueTeamPlayers().forEach(gameTeam2::registerLineup);
     }
 
     private Game saveGame(Long leagueId, Member manager, GameRequestDto.Register requestDto) {
