@@ -3,16 +3,19 @@ package com.sports.server.command.game.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.when;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
@@ -21,7 +24,10 @@ import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.GameFixtureRepository;
 import com.sports.server.support.fixture.GameTeamFixtureRepository;
 import com.sports.server.support.fixture.LeagueTeamPlayerFixtureRepository;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +35,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/game-fixture.sql")
@@ -49,6 +56,9 @@ public class GameServiceTest extends ServiceTest {
     @Autowired
     private LeagueTeamPlayerFixtureRepository leagueTeamPlayerFixtureRepository;
 
+    @MockBean
+    private Clock clock;
+
     private GameRequestDto.Register requestDto;
     private String nameOfGame;
     private Long idOfTeam1;
@@ -59,8 +69,13 @@ public class GameServiceTest extends ServiceTest {
         this.nameOfGame = "경기 이름";
         this.idOfTeam1 = 1L;
         this.idOfTeam2 = 2L;
-        this.requestDto = new GameRequestDto.Register(nameOfGame, 16, "전반전", "SCHEDULED",
-                LocalDateTime.now(), idOfTeam1, idOfTeam2, null);
+        this.requestDto = new GameRequestDto.Register(nameOfGame, 16, "전반전", "SCHEDULED", LocalDateTime.now(),
+                idOfTeam1, idOfTeam2, null);
+        LocalDateTime fixedNow = LocalDateTime.of(2024, 11, 26, 0, 0, 0, 0);
+        Clock fixedClock = Clock.fixed(fixedNow.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
     }
 
     @Nested
@@ -102,11 +117,8 @@ public class GameServiceTest extends ServiceTest {
         }
 
         private void assertInFormationOfGame(Game game) {
-            assertAll(
-                    () -> assertThat(game).isNotNull(),
-                    () -> assertThat(game.getName()).isEqualTo(nameOfGame),
-                    () -> assertThat(game.getRound()).isEqualTo(Round.from(16))
-            );
+            assertAll(() -> assertThat(game).isNotNull(), () -> assertThat(game.getName()).isEqualTo(nameOfGame),
+                    () -> assertThat(game.getRound()).isEqualTo(Round.from(16)));
 
         }
 
@@ -134,8 +146,8 @@ public class GameServiceTest extends ServiceTest {
             Member nonManager = entityUtils.getEntity(2L, Member.class);
 
             // when & then
-            assertThatThrownBy(() -> gameService.register(leagueId, requestDto, nonManager))
-                    .isInstanceOf(UnauthorizedException.class);
+            assertThatThrownBy(() -> gameService.register(leagueId, requestDto, nonManager)).isInstanceOf(
+                    UnauthorizedException.class);
         }
 
         @Test
@@ -147,9 +159,8 @@ public class GameServiceTest extends ServiceTest {
                     LocalDateTime.now(), idOfTeam1, idOfTeam2, null);
 
             // when & then
-            assertThatThrownBy(() -> gameService.register(leagueId, requestDto, manager))
-                    .isInstanceOf(CustomException.class)
-                    .hasMessage("최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
+            assertThatThrownBy(() -> gameService.register(leagueId, requestDto, manager)).isInstanceOf(
+                    CustomException.class).hasMessage("최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
         }
     }
 
@@ -165,8 +176,7 @@ public class GameServiceTest extends ServiceTest {
         @BeforeEach
         void setUp() {
             LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-            updateDto = new GameRequestDto.Update(nameOfGame, 8, "후반전", "PLAYING",
-                    fixedLocalDateTime, "videoId");
+            updateDto = new GameRequestDto.Update(nameOfGame, 8, "후반전", "PLAYING", fixedLocalDateTime, "videoId");
             leagueId = 1L;
             gameId = 1L;
             manager = entityUtils.getEntity(1L, Member.class);
@@ -179,14 +189,12 @@ public class GameServiceTest extends ServiceTest {
 
             // then
             Game game = entityUtils.getEntity(gameId, Game.class);
-            assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(updateDto.quarter()),
+            assertAll(() -> assertThat(game.getGameQuarter()).isEqualTo(updateDto.quarter()),
                     () -> assertThat(game.getRound()).isEqualTo(Round.from(updateDto.round())),
                     () -> assertThat(game.getName()).isEqualTo(updateDto.name()),
                     () -> assertThat(game.getStartTime()).isEqualTo(updateDto.startTime()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.from(updateDto.state())),
-                    () -> assertThat(game.getVideoId()).isEqualTo(updateDto.videoId())
-            );
+                    () -> assertThat(game.getVideoId()).isEqualTo(updateDto.videoId()));
         }
 
         @Test
@@ -195,8 +203,8 @@ public class GameServiceTest extends ServiceTest {
             Member nonManager = entityUtils.getEntity(2L, Member.class);
 
             // when & then
-            assertThatThrownBy(() -> gameService.updateGame(leagueId, gameId, updateDto, nonManager))
-                    .isInstanceOf(UnauthorizedException.class);
+            assertThatThrownBy(() -> gameService.updateGame(leagueId, gameId, updateDto, nonManager)).isInstanceOf(
+                    UnauthorizedException.class);
         }
     }
 
@@ -211,9 +219,47 @@ public class GameServiceTest extends ServiceTest {
         gameService.deleteGame(leagueId, gameId, manager);
 
         // then
-        assertThatThrownBy(
-                () -> entityUtils.getEntity(gameId, Game.class))
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> entityUtils.getEntity(gameId, Game.class)).isInstanceOf(NotFoundException.class);
+    }
+
+    @Nested
+    @DisplayName("게임 상태를 업데이트할 때")
+    class UpdateGameStatusToFinishTest {
+
+        @Test
+        @DisplayName("정상적으로 시작한지 5시간이 지난 게임의 상태가 FINISHED로 변경된다")
+        void updateGamesOlderThanFiveHoursToFinished() {
+            // given
+            LocalDateTime now = LocalDateTime.now(clock);
+
+            Sport sport = entityUtils.getEntity(1L, Sport.class);
+            League league = entityUtils.getEntity(1L, League.class);
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            Round round = Round.ROUND_16;
+
+            Game recentGame = new Game(sport, manager, league, "종료되면 안되는 경기", now.minusHours(4), "videoId", "전반전",
+                    GameState.PLAYING, round, false);
+            Game oldGame1 = new Game(sport, manager, league, "오래된 경기1", now.minusHours(5), "videoId", "전반전",
+                    GameState.PLAYING, round, false);
+            Game oldGame2 = new Game(sport, manager, league, "오래된 경기2", now.minusHours(6), "videoId", "전반전",
+                    GameState.PLAYING, round, false);
+
+            gameFixtureRepository.save(recentGame);
+            gameFixtureRepository.save(oldGame1);
+            gameFixtureRepository.save(oldGame2);
+
+            // when
+            gameService.updateGameStatusToFinish(now);
+
+            // then
+            assertAll(
+                    () -> assertThat(gameFixtureRepository.findByName("종료되면 안되는 경기").orElse(null).getState()).isEqualTo(
+                            GameState.PLAYING),
+                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기1").orElse(null).getState()).isEqualTo(
+                            GameState.FINISHED),
+                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기2").orElse(null).getState()).isEqualTo(
+                            GameState.FINISHED));
+        }
     }
 
 }
