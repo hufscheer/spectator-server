@@ -1,6 +1,7 @@
 name: spring server cd
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
 
