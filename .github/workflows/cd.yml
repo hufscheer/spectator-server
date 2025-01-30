@@ -30,7 +30,7 @@ jobs:
           timezoneLinux: "Asia/Seoul"
 
       - name: 빌드
-        run: ./gradlew build
+        run: ./gradlew build --info --stacktrace
 
       - name: 도커 이미지 빌드
         run: docker build -t ${{ secrets.DOCKER_IMG }} .
