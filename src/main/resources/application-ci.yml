@@ -5,10 +5,13 @@ spring:
     username: root
     password: password
   jpa:
-    hibernate:
-      format_sql: true
-      show_sql: true
-
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        jdbc:
+          batch_size: 10
 report-check-origin: fake-origin.com
 cors-allow-origins: http://localhost:3000
 
