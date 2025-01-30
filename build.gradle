@@ -91,7 +91,7 @@ test {
     testLogging {
         events "failed" // 실패한 테스트만 로그 출력
         exceptionFormat "full" // Expected vs Actual 포함
-        showStandardStreams = true // System.out.println()도 출력
+        showStandardStreams = false
 
         // 실패한 테스트에서만 Expected vs Actual을 출력
         afterTest { desc, result ->
