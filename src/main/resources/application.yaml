@@ -7,7 +7,7 @@ spring:
       ddl-auto: none
   flyway:
     enabled: true
-    baseline-on-migrate: true
+    baseline-on-migrate: false
     version: 1
 server:
   port: 8080
@@ -39,3 +39,11 @@ spring:
       on-profile: prod
     import:
       - classpath:be-config/application-prod.yml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+    import:
+      - application-test.yml
