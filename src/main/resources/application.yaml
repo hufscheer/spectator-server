@@ -39,3 +39,11 @@ spring:
       on-profile: prod
     import:
       - classpath:be-config/application-prod.yml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import:
+      - classpath:be-config/application-dev.yml
