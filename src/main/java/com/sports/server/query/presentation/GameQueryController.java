@@ -50,7 +50,7 @@ public class GameQueryController {
     }
 
     @GetMapping("/{gameId}/lineup")
-    public ResponseEntity<List<LineupPlayerResponse.Separated>> getGameLineup(@PathVariable final Long gameId) {
+    public ResponseEntity<List<LineupPlayerResponse.All>> getGameLineup(@PathVariable final Long gameId) {
         return ResponseEntity.ok(lineupPlayerQueryService.getLineup(gameId));
     }
 

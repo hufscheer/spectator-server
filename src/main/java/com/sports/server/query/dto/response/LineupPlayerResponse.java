@@ -5,6 +5,7 @@ import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerState;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LineupPlayerResponse {
 
@@ -24,13 +25,13 @@ public class LineupPlayerResponse {
 		}
 	}
 
-	public record Separated(
+	public record All(
 			Long gameTeamId,
 			String teamName,
-			List<LineupPlayerResponse.PlayerResponse> starterPlayers,
-			List<LineupPlayerResponse.PlayerResponse> candidatePlayers
+			List<PlayerResponse> starterPlayers,
+			List<PlayerResponse> candidatePlayers
 	) {
-		public Separated(GameTeam gameTeam, List<LineupPlayer> lineupPlayers) {
+		public All(GameTeam gameTeam, List<LineupPlayer> lineupPlayers) {
 			this(
 					gameTeam.getId(),
 					gameTeam.getLeagueTeam().getName(),
@@ -52,11 +53,24 @@ public class LineupPlayerResponse {
 			String description,
 			int number,
 			boolean isCaptain,
-			LineupPlayerState state
+			LineupPlayerState state,
+			boolean isReplaced,
+			Optional<SimplePlayer> replacedPlayer
 	) {
 		public PlayerResponse(LineupPlayer player) {
 			this(player.getId(), player.getName(), player.getDescription(), player.getNumber(), player.isCaptain(),
-					player.getState());
+					player.getState(), player.isReplaced(),
+					Optional.ofNullable(player.getReplacedPlayer()).map(SimplePlayer::new));
+		}
+	}
+
+	public record SimplePlayer(
+			Long id,
+			String playerName,
+			int number
+	) {
+		public SimplePlayer(LineupPlayer player) {
+			this(player.getId(), player.getName(), player.getNumber());
 		}
 	}
 }

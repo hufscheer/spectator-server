@@ -5,14 +5,8 @@ import static com.sports.server.command.game.domain.LineupPlayerState.STARTER;
 
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,6 +44,22 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     @Column(name = "is_playing", nullable = false)
     private boolean isPlaying;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "replaced_player_id", nullable = true)
+    private LineupPlayer replacedPlayer;
+
+    public boolean isReplaced() {
+        return replacedPlayer != null;
+    }
+
+    public void recordReplacedPlayer(LineupPlayer replacedPlayer) {
+        this.replacedPlayer = replacedPlayer;
+    }
+
+    public void deleteReplacedPlayer() {
+        this.replacedPlayer = null;
+    }
 
     public void changeStateToStarter() {
         if (this.state == STARTER) {
