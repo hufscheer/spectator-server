@@ -55,21 +55,21 @@ public class LineupPlayerResponse {
 			boolean isCaptain,
 			LineupPlayerState state,
 			boolean isReplaced,
-			Optional<SimplePlayer> replacedPlayer
+			PlayerSummary replacedPlayer
 	) {
 		public PlayerResponse(LineupPlayer player) {
 			this(player.getId(), player.getName(), player.getDescription(), player.getNumber(), player.isCaptain(),
 					player.getState(), player.isReplaced(),
-					Optional.ofNullable(player.getReplacedPlayer()).map(SimplePlayer::new));
+					player.getReplacedPlayer() != null ? new PlayerSummary(player.getReplacedPlayer()) : null);
 		}
 	}
 
-	public record SimplePlayer(
+	public record PlayerSummary(
 			Long id,
 			String playerName,
 			int number
 	) {
-		public SimplePlayer(LineupPlayer player) {
+		public PlayerSummary(LineupPlayer player) {
 			this(player.getId(), player.getName(), player.getNumber());
 		}
 	}
