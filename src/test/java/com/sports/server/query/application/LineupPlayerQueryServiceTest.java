@@ -88,12 +88,12 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
         List<LineupPlayerResponse.All> responses = lineupPlayerQueryService.getLineup(gameId);
 
         // then
-        Optional<Long> replacedPlayerId = responses.get(0).candidatePlayers().stream()
+        Long replacedPlayerId = responses.get(0).candidatePlayers().stream()
                 .filter(playerResponse -> playerResponse.id().equals(replaceLineupPlayerId))
-                .map(player -> player.replacedPlayer().map(LineupPlayerResponse.SimplePlayer::id)) // Optional<Optional<Long>> 반환
+                .map(player -> player.replacedPlayer().id())
                 .findFirst()
-                .orElse(Optional.empty()); // 값이 없으면 Optional.empty() 반환
-        Assertions.assertThat(originLineupPlayerId).isEqualTo(replacedPlayerId.get());
+                .orElse(null); // 값이 없으면 null 반환
+        Assertions.assertThat(originLineupPlayerId).isEqualTo(replacedPlayerId);
 
     }
 }
