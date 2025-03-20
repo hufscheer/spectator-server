@@ -4,6 +4,7 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
+import com.sports.server.command.leagueteam.domain.TeamColor;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
@@ -37,7 +38,9 @@ public class LeagueTeamService {
 
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
-        LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
+
+        TeamColor teamColor = TeamColor.fromHexCode(request.teamColor());
+        LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl, teamColor.getHexCode());
 
         for (LeagueTeamPlayerRequest.Register player : request.players()) {
             leagueTeam.addPlayer(player.toEntity(leagueTeam));
