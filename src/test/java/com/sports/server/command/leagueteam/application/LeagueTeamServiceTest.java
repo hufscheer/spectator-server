@@ -90,8 +90,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, imageUrl,
                 playerRegisterRequests, TeamColor.BLUE.getHexCode());
         doNothing().when(s3Service).doesFileExist(anyString());
@@ -115,8 +115,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, "invalid-logo-url",
                 playerRegisterRequests, TeamColor.BLUE.getHexCode());
 
@@ -146,8 +146,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         void 리그팀에_속하지_않은_리그팀_선수를_삭제하려고_할_때_예외가_발생한다() {
             // given
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                    new LeagueTeamPlayerRequest.Register("name-a", 1),
-                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+                    new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(5L));
@@ -163,8 +163,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         void 정상적으로_이미지_url이_수정된다() {
             // given
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                    new LeagueTeamPlayerRequest.Register("name-a", 1),
-                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+                    new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
@@ -186,10 +186,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
             Long updatedLeagueTeamPlayerId = 1L;
             String updatedName = "여름수박진승희";
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                    new LeagueTeamPlayerRequest.Register("name-a", 1),
-                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+                    new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-                    new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0)
+                    new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0, "202003330")
             );
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));

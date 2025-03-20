@@ -1,5 +1,6 @@
 package com.sports.server.command.leagueteam.domain;
 
+import com.sports.server.common.exception.CustomException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,6 @@ class TeamColorTest {
 
         // when & then
         assertThatThrownBy(() -> TeamColor.fromHexCode(invalidTeamColor))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class);
     }
 }

@@ -32,8 +32,8 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         // given
         Long leagueId = 1L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", originPrefix + "image", playerRegisterRequests, TeamColor.BLUE.getHexCode());
 
@@ -59,10 +59,10 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
         Long teamId = 3L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0)
+                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0, "202003330")
         );
         LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                 "name", originPrefix + "image", playerRegisterRequests, playerUpdateRequests, List.of(4L));
