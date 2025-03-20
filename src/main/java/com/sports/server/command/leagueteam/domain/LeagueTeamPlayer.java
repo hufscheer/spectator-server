@@ -30,10 +30,15 @@ public class LeagueTeamPlayer extends BaseEntity<LeagueTeamPlayer> {
     @Column(name = "number", nullable = true)
     private int number;
 
-    public LeagueTeamPlayer(LeagueTeam leagueTeam, String name, int number) {
+    // TODO: 데이터베이스 정리 이후 중복 검사 로직 추가
+    @Column(name = "student_number", nullable = true)
+    private String studentNumber;
+
+    public LeagueTeamPlayer(LeagueTeam leagueTeam, String name, int number, String studentNumber) {
         this.leagueTeam = leagueTeam;
         this.name = name;
         this.number = number;
+        this.studentNumber = studentNumber;
     }
 
     public void update(String name, int number) {
