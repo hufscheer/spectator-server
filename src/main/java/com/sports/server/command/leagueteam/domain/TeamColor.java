@@ -1,6 +1,8 @@
 package com.sports.server.command.leagueteam.domain;
 
+import com.sports.server.common.exception.CustomException;
 import java.util.Arrays;
+import org.springframework.http.HttpStatus;
 
 public enum TeamColor {
     PINK("FF9A9E"),
@@ -24,7 +26,7 @@ public enum TeamColor {
         return Arrays.stream(TeamColor.values())
                 .filter(color -> color.getHexCode().equals(hexCode))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀 컬러입니다."));
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "존재하지 않는 팀 컬러입니다."));
     }
 }
 

@@ -1,17 +1,7 @@
 package com.sports.server.command.leagueteam.presentation;
 
 
-import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
-import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.sports.server.command.leagueteam.domain.TeamColor;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.DocumentationTest;
@@ -20,8 +10,18 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.MediaType;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import org.springframework.restdocs.payload.JsonFieldType;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import org.springframework.test.web.servlet.ResultActions;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LeagueTeamControllerTest extends DocumentationTest {
 
@@ -34,7 +34,7 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                 new LeagueTeamPlayerRequest.Register("name-a", 1),
                 new LeagueTeamPlayerRequest.Register("name-b", 2));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
-                "name", "logo-image-url", playerRegisterRequests);
+                "name", "logo-image-url", playerRegisterRequests, TeamColor.BLUE.getHexCode());
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
         Mockito.doNothing().when(leagueTeamService).register(Mockito.anyLong(), Mockito.any(), Mockito.any());
@@ -55,6 +55,7 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("리그팀의 이름"),
                                 fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 url"),
+                                fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 색에 대한 hexcode"),
                                 fieldWithPath("players").type(JsonFieldType.ARRAY).description("리그팀 선수 목록"),
                                 fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수의 이름"),
                                 fieldWithPath("players[].number").type(JsonFieldType.NUMBER).description("선수의 번호")

@@ -1,7 +1,6 @@
 package com.sports.server.command.leagueteam.acceptance;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
+import com.sports.server.command.leagueteam.domain.TeamColor;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.common.application.S3Service;
@@ -10,7 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -36,7 +35,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
                 new LeagueTeamPlayerRequest.Register("name-a", 1),
                 new LeagueTeamPlayerRequest.Register("name-b", 2));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
-                "name", originPrefix + "image", playerRegisterRequests);
+                "name", originPrefix + "image", playerRegisterRequests, TeamColor.BLUE.getHexCode());
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

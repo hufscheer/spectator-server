@@ -3229,7 +3229,7 @@ Content-Length: 218
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues/1/teams HTTP/1.1
 Content-Type: application/json
-Content-Length: 170
+Content-Length: 196
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -3242,7 +3242,8 @@ Cookie: HCC_SES=temp-cookie
   }, {
     "name" : "name-b",
     "number" : 2
-  } ]
+  } ],
+  "teamColor" : "8CBAFF"
 }</code></pre>
 </div>
 </div>
@@ -3272,6 +3273,11 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>logoImageUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">팀 로고 이미지 url</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>teamColor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">팀의 색에 대한 hexcode</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>players</code></p></td>
@@ -5125,7 +5131,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sat, 15 Mar 2025 07:33:08 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 27 Mar 2025 12:29:36 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -5199,7 +5205,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-01-18 17:45:13 +0900
+Last updated 2025-03-04 21:02:22 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
