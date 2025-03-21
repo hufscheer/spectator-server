@@ -158,12 +158,12 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse.Separated> actual = toResponses(response, LineupPlayerResponse.Separated.class);
-        LineupPlayerResponse.Separated teamA = actual.stream()
+        List<LineupPlayerResponse.All> actual = toResponses(response, LineupPlayerResponse.All.class);
+        LineupPlayerResponse.All teamA = actual.stream()
                 .filter(lineup -> lineup.gameTeamId().equals(gameTeamAId))
                 .toList()
                 .get(0);
-        LineupPlayerResponse.Separated teamB = actual.stream()
+        LineupPlayerResponse.All teamB = actual.stream()
                 .filter(lineup -> lineup.gameTeamId().equals(gameTeamBId))
                 .toList()
                 .get(0);
@@ -179,7 +179,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual).hasSize(2),
                 () -> assertThat(actual)
-                        .map(LineupPlayerResponse.Separated::gameTeamId)
+                        .map(LineupPlayerResponse.All::gameTeamId)
                         .containsExactly(gameTeamAId, gameTeamBId),
 
                 () -> assertThat(teamA.teamName()).isEqualTo("팀 A"),
