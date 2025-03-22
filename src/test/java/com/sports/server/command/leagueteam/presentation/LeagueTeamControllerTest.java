@@ -1,7 +1,6 @@
 package com.sports.server.command.leagueteam.presentation;
 
 
-import com.sports.server.command.leagueteam.domain.TeamColor;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.DocumentationTest;
@@ -34,7 +33,7 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
-                "name", "logo-image-url", playerRegisterRequests, TeamColor.BLUE.getHexCode());
+                "name", "logo-image-url", playerRegisterRequests, "color code");
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
         Mockito.doNothing().when(leagueTeamService).register(Mockito.anyLong(), Mockito.any(), Mockito.any());

@@ -1,6 +1,5 @@
 package com.sports.server.command.leagueteam.acceptance;
 
-import com.sports.server.command.leagueteam.domain.TeamColor;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.common.application.S3Service;
@@ -35,7 +34,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
-                "name", originPrefix + "image", playerRegisterRequests, TeamColor.BLUE.getHexCode());
+                "name", originPrefix + "image", playerRegisterRequests, "color code");
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

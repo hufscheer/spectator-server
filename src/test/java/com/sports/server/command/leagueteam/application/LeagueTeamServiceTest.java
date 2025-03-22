@@ -4,7 +4,6 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
-import com.sports.server.command.leagueteam.domain.TeamColor;
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
@@ -74,7 +73,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
         Long leagueId = 1L;
         Member nonManager = entityUtils.getEntity(2L, Member.class);
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register("name", imageUrl, List.of(),
-                TeamColor.BLUE.getHexCode());
+                "color code");
 
         // when & then
         assertThrows(UnauthorizedException.class, () -> {
@@ -93,7 +92,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, imageUrl,
-                playerRegisterRequests, TeamColor.BLUE.getHexCode());
+                playerRegisterRequests, "color code");
         doNothing().when(s3Service).doesFileExist(anyString());
 
         // when
@@ -118,7 +117,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, "invalid-logo-url",
-                playerRegisterRequests, TeamColor.BLUE.getHexCode());
+                playerRegisterRequests, "color code");
 
         // when & then
         assertThatThrownBy(() -> leagueTeamService.register(leagueId, manager, request))
