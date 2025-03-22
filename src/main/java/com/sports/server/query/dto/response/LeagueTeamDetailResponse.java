@@ -7,12 +7,14 @@ import java.util.List;
 public record LeagueTeamDetailResponse(
         String logoImageUrl,
         String teamName,
+        String teamColor,
         List<LeagueTeamPlayerResponse> leagueTeamPlayers
 ) {
     public static LeagueTeamDetailResponse of(final LeagueTeam leagueTeam,
                                               final List<LeagueTeamPlayer> leagueTeamPlayers) {
         return new LeagueTeamDetailResponse(
                 leagueTeam.getLogoImageUrl(), leagueTeam.getName(),
+                leagueTeam.getTeamColor(),
                 leagueTeamPlayers.stream()
                         .map(LeagueTeamPlayerResponse::of)
                         .toList()
