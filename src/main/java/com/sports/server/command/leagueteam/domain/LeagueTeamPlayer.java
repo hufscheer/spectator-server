@@ -35,10 +35,17 @@ public class LeagueTeamPlayer extends BaseEntity<LeagueTeamPlayer> {
     private String studentNumber;
 
     public LeagueTeamPlayer(LeagueTeam leagueTeam, String name, int number, String studentNumber) {
+        validateStudentNumber(studentNumber);
         this.leagueTeam = leagueTeam;
         this.name = name;
         this.number = number;
         this.studentNumber = studentNumber;
+    }
+
+    private void validateStudentNumber(String studentNumber) {
+        if (studentNumber != null && !studentNumber.matches("^[0-9]{9}$")) {
+            throw new IllegalArgumentException("학생번호는 9자리 숫자여야 합니다.");
+        }
     }
 
     public void update(String name, int number) {
