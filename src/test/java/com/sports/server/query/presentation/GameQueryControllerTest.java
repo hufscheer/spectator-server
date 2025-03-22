@@ -3,8 +3,7 @@ package com.sports.server.query.presentation;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
@@ -15,6 +14,8 @@ import com.sports.server.query.dto.response.*;
 import com.sports.server.support.DocumentationTest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -199,26 +200,26 @@ class GameQueryControllerTest extends DocumentationTest {
         // given
         Long gameId = 1L;
         List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수A", "탑", 1, true, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수B", "미드", 2, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수C", "정글", 3, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수D", "원딜", 4, false, LineupPlayerState.CANDIDATE),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수E", "서폿", 5, false, LineupPlayerState.STARTER)
+                new LineupPlayerResponse.PlayerResponse(1L, "선수A", "탑", 1, true, LineupPlayerState.STARTER, true, new LineupPlayerResponse.PlayerSummary(4L, "선수D", 4)),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수B", "미드", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수C", "정글", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수D", "원딜", 4, false, LineupPlayerState.CANDIDATE, true, new LineupPlayerResponse.PlayerSummary(1L, "선수A", 1)),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수E", "서폿", 5, false, LineupPlayerState.STARTER, false, null)
         );
         List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수F", "탑", 1, true, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수G", "미드", 2, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수H", "정글", 3, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수I", "원딜", 4, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수J", "서폿", 5, false, LineupPlayerState.CANDIDATE)
+                new LineupPlayerResponse.PlayerResponse(1L, "선수F", "탑", 1, true, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수G", "미드", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수H", "정글", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수I", "원딜", 4, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수J", "서폿", 5, false, LineupPlayerState.CANDIDATE, false, null)
         );
 
         given(lineupPlayerQueryService.getLineup(gameId))
                 .willReturn(List.of(
-                        new LineupPlayerResponse.Separated(1L, "팀A",
+                        new LineupPlayerResponse.All(1L, "팀A",
                                 playersA.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.STARTER)).toList(),
                                 playersA.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.CANDIDATE)).toList()),
-                        new LineupPlayerResponse.Separated(2L, "팀B",
+                        new LineupPlayerResponse.All(2L, "팀B",
                                 playersB.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.STARTER)).toList(),
                                 playersB.stream().filter(playerResponse -> playerResponse.state().equals(LineupPlayerState.CANDIDATE)).toList())
                 ));
@@ -249,6 +250,28 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .description("선발 선수가 주장인지에 대한 정보"),
                                 fieldWithPath("[].starterPlayers[].state").type(JsonFieldType.STRING)
                                         .description("선발 선수의 선발 상태(STARTER)"),
+                                fieldWithPath("[].starterPlayers[].isReplaced").type(JsonFieldType.BOOLEAN)
+                                        .description("선발 선수의 교체 여부"),
+                                fieldWithPath("[].starterPlayers[].replacedPlayer")
+                                        .type(JsonFieldType.OBJECT)  // replacedPlayer는 객체 (또는 null)
+                                        .optional()  // null일 수도 있음
+                                        .description("교체되었을 시 해당 선수와 교체된 선수 정보 (없을 경우 null)"),
+                                subsectionWithPath("[].starterPlayers[].replacedPlayer")
+                                        .type(JsonFieldType.OBJECT)
+                                        .optional()
+                                        .description("교체된 선수 정보 (없으면 null). 포함 필드: id, playerName, number"),
+                                fieldWithPath("[].starterPlayers[].replacedPlayer.id")
+                                        .type(JsonFieldType.NUMBER)
+                                        .optional()
+                                        .description("교체된 선수의 ID"),
+                                fieldWithPath("[].starterPlayers[].replacedPlayer.playerName")
+                                        .type(JsonFieldType.STRING)
+                                        .optional()
+                                        .description("교체된 선수의 이름"),
+                                fieldWithPath("[].starterPlayers[].replacedPlayer.number")
+                                        .type(JsonFieldType.NUMBER)
+                                        .optional()
+                                        .description("교체된 선수의 등번호"),
                                 fieldWithPath("[].candidatePlayers[].id").type(JsonFieldType.NUMBER)
                                         .description("후보 선수 ID"),
                                 fieldWithPath("[].candidatePlayers[].playerName").type(JsonFieldType.STRING)
@@ -260,7 +283,29 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].candidatePlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
                                         .description("후보 선수가 주장인지에 대한 정보"),
                                 fieldWithPath("[].candidatePlayers[].state").type(JsonFieldType.STRING)
-                                        .description("후보 선수의 선발 상태(CANDIDATE)")
+                                        .description("후보 선수의 선발 상태(CANDIDATE)"),
+                                fieldWithPath("[].candidatePlayers[].isReplaced").type(JsonFieldType.BOOLEAN)
+                                        .description("후보 선수의 교체 여부"),
+                                fieldWithPath("[].candidatePlayers[].replacedPlayer")
+                                        .type(JsonFieldType.OBJECT)  // replacedPlayer는 객체 (또는 null)
+                                        .optional()  // null일 수도 있음
+                                        .description("교체되었을 시 해당 선수와 교체된 선수 정보 (없을 경우 null)"),
+                                subsectionWithPath("[].candidatePlayers[].replacedPlayer")
+                                        .type(JsonFieldType.OBJECT)
+                                        .optional()
+                                        .description("교체된 선수 정보 (없으면 null). 포함 필드: id, playerName, number"),
+                                fieldWithPath("[].candidatePlayers[].replacedPlayer.id")
+                                        .type(JsonFieldType.NUMBER)
+                                        .optional()
+                                        .description("교체된 선수의 ID"),
+                                fieldWithPath("[].candidatePlayers[].replacedPlayer.playerName")
+                                        .type(JsonFieldType.STRING)
+                                        .optional()
+                                        .description("교체된 선수의 이름"),
+                                fieldWithPath("[].candidatePlayers[].replacedPlayer.number")
+                                        .type(JsonFieldType.NUMBER)
+                                        .optional()
+                                        .description("교체된 선수의 등번호")
                         )
                 ));
     }
@@ -270,18 +315,18 @@ class GameQueryControllerTest extends DocumentationTest {
         // given
         Long gameId = 1L;
         List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수A", "탑", 1, true, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수B", "미드", 2, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수C", "정글", 3, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수D", "원딜", 4, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수E", "서폿", 5, false, LineupPlayerState.STARTER)
+                new LineupPlayerResponse.PlayerResponse(1L, "선수A", "탑", 1, true, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수B", "미드", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수C", "정글", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수D", "원딜", 4, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수E", "서폿", 5, false, LineupPlayerState.STARTER, false, null)
         );
         List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수F", "탑", 1, true, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수G", "미드", 2, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수H", "정글", 3, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수I", "원딜", 4, false, LineupPlayerState.STARTER),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수J", "서폿", 5, false, LineupPlayerState.STARTER)
+                new LineupPlayerResponse.PlayerResponse(1L, "선수F", "탑", 1, true, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(2L, "선수G", "미드", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, "선수H", "정글", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, "선수I", "원딜", 4, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(5L, "선수J", "서폿", 5, false, LineupPlayerState.STARTER, false, null)
         );
 
         given(lineupPlayerQueryService.getPlayingLineup(gameId))
@@ -315,7 +360,29 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamPlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
                                         .description("선수가 주장인지에 대한 정보"),
                                 fieldWithPath("[].gameTeamPlayers[].state").type(JsonFieldType.STRING)
-                                        .description("선수의 선발 상태 ")
+                                        .description("선수의 선발 상태"),
+                                fieldWithPath("[].gameTeamPlayers[].isReplaced").type(JsonFieldType.BOOLEAN)
+                                        .description("선수의 교체 여부"),
+                                fieldWithPath("[].gameTeamPlayers[].replacedPlayer")
+                                        .type(JsonFieldType.OBJECT)  // replacedPlayer는 객체 (또는 null)
+                                        .optional()  // null일 수도 있음
+                                        .description("교체되었을 시 해당 선수와 교체된 선수 정보 (없을 경우 null)"),
+                                subsectionWithPath("[].gameTeamPlayers[].replacedPlayer")
+                                        .type(JsonFieldType.OBJECT)
+                                        .optional()
+                                        .description("교체된 선수 정보 (없으면 null). 포함 필드: id, playerName, number"),
+                                fieldWithPath("[].gameTeamPlayers[].replacedPlayer.id")
+                                        .type(JsonFieldType.NUMBER)
+                                        .optional()
+                                        .description("교체된 선수의 ID"),
+                                fieldWithPath("[].gameTeamPlayers[].replacedPlayer.playerName")
+                                        .type(JsonFieldType.STRING)
+                                        .optional()
+                                        .description("교체된 선수의 이름"),
+                                fieldWithPath("[].gameTeamPlayers[].replacedPlayer.number")
+                                        .type(JsonFieldType.NUMBER)
+                                        .optional()
+                                        .description("교체된 선수의 등번호")
                         )
                 ));
     }

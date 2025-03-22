@@ -54,8 +54,7 @@ VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-1
         false);
 
 -- 팀
-INSERT
-INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
+INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
 VALUES ('팀 A', 'http://example.com/logo_a.png', 1, 1, 1);
 
 INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
@@ -91,6 +90,13 @@ INSERT INTO sports(id, name)
 VALUES (1, '농구'),
        (2, '루미큐브'),
        (3, '축구');
+
+-- 쿼터
+INSERT INTO quarters (id, name, sports_id, _order)
+VALUES (1, '1쿼터', 1, 1),
+       (2, '2쿼터', 1, 2),
+       (3, '3쿼터', 1, 3),
+       (4, '4쿼터', 1, 4);
 
 -- 농구 대전(game_id = 1) A팀 선수
 INSERT INTO lineup_players (id, game_team_id, name, description, number, is_captain, league_team_player_id, state,

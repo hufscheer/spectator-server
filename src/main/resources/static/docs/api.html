@@ -1875,7 +1875,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1676
+Content-Length: 2364
 
 [ {
   "gameTeamId" : 1,
@@ -1886,28 +1886,40 @@ Content-Length: 1676
     "description" : "탑",
     "number" : 1,
     "isCaptain" : true,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : true,
+    "replacedPlayer" : {
+      "id" : 4,
+      "playerName" : "선수D",
+      "number" : 4
+    }
   }, {
     "id" : 2,
     "playerName" : "선수B",
     "description" : "미드",
     "number" : 2,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 3,
     "playerName" : "선수C",
     "description" : "정글",
     "number" : 3,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 5,
     "playerName" : "선수E",
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   } ],
   "candidatePlayers" : [ {
     "id" : 4,
@@ -1915,7 +1927,13 @@ Content-Length: 1676
     "description" : "원딜",
     "number" : 4,
     "isCaptain" : false,
-    "state" : "CANDIDATE"
+    "state" : "CANDIDATE",
+    "isReplaced" : true,
+    "replacedPlayer" : {
+      "id" : 1,
+      "playerName" : "선수A",
+      "number" : 1
+    }
   } ]
 }, {
   "gameTeamId" : 2,
@@ -1926,28 +1944,36 @@ Content-Length: 1676
     "description" : "탑",
     "number" : 1,
     "isCaptain" : true,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 2,
     "playerName" : "선수G",
     "description" : "미드",
     "number" : 2,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 3,
     "playerName" : "선수H",
     "description" : "정글",
     "number" : 3,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 4,
     "playerName" : "선수I",
     "description" : "원딜",
     "number" : 4,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   } ],
   "candidatePlayers" : [ {
     "id" : 5,
@@ -1955,7 +1981,9 @@ Content-Length: 1676
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false,
-    "state" : "CANDIDATE"
+    "state" : "CANDIDATE",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   } ]
 } ]</code></pre>
 </div>
@@ -2018,6 +2046,36 @@ Content-Length: 1676
 <td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수의 선발 상태(STARTER)</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].isReplaced</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선발 선수의 교체 여부</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].replacedPlayer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체되었을 시 해당 선수와 교체된 선수 정보 (없을 경우 null)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].replacedPlayer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수 정보 (없으면 null). 포함 필드: id, playerName, number</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].replacedPlayer.id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].replacedPlayer.playerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].starterPlayers[].replacedPlayer.number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 등번호</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].id</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수 ID</p></td>
@@ -2046,6 +2104,36 @@ Content-Length: 1676
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].state</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수의 선발 상태(CANDIDATE)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].isReplaced</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후보 선수의 교체 여부</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].replacedPlayer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체되었을 시 해당 선수와 교체된 선수 정보 (없을 경우 null)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].replacedPlayer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수 정보 (없으면 null). 포함 필드: id, playerName, number</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].replacedPlayer.id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].replacedPlayer.playerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].candidatePlayers[].replacedPlayer.number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 등번호</p></td>
 </tr>
 </tbody>
 </table>
@@ -2094,7 +2182,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1620
+Content-Length: 2170
 
 [ {
   "gameTeamId" : 1,
@@ -2105,35 +2193,45 @@ Content-Length: 1620
     "description" : "탑",
     "number" : 1,
     "isCaptain" : true,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 2,
     "playerName" : "선수B",
     "description" : "미드",
     "number" : 2,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 3,
     "playerName" : "선수C",
     "description" : "정글",
     "number" : 3,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 4,
     "playerName" : "선수D",
     "description" : "원딜",
     "number" : 4,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 5,
     "playerName" : "선수E",
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   } ]
 }, {
   "gameTeamId" : 2,
@@ -2144,35 +2242,45 @@ Content-Length: 1620
     "description" : "탑",
     "number" : 1,
     "isCaptain" : true,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 2,
     "playerName" : "선수G",
     "description" : "미드",
     "number" : 2,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 3,
     "playerName" : "선수H",
     "description" : "정글",
     "number" : 3,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 4,
     "playerName" : "선수I",
     "description" : "원딜",
     "number" : 4,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   }, {
     "id" : 5,
     "playerName" : "선수J",
     "description" : "서폿",
     "number" : 5,
     "isCaptain" : false,
-    "state" : "STARTER"
+    "state" : "STARTER",
+    "isReplaced" : false,
+    "replacedPlayer" : null
   } ]
 } ]</code></pre>
 </div>
@@ -2233,6 +2341,36 @@ Content-Length: 1620
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].state</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수의 선발 상태</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].isReplaced</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선수의 교체 여부</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].replacedPlayer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체되었을 시 해당 선수와 교체된 선수 정보 (없을 경우 null)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].replacedPlayer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수 정보 (없으면 null). 포함 필드: id, playerName, number</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].replacedPlayer.id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].replacedPlayer.playerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].replacedPlayer.number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">교체된 선수의 등번호</p></td>
 </tr>
 </tbody>
 </table>
@@ -3229,7 +3367,7 @@ Content-Length: 218
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /leagues/1/teams HTTP/1.1
 Content-Type: application/json
-Content-Length: 268
+Content-Length: 170
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -3238,14 +3376,11 @@ Cookie: HCC_SES=temp-cookie
   "logoImageUrl" : "logo-image-url",
   "players" : [ {
     "name" : "name-a",
-    "number" : 1,
-    "studentNumber" : "2020033320"
+    "number" : 1
   }, {
     "name" : "name-b",
-    "number" : 2,
-    "studentNumber" : "2020033320"
-  } ],
-  "teamColor" : "8CBAFF"
+    "number" : 2
+  } ]
 }</code></pre>
 </div>
 </div>
@@ -3277,11 +3412,6 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock">팀 로고 이미지 url</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>teamColor</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">팀의 색에 대한 hexcode</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>players</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">리그팀 선수 목록</p></td>
@@ -3295,11 +3425,6 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>players[].number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수의 번호</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>players[].studentNumber</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수의 학번</p></td>
 </tr>
 </tbody>
 </table>
@@ -3324,7 +3449,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /leagues/1/teams/3 HTTP/1.1
 Content-Type: application/json
-Content-Length: 411
+Content-Length: 304
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -3333,18 +3458,15 @@ Cookie: HCC_SES=temp-cookie
   "logoImageUrl" : "logo-image-url",
   "newPlayers" : [ {
     "name" : "name-a",
-    "number" : 1,
-    "studentNumber" : "2020033320"
+    "number" : 1
   }, {
     "name" : "name-b",
-    "number" : 2,
-    "studentNumber" : "2020033320"
+    "number" : 2
   } ],
   "updatedPlayers" : [ {
     "id" : 1,
     "name" : "여름수박진승희",
-    "number" : 0,
-    "studentNumber" : "202003330"
+    "number" : 0
   } ],
   "deletedPlayerIds" : [ 5 ]
 }</code></pre>
@@ -3419,11 +3541,6 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock">등록할 선수의 번호</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>newPlayers[].studentNumber</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">등록할 선수의 학번</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>updatedPlayers</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">수정할 리그팀 선수 목록</p></td>
@@ -3442,11 +3559,6 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>updatedPlayers[].number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">수정하고자 하는 번호</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updatedPlayers[].studentNumber</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">수정하고자 하는 학번</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>deletedPlayerIds</code></p></td>
@@ -5151,7 +5263,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 27 Mar 2025 12:45:39 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 24 Mar 2025 06:00:54 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -5225,7 +5337,7 @@ Content-Length: 82
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-03-04 21:02:22 +0900
+Last updated 2025-01-18 17:45:13 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

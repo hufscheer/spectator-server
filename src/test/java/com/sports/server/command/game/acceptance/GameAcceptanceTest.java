@@ -81,7 +81,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
+        List<LineupPlayerResponse.All> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.All.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 
@@ -120,7 +120,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
+        List<LineupPlayerResponse.All> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.All.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 
@@ -254,7 +254,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
+        List<LineupPlayerResponse.All> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.All.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 
@@ -292,7 +292,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<LineupPlayerResponse.Separated> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.Separated.class).stream()
+        List<LineupPlayerResponse.All> lineupPlayerResponses = toResponses(response, LineupPlayerResponse.All.class).stream()
                 .filter(lineupPlayerResponse -> lineupPlayerResponse.gameTeamId().equals(gameTeamId))
                 .toList();
 

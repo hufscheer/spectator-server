@@ -58,13 +58,17 @@ public class ReplacementTimeline extends Timeline {
 
     @Override
     public void apply() {
-        originLineupPlayer.deactivatePlayerInGame();
-        replacedLineupPlayer.activatePlayerInGame();
+        this.originLineupPlayer.deactivatePlayerInGame();
+        this.originLineupPlayer.recordReplacedPlayer(replacedLineupPlayer);
+        this.replacedLineupPlayer.activatePlayerInGame();
+        this.replacedLineupPlayer.recordReplacedPlayer(originLineupPlayer);
     }
 
     @Override
     public void rollback() {
         this.originLineupPlayer.activatePlayerInGame();
+        this.originLineupPlayer.deleteReplacedPlayer();
         this.replacedLineupPlayer.deactivatePlayerInGame();
+        this.replacedLineupPlayer.deleteReplacedPlayer();
     }
 }
