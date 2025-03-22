@@ -1,17 +1,5 @@
 package com.sports.server.query.presentation;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
-import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.dto.response.LeagueDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponse;
@@ -31,9 +19,20 @@ import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import org.springframework.http.MediaType;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import org.springframework.restdocs.payload.JsonFieldType;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import org.springframework.test.web.servlet.ResultActions;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LeagueQueryControllerTest extends DocumentationTest {
 
@@ -331,7 +330,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(2L, "가을전어이동규", 2)
         );
         LeagueTeamDetailResponse leagueTeamDetailResponse = new LeagueTeamDetailResponse(
-                "이미지이미지", "미컴 축구생각", leagueTeamPlayerResponses
+                "이미지이미지", "미컴 축구생각", "color code", leagueTeamPlayerResponses
         );
 
         given(leagueQueryService.findLeagueTeam(leagueTeamId))
@@ -350,6 +349,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("teamName").type(JsonFieldType.STRING).description("대회 팀의 이름"),
                                 fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("로고 이미지의 URL"),
+                                fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 컬러 코드"),
                                 fieldWithPath("leagueTeamPlayers").type(JsonFieldType.ARRAY).description("대회 팀 선수들"),
                                 fieldWithPath("leagueTeamPlayers[].id").type(JsonFieldType.NUMBER)
                                         .description("대회 팀 선수 ID"),

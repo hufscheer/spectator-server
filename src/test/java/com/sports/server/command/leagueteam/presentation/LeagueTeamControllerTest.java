@@ -1,17 +1,6 @@
 package com.sports.server.command.leagueteam.presentation;
 
 
-import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
-import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.support.DocumentationTest;
@@ -20,8 +9,18 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.MediaType;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import org.springframework.restdocs.payload.JsonFieldType;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import org.springframework.test.web.servlet.ResultActions;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LeagueTeamControllerTest extends DocumentationTest {
 
@@ -31,10 +30,10 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         // given
         Long leagueId = 1L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
-                "name", "logo-image-url", playerRegisterRequests);
+                "name", "logo-image-url", playerRegisterRequests, "color code");
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
         Mockito.doNothing().when(leagueTeamService).register(Mockito.anyLong(), Mockito.any(), Mockito.any());
@@ -55,9 +54,11 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("리그팀의 이름"),
                                 fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 url"),
+                                fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 색에 대한 hexcode"),
                                 fieldWithPath("players").type(JsonFieldType.ARRAY).description("리그팀 선수 목록"),
                                 fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수의 이름"),
-                                fieldWithPath("players[].number").type(JsonFieldType.NUMBER).description("선수의 번호")
+                                fieldWithPath("players[].number").type(JsonFieldType.NUMBER).description("선수의 번호"),
+                                fieldWithPath("players[].studentNumber").type(JsonFieldType.STRING).description("선수의 학번")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -72,10 +73,10 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         Long teamId = 3L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0)
+                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0, "202003330")
         );
         LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                 "name", "logo-image-url", playerRegisterRequests, playerUpdateRequests, List.of(5L));
@@ -106,6 +107,8 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                                 fieldWithPath("newPlayers[].name").type(JsonFieldType.STRING).description("등록할 선수의 이름"),
                                 fieldWithPath("newPlayers[].number").type(JsonFieldType.NUMBER)
                                         .description("등록할 선수의 번호"),
+                                fieldWithPath("newPlayers[].studentNumber").type(JsonFieldType.STRING)
+                                        .description("등록할 선수의 학번"),
                                 fieldWithPath("updatedPlayers").type(JsonFieldType.ARRAY).description("수정할 리그팀 선수 목록"),
                                 fieldWithPath("updatedPlayers[].id").type(JsonFieldType.NUMBER)
                                         .description("수정할 리그팀 선수의 ID"),
@@ -113,6 +116,8 @@ public class LeagueTeamControllerTest extends DocumentationTest {
                                         .description("수정하고자 하는 이름"),
                                 fieldWithPath("updatedPlayers[].number").type(JsonFieldType.NUMBER)
                                         .description("수정하고자 하는 번호"),
+                                fieldWithPath("updatedPlayers[].studentNumber").type(JsonFieldType.STRING)
+                                        .description("수정하고자 하는 학번"),
                                 fieldWithPath("deletedPlayerIds").type(JsonFieldType.ARRAY)
                                         .description("삭제할 리그팀 선수의 ID")
 
