@@ -9,11 +9,12 @@ public class LeagueTeamRequest {
     public record Register(
             String name,
             String logoImageUrl,
-            List<LeagueTeamPlayerRequest.Register> players
+            List<LeagueTeamPlayerRequest.Register> players,
+            String teamColor
     ) {
 
         public LeagueTeam toEntity(Member manager, League league, String logoImageUrl) {
-            return new LeagueTeam(name, logoImageUrl, manager, league);
+            return new LeagueTeam(name, logoImageUrl, manager, league, teamColor);
         }
     }
 

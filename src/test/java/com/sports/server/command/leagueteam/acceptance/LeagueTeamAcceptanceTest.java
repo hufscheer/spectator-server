@@ -1,7 +1,5 @@
 package com.sports.server.command.leagueteam.acceptance;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
 import com.sports.server.common.application.S3Service;
@@ -10,7 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,10 +31,10 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         // given
         Long leagueId = 1L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
-                "name", originPrefix + "image", playerRegisterRequests);
+                "name", originPrefix + "image", playerRegisterRequests, "color code");
 
         configureMockJwtForEmail(MOCK_EMAIL);
 
@@ -60,10 +58,10 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
         Long teamId = 3L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
         List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0)
+                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0, "202000000")
         );
         LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                 "name", originPrefix + "image", playerRegisterRequests, playerUpdateRequests, List.of(4L));

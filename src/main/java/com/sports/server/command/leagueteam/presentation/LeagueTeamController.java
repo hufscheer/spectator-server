@@ -45,5 +45,4 @@ public class LeagueTeamController {
         leagueTeamService.delete(leagueId, member, teamId);
         return ResponseEntity.ok().build();
     }
-
 }

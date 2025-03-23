@@ -1,14 +1,5 @@
 package com.sports.server.command.leagueteam.application;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
@@ -23,11 +14,18 @@ import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.LeagueTeamPlayerFixtureRepository;
 import java.util.List;
 import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,8 +72,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         // given
         Long leagueId = 1L;
         Member nonManager = entityUtils.getEntity(2L, Member.class);
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register("name", imageUrl, List.of());
-
+        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register("name", imageUrl, List.of(),
+                "color code");
 
         // when & then
         assertThrows(UnauthorizedException.class, () -> {
@@ -91,10 +89,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, imageUrl,
-                playerRegisterRequests);
+                playerRegisterRequests, "color code");
         doNothing().when(s3Service).doesFileExist(anyString());
 
         // when
@@ -116,10 +114,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
         Member manager = entityUtils.getEntity(1L, Member.class);
         String leagueTeamName = "name";
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1),
-                new LeagueTeamPlayerRequest.Register("name-b", 2));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, "invalid-logo-url",
-                playerRegisterRequests);
+                playerRegisterRequests, "color code");
 
         // when & then
         assertThatThrownBy(() -> leagueTeamService.register(leagueId, manager, request))
@@ -147,8 +145,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         void 리그팀에_속하지_않은_리그팀_선수를_삭제하려고_할_때_예외가_발생한다() {
             // given
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                    new LeagueTeamPlayerRequest.Register("name-a", 1),
-                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+                    new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(5L));
@@ -164,8 +162,8 @@ public class LeagueTeamServiceTest extends ServiceTest {
         void 정상적으로_이미지_url이_수정된다() {
             // given
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                    new LeagueTeamPlayerRequest.Register("name-a", 1),
-                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+                    new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
@@ -187,10 +185,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
             Long updatedLeagueTeamPlayerId = 1L;
             String updatedName = "여름수박진승희";
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                    new LeagueTeamPlayerRequest.Register("name-a", 1),
-                    new LeagueTeamPlayerRequest.Register("name-b", 2));
+                    new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-                    new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0)
+                    new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0, "202000000")
             );
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));

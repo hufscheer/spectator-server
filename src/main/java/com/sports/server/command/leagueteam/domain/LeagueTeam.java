@@ -20,7 +20,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Getter
@@ -33,6 +32,9 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
 
     @Column(name = "logo_image_url", nullable = false)
     private String logoImageUrl;
+
+    @Column(name = "team_color", nullable = false)
+    private String teamColor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
@@ -56,12 +58,13 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         leagueTeamPlayers.add(leagueTeamPlayer);
     }
 
-    public LeagueTeam(String name, String logoImageUrl, Member manager, League league) {
+    public LeagueTeam(String name, String logoImageUrl, Member manager, League league, String teamColor) {
         this.name = name;
         this.logoImageUrl = logoImageUrl;
         this.manager = manager;
         this.organization = manager.getOrganization();
         this.league = league;
+        this.teamColor = teamColor;
     }
 
     public void updateInfo(String name, String logoImageUrl, String originPrefix, String replacePrefix) {

@@ -37,6 +37,7 @@ public class LeagueTeamService {
 
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
+
         LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
 
         for (LeagueTeamPlayerRequest.Register player : request.players()) {
