@@ -188,8 +188,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueTeamId = 1L;
 
         List<LeagueTeamPlayerResponse> responses = List.of(
-                new LeagueTeamPlayerResponse(1L, "봄동나물진승희", "설명설명설명", 0),
-                new LeagueTeamPlayerResponse(2L, "가을전어이동규", "설명설명설명", 2)
+                new LeagueTeamPlayerResponse(1L, "봄동나물진승희", "설명설명설명", 0, "202022222"),
+                new LeagueTeamPlayerResponse(2L, "가을전어이동규", "설명설명설명", 2, "202022221")
         );
 
         given(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId))
@@ -209,7 +209,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("대회 팀 선수 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("대회 팀 선수 이름"),
                                 fieldWithPath("[].description").type(JsonFieldType.STRING).description("대회 팀 선수 설명"),
-                                fieldWithPath("[].number").type(JsonFieldType.NUMBER).description("대회 팀 선수 점수")
+                                fieldWithPath("[].number").type(JsonFieldType.NUMBER).description("대회 팀 선수 점수"),
+                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("대회 팀 선수 학번")
                         )
                 ));
     }
@@ -327,7 +328,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         List<LeagueTeamDetailResponse.LeagueTeamPlayerResponse> leagueTeamPlayerResponses = List.of(
                 new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(1L, "봄동나물진승희", 0, "202100000"),
-                new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(2L, "가을전어이동규", 2, "202100000")
+                new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(2L, "가을전어이동규", 2, "202100001")
         );
         LeagueTeamDetailResponse leagueTeamDetailResponse = new LeagueTeamDetailResponse(
                 "이미지이미지", "미컴 축구생각", "color code", leagueTeamPlayerResponses
