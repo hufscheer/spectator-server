@@ -24,11 +24,13 @@ public record LeagueTeamDetailResponse(
     public record LeagueTeamPlayerResponse(
             Long id,
             String name,
-            int number
+            int number,
+            String studentNumber
     ) {
         public static LeagueTeamPlayerResponse of(final LeagueTeamPlayer leagueTeamPlayer) {
             return new LeagueTeamPlayerResponse(
-                    leagueTeamPlayer.getId(), leagueTeamPlayer.getName(), leagueTeamPlayer.getNumber()
+                    leagueTeamPlayer.getId(), leagueTeamPlayer.getName(),
+                    leagueTeamPlayer.getNumber(), leagueTeamPlayer.getStudentNumber()
             );
         }
     }
