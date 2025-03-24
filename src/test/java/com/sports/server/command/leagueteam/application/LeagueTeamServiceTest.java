@@ -185,10 +185,10 @@ public class LeagueTeamServiceTest extends ServiceTest {
             Long updatedLeagueTeamPlayerId = 1L;
             String updatedName = "여름수박진승희";
             List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                    new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
-                    new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
+                    new LeagueTeamPlayerRequest.Register("name-a", 1, "202000001"),
+                    new LeagueTeamPlayerRequest.Register("name-b", 2, "202000002"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-                    new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0, "202000000")
+                    new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0, "202000003")
             );
             LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));

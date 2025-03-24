@@ -91,7 +91,7 @@ public class LeagueTeamService {
             request.updatedPlayers().forEach(updateRequest -> {
                 LeagueTeamPlayer player = entityUtils.getEntity(updateRequest.id(), LeagueTeamPlayer.class);
                 leagueTeam.validateLeagueTeamPlayer(player);
-                player.update(updateRequest.name(), updateRequest.number());
+                player.update(updateRequest.name(), updateRequest.number(), updateRequest.studentNumber());
             });
         }
     }
