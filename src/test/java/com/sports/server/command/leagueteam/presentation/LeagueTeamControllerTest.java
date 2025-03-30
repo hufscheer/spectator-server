@@ -30,8 +30,8 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         // given
         Long leagueId = 1L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
-                new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "202000001"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "202000002"));
         LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
                 "name", "logo-image-url", playerRegisterRequests, "color code");
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
@@ -73,10 +73,10 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         Long teamId = 3L;
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
-                new LeagueTeamPlayerRequest.Register("name-a", 1, "202100000"),
-                new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
+                new LeagueTeamPlayerRequest.Register("name-a", 1, "202000001"),
+                new LeagueTeamPlayerRequest.Register("name-b", 2, "202000002"));
         List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
-                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0, "202100001")
+                new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0, "202000003")
         );
         LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
                 "name", "logo-image-url", playerRegisterRequests, playerUpdateRequests, List.of(5L));
