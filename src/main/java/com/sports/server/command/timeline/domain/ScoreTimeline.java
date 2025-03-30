@@ -24,6 +24,7 @@ public class ScoreTimeline extends Timeline {
     private static final int SCORE_VALUE = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "scorer_id")
     private LineupPlayer scorer;
 
