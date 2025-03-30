@@ -51,9 +51,7 @@ public class LeagueTeamPlayer extends BaseEntity<LeagueTeamPlayer> {
     public void update(String name, int number, String studentNumber) {
         this.name = name;
         this.number = number;
-        if (studentNumber != null && !studentNumber.equals(this.studentNumber)) {
-            validateStudentNumber(studentNumber);
-            this.studentNumber = studentNumber;
-        }
+        validateStudentNumber(studentNumber);
+        this.studentNumber = studentNumber;
     }
 }
