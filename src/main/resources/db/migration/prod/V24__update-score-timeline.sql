@@ -1,0 +1,8 @@
+ALTER TABLE timelines
+    DROP FOREIGN KEY FK_TIMELINES_ON_SCORER;
+
+ALTER TABLE timelines
+    ADD CONSTRAINT FK_TIMELINES_ON_SCORER
+        FOREIGN KEY (scorer_id)
+            REFERENCES lineup_players(id)
+            ON DELETE CASCADE;
