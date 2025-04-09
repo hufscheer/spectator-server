@@ -11,6 +11,7 @@ import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.command.sport.domain.SportRepository;
+import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.NotFoundException;
@@ -27,6 +28,7 @@ public class GameService {
     private final EntityUtils entityUtils;
     private final GameRepository gameRepository;
     private final SportRepository sportRepository;
+    private final TimelineRepository timelineRepository;
     private static final String NAME_OF_SPORT = "축구";
 
     @Transactional
@@ -94,6 +96,7 @@ public class GameService {
         PermissionValidator.checkPermission(league, manager);
 
         Game game = entityUtils.getEntity(gameId, Game.class);
+        timelineRepository.deleteByGame(game);
         gameRepository.delete(game);
     }
 }
