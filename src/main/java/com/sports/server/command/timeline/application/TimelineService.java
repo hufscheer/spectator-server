@@ -1,12 +1,10 @@
 package com.sports.server.command.timeline.application;
 
 import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
-import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.command.timeline.mapper.TimelineMapper;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import static com.sports.server.command.timeline.exception.TimelineErrorMessage.GAME_ALREADY_FINISHED;
 
 @Service
 @Transactional
