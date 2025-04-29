@@ -11,6 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
@@ -176,6 +177,43 @@ public class TimelineControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("gameId").description("경기의 ID"),
                                 parameterWithName("timelineId").description("타임라인의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 경고_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(
+                10,
+                1L,
+                2L,
+                3L,
+                WarningCardType.YELLOW
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/warning", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
+                                fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
+                                fieldWithPath("warnedLineupPlayerId").type(JsonFieldType.NUMBER).description("경고 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("경고 시간"),
+                                fieldWithPath("cardType").type(JsonFieldType.STRING).description("경고 카드 종류")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

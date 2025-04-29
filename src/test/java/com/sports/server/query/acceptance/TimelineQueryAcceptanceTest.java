@@ -4,12 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.query.dto.response.PkRecordResponse;
-import com.sports.server.query.dto.response.ProgressRecordResponse;
-import com.sports.server.query.dto.response.RecordResponse;
-import com.sports.server.query.dto.response.ReplacementRecordResponse;
-import com.sports.server.query.dto.response.ScoreRecordResponse;
-import com.sports.server.query.dto.response.TimelineResponse;
+import com.sports.server.command.timeline.domain.WarningCardType;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -36,17 +32,18 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
     private static final String REPLACEMENT_TYPE = "REPLACEMENT";
     private static final String PROGRESS_TYPE = "GAME_PROGRESS";
     private static final String PK_TYPE = "PK";
+    private static final String WARNING_CARD_TYPE = "WARNING_CARD";
 
     @Test
     void 게임의_타임라인을_조회한다() {
         // given
-        Long baseballId = 1L;
+        Long gameId = 1L;
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games/{gameId}/timeline", baseballId)
+                .get("/games/{gameId}/timeline", gameId)
                 .then().log().all()
                 .extract();
 
@@ -59,6 +56,16 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                         new TimelineResponse(
                                 "2쿼터", List.of(
                                 new RecordResponse(
+                                        null, 8L, "WARNING_CARD",
+                                        25,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null, null, null, null,
+                                        new WarningCardRecordResponse(WarningCardType.YELLOW)
+                                ),
+                                new RecordResponse(
                                         null, 6L, "GAME_PROGRESS",
                                         20,
                                         null,
@@ -68,7 +75,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         null,
                                         null,
                                         new ProgressRecordResponse(GameProgressType.GAME_END),
-                                        null
+                                        null, null
                                 ),
                                 new RecordResponse(
                                         null, 5L, "SCORE",
@@ -84,7 +91,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                                         "팀B", "http://example.com/logo_b.png", 3)
                                         )),
                                         null,
-                                        null, null
+                                        null, null, null
                                 ),
                                 new RecordResponse(
                                         null, 7L, "PK",
@@ -96,7 +103,8 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         null,
                                         null,
                                         null,
-                                        new PkRecordResponse(7L, true)
+                                        new PkRecordResponse(7L, true),
+                                        null
                                 ),
                                 new RecordResponse(
                                         null, 4L, "REPLACEMENT",
@@ -107,11 +115,21 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         "http://example.com/logo_a.png",
                                         null,
                                         new ReplacementRecordResponse(4L, "선수3"),
-                                        null, null
+                                        null, null, null
                                 )
                         )),
                         new TimelineResponse(
                                 "1쿼터", List.of(
+                                new RecordResponse(
+                                        null, 9L, "WARNING_CARD",
+                                        25,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null, null, null, null,
+                                        new WarningCardRecordResponse(WarningCardType.RED)
+                                ),
                                 new RecordResponse(
                                         null, 3L, "REPLACEMENT",
                                         24,
@@ -121,7 +139,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         "http://example.com/logo_b.png",
                                         null,
                                         new ReplacementRecordResponse(3L, "선수7"),
-                                        null, null
+                                        null, null, null
                                 ),
                                 new RecordResponse(
                                         null, 2L, "SCORE",
@@ -137,7 +155,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                                         "팀B", "http://example.com/logo_b.png", 0)
                                         )),
                                         null,
-                                        null, null
+                                        null, null, null
                                 ),
                                 new RecordResponse(
                                         null, 1L, "GAME_PROGRESS",
@@ -148,7 +166,7 @@ public class TimelineQueryAcceptanceTest extends AcceptanceTest {
                                         null,
                                         null,
                                         null,
-                                        new ProgressRecordResponse(GameProgressType.QUARTER_START), null
+                                        new ProgressRecordResponse(GameProgressType.QUARTER_START), null, null
                                 )
                         ))
                 ))

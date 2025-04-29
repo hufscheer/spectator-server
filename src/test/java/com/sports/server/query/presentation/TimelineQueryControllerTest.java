@@ -8,12 +8,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.query.dto.response.PkRecordResponse;
-import com.sports.server.query.dto.response.ProgressRecordResponse;
-import com.sports.server.query.dto.response.RecordResponse;
-import com.sports.server.query.dto.response.ReplacementRecordResponse;
-import com.sports.server.query.dto.response.ScoreRecordResponse;
-import com.sports.server.query.dto.response.TimelineResponse;
+import com.sports.server.command.timeline.domain.WarningCardType;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.support.DocumentationTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -58,7 +54,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         )),
                                         new ReplacementRecordResponse(1L, "선수3"),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_START),
-                                        new PkRecordResponse(1L, true)
+                                        new PkRecordResponse(1L, true),
+                                        new WarningCardRecordResponse(WarningCardType.YELLOW)
                                 ),
                                 new RecordResponse(
                                         null, 1L, REPLACEMENT_TYPE,
@@ -75,7 +72,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         )),
                                         new ReplacementRecordResponse(1L, "선수3"),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_END),
-                                        new PkRecordResponse(4L, false)
+                                        new PkRecordResponse(4L, false),
+                                        new WarningCardRecordResponse(WarningCardType.RED)
                                 )
                         ))
                 ));
@@ -130,10 +128,11 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("PK 타입 기록의  ID"),
                                 fieldWithPath("[].records[].pkRecord.isSuccess").type(
                                                 JsonFieldType.BOOLEAN)
-                                        .description("승부차기 득점 성공 여부")
+                                        .description("승부차기 득점 성공 여부"),
+                                fieldWithPath("[].records[].warningCardRecord.warningCardType").type(
+                                                JsonFieldType.STRING)
+                                        .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
                         )
                 ));
-
-
     }
 }
