@@ -26,12 +26,12 @@ public class WarningCardTimeline extends Timeline{
     private WarningCardType warningCardType;
 
     public WarningCardTimeline(Game game,
-                               Quarter recoredQuarter,
+                               Quarter recordedQuarter,
                                Integer recordedAt,
                                LineupPlayer scorer,
                                WarningCardType warningCardType
     ) {
-        super(game, recoredQuarter, recordedAt);
+        super(game, recordedQuarter, recordedAt);
         this.scorer = scorer;
         this.warningCardType = warningCardType;
     }
