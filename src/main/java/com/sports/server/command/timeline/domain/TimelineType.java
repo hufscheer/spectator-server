@@ -5,4 +5,5 @@ public enum TimelineType {
     REPLACEMENT,
     GAME_PROGRESS,
     PK,
+    WARNING_CARD
 }

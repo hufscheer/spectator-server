@@ -156,5 +156,23 @@ INSERT INTO timelines(type,
                       is_success)
 VALUES ('PK', 1, 2, 10, 10, true);
 
+-- 경고카드 타임라인 추가
+INSERT INTO timelines(type,
+                      game_id,
+                      recorded_quarter_id,
+                      recorded_at,
+                      scorer_id,
+                      warning_card_type)
+VALUES ('WARNING_CARD', 1, 2, 25, 10, 'YELLOW');
+
+INSERT INTO timelines(type,
+                      game_id,
+                      recorded_quarter_id,
+                      recorded_at,
+                      scorer_id,
+                      warning_card_type)
+VALUES ('WARNING_CARD', 1, 1, 25, 10, 'RED');
+
+-- 외래키 체크 켜기
 SET
     foreign_key_checks = 1;

@@ -2,6 +2,7 @@ package com.sports.server.command.game.domain;
 
 import static com.sports.server.command.timeline.exception.TimelineErrorMessage.GAME_ALREADY_FINISHED;
 
+import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
@@ -108,39 +109,34 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void score(LineupPlayer scorer) {
-        GameTeam scoredTeam = teams.stream()
-                .filter(scorer::isInTeam)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점할 수 없습니다."));
-
-        scoredTeam.score();
+        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_SCORE).score();
     }
 
     public void scoreInPk(LineupPlayer scorer) {
-        GameTeam scoredTeam = teams.stream()
-                .filter(scorer::isInTeam)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 승부차기에서 득점할 수 없습니다."));
-
-        scoredTeam.scoreInPk();
+        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_PK_SCORE).scoreInPk();
     }
 
     public void cancelScore(LineupPlayer scorer) {
-        GameTeam scoredTeam = teams.stream()
-                .filter(scorer::isInTeam)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
-
-        scoredTeam.cancelScore();
+        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_CANCEL_SCORE).cancelScore();
     }
 
     public void cancelPkScore(LineupPlayer scorer) {
-        GameTeam scoredTeam = teams.stream()
+        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_CANCEL_SCORE).cancelPkScore();
+    }
+
+    public void issueWarningCard(LineupPlayer scorer){
+        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_ISSUE_WARNING_CARD);
+    }
+
+    public void cancelWarningCard(LineupPlayer scorer){
+        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_CANCEL_WARNING_CARD);
+    }
+
+    private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {
+        return teams.stream()
                 .filter(scorer::isInTeam)
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("참여하지 않는 선수는 득점을 취소할 수 없습니다."));
-
-        scoredTeam.cancelPkScore();
+                .orElseThrow(() -> new IllegalArgumentException(errorMessage));
     }
 
     public void updateName(String name) {
@@ -198,7 +194,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     private void validateGameTeam(final GameTeam gameTeam) {
         if (this.teams.stream().noneMatch(team -> team.getId().equals(gameTeam.getId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀은 이 게임에 포함되지 않습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
         }
     }
 

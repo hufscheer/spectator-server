@@ -5,11 +5,8 @@ import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.timeline.domain.GameProgressTimeline;
-import com.sports.server.command.timeline.domain.PKTimeline;
-import com.sports.server.command.timeline.domain.ReplacementTimeline;
-import com.sports.server.command.timeline.domain.ScoreTimeline;
-import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.*;
+
 import java.util.Optional;
 
 public record RecordResponse(
@@ -25,7 +22,8 @@ public record RecordResponse(
         ScoreRecordResponse scoreRecord,
         ReplacementRecordResponse replacementRecord,
         ProgressRecordResponse progressRecord,
-        PkRecordResponse pkRecord
+        PkRecordResponse pkRecord,
+        WarningCardRecordResponse warningCardRecord
 ) {
     public static RecordResponse from(Timeline timeline) {
         Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
@@ -48,7 +46,9 @@ public record RecordResponse(
                 timeline instanceof GameProgressTimeline progressTimeline
                         ? ProgressRecordResponse.from(progressTimeline) : null,
                 timeline instanceof PKTimeline pkTimeline
-                        ? PkRecordResponse.from(pkTimeline) : null
+                        ? PkRecordResponse.from(pkTimeline) : null,
+                timeline instanceof WarningCardTimeline warningCardTimeline
+                        ? WarningCardRecordResponse.from(warningCardTimeline) : null
         );
     }
 

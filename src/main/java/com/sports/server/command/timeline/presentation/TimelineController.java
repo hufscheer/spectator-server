@@ -52,6 +52,14 @@ public class TimelineController {
         return ResponseEntity.created(URI.create("")).build();
     }
 
+    @PostMapping("/warning")
+    public ResponseEntity<Void> createWarningTimeline(@PathVariable Long gameId,
+                                                      @RequestBody TimelineRequest.RegisterWarningCard request,
+                                                      Member member) {
+        timelineService.register(member, gameId, request);
+        return ResponseEntity.created(URI.create("")).build();
+    }
+
     @DeleteMapping("/{timelineId}")
     public ResponseEntity<Void> deleteTimeline(@PathVariable Long gameId,
                                                @PathVariable Long timelineId,
