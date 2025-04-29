@@ -117,12 +117,12 @@ public abstract class TimelineRequest {
                 Integer recordedAt,
                 Long recordedQuarterId,
                 Long gameTeamId,
-                Long warnedPlayerId,
+                Long warnedLineupPlayerId,
                 WarningCardType cardType
         ){
             super(recordedQuarterId, recordedAt);
             this.gameTeamId = gameTeamId;
-            this.warnedLineupPlayerId = warnedPlayerId;
+            this.warnedLineupPlayerId = warnedLineupPlayerId;
             this.cardType = cardType;
         }
 
