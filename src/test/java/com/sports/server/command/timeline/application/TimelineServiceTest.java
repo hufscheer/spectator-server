@@ -289,6 +289,7 @@ class TimelineServiceTest extends ServiceTest {
             //then
             Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
             assertThat(actual).isInstanceOf(WarningCardTimeline.class);
+            assertThat(((WarningCardTimeline) actual).getWarningCardType()).isEqualTo(WarningCardType.YELLOW);
         }
     }
 
