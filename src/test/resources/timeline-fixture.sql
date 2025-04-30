@@ -157,6 +157,7 @@ INSERT INTO timelines(type,
 VALUES ('PK', 1, 2, 10, 10, true);
 
 -- 경고카드 타임라인 추가
+-- 8th timeline
 INSERT INTO timelines(type,
                       game_id,
                       recorded_quarter_id,
@@ -165,6 +166,7 @@ INSERT INTO timelines(type,
                       warning_card_type)
 VALUES ('WARNING_CARD', 1, 2, 25, 10, 'YELLOW');
 
+-- 9th timeline
 INSERT INTO timelines(type,
                       game_id,
                       recorded_quarter_id,

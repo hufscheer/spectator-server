@@ -14,6 +14,7 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -288,8 +289,10 @@ class TimelineServiceTest extends ServiceTest {
 
             //then
             Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
-            assertThat(actual).isInstanceOf(WarningCardTimeline.class);
-            assertThat(((WarningCardTimeline) actual).getWarningCardType()).isEqualTo(WarningCardType.YELLOW);
+            assertAll(
+                    () -> Assertions.assertThat(actual).isInstanceOf(WarningCardTimeline.class),
+                    () -> Assertions.assertThat(((WarningCardTimeline) actual).getWarningCardType()).isEqualTo(WarningCardType.YELLOW)
+            );
         }
     }
 

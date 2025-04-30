@@ -4,12 +4,13 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.sport.domain.Quarter;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class WarningCardTimelineTest {
 
@@ -36,8 +37,10 @@ public class WarningCardTimelineTest {
             );
 
             //then
-            assertThat(timeline.getScorer()).isEqualTo(scorer);
-            assertThat(timeline.getWarningCardType()).isEqualTo(WarningCardType.YELLOW);
+            assertAll(
+                    () -> Assertions.assertThat(timeline.getScorer()).isEqualTo(scorer),
+                    () -> Assertions.assertThat(timeline.getWarningCardType()).isEqualTo(WarningCardType.YELLOW)
+            );
         }
 
         @Test
@@ -56,8 +59,10 @@ public class WarningCardTimelineTest {
             );
 
             //then
-            assertThat(timeline.getScorer()).isEqualTo(scorer);
-            assertThat(timeline.getWarningCardType()).isEqualTo(WarningCardType.RED);
+            assertAll(
+                    () -> Assertions.assertThat(timeline.getScorer()).isEqualTo(scorer),
+                    () -> Assertions.assertThat(timeline.getWarningCardType()).isEqualTo(WarningCardType.RED)
+            );
         }
     }
 }

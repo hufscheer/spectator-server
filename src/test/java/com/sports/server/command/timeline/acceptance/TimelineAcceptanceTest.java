@@ -141,7 +141,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .post("/games/{gameId}/timelines/warning", gameId)
+                .post("/games/{gameId}/timelines/warning-card", gameId)
                 .then().log().all()
                 .extract();
 

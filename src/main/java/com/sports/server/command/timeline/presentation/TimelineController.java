@@ -52,8 +52,8 @@ public class TimelineController {
         return ResponseEntity.created(URI.create("")).build();
     }
 
-    @PostMapping("/warning")
-    public ResponseEntity<Void> createWarningTimeline(@PathVariable Long gameId,
+    @PostMapping("/warning-card")
+    public ResponseEntity<Void> createWarningCardTimeline(@PathVariable Long gameId,
                                                       @RequestBody TimelineRequest.RegisterWarningCard request,
                                                       Member member) {
         timelineService.register(member, gameId, request);

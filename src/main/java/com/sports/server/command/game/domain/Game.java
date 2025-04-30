@@ -109,27 +109,27 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void score(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_SCORE).score();
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_SCORE_EXCEPTION).score();
     }
 
     public void scoreInPk(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_PK_SCORE).scoreInPk();
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_PK_SCORE_EXCEPTION).scoreInPk();
     }
 
     public void cancelScore(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_CANCEL_SCORE).cancelScore();
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelScore();
     }
 
     public void cancelPkScore(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_CANCEL_SCORE).cancelPkScore();
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelPkScore();
     }
 
     public void issueWarningCard(LineupPlayer scorer){
-        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_ISSUE_WARNING_CARD);
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_ISSUE_WARNING_CARD_EXCEPTION);
     }
 
     public void cancelWarningCard(LineupPlayer scorer){
-        findTeamOf(scorer, GameErrorMessages.NOT_PARTICIPATING_PLAYER_CANCEL_WARNING_CARD);
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION);
     }
 
     private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {
@@ -248,7 +248,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
                 .stream()
                 .filter(quarter -> quarter.getName().equals(gameQuarter))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 쿼터가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(GameErrorMessages.QUARTER_NOT_EXIST_EXCEPTION));
     }
 
     public void checkStateForTimeline() {
