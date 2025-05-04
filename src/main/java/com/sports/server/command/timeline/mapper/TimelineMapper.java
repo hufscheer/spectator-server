@@ -17,11 +17,11 @@ public class TimelineMapper {
     private final EntityUtils entityUtils;
 
     private final Map<TimelineType, TimelineSupplier> suppliers = Map.of(
-            TimelineType.SCORE, (g, r) -> toScoreTimeline(g, (TimelineRequest.RegisterScore) r),
-            TimelineType.REPLACEMENT, (g, r) -> toReplacementTimeline(g, (TimelineRequest.RegisterReplacement) r),
-            TimelineType.GAME_PROGRESS, (g, r) -> toProgressTimeline(g, (TimelineRequest.RegisterProgress) r),
-            TimelineType.PK, (g, r) -> toPkTimeline(g, (TimelineRequest.RegisterPk) r),
-            TimelineType.WARNING_CARD, (g, r) -> toWarningCardTimeline(g, (TimelineRequest.RegisterWarningCard) r)
+            TimelineType.SCORE, (game, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
+            TimelineType.REPLACEMENT, (game, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
+            TimelineType.GAME_PROGRESS, (game, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
+            TimelineType.PK, (game, request) -> toPkTimeline(game, (TimelineRequest.RegisterPk) request),
+            TimelineType.WARNING_CARD, (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
     );
 
     public Timeline toEntity(Game game, TimelineRequest request) {
