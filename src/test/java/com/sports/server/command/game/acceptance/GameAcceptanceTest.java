@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequestDto;
-import com.sports.server.command.league.domain.Round;
 import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.GameTeamCheerResponseDto;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
@@ -58,7 +57,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 라인업_선수의_상태를_선발로_변경한다() throws Exception {
+    void 라인업_선수의_상태를_선발로_변경한다() {
 
         // given
         Long gameId = 1L;
@@ -97,7 +96,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 라인업_선수의_상태를_후보로_변경한다() throws Exception {
+    void 라인업_선수의_상태를_후보로_변경한다() {
 
         //given
         Long gameId = 1L;
@@ -162,7 +161,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 경기_정보를_수정한_후_다시_가져와_확인한다() throws Exception {
+    void 경기_정보를_수정한_후_다시_가져와_확인한다() {
 
         // given
         Long leagueId = 1L;
@@ -226,11 +225,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
-    void 라인업_선수를_주장으로_등록한다() throws Exception {
+    void 라인업_선수를_주장으로_등록한다() {
 
         //given
         Long gameId = 1L;
@@ -270,7 +269,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 라인업_선수를_주장에서_해제한다() throws Exception {
+    void 라인업_선수를_주장에서_해제한다()  {
 
         //given
         Long gameId = 1L;

@@ -1,8 +1,5 @@
 package com.sports.server.command.game.presentation;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -16,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequestDto;
-import com.sports.server.command.member.domain.Member;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
@@ -198,7 +194,7 @@ public class GameControllerTest extends DocumentationTest {
                 .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
-        result.andExpect((status().isOk()))
+        result.andExpect((status().isNoContent()))
                 .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID"),
