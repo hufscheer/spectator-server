@@ -42,13 +42,13 @@ public record RecordResponse(
                 timeline instanceof ScoreTimeline scoreTimeline
                         ? ScoreRecordResponse.from(scoreTimeline) : null,
                 timeline instanceof ReplacementTimeline replacementTimeline
-                        ? ReplacementRecordResponse.from(replacementTimeline) : null,
+                        ? new ReplacementRecordResponse(replacementTimeline.getId(), replacementTimeline.getReplacedLineupPlayer().getName()) : null,
                 timeline instanceof GameProgressTimeline progressTimeline
-                        ? ProgressRecordResponse.from(progressTimeline) : null,
+                        ? new ProgressRecordResponse(progressTimeline.getGameProgressType()) : null,
                 timeline instanceof PKTimeline pkTimeline
-                        ? PkRecordResponse.from(pkTimeline) : null,
+                        ? new PkRecordResponse(pkTimeline.getId(), pkTimeline.getIsSuccess()) : null,
                 timeline instanceof WarningCardTimeline warningCardTimeline
-                        ? WarningCardRecordResponse.from(warningCardTimeline) : null
+                        ? new WarningCardRecordResponse(warningCardTimeline.getWarningCardType()) : null
         );
     }
 
