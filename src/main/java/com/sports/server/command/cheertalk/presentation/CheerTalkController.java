@@ -22,18 +22,16 @@ public class CheerTalkController {
     }
 
     @PatchMapping("/{leagueId}/{cheerTalkId}/block")
-    public ResponseEntity<Void> block(@PathVariable Long leagueId,
-                                      @PathVariable Long cheerTalkId,
-                                      final Member manager) {
+    public void block(@PathVariable Long leagueId,
+                      @PathVariable Long cheerTalkId,
+                      final Member manager) {
         cheerTalkService.block(leagueId, cheerTalkId, manager);
-        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("{leagueId}/{cheerTalkId}/unblock")
-    public ResponseEntity<Void> unblock(@PathVariable Long leagueId,
-                                        @PathVariable Long cheerTalkId,
-                                        final Member manager) {
+    public void unblock(@PathVariable Long leagueId,
+                        @PathVariable Long cheerTalkId,
+                        final Member manager) {
         cheerTalkService.unblock(leagueId, cheerTalkId, manager);
-        return ResponseEntity.ok().build();
     }
 }
