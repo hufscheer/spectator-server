@@ -5,6 +5,7 @@ import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.command.member.domain.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ public class CheerTalkController {
     }
 
     @PatchMapping("/{leagueId}/{cheerTalkId}/block")
+    @ResponseStatus(HttpStatus.OK)
     public void block(@PathVariable Long leagueId,
                       @PathVariable Long cheerTalkId,
                       final Member manager) {
@@ -29,6 +31,7 @@ public class CheerTalkController {
     }
 
     @PatchMapping("{leagueId}/{cheerTalkId}/unblock")
+    @ResponseStatus(HttpStatus.OK)
     public void unblock(@PathVariable Long leagueId,
                         @PathVariable Long cheerTalkId,
                         final Member manager) {

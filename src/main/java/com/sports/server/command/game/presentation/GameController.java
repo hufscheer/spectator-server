@@ -60,7 +60,7 @@ public class GameController {
     }
 
     @DeleteMapping("/leagues/{leagueId}/{gameId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGame(@PathVariable final Long leagueId,
                            @PathVariable final Long gameId, final Member manager) {
         gameService.deleteGame(leagueId, gameId, manager);
