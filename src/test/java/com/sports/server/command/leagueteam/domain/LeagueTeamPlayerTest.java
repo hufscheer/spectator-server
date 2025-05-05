@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,7 +52,18 @@ class LeagueTeamPlayerTest {
             leagueTeamPlayer.update("양효빈", 1, null);
 
             //then
-            Assertions.assertThat(leagueTeamPlayer.getStudentNumber()).isEqualTo(null);
+            assertThat(leagueTeamPlayer.getStudentNumber()).isEqualTo(null);
         }
+
+        @Test
+        void 유효하지_않은_학번으로_수정시_예외를_던진다() {
+            // given
+            String invalidValue = "2020033";
+
+            // when & then
+            assertThatThrownBy(() -> leagueTeamPlayer.update("양효빈", 1, invalidValue))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
     }
 }
