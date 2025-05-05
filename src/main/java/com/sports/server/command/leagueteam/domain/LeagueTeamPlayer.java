@@ -11,6 +11,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @Table(name = "league_team_players")
@@ -51,8 +53,11 @@ public class LeagueTeamPlayer extends BaseEntity<LeagueTeamPlayer> {
     public void update(String name, int number, String studentNumber) {
         this.name = name;
         this.number = number;
-        if (studentNumber != null && !studentNumber.equals(this.studentNumber)) {
-            validateStudentNumber(studentNumber);
+
+        if (!Objects.equals(this.studentNumber, studentNumber)) {
+            if (studentNumber != null){
+                validateStudentNumber(studentNumber);
+            }
             this.studentNumber = studentNumber;
         }
     }
