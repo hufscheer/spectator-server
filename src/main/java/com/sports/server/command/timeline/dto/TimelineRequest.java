@@ -3,6 +3,7 @@ package com.sports.server.command.timeline.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.TimelineType;
+import com.sports.server.command.timeline.domain.WarningCardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -106,5 +107,29 @@ public abstract class TimelineRequest {
         }
     }
 
+    @Getter
+    public static class RegisterWarningCard extends TimelineRequest {
+        private final Long gameTeamId;
+        private final Long warnedLineupPlayerId;
+        private final WarningCardType cardType;
+
+        public RegisterWarningCard(
+                Integer recordedAt,
+                Long recordedQuarterId,
+                Long gameTeamId,
+                Long warnedLineupPlayerId,
+                WarningCardType cardType
+        ){
+            super(recordedQuarterId, recordedAt);
+            this.gameTeamId = gameTeamId;
+            this.warnedLineupPlayerId = warnedLineupPlayerId;
+            this.cardType = cardType;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.WARNING_CARD;
+        }
+    }
 
 }

@@ -39,7 +39,6 @@ public class TimelineService {
 
         Timeline timeline = getLastTimeline(timelineId, game);
         timeline.rollback();
-
         timelineRepository.delete(timeline);
     }
 

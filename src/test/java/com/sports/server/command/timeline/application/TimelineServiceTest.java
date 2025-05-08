@@ -7,18 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
-import com.sports.server.command.timeline.domain.GameProgressTimeline;
-import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.command.timeline.domain.PKTimeline;
-import com.sports.server.command.timeline.domain.ReplacementTimeline;
-import com.sports.server.command.timeline.domain.ScoreTimeline;
-import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -270,13 +266,43 @@ class TimelineServiceTest extends ServiceTest {
         }
     }
 
+    @DisplayName("경고 타임라인을")
+    @Nested
+    class WarningCardTest{
+        @Test
+        void 생성한다(){
+            //given
+            Long teamId = 1L;
+            Long playerId = 1L;
+            int recordedAt = 10;
+
+            TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(
+                    recordedAt,
+                    quarterId,
+                    teamId,
+                    playerId,
+                    WarningCardType.YELLOW
+            );
+
+            //when
+            timelineService.register(manager, gameId, request);
+
+            //then
+            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertAll(
+                    () -> Assertions.assertThat(actual).isInstanceOf(WarningCardTimeline.class),
+                    () -> Assertions.assertThat(((WarningCardTimeline) actual).getWarningCardType()).isEqualTo(WarningCardType.YELLOW)
+            );
+        }
+    }
+
     @DisplayName("타임라인을 삭제할 때")
     @Nested
     class DeleteTest {
         @Test
         void 마지막_타임라인을_차례로_삭제한다() {
             // given
-            long lastId = 7L;
+            long lastId = 9L;
 
             // when
             for (long i = lastId; i > 0; i--) {

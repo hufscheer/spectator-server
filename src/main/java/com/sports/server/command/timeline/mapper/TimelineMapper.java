@@ -3,12 +3,7 @@ package com.sports.server.command.timeline.mapper;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.timeline.domain.GameProgressTimeline;
-import com.sports.server.command.timeline.domain.PKTimeline;
-import com.sports.server.command.timeline.domain.ReplacementTimeline;
-import com.sports.server.command.timeline.domain.ScoreTimeline;
-import com.sports.server.command.timeline.domain.Timeline;
-import com.sports.server.command.timeline.domain.TimelineType;
+import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
 import java.util.Map;
@@ -22,10 +17,11 @@ public class TimelineMapper {
     private final EntityUtils entityUtils;
 
     private final Map<TimelineType, TimelineSupplier> suppliers = Map.of(
-            TimelineType.SCORE, (g, r) -> toScoreTimeline(g, (TimelineRequest.RegisterScore) r),
-            TimelineType.REPLACEMENT, (g, r) -> toReplacementTimeline(g, (TimelineRequest.RegisterReplacement) r),
-            TimelineType.GAME_PROGRESS, (g, r) -> toProgressTimeline(g, (TimelineRequest.RegisterProgress) r),
-            TimelineType.PK, (g, r) -> toPkTimeline(g, (TimelineRequest.RegisterPk) r)
+            TimelineType.SCORE, (game, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
+            TimelineType.REPLACEMENT, (game, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
+            TimelineType.GAME_PROGRESS, (game, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
+            TimelineType.PK, (game, request) -> toPkTimeline(game, (TimelineRequest.RegisterPk) request),
+            TimelineType.WARNING_CARD, (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
     );
 
     public Timeline toEntity(Game game, TimelineRequest request) {
@@ -73,6 +69,17 @@ public class TimelineMapper {
                 pkRequest.getRecordedAt(),
                 getPlayer(pkRequest.getScorerId()),
                 pkRequest.getIsSuccess()
+        );
+    }
+
+    private WarningCardTimeline toWarningCardTimeline(Game game,
+                                                      TimelineRequest.RegisterWarningCard warningCardRequest) {
+        return new WarningCardTimeline(
+                game,
+                getQuarter(warningCardRequest.getRecordedQuarterId()),
+                warningCardRequest.getRecordedAt(),
+                getPlayer(warningCardRequest.getWarnedLineupPlayerId()),
+                warningCardRequest.getCardType()
         );
     }
 
