@@ -188,6 +188,10 @@ operation::timeline-controller-test/게임_진행_변경_타임라인을_생성�
 
 operation::timeline-controller-test/게임_승부차기_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
+=== 경고 타임라인 생성
+
+operation::timeline-controller-test/경고_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
 === 게임의 타임라인 조회
 
 operation::timeline-query-controller-test/타임라인을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
