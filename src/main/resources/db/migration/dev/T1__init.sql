@@ -221,23 +221,6 @@ CREATE TABLE test_sports_live.reports
     CONSTRAINT FK_REPORTS_ON_CHEER_TALKS FOREIGN KEY (cheer_talk_id) REFERENCES test_sports_live.cheer_talks (id)
 );
 
-CREATE TABLE test_sports_live.records
-(
-    id               BIGINT AUTO_INCREMENT NOT NULL,
-    lineup_player_id BIGINT                NOT NULL,
-    game_id          BIGINT                NOT NULL,
-    game_team_id     BIGINT                NOT NULL,
-    quarter_id       BIGINT                NOT NULL,
-    score            INT                   NOT NULL,
-    scored_at        INT                   NOT NULL,
-
-    CONSTRAINT pk_records PRIMARY KEY (id),
-    CONSTRAINT FK_RECORDS_ON_LINEUP_PLAYERS FOREIGN KEY (lineup_player_id) REFERENCES test_sports_live.lineup_players (id),
-    CONSTRAINT FK_RECORDS_ON_GAMES FOREIGN KEY (game_id) REFERENCES test_sports_live.games (id),
-    CONSTRAINT FK_RECORDS_ON_GAME_TEAMS FOREIGN KEY (game_team_id) REFERENCES test_sports_live.game_teams (id),
-    CONSTRAINT FK_RECORDS_ON_QUARTERS FOREIGN KEY (quarter_id) REFERENCES test_sports_live.quarters (id)
-);
-
 CREATE TABLE test_sports_live.timelines
 (
     id                          BIGINT AUTO_INCREMENT NOT NULL,
