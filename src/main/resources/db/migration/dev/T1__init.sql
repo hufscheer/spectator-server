@@ -22,25 +22,16 @@ CREATE TABLE test_sports_live.members
 
 CREATE TABLE test_sports_live.teams
 (
-    id             BIGINT AUTO_INCREMENT NOT NULL,
-    administrator_id     BIGINT          NULL,
-    organization_id      BIGINT          NULL,
-    faculty        VARCHAR(255)          NULL,
-    name           VARCHAR(255)          NOT NULL,
-    logo_image_url VARCHAR(255)          NULL,
+    id               BIGINT AUTO_INCREMENT NOT NULL,
+    administrator_id BIGINT                NULL,
+    organization_id  BIGINT                NULL,
+    unit             VARCHAR(255)          NULL,
+    name             VARCHAR(255)          NOT NULL,
+    logo_image_url   VARCHAR(255)          NULL,
 
     CONSTRAINT pk_teams PRIMARY KEY (id),
     CONSTRAINT FK_TEAMS_ON_ADMINISTRATOR FOREIGN KEY (administrator_id) REFERENCES test_sports_live.members (id),
-    CONSTRAINT FK_TEAMS_ON_ORGANIZATION FOREIGN KEY (organization_id) REFERENCES organizations (id)
-);
-
-CREATE TABLE test_sports_live.team_statistics
-(
-    id      BIGINT AUTO_INCREMENT NOT NULL,
-    team_id BIGINT                NOT NULL,
-
-    CONSTRAINT pk_team_statistics PRIMARY KEY (id),
-    CONSTRAINT FK_TEAM_STATISTICS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES test_sports_live.teams (id)
+    CONSTRAINT FK_TEAMS_ON_ORGANIZATION FOREIGN KEY (organization_id) REFERENCES test_sports_live.organizations (id)
 );
 
 CREATE TABLE test_sports_live.team_players
@@ -63,16 +54,6 @@ CREATE TABLE test_sports_live.players
 
     CONSTRAINT pk_players PRIMARY KEY (id),
     CONSTRAINT uc_players_student_number UNIQUE (student_number)
-);
-
-CREATE TABLE test_sports_live.player_statistics
-(
-    id               BIGINT AUTO_INCREMENT NOT NULL,
-    player_id        BIGINT                NOT NULL,
-    total_goal_count INT                   NOT NULL DEFAULT 0,
-
-    CONSTRAINT pk_player_statistics PRIMARY KEY (id),
-    CONSTRAINT FK_PLAYER_STATISTICS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES test_sports_live.players (id)
 );
 
 CREATE TABLE test_sports_live.games
@@ -117,7 +98,7 @@ CREATE TABLE test_sports_live.leagues
     name              VARCHAR(255)          NOT NULL,
     start_at          DATETIME              NULL,
     end_at            DATETIME              NULL,
-    is_deleted        TINYINT               NOT NULL DEFAULT 0,
+    is_deleted        BOOLEAN               NOT NULL DEFAULT FALSE,
     max_round         VARCHAR(255)          NULL,
     in_progress_round VARCHAR(255)          NULL,
 
@@ -224,7 +205,7 @@ CREATE TABLE test_sports_live.reports
 CREATE TABLE test_sports_live.timelines
 (
     id                          BIGINT AUTO_INCREMENT NOT NULL,
-    type               VARCHAR(255)          NOT NULL,
+    timeline_type               VARCHAR(255)          NOT NULL,
     game_id                     BIGINT                NOT NULL,
     recorded_quarter_id         BIGINT                NOT NULL,
     recorded_at                 INT                   NOT NULL,
