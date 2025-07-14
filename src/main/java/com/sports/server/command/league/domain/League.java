@@ -2,24 +2,21 @@ package com.sports.server.command.league.domain;
 
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.newEntity.league.domain.LeagueStatic;
+import com.sports.server.command.newEntity.league.domain.LeagueTopScorer;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -61,6 +58,14 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     List<LeagueTeam> leagueTeams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LeagueTopScorer> topScorers = new ArrayList<>();
+
+    @Setter
+    @OneToOne(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    private LeagueStatic leagueStatic;
+
 
     public League(
             final Member manager,
@@ -107,4 +112,23 @@ public class League extends BaseEntity<League> implements ManagedEntity {
             throw new CustomException(HttpStatus.BAD_REQUEST, "최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
         }
     }
+
+    public void addTopScorer(LeagueTopScorer topScorer) {
+        this.topScorers.add(topScorer);
+    }
+
+    public void removeTopScorer(LeagueTopScorer topScorer) {
+        this.topScorers.remove(topScorer);
+    }
+/* 테이블 이름 겹쳐서 일단 주석 처리
+    public void addLeagueTeam(LeagueTeam leagueTeam) {
+        this.leagueTeams.add(leagueTeam);
+    }
+
+    public void removeLeagueTeam(LeagueTeam leagueTeam) {
+        this.leagueTeams.remove(leagueTeam);
+    }
+
+ */
+
 }
