@@ -34,6 +34,16 @@ CREATE TABLE test_sports_live.teams
     CONSTRAINT FK_TEAMS_ON_ORGANIZATION FOREIGN KEY (organization_id) REFERENCES test_sports_live.organizations (id)
 );
 
+CREATE TABLE test_sports_live.players
+(
+    id             BIGINT AUTO_INCREMENT NOT NULL,
+    name           VARCHAR(255)          NOT NULL,
+    student_number VARCHAR(255)          NULL,
+
+    CONSTRAINT pk_players PRIMARY KEY (id),
+    CONSTRAINT uc_players_student_number UNIQUE (student_number)
+);
+
 CREATE TABLE test_sports_live.team_players
 (
     id        BIGINT AUTO_INCREMENT NOT NULL,
@@ -46,14 +56,21 @@ CREATE TABLE test_sports_live.team_players
     CONSTRAINT uc_team_player UNIQUE (team_id, player_id)
 );
 
-CREATE TABLE test_sports_live.players
+CREATE TABLE test_sports_live.leagues
 (
-    id             BIGINT AUTO_INCREMENT NOT NULL,
-    name           VARCHAR(255)          NOT NULL,
-    student_number VARCHAR(255)          NULL,
+    id                BIGINT AUTO_INCREMENT NOT NULL,
+    organization_id   BIGINT                NOT NULL,
+    administrator_id  BIGINT                NOT NULL,
+    name              VARCHAR(255)          NOT NULL,
+    start_at          DATETIME              NULL,
+    end_at            DATETIME              NULL,
+    is_deleted        BOOLEAN               NOT NULL DEFAULT FALSE,
+    max_round         VARCHAR(255)          NULL,
+    in_progress_round VARCHAR(255)          NULL,
 
-    CONSTRAINT pk_players PRIMARY KEY (id),
-    CONSTRAINT uc_players_student_number UNIQUE (student_number)
+    CONSTRAINT pk_leagues PRIMARY KEY (id),
+    CONSTRAINT FK_LEAGUES_ON_ORGANIZATIONS FOREIGN KEY (organization_id) REFERENCES test_sports_live.organizations (id),
+    CONSTRAINT FK_LEAGUES_ON_MEMBERS FOREIGN KEY (administrator_id) REFERENCES test_sports_live.members (id)
 );
 
 CREATE TABLE test_sports_live.games
@@ -88,23 +105,6 @@ CREATE TABLE test_sports_live.game_teams
     CONSTRAINT FK_GAME_TEAMS_ON_GAMES FOREIGN KEY (game_id) REFERENCES test_sports_live.games (id),
     CONSTRAINT FK_GAME_TEAMS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES test_sports_live.teams (id),
     CONSTRAINT uc_game_team UNIQUE (game_id, team_id)
-);
-
-CREATE TABLE test_sports_live.leagues
-(
-    id                BIGINT AUTO_INCREMENT NOT NULL,
-    organization_id   BIGINT                NOT NULL,
-    administrator_id  BIGINT                NOT NULL,
-    name              VARCHAR(255)          NOT NULL,
-    start_at          DATETIME              NULL,
-    end_at            DATETIME              NULL,
-    is_deleted        BOOLEAN               NOT NULL DEFAULT FALSE,
-    max_round         VARCHAR(255)          NULL,
-    in_progress_round VARCHAR(255)          NULL,
-
-    CONSTRAINT pk_leagues PRIMARY KEY (id),
-    CONSTRAINT FK_LEAGUES_ON_ORGANIZATIONS FOREIGN KEY (organization_id) REFERENCES test_sports_live.organizations (id),
-    CONSTRAINT FK_LEAGUES_ON_MEMBERS FOREIGN KEY (administrator_id) REFERENCES test_sports_live.members (id)
 );
 
 CREATE TABLE test_sports_live.league_teams
