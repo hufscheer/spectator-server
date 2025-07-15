@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "NewLeagueTeam")
 @Getter
 @Table(name = "league_teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
