@@ -58,7 +58,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     List<LeagueTeam> leagueTeams = new ArrayList<>();
-
+/*
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTopScorer> topScorers = new ArrayList<>();
 
@@ -66,7 +66,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     @OneToOne(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     private LeagueStatic leagueStatic;
 
-
+ */
     public League(
             final Member manager,
             final Organization organization,
@@ -112,7 +112,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
             throw new CustomException(HttpStatus.BAD_REQUEST, "최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
         }
     }
-
+/* 새 엔티티와의 연관관계 주석 처리
     public void addTopScorer(LeagueTopScorer topScorer) {
         this.topScorers.add(topScorer);
     }
@@ -120,7 +120,6 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     public void removeTopScorer(LeagueTopScorer topScorer) {
         this.topScorers.remove(topScorer);
     }
-/* 테이블 이름 겹쳐서 일단 주석 처리
     public void addLeagueTeam(LeagueTeam leagueTeam) {
         this.leagueTeams.add(leagueTeam);
     }
@@ -128,7 +127,5 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     public void removeLeagueTeam(LeagueTeam leagueTeam) {
         this.leagueTeams.remove(leagueTeam);
     }
-
  */
-
 }

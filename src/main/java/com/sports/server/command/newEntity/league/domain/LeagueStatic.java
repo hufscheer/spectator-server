@@ -36,7 +36,7 @@ public class LeagueStatic extends BaseEntity<LeagueStatic> {
 
     public LeagueStatic(League league) {
         this.league = league;
-        league.setLeagueStatic(this);
+        //league.setLeagueStatic(this);
     }
 
     public void updateFirstWinnerTeam(Team firstWinnerTeam) {
