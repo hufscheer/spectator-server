@@ -44,6 +44,7 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    //TODO: 삭제
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id")
     private League league;

@@ -1,7 +1,7 @@
-package com.sports.server.command.newEntity.player.domain;
+package com.sports.server.command.player.domain;
 
-import com.sports.server.command.newEntity.league.domain.LeagueTopScorer;
-import com.sports.server.command.newEntity.team.domain.TeamPlayer;
+import com.sports.server.command.league.domain.LeagueTopScorer;
+import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

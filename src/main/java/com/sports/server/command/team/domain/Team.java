@@ -1,8 +1,8 @@
-package com.sports.server.command.newEntity.team.domain;
+package com.sports.server.command.team.domain;
 
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.newEntity.league.domain.LeagueStatic;
-import com.sports.server.command.newEntity.league.domain.LeagueTeam;
+import com.sports.server.command.league.domain.LeagueStatic;
+import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;

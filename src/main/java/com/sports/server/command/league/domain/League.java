@@ -2,8 +2,6 @@ package com.sports.server.command.league.domain;
 
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.newEntity.league.domain.LeagueStatic;
-import com.sports.server.command.newEntity.league.domain.LeagueTopScorer;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
@@ -16,7 +14,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;

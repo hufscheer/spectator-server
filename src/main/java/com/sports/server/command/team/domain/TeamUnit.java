@@ -1,4 +1,4 @@
-package com.sports.server.command.newEntity.team.domain;
+package com.sports.server.command.team.domain;
 
 public enum TeamUnit {
     HUFS_1,

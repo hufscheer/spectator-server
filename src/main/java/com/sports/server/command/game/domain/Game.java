@@ -40,6 +40,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     private static final String NAME_OF_PK_QUARTER = "승부차기";
     private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
+    //TODO: sport 삭제
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_id")
     private Sport sport;
