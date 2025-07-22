@@ -1,7 +1,5 @@
 package com.sports.server.query.presentation;
 
-import com.sports.server.query.application.SportQueryService;
-import com.sports.server.query.dto.response.SportResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

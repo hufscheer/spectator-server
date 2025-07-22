@@ -1,7 +1,7 @@
 package com.sports.server.command.game.domain;
 
-import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
+import com.sports.server.command.leagueteam.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;
@@ -37,7 +37,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_team_id")
-    private LeagueTeam leagueTeam;
+    private Team team;
 
     @OneToMany(mappedBy = "gameTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineupPlayer> lineupPlayers = new ArrayList<>();

@@ -28,8 +28,8 @@ import org.springframework.http.HttpStatus;
 public class League extends BaseEntity<League> implements ManagedEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
+    @JoinColumn(name = "administrator_id")
+    private Member administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
@@ -65,14 +65,14 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
  */
     public League(
-            final Member manager,
+            final Member administrator,
             final Organization organization,
             final String name,
             final LocalDateTime startAt,
             final LocalDateTime endAt,
             final Round maxRound
     ) {
-        this.manager = manager;
+        this.administrator = administrator;
         this.organization = organization;
         this.name = name;
         this.startAt = startAt;
@@ -93,7 +93,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     @Override
     public boolean isManagedBy(Member manager) {
-        return manager.getId() == 1 || this.manager.equals(manager);
+        return manager.getId() == 1 || this.administrator.equals(manager);
     }
 
     public void delete() {
@@ -101,7 +101,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     }
 
     public String manager() {
-        return manager.getEmail();
+        return administrator.getEmail();
     }
 
     public void validateRoundWithinLimit(Integer round) {

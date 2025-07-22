@@ -40,8 +40,8 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
+    @JoinColumn(name = "administrator_id")
+    private Member administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id")
@@ -160,9 +160,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.round = round;
     }
 
-    public Game(Member manager, League league, String name, LocalDateTime startTime,
+    public Game(Member administrator, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round, boolean isPkTaken) {
-        this.manager = manager;
+        this.administrator = administrator;
         this.league = league;
         this.name = name;
         this.startTime = startTime;
@@ -247,7 +247,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     @Override
-    public boolean isManagedBy(Member manager) {
-        return manager.getId() == 1 || this.manager.equals(manager);
+    public boolean isManagedBy(Member administrator) {
+        return administrator.getId() == 1 || this.administrator.equals(administrator);
     }
 }

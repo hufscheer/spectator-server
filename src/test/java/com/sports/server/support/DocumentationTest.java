@@ -28,7 +28,6 @@ import com.sports.server.query.application.GameTeamQueryService;
 import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.application.LineupPlayerQueryService;
 import com.sports.server.query.application.MemberQueryService;
-import com.sports.server.query.application.SportQueryService;
 import com.sports.server.query.application.TimelineQueryService;
 import com.sports.server.query.presentation.CheerTalkQueryController;
 import com.sports.server.query.presentation.GameQueryController;

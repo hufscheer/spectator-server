@@ -7,14 +7,8 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.UnauthorizedException;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -23,9 +17,17 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "league_teams")
+@Table(name = "teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LeagueTeam extends BaseEntity<LeagueTeam> {
+public class Team extends BaseEntity<Team> {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "administrator_id")
+    private Member administrator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -33,21 +35,9 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     @Column(name = "logo_image_url", nullable = false)
     private String logoImageUrl;
 
-    @Column(name = "team_color", nullable = false)
-    private String teamColor;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
-
-    //TODO: 삭제
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_id")
-    private League league;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "unit")
+    private Unit unit;
 
     @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
@@ -59,13 +49,12 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         leagueTeamPlayers.add(leagueTeamPlayer);
     }
 
-    public LeagueTeam(String name, String logoImageUrl, Member manager, League league, String teamColor) {
+    public Team(String name, Unit unit, String logoImageUrl, Member administrator) {
         this.name = name;
+        this.unit = unit;
         this.logoImageUrl = logoImageUrl;
-        this.manager = manager;
-        this.organization = manager.getOrganization();
-        this.league = league;
-        this.teamColor = teamColor;
+        this.administrator = administrator;
+        this.organization = administrator.getOrganization();
     }
 
     public void updateInfo(String name, String logoImageUrl, String originPrefix, String replacePrefix) {

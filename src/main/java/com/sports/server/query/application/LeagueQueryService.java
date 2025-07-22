@@ -15,7 +15,6 @@ import com.sports.server.query.dto.response.LeagueResponse;
 import com.sports.server.query.dto.response.LeagueResponseToManage;
 import com.sports.server.query.dto.response.LeagueResponseWithGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
-import com.sports.server.query.dto.response.LeagueSportResponse;
 import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
@@ -37,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LeagueQueryService {
 
     private final LeagueQueryRepository leagueQueryRepository;
-    private final LeagueSportQueryRepository leagueSportQueryRepository;
     private final LeagueTeamDynamicRepository leagueTeamDynamicRepository;
     private final LeagueTeamPlayerQueryRepository leagueTeamPlayerQueryRepository;
     private final GameQueryRepository gameQueryRepository;
@@ -47,13 +45,6 @@ public class LeagueQueryService {
         return leagueQueryRepository.findByYear(year)
                 .stream()
                 .map(LeagueResponse::new)
-                .toList();
-    }
-
-    public List<LeagueSportResponse> findSportsByLeague(Long leagueId) {
-        return leagueSportQueryRepository.findByLeagueId(leagueId)
-                .stream()
-                .map(LeagueSportResponse::new)
                 .toList();
     }
 
