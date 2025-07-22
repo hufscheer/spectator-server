@@ -1,7 +1,7 @@
 package com.sports.server.command.leagueteam.acceptance;
 
-import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
+import com.sports.server.command.team.dto.LeagueTeamPlayerRequest;
+import com.sports.server.command.team.dto.LeagueTeamRequest;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;

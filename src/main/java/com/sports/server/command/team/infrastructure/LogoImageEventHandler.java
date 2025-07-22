@@ -1,6 +1,6 @@
-package com.sports.server.command.leagueteam.infrastructure;
+package com.sports.server.command.team.infrastructure;
 
-import com.sports.server.command.leagueteam.domain.LogoImageDeletedEvent;
+import com.sports.server.command.team.domain.LogoImageDeletedEvent;
 import com.sports.server.common.application.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

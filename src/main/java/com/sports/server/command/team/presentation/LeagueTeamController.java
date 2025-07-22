@@ -1,7 +1,7 @@
-package com.sports.server.command.leagueteam.presentation;
+package com.sports.server.command.team.presentation;
 
-import com.sports.server.command.leagueteam.application.LeagueTeamService;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
+import com.sports.server.command.team.application.LeagueTeamService;
+import com.sports.server.command.team.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

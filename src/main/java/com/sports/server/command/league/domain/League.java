@@ -55,15 +55,14 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     List<LeagueTeam> leagueTeams = new ArrayList<>();
-/*
+
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTopScorer> topScorers = new ArrayList<>();
 
-    @Setter
-    @OneToOne(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
-    private LeagueStatic leagueStatic;
+//    @Setter
+//    @OneToOne(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private LeagueStatic leagueStatic;
 
- */
     public League(
             final Member administrator,
             final Organization organization,

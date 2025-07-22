@@ -1,7 +1,7 @@
 package com.sports.server.command.game.domain;
 
-import com.sports.server.command.leagueteam.domain.Player;
-import com.sports.server.command.leagueteam.domain.Team;
+import com.sports.server.command.team.domain.Player;
+import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;

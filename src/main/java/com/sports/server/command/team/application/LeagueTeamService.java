@@ -1,11 +1,11 @@
-package com.sports.server.command.leagueteam.application;
+package com.sports.server.command.team.application;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
-import com.sports.server.command.leagueteam.domain.LeagueTeamRepository;
-import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
+import com.sports.server.command.team.domain.LeagueTeamRepository;
+import com.sports.server.command.team.dto.LeagueTeamPlayerRequest;
+import com.sports.server.command.team.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;

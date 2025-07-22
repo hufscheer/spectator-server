@@ -5,7 +5,6 @@ import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerState;
 
 import java.util.List;
-import java.util.Optional;
 
 public class LineupPlayerResponse {
 
@@ -58,7 +57,7 @@ public class LineupPlayerResponse {
 			PlayerSummary replacedPlayer
 	) {
 		public PlayerResponse(LineupPlayer player) {
-			this(player.getId(), player.getName(), player.getDescription(), player.getNumber(), player.isCaptain(),
+			this(player.getId(), player.getName(), player.getDescription(), player.getJerseyNumber(), player.isCaptain(),
 					player.getState(), player.isReplaced(),
 					player.getReplacedPlayer() != null ? new PlayerSummary(player.getReplacedPlayer()) : null);
 		}
@@ -70,7 +69,7 @@ public class LineupPlayerResponse {
 			int number
 	) {
 		public PlayerSummary(LineupPlayer player) {
-			this(player.getId(), player.getName(), player.getNumber());
+			this(player.getId(), player.getName(), player.getJerseyNumber());
 		}
 	}
 }

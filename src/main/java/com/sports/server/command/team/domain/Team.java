@@ -1,12 +1,10 @@
-package com.sports.server.command.leagueteam.domain;
+package com.sports.server.command.team.domain;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
-import com.sports.server.common.exception.UnauthorizedException;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

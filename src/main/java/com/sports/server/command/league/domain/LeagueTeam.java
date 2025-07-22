@@ -42,7 +42,7 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         this.ranking = 0;
         
         // 양방향 매핑을 위한 로직
-        //league.addLeagueTeam(this);
+        league.addLeagueTeam(this);
         team.addLeagueTeam(this);
     }
 
@@ -70,31 +70,4 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         this.totalTalkCount++;
     }
 
-    public void updateTeam(Team newTeam) {
-        // 기존 Team에서 제거
-        if (this.team != null) {
-            this.team.removeLeagueTeam(this);
-        }
-        
-        // 새 Team에 추가
-        this.team = newTeam;
-        if (newTeam != null) {
-            newTeam.addLeagueTeam(this);
-        }
-    }
-/*
-    public void updateLeague(League newLeague) {
-        // 기존 League에서 제거
-        if (this.league != null) {
-            this.league.removeLeagueTeam(this);
-        }
-        
-        // 새 League에 추가
-        this.league = newLeague;
-        if (newLeague != null) {
-            newLeague.addLeagueTeam(this);
-        }
-    }
-
- */
 }

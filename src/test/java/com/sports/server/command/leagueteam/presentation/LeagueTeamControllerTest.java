@@ -1,8 +1,8 @@
 package com.sports.server.command.leagueteam.presentation;
 
 
-import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
+import com.sports.server.command.team.dto.LeagueTeamPlayerRequest;
+import com.sports.server.command.team.dto.LeagueTeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;

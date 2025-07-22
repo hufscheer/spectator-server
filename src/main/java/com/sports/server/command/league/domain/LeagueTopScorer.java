@@ -1,6 +1,6 @@
 package com.sports.server.command.league.domain;
 
-import com.sports.server.command.leagueteam.domain.Player;
+import com.sports.server.command.team.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

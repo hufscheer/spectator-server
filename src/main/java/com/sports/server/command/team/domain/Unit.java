@@ -1,4 +1,4 @@
-package com.sports.server.command.leagueteam.domain;
+package com.sports.server.command.team.domain;
 
 public enum Unit {
     HUFS_1,
