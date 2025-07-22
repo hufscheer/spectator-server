@@ -2,7 +2,7 @@ name: CI TEST
 on:
   pull_request:
     branches:
-      - '**'
+      - 'main'
 
 jobs:
   build:

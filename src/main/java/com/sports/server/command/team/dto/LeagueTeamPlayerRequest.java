@@ -1,4 +1,4 @@
-package com.sports.server.command.leagueteam.dto;
+package com.sports.server.command.team.dto;
 
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;

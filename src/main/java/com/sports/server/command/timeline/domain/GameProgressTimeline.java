@@ -30,8 +30,8 @@ public class GameProgressTimeline extends Timeline {
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "previous_quarter_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "previous_quarter")
     private Quarter previousQuarter;
 
     private LocalDateTime previousQuarterChangedAt;

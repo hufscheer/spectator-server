@@ -7,7 +7,6 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
@@ -41,12 +40,8 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sport_id")
-    private Sport sport;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
+    @JoinColumn(name = "administrator_id")
+    private Member administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id")
@@ -165,11 +160,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.round = round;
     }
 
-
-    public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
+    public Game(Member administrator, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round, boolean isPkTaken) {
-        this.sport = sport;
-        this.manager = manager;
+        this.administrator = administrator;
         this.league = league;
         this.name = name;
         this.startTime = startTime;
@@ -204,12 +197,12 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void play() {
         this.state = GameState.PLAYING;
-        updateQuarter(sport.getAfterStartQuarter());
+        //updateQuarter(sport.getAfterStartQuarter());
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        updateQuarter(sport.getEndQuarter());
+        //updateQuarter(sport.getEndQuarter());
     }
 
     public void updateQuarter(Quarter quarter) {
@@ -244,11 +237,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return sport.getQuarters()
-                .stream()
-                .filter(quarter -> quarter.getName().equals(gameQuarter))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(GameErrorMessages.QUARTER_NOT_EXIST_EXCEPTION));
+        return Quarter.fromName(gameQuarter);
     }
 
     public void checkStateForTimeline() {
@@ -258,7 +247,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     @Override
-    public boolean isManagedBy(Member manager) {
-        return manager.getId() == 1 || this.manager.equals(manager);
+    public boolean isManagedBy(Member administrator) {
+        return administrator.getId() == 1 || this.administrator.equals(administrator);
     }
 }

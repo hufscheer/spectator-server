@@ -23,17 +23,14 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @JoinColumn(name = "game_team_id")
     private GameTeam gameTeam;
 
-    @Column(name = "league_team_player_id", nullable = false)
-    private Long leagueTeamPlayerId;
-
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "player_id", nullable = false)
+    private Long playerId;
 
     @Column(name = "description", nullable = true)
     private String description;
 
-    @Column(name = "number", nullable = true)
-    private int number;
+    @Column(name = "jersey_number", nullable = true)
+    private int jerseyNumber;
 
     @Column(name = "is_captain", nullable = false)
     private boolean isCaptain;
@@ -96,12 +93,11 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         this.isPlaying = false;
     }
 
-    public LineupPlayer(GameTeam gameTeam, Long leagueTeamPlayerId, String name, int number,
+    public LineupPlayer(GameTeam gameTeam, Long playerId, int number,
                         boolean isCaptain, LineupPlayerState state) {
         this.gameTeam = gameTeam;
-        this.leagueTeamPlayerId = leagueTeamPlayerId;
-        this.name = name;
-        this.number = number;
+        this.playerId = playerId;
+        this.jerseyNumber = number;
         this.isCaptain = isCaptain;
         this.state = state;
     }

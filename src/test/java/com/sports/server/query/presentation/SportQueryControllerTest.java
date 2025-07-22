@@ -6,7 +6,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sports.server.query.dto.response.SportResponse;
 import com.sports.server.support.DocumentationTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;

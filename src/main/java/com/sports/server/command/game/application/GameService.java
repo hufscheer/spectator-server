@@ -9,8 +9,6 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.sport.domain.Sport;
-import com.sports.server.command.sport.domain.SportRepository;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
@@ -27,9 +25,7 @@ public class GameService {
 
     private final EntityUtils entityUtils;
     private final GameRepository gameRepository;
-    private final SportRepository sportRepository;
     private final TimelineRepository timelineRepository;
-    private static final String NAME_OF_SPORT = "축구";
 
     @Transactional
     public Long register(final Long leagueId, final GameRequestDto.Register requestDto, final Member manager) {
@@ -65,12 +61,10 @@ public class GameService {
     }
 
     private Game saveGame(Long leagueId, Member manager, GameRequestDto.Register requestDto) {
-        Sport sport = sportRepository.findByName(NAME_OF_SPORT)
-                .orElseThrow(() -> new NotFoundException("해당 이름을 가진 스포츠가 존재하지 않습니다."));
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
-        Game game = requestDto.toEntity(sport, manager, league);
+        Game game = requestDto.toEntity(manager, league);
         gameRepository.save(game);
         return game;
     }

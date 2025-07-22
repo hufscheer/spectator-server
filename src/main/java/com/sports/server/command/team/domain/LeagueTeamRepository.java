@@ -1,4 +1,4 @@
-package com.sports.server.command.leagueteam.domain;
+package com.sports.server.command.team.domain;
 
 import com.sports.server.command.league.domain.League;
 import java.util.Optional;

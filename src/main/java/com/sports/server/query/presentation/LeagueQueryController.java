@@ -25,11 +25,6 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagues(year));
     }
 
-    @GetMapping("/{leagueId}/sports")
-    public ResponseEntity<List<LeagueSportResponse>> findSportsByLeague(@PathVariable Long leagueId) {
-        return ResponseEntity.ok(leagueQueryService.findSportsByLeague(leagueId));
-    }
-
     @GetMapping("/{leagueId}/teams")
     public ResponseEntity<List<LeagueTeamResponse>> findLeagueTeamsByLeague(
             @PathVariable Long leagueId,
