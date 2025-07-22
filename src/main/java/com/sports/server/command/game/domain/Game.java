@@ -237,11 +237,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return sport.getQuarters()
-                .stream()
-                .filter(quarter -> quarter.getName().equals(gameQuarter))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(GameErrorMessages.QUARTER_NOT_EXIST_EXCEPTION));
+        return Quarter.fromName(gameQuarter);
     }
 
     public void checkStateForTimeline() {

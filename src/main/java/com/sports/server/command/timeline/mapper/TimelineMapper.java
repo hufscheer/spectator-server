@@ -84,7 +84,7 @@ public class TimelineMapper {
     }
 
     private Quarter getQuarter(Long quarterId) {
-        return entityUtils.getEntity(quarterId, Quarter.class);
+        return Quarter.fromId(quarterId);
     }
 
     private LineupPlayer getPlayer(Long playerId) {

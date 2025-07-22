@@ -7,6 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -32,8 +34,8 @@ public abstract class Timeline extends BaseEntity<Timeline> {
     @JoinColumn(name = "game_id", nullable = false)
     protected Game game;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recorded_quarter_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recorded_quarter", nullable = false)
     protected Quarter recordedQuarter;
 
     @Column(name = "recorded_at", nullable = false)
