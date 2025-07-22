@@ -11,6 +11,8 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,14 +42,38 @@ public class Team extends BaseEntity<Team> {
     private Unit unit;
 
     @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
+    private List<TeamPlayer> teamPlayers = new ArrayList<>();
 
     @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GameTeam> gameTeams = new ArrayList<>();
 
-    public void addPlayer(LeagueTeamPlayer leagueTeamPlayer) {
-        leagueTeamPlayers.add(leagueTeamPlayer);
+    public void addPlayer(Player player) {
+        TeamPlayer teamPlayer = new TeamPlayer(this, player);
+        this.teamPlayers.add(teamPlayer);
+        player.getTeamPlayers().add(teamPlayer);
     }
+
+    public void removePlayer(Player player) {
+        TeamPlayer teamPlayer = findTeamPlayer(player);
+        if (teamPlayer != null) {
+            this.teamPlayers.remove(teamPlayer);
+            player.getTeamPlayers().remove(teamPlayer);
+        }
+    }
+
+    private TeamPlayer findTeamPlayer(Player player) {
+        return this.teamPlayers.stream()
+                .filter(tp -> tp.getPlayer().equals(player))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<Player> getPlayers() {
+        return this.teamPlayers.stream()
+                .map(TeamPlayer::getPlayer)
+                .collect(Collectors.toList());
+    }
+
 
     public Team(String name, Unit unit, String logoImageUrl, Member administrator) {
         this.name = name;
@@ -73,9 +99,10 @@ public class Team extends BaseEntity<Team> {
         return logoImageUrl.replace(originPrefix, replacePrefix);
     }
 
-    public void validateLeagueTeamPlayer(LeagueTeamPlayer leagueTeamPlayer) {
-        if (!this.leagueTeamPlayers.contains(leagueTeamPlayer)) {
-            throw new IllegalStateException("해당 리그팀에 속하지 않은 선수입니다.");
+    public void validateTeamPlayer(Player player) {
+        TeamPlayer teamPlayer = findTeamPlayer(player);
+        if (teamPlayer == null) {
+            throw new IllegalStateException("해당 팀에 속하지 않은 선수입니다.");
         }
     }
 
@@ -84,13 +111,11 @@ public class Team extends BaseEntity<Team> {
         registerEvent(new LogoImageDeletedEvent(logoImageUrl));
     }
 
-    public void deletePlayer(LeagueTeamPlayer leagueTeamPlayer) {
-        this.leagueTeamPlayers.remove(leagueTeamPlayer);
-    }
-
     public void isParticipate(League league) {
+        /*
         if (!this.league.equals(league)) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
+         */
     }
 }

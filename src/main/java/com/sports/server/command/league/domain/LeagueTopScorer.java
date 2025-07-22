@@ -1,6 +1,6 @@
 package com.sports.server.command.league.domain;
 
-import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.leagueteam.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
         
         // 양방향 매핑을 위한 로직
         //league.addTopScorer(this);
-        player.addLeagueTopScorer(this);
+        //player.addLeagueTopScorer(this);
     }
 
     public void updateRanking(Integer ranking) {
@@ -46,6 +46,7 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
         this.goalCount = goalCount;
     }
 
+    /*
     public void updateScorer(Player newPlayer) {
         if (this.player != null) {
             this.player.removeLeagueTopScorer(this);
@@ -56,6 +57,8 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
             newPlayer.addLeagueTopScorer(this);
         }
     }
+
+     */
     /*
     public void updateLeague(League newLeague) {
         if (this.league != null) {
