@@ -49,8 +49,7 @@ public class GameQueryService {
                 .collect(groupingBy(GameTeam::getGame));
 
         return games.stream()
-                .map(game -> new GameResponseDto(game, groupedByGame.getOrDefault(game, new ArrayList<>()),
-                        game.getSport()))
+                .map(game -> new GameResponseDto(game, groupedByGame.getOrDefault(game, new ArrayList<>())))
                 .toList();
     }
 

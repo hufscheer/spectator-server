@@ -21,7 +21,6 @@ import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.query.repository.GameQueryRepository;
 import com.sports.server.query.repository.LeagueQueryRepository;
-import com.sports.server.query.repository.LeagueSportQueryRepository;
 import com.sports.server.query.repository.LeagueTeamDynamicRepository;
 import com.sports.server.query.repository.LeagueTeamPlayerQueryRepository;
 import java.time.LocalDateTime;

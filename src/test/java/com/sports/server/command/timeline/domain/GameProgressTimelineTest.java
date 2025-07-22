@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
 import java.util.List;

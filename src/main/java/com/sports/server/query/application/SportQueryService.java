@@ -1,7 +1,7 @@
 package com.sports.server.query.application;
 
 import com.sports.server.query.dto.response.SportResponse;
-import com.sports.server.query.repository.SportQueryRepository;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

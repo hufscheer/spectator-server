@@ -7,7 +7,6 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
@@ -39,11 +38,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     private static final String NAME_OF_PK_QUARTER = "승부차기";
     private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
-
-    //TODO: sport 삭제
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sport_id")
-    private Sport sport;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
@@ -166,10 +160,8 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.round = round;
     }
 
-
-    public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
+    public Game(Member manager, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round, boolean isPkTaken) {
-        this.sport = sport;
         this.manager = manager;
         this.league = league;
         this.name = name;
@@ -205,12 +197,12 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void play() {
         this.state = GameState.PLAYING;
-        updateQuarter(sport.getAfterStartQuarter());
+        //updateQuarter(sport.getAfterStartQuarter());
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        updateQuarter(sport.getEndQuarter());
+        //updateQuarter(sport.getEndQuarter());
     }
 
     public void updateQuarter(Quarter quarter) {
