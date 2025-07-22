@@ -6,13 +6,15 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
-@Table(name = "league_statics")
+@Table(name = "league_statistics")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LeagueStatic extends BaseEntity<LeagueStatic> {
 
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id", nullable = false)
     private League league;
@@ -35,7 +37,31 @@ public class LeagueStatic extends BaseEntity<LeagueStatic> {
 
     public LeagueStatic(League league) {
         this.league = league;
-        //league.setLeagueStatic(this);
+        league.setLeagueStatic(this);
+    }
+
+    public LeagueStatic(League league, Team firstWinnerTeam, Team secondWinnerTeam,
+                        Team mostCheeredTeam, Team mostCheerTalksTeam) {
+        this.league = league;
+        if (league.getLeagueStatic() != this) {
+            league.setLeagueStatic(this);
+        }
+
+        if (firstWinnerTeam != null) {
+            updateFirstWinnerTeam(firstWinnerTeam);
+        }
+
+        if (secondWinnerTeam != null) {
+            updateSecondWinnerTeam(secondWinnerTeam);
+        }
+
+        if (mostCheeredTeam != null) {
+            updateMostCheeredTeam(mostCheeredTeam);
+        }
+
+        if (mostCheerTalksTeam != null) {
+            updateMostCheerTalksTeam(mostCheerTalksTeam);
+        }
     }
 
     public void updateFirstWinnerTeam(Team firstWinnerTeam) {

@@ -32,10 +32,9 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
         this.player = player;
         this.ranking = ranking;
         this.goalCount = goalCount;
-        
-        // 양방향 매핑을 위한 로직
-        //league.addTopScorer(this);
-        //player.addLeagueTopScorer(this);
+
+        league.addTopScorer(this);
+        player.addLeagueTopScorer(this);
     }
 
     public void updateRanking(Integer ranking) {
@@ -46,7 +45,7 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
         this.goalCount = goalCount;
     }
 
-    /*
+
     public void updateScorer(Player newPlayer) {
         if (this.player != null) {
             this.player.removeLeagueTopScorer(this);
@@ -58,8 +57,6 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
         }
     }
 
-     */
-    /*
     public void updateLeague(League newLeague) {
         if (this.league != null) {
             this.league.removeTopScorer(this);
@@ -70,5 +67,4 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
             newLeague.addTopScorer(this);
         }
     }
-     */
 }

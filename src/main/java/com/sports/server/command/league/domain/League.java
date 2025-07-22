@@ -1,6 +1,5 @@
 package com.sports.server.command.league.domain;
 
-import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
@@ -59,9 +58,8 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTopScorer> topScorers = new ArrayList<>();
 
-//    @Setter
-//    @OneToOne(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private LeagueStatic leagueStatic;
+    @OneToOne(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    private LeagueStatic leagueStatic;
 
     public League(
             final Member administrator,
@@ -79,6 +77,15 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.maxRound = maxRound;
         this.inProgressRound = maxRound;
         this.isDeleted = false;
+    }
+
+    public void setLeagueStatic(LeagueStatic leagueStatic) {
+        this.leagueStatic = leagueStatic;
+
+        // 양방향 연관관계 설정 (무한 루프 방지)
+        if (leagueStatic.getLeague() != this) {
+            leagueStatic.setLeague(this);
+        }
     }
 
     public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound) {
@@ -108,7 +115,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
             throw new CustomException(HttpStatus.BAD_REQUEST, "최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
         }
     }
-/* 새 엔티티와의 연관관계 주석 처리
+
     public void addTopScorer(LeagueTopScorer topScorer) {
         this.topScorers.add(topScorer);
     }
@@ -116,6 +123,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     public void removeTopScorer(LeagueTopScorer topScorer) {
         this.topScorers.remove(topScorer);
     }
+
     public void addLeagueTeam(LeagueTeam leagueTeam) {
         this.leagueTeams.add(leagueTeam);
     }
@@ -123,5 +131,4 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     public void removeLeagueTeam(LeagueTeam leagueTeam) {
         this.leagueTeams.remove(leagueTeam);
     }
- */
 }
