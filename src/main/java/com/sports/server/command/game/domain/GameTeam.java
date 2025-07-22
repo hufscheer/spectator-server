@@ -103,7 +103,6 @@ public class GameTeam extends BaseEntity<GameTeam> {
         LineupPlayer lineupPlayer = new LineupPlayer(
                 this,
                 player.getId(),
-                player.getName(),
                 player.getNumber(),
                 false,
                 LineupPlayerState.CANDIDATE);

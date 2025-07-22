@@ -4,8 +4,9 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.team.domain.LeagueTeamRepository;
+import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.dto.LeagueTeamPlayerRequest;
-import com.sports.server.command.team.dto.LeagueTeamRequest;
+import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class LeagueTeamService {
+public class TeamService {
 
     @Value("${image.origin-prefix}")
     private String originPrefix;
@@ -31,80 +32,80 @@ public class LeagueTeamService {
     private final EntityUtils entityUtils;
     private final S3Service s3Service;
 
-    public void register(final Long leagueId, final Member manager, final LeagueTeamRequest.Register request) {
+    public void register(final Long leagueId, final Member manager, final TeamRequest.Register request) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
 
-        LeagueTeam leagueTeam = request.toEntity(manager, league, imgUrl);
+        Team team = request.toEntity(name, manager, league, imgUrl);
 
         for (LeagueTeamPlayerRequest.Register player : request.players()) {
-            leagueTeam.addPlayer(player.toEntity(leagueTeam));
+            team.addPlayer(player.toEntity(team));
         }
 
-        leagueTeamRepository.save(leagueTeam);
+        leagueTeamRepository.save(team);
     }
 
-    public void update(Long leagueId, LeagueTeamRequest.Update request, Member manager, Long teamId) {
+    public void update(Long leagueId, TeamRequest.Update request, Member manager, Long teamId) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
-        LeagueTeam leagueTeam = getLeagueTeam(teamId);
+        Team team = getTeam(teamId);
 
-        leagueTeam.updateInfo(request.name(), request.logoImageUrl(), originPrefix, replacePrefix);
-        s3Service.doesFileExist(leagueTeam.getLogoImageUrl());
+        team.updateInfo(request.name(), request.logoImageUrl(), originPrefix, replacePrefix);
+        s3Service.doesFileExist(team.getLogoImageUrl());
 
-        addPlayers(request, leagueTeam);
-        updatePlayers(request, leagueTeam);
-        deletePlayers(request, leagueTeam);
+        addPlayers(request, team);
+        updatePlayers(request, team);
+        deletePlayers(request, team);
     }
 
     public void delete(Long leagueId, Member manager, Long teamId) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
-        LeagueTeam leagueTeam = entityUtils.getEntity(teamId, LeagueTeam.class);
+        Team leagueTeam = entityUtils.getEntity(teamId, Team.class);
         leagueTeam.isParticipate(league);
 
         leagueTeam.deleteLogoImageUrl();
-        leagueTeamRepository.delete(leagueTeam);
+        leagueTeamRepository.delete(team);
     }
 
-    private LeagueTeam getLeagueTeam(final Long leagueTeamId) {
+    private Team getLeagueTeam(final Long leagueTeamId) {
         return leagueTeamRepository.findById(leagueTeamId)
                 .orElseThrow(() -> new NotFoundException("해당 리그팀이 존재하지 않습니다."));
     }
 
 
-    private void addPlayers(LeagueTeamRequest.Update request, LeagueTeam leagueTeam) {
+    private void addPlayers(TeamRequest.Update request, Team team) {
         if (request.newPlayers() != null) {
             request.newPlayers().stream()
-                    .map(lgp -> lgp.toEntity(leagueTeam))
-                    .forEach(leagueTeam::addPlayer);
+                    .map(lgp -> lgp.toEntity(team))
+                    .forEach(team::addPlayer);
         }
     }
 
-    private void updatePlayers(LeagueTeamRequest.Update request, LeagueTeam leagueTeam) {
+    private void updatePlayers(TeamRequest.Update request, Team team) {
         if (request.updatedPlayers() != null) {
             request.updatedPlayers().forEach(updateRequest -> {
                 LeagueTeamPlayer player = entityUtils.getEntity(updateRequest.id(), LeagueTeamPlayer.class);
-                leagueTeam.validateLeagueTeamPlayer(player);
+                team.validateTeamPlayer(player);
                 player.update(updateRequest.name(), updateRequest.number(), updateRequest.studentNumber());
             });
         }
     }
 
-    private void deletePlayers(LeagueTeamRequest.Update request, LeagueTeam leagueTeam) {
+    private void deletePlayers(TeamRequest.Update request, Team team) {
         if (request.deletedPlayerIds() != null) {
             request.deletedPlayerIds().stream()
                     .map(lgpId -> {
                         LeagueTeamPlayer lgp = entityUtils.getEntity(lgpId, LeagueTeamPlayer.class);
-                        leagueTeam.validateLeagueTeamPlayer(lgp);
+                        team.validateLeagueTeamPlayer(lgp);
                         return lgp;
                     })
-                    .forEach(leagueTeam::deletePlayer);
+                    .forEach(team::deletePlayer);
         }
     }
 

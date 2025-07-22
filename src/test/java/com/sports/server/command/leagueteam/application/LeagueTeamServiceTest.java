@@ -3,10 +3,10 @@ package com.sports.server.command.leagueteam.application;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
-import com.sports.server.command.team.application.LeagueTeamService;
+import com.sports.server.command.team.application.TeamService;
 import com.sports.server.command.team.domain.LeagueTeamRepository;
 import com.sports.server.command.team.dto.LeagueTeamPlayerRequest;
-import com.sports.server.command.team.dto.LeagueTeamRequest;
+import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.S3Service;
@@ -50,7 +50,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
     private EntityUtils entityUtils;
 
     @Autowired
-    private LeagueTeamService leagueTeamService;
+    private TeamService leagueTeamService;
 
     @Autowired
     private LeagueTeamRepository leagueTeamRepository;
@@ -73,7 +73,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
         // given
         Long leagueId = 1L;
         Member nonManager = entityUtils.getEntity(2L, Member.class);
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register("name", imageUrl, List.of(),
+        TeamRequest.Register request = new TeamRequest.Register("name", imageUrl, List.of(),
                 "color code");
 
         // when & then
@@ -92,7 +92,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, imageUrl,
+        TeamRequest.Register request = new TeamRequest.Register(leagueTeamName, imageUrl,
                 playerRegisterRequests, "color code");
         doNothing().when(s3Service).doesFileExist(anyString());
 
@@ -117,7 +117,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "2020033320"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "2020033320"));
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(leagueTeamName, "invalid-logo-url",
+        TeamRequest.Register request = new TeamRequest.Register(leagueTeamName, "invalid-logo-url",
                 playerRegisterRequests, "color code");
 
         // when & then
@@ -149,7 +149,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
                     new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
                     new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
-            LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
+            TeamRequest.Update request = new TeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(5L));
             doNothing().when(s3Service).doesFileExist(anyString());
 
@@ -166,7 +166,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
                     new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
                     new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of();
-            LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
+            TeamRequest.Update request = new TeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
             doNothing().when(s3Service).doesFileExist(anyString());
 
@@ -191,7 +191,7 @@ public class LeagueTeamServiceTest extends ServiceTest {
             List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
                     new LeagueTeamPlayerRequest.Update(updatedLeagueTeamPlayerId, updatedName, 0, "202000003")
             );
-            LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
+            TeamRequest.Update request = new TeamRequest.Update(
                     "name", imageUrl, playerRegisterRequests, playerUpdateRequests, List.of(3L));
             doNothing().when(s3Service).doesFileExist(anyString());
 

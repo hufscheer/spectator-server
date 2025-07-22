@@ -2,7 +2,7 @@ package com.sports.server.command.leagueteam.presentation;
 
 
 import com.sports.server.command.team.dto.LeagueTeamPlayerRequest;
-import com.sports.server.command.team.dto.LeagueTeamRequest;
+import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
@@ -32,7 +32,7 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "202000001"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "202000002"));
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
+        TeamRequest.Register request = new TeamRequest.Register(
                 "name", "logo-image-url", playerRegisterRequests, "color code");
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -78,7 +78,7 @@ public class LeagueTeamControllerTest extends DocumentationTest {
         List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
                 new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0, "202000003")
         );
-        LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
+        TeamRequest.Update request = new TeamRequest.Update(
                 "name", "logo-image-url", playerRegisterRequests, playerUpdateRequests, List.of(5L));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
