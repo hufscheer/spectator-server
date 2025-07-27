@@ -42,7 +42,6 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(game.gameName()).isEqualTo("농구 대전"),
                 () -> assertThat(game.gameQuarter()).isEqualTo("1st Quarter"),
                 () -> assertThat(game.videoId()).isEqualTo("abc123"),
-                () -> assertThat(game.sportName()).isEqualTo("농구"),
                 () -> assertThat(game.startTime()).isEqualTo(
                         LocalDateTime.of(2023, 11, 12, 10, 0, 0)
                 ),
@@ -95,8 +94,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                                                         1L, "팀 A", "http://example.com/logo_a.png", 1, 0
                                                 ),
                                                 new GameResponseDto.TeamResponse(
-                                                        2L, "팀 B", "http://example.com/logo_b.png", 2, 0)),
-                                        "농구", false
+                                                        2L, "팀 B", "http://example.com/logo_b.png", 2, 0)), false
                                 )
                         ),
                 () -> assertThat(games)
@@ -109,36 +107,11 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                                                         3L, "팀 B", "http://example.com/logo_b.png", 0, 0),
                                                 new GameResponseDto.TeamResponse(
                                                         4L, "팀 C", "http://example.com/logo_c.png", 0, 0)
-                                        ),
-                                        "농구", false
+                                        ), false
                                 )
 
                         )
         );
-
-    }
-
-    @Test
-    void 스포츠_아이디가_여러개일_경우_해당하는_모든_경기를_반환한다() {
-
-        // when
-        int lastPkOfFixtureFromFirstLeague = 13;
-        ExtractableResponse<Response> response = RestAssured.given()
-                .queryParam("state", "SCHEDULED")
-                .queryParam("league_id", 1L)
-                .queryParam("size", lastPkOfFixtureFromFirstLeague)
-                .queryParam("sport_id", 1L)
-                .queryParam("sport_id", 2L)
-                .log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games")
-                .then().log().all()
-                .extract();
-
-        // then
-        List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
-        assertThat(games).hasSize(lastPkOfFixtureFromFirstLeague);
 
     }
 

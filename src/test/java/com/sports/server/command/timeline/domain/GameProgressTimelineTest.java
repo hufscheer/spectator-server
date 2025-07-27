@@ -10,7 +10,6 @@ import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,11 +18,9 @@ class GameProgressTimelineTest {
     private Quarter 경기전;
     private Quarter 전반전;
     private Quarter 후반전;
-    private Quarter 연장전;
     private Quarter 승부차기;
     private Quarter 경기후;
     private Game game;
-    private Sport sport;
 
     @BeforeEach
     void setUp() {
@@ -57,16 +54,10 @@ class GameProgressTimelineTest {
                 .set("order", 6)
                 .sample();
 
-        sport = entityBuilder(Sport.class)
-                .set("name", "축구")
-                .set("quarters", List.of(경기전, 전반전, 후반전, 승부차기, 경기후))
-                .sample();
-
         game = entityBuilder(Game.class)
                 .set("teams", new ArrayList<>())
                 .set("gameQuarter", 경기전.getName())
                 .set("state", GameState.SCHEDULED)
-                .set("sport", sport)
                 .set("is_pk_taken", false)
                 .sample();
     }

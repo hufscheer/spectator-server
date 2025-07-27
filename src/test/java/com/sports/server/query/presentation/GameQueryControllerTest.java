@@ -14,7 +14,6 @@ import com.sports.server.query.dto.response.*;
 import com.sports.server.support.DocumentationTest;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -35,7 +34,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(
-                startTime, "videoId", "전반전", "여름축구", "축구", gameTeams, "PLAYING", 4, false
+                startTime, "videoId", "전반전", "여름축구", gameTeams, "PLAYING", 4, false
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);
@@ -56,7 +55,6 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("videoId").type(JsonFieldType.STRING).description("게임 비디오 ID"),
                                 fieldWithPath("gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("gameName").type(JsonFieldType.STRING).description("게임 이름"),
-                                fieldWithPath("sportName").type(JsonFieldType.STRING).description("종목"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("게임의 라운드"),
                                 fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
@@ -110,8 +108,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2, 0)
         );
         List<GameResponseDto> responses = List.of(
-                new GameResponseDto(1L, startTime, "전반전", "4강", 4, "abc123", gameTeams1, "축구", false),
-                new GameResponseDto(2L, startTime, "1쿼터", "결승전", 2, "abc123", gameTeams2, "농구", false)
+                new GameResponseDto(1L, startTime, "전반전", "4강", 4, "abc123", gameTeams1, false),
+                new GameResponseDto(2L, startTime, "1쿼터", "결승전", 2, "abc123", gameTeams2, false)
         );
 
         given(gameQueryService.getAllGames(any(), any()))
@@ -121,8 +119,6 @@ class GameQueryControllerTest extends DocumentationTest {
         ResultActions result = mockMvc.perform(get("/games")
                 .queryParam("league_id", "1")
                 .queryParam("state", "PLAYING")
-                .queryParam("sport_id", "1")
-                .queryParam("sport_id", "2")
                 .queryParam("round", "4")
                 .queryParam("league_team_id", "1")
                 .queryParam("cursor", String.valueOf(12))
@@ -136,7 +132,6 @@ class GameQueryControllerTest extends DocumentationTest {
                         queryParameters(
                                 parameterWithName("league_id").description("대회의 ID"),
                                 parameterWithName("state").description("게임의 상태"),
-                                parameterWithName("sport_id").description("게임의 종목"),
                                 parameterWithName("cursor").description("페이징 커서"),
                                 parameterWithName("size").description("페이징 사이즈"),
                                 parameterWithName("league_team_id").description("리그팀의 ID"),
@@ -150,7 +145,6 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].round").type(JsonFieldType.NUMBER)
                                         .description("게임 라운드 ex. 4강->4, 결승->2"),
                                 fieldWithPath("[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
-                                fieldWithPath("[].sportsName").type(JsonFieldType.STRING).description("종목"),
                                 fieldWithPath("[].isPkTaken").type(JsonFieldType.BOOLEAN)
                                         .description("승부차기 진출 여부"),
                                 fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)

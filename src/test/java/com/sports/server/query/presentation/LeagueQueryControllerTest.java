@@ -10,7 +10,6 @@ import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.G
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
-import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.DocumentationTest;
@@ -67,38 +66,6 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER)
                                         .description("현재 진행 중인 라운드"),
                                 fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태")
-                        )
-                ));
-    }
-
-    @Test
-    void 리그의_해당하는_스포츠_전체를_조회한다() throws Exception {
-
-        // given
-        Long leagueId = 1L;
-
-        List<LeagueSportResponse> responses = List.of(
-                new LeagueSportResponse(1L, "축구"),
-                new LeagueSportResponse(2L, "농구")
-        );
-
-        given(leagueQueryService.findSportsByLeague(leagueId))
-                .willReturn(responses);
-
-        // when
-        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/sports", leagueId)
-                .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        // then
-        result.andExpect((status().isOk()))
-                .andDo(restDocsHandler.document(
-                        pathParameters(
-                                parameterWithName("leagueId").description("리그의 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("[].sportId").type(JsonFieldType.NUMBER).description("스포츠의 ID"),
-                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("스포츠의 이름")
                         )
                 ));
     }
@@ -318,7 +285,6 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         )
                 ));
     }
-
 
     @Test
     void 리그팀을_상세_조회한다() throws Exception {

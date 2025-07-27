@@ -1,7 +1,6 @@
 package com.sports.server.command.leagueteam.presentation;
 
 
-import com.sports.server.command.team.dto.LeagueTeamPlayerRequest;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;

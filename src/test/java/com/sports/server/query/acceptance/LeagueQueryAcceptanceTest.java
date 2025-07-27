@@ -2,7 +2,6 @@ package com.sports.server.query.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.query.dto.response.*;
@@ -67,32 +66,6 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual)
                         .map(LeagueResponse::leagueId)
                         .containsExactly(7L, 6L, 5L)
-        );
-    }
-
-    @Test
-    void 리그의_모든_스포츠를_조회한다() {
-        // given
-        Long threeBuildingCup = 1L;
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/sports", threeBuildingCup)
-                .then().log().all()
-                .extract();
-
-        // then
-        List<LeagueSportResponse> actual = toResponses(response, LeagueSportResponse.class);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual)
-                        .map(LeagueSportResponse::name)
-                        .containsExactly("축구"),
-                () -> assertThat(actual)
-                        .map(LeagueSportResponse::sportId)
-                        .containsExactly(threeBuildingCup)
         );
     }
 
