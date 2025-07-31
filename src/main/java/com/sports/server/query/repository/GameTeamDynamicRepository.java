@@ -17,7 +17,7 @@ public class GameTeamDynamicRepository {
         return jpaQueryFactory
                 .selectFrom(gameTeam)
                 .select(gameTeam.game.id)
-                .where(gameTeam.leagueTeam.id.in(leagueTeamIds))
+                .where(gameTeam.team.id.in(leagueTeamIds))
                 .fetch();
     }
 }

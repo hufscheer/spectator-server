@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -99,8 +100,17 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
                 .orElseThrow();
     }
 
-    public void addTeam(GameTeam team) {
-        teams.add(team);
+    public void addGameTeam(GameTeam team) {
+        if (!this.teams.contains(team)) {
+            this.teams.add(team);
+        }
+        if (team.getGame() != this) {
+            team.setGame(this);
+        }
+    }
+
+    public void removeGameTeam(GameTeam team) {
+        this.teams.remove(team);
     }
 
     public void score(LineupPlayer scorer) {
@@ -160,6 +170,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.round = round;
     }
 
+    @Builder
     public Game(Member administrator, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round, boolean isPkTaken) {
         this.administrator = administrator;
@@ -195,14 +206,15 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.state = state;
     }
 
+    // 이 부분 맞는지 확인
     public void play() {
         this.state = GameState.PLAYING;
-        //updateQuarter(sport.getAfterStartQuarter());
+        updateQuarter(Quarter.FIRST_HALF);
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        //updateQuarter(sport.getEndQuarter());
+        updateQuarter(Quarter.POST_GAME);
     }
 
     public void updateQuarter(Quarter quarter) {

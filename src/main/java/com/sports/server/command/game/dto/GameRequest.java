@@ -8,7 +8,7 @@ import com.sports.server.command.member.domain.Member;
 
 import java.time.LocalDateTime;
 
-public class GameRequestDto {
+public class GameRequest {
     public record Register(
             String name,
             int round,
@@ -19,9 +19,18 @@ public class GameRequestDto {
             Long idOfTeam2,
             String videoId
     ) {
-        public Game toEntity(Member manager, League league) {
-            return new Game(manager, league, name, startTime, videoId, quarter, GameState.from(state),
-                    Round.from(round), false);
+        public Game toEntity(Member administrator, League league) {
+            return Game.builder()
+                    .administrator(administrator)
+                    .league(league)
+                    .name(this.name())
+                    .startTime(this.startTime())
+                    .videoId(this.videoId())
+                    .gameQuarter(this.quarter())
+                    .state(GameState.from(this.state()))
+                    .round(Round.from(this.round()))
+                    .isPkTaken(false)
+                    .build();
         }
     }
 

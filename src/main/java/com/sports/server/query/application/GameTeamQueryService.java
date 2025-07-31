@@ -25,7 +25,7 @@ public class GameTeamQueryService {
 
         return gameTeamQueryRepository.findAllByGame(game).stream()
                 .sorted(comparingLong(GameTeam::getId))
-                .map(gameTeam -> new GameTeamCheerResponseDto(gameTeam))
+                .map(GameTeamCheerResponseDto::new)
                 .toList();
     }
 }
