@@ -1,6 +1,6 @@
 package com.sports.server.command.league.domain;
 
-import com.sports.server.command.team.domain.Player;
+import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -44,7 +44,6 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
     public void updateGoalCount(Integer goalCount) {
         this.goalCount = goalCount;
     }
-
 
     public void updateScorer(Player newPlayer) {
         if (this.player != null) {

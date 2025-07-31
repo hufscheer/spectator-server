@@ -3,11 +3,12 @@ package com.sports.server.command.league.domain;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Entity(name = "NewLeagueTeam")
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity(name = "LeagueTeam")
 @Getter
 @Table(name = "league_teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,6 +22,9 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
+    @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
+
     @Column(name = "total_cheer_count")
     private Integer totalCheerCount;
 
@@ -30,20 +34,33 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     @Column(name = "ranking")
     private Integer ranking;
 
-    @Column(name = "team_color")
-    private String teamColor;
-
-    public LeagueTeam(League league, Team team, String teamColor) {
+    private LeagueTeam(League league,Team team) {
         this.league = league;
         this.team = team;
-        this.teamColor = teamColor;
         this.totalCheerCount = 0;
         this.totalTalkCount = 0;
         this.ranking = 0;
-        
-        // 양방향 매핑을 위한 로직
-        league.addLeagueTeam(this);
-        team.addLeagueTeam(this);
+    }
+
+    public static LeagueTeam of(League league, Team team) {
+        LeagueTeam leagueTeam = new LeagueTeam(league, team);
+        league.addLeagueTeam(leagueTeam);
+        team.addLeagueTeam(leagueTeam);
+        return leagueTeam;
+    }
+
+    void setLeague(League league) {
+        this.league = league;
+    }
+
+    public void addLeaguePlayer(LeagueTeamPlayer leaguePlayer) {
+        if (!this.leagueTeamPlayers.contains(leaguePlayer)) {
+            this.leagueTeamPlayers.add(leaguePlayer);
+        }
+    }
+
+    public void removeLeagueTeamPlayer(LeagueTeamPlayer leagueTeamPlayer) {
+        this.leagueTeamPlayers.remove(leagueTeamPlayer);
     }
 
     public void updateTotalCheerCount(Integer totalCheerCount) {
@@ -56,10 +73,6 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
 
     public void updateRanking(Integer ranking) {
         this.ranking = ranking;
-    }
-
-    public void updateTeamColor(String teamColor) {
-        this.teamColor = teamColor;
     }
 
     public void incrementCheerCount() {
