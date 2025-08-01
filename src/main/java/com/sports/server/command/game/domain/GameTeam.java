@@ -1,6 +1,6 @@
 package com.sports.server.command.game.domain;
 
-import com.sports.server.command.team.domain.Player;
+import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;

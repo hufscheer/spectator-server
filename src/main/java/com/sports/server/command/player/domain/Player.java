@@ -1,7 +1,9 @@
-package com.sports.server.command.team.domain;
+package com.sports.server.command.player.domain;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTopScorer;
+import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
