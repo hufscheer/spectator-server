@@ -10,13 +10,7 @@ import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
-import com.sports.server.query.dto.response.LeagueDetailResponse;
-import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueResponseToManage;
-import com.sports.server.query.dto.response.LeagueResponseWithGames;
-import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
-import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
-import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.query.repository.GameQueryRepository;
 import com.sports.server.query.repository.LeagueQueryRepository;
@@ -48,12 +42,12 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
+    public List<TeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
         return leagueTeamDynamicRepository.findByLeagueAndRound(league, round)
                 .stream()
-                .map(LeagueTeamResponse::new)
+                .map(TeamResponse::new)
                 .toList();
     }
 
