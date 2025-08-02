@@ -8,6 +8,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,8 +20,9 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
     @Test
     void 대회를_저장한다() {
         // given
+        List<Long> teamIds = List.of(1L, 2L);
         LeagueRequestDto.Register request = new LeagueRequestDto.Register("우물정 제기차기 대회", 4, LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), teamIds);
 
         configureMockJwtForEmail("john.doe@example.com");
         configureMockJwtForEmail(MOCK_EMAIL);
@@ -61,11 +64,14 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
     void 대회를_수정한다() throws Exception {
         // given
         Long leagueId = 1L;
+        List<Long> teamIds = List.of(1L, 2L, 3L);
         LeagueRequestDto.Update request = new LeagueRequestDto.Update(
                 "라임즙 많이 먹기 대회",
                 LocalDateTime.of(24, 12, 11, 0, 0, 0),
                 LocalDateTime.of(24, 12, 13, 0, 0, 0),
-                16);
+                16,
+                teamIds
+        );
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

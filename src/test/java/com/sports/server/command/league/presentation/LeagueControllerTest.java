@@ -13,6 +13,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -31,7 +32,8 @@ class LeagueControllerTest extends DocumentationTest {
 	void 리그를_생성한다() throws Exception {
 		// given
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequestDto.Register request = new LeagueRequestDto.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime);
+		List<Long> teamIds = List.of(1L, 2L, 3L);
+		LeagueRequestDto.Register request = new LeagueRequestDto.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, teamIds);
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequestDto.Register.class));
 
@@ -48,8 +50,9 @@ class LeagueControllerTest extends DocumentationTest {
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("대회 이름"),
                                         fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("대회 진행 라운드 수. 결승은 2"),
                                         fieldWithPath("startAt").type(JsonFieldType.STRING).description("대회 시작 시간"),
-                                        fieldWithPath("endAt").type(JsonFieldType.STRING).description("대회 종료 시간")
-                                ),
+                                        fieldWithPath("endAt").type(JsonFieldType.STRING).description("대회 종료 시간"),
+										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("참가 팀 ID 목록").optional()
+								),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                                 )
@@ -87,8 +90,14 @@ class LeagueControllerTest extends DocumentationTest {
 		// given
 		Long leagueId = 5124L;
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequestDto.Update request = new LeagueRequestDto.Update("훕치치배 망고 빨리먹기 대회", fixedDateTime,
-				fixedDateTime, 16);
+		List<Long> teamIds = List.of(1L, 2L, 4L);
+		LeagueRequestDto.Update request = new LeagueRequestDto.Update(
+				"훕치치배 망고 빨리먹기 대회",
+				fixedDateTime,
+				fixedDateTime,
+				16,
+				teamIds
+		);
 
 		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequestDto.Update.class), anyLong());
 
@@ -102,12 +111,13 @@ class LeagueControllerTest extends DocumentationTest {
 		result.andExpect(status().isOk())
 			.andDo(restDocsHandler.document(
 				requestFields(
-					fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 대회의 이름"),
-					fieldWithPath("startAt").type(JsonFieldType.STRING).description("변경할 대회 시작시간"),
-					fieldWithPath("endAt").type(JsonFieldType.STRING).description("변경할 대회 종료시간"),
-					fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("변경할 대회의 총 라운드 수")
+						fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 대회의 이름"),
+						fieldWithPath("startAt").type(JsonFieldType.STRING).description("변경할 대회 시작시간"),
+						fieldWithPath("endAt").type(JsonFieldType.STRING).description("변경할 대회 종료시간"),
+						fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("변경할 대회의 총 라운드 수"),
+						fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("변경할 참가 팀 ID 목록").optional()
 				),
-				requestCookies(
+					requestCookies(
 					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
 				)
 			));

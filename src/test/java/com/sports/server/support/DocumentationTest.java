@@ -116,9 +116,6 @@ public class DocumentationTest {
     protected TimelineQueryService timelineQueryService;
 
     @MockBean
-    protected SportQueryService sportQueryService;
-
-    @MockBean
     protected LineupPlayerService lineupPlayerService;
 
     @MockBean

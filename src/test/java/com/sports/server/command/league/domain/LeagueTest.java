@@ -95,10 +95,12 @@ class LeagueTest {
         LocalDateTime startAt = LocalDateTime.of(20, 12, 20, 0, 0, 0);
         LocalDateTime endAt = LocalDateTime.of(20, 12, 21, 0, 0, 0);
         int maxRound = 16;
+        List<Long> teamIds = List.of(1L, 2L, 3L);
+
         return Stream.of(
                 leagueUpdateRequestArgument(
                         "이름이 빈 값이 아닐 경우, 대회 이름, 시작 시간, 종료 시간, 총 라운드 수를 수정한다.",
-                        new LeagueRequestDto.Update(newName, startAt, endAt, maxRound),
+                        new LeagueRequestDto.Update(newName, startAt, endAt, maxRound, teamIds),
                         List.of(
                                 (league) -> () -> assertThat(league.getName()).isEqualTo(newName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
@@ -108,14 +110,35 @@ class LeagueTest {
                 ),
                 leagueUpdateRequestArgument(
                         "이름이 빈 값인 경우, 이름을 제외한 시작 시간, 종료 시간, 총 라운드 수를 수정한다.",
-                        new LeagueRequestDto.Update(emptyName, startAt, endAt, maxRound),
+                        new LeagueRequestDto.Update(emptyName, startAt, endAt, maxRound, teamIds),
                         List.of(
                                 (league) -> () -> assertThat(league.getName()).isNotEqualTo(emptyName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
                                 (league) -> () -> assertThat(league.getEndAt()).isEqualTo(endAt),
                                 (league) -> () -> assertThat(league.getMaxRound().getNumber()).isEqualTo(maxRound)
                         )
+                ),
+                leagueUpdateRequestArgument(
+                        "팀 목록이 null이어도 다른 정보는 정상적으로 수정된다.",
+                        new LeagueRequestDto.Update(newName, startAt, endAt, maxRound, null),
+                        List.of(
+                                (league) -> () -> assertThat(league.getName()).isEqualTo(newName),
+                                (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
+                                (league) -> () -> assertThat(league.getEndAt()).isEqualTo(endAt),
+                                (league) -> () -> assertThat(league.getMaxRound().getNumber()).isEqualTo(maxRound)
+                        )
+                ),
+                leagueUpdateRequestArgument(
+                        "팀 목록이 비어있어도 다른 정보는 정상적으로 수정된다.",
+                        new LeagueRequestDto.Update(newName, startAt, endAt, maxRound, List.of()),
+                        List.of(
+                                (league) -> () -> assertThat(league.getName()).isEqualTo(newName),
+                                (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
+                                (league) -> () -> assertThat(league.getEndAt()).isEqualTo(endAt),
+                                (league) -> () -> assertThat(league.getMaxRound().getNumber()).isEqualTo(maxRound)
+                        )
                 )
+
         );
     }
 
