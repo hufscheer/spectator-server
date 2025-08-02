@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Table(name = "league_statistics")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LeagueStatic extends BaseEntity<LeagueStatic> {
+public class LeagueStatistic extends BaseEntity<LeagueStatistic> {
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
@@ -35,16 +35,16 @@ public class LeagueStatic extends BaseEntity<LeagueStatic> {
     @JoinColumn(name = "most_cheer_talks_team_id")
     private Team mostCheerTalksTeam;
 
-    public LeagueStatic(League league) {
+    public LeagueStatistic(League league) {
         this.league = league;
-        league.setLeagueStatic(this);
+        league.setLeagueStatistic(this);
     }
 
-    public LeagueStatic(League league, Team firstWinnerTeam, Team secondWinnerTeam,
-                        Team mostCheeredTeam, Team mostCheerTalksTeam) {
+    public LeagueStatistic(League league, Team firstWinnerTeam, Team secondWinnerTeam,
+                           Team mostCheeredTeam, Team mostCheerTalksTeam) {
         this.league = league;
-        if (league.getLeagueStatic() != this) {
-            league.setLeagueStatic(this);
+        if (league.getLeagueStatistic() != this) {
+            league.setLeagueStatistic(this);
         }
 
         if (firstWinnerTeam != null) {

@@ -197,12 +197,41 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void play() {
         this.state = GameState.PLAYING;
-        //updateQuarter(sport.getAfterStartQuarter());
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        //updateQuarter(sport.getEndQuarter());
+        determineResult();
+    }
+
+    public void determineResult() {
+        if (teams.size() != 2) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
+        }
+
+        GameTeam team1 = getTeam1();
+        GameTeam team2 = getTeam2();
+
+        // 점수로 승패 결정
+        if (team1.getScore() > team2.getScore()) {
+            team1.markAsWinner();
+            team2.markAsLoser();
+        } else if (team2.getScore() > team1.getScore()) {
+            team2.markAsWinner();
+            team1.markAsLoser();
+        } else {
+            // 동점인 경우 승부차기 점수 확인 TODO: 승부차기 안 하는 경우 고려
+            if (team1.getPkScore() > team2.getPkScore()) {
+                team1.markAsWinner();
+                team2.markAsLoser();
+            } else if (team2.getPkScore() > team1.getPkScore()) {
+                team2.markAsWinner();
+                team1.markAsLoser();
+            } else {
+                team1.markAsDraw();
+                team2.markAsDraw();
+            }
+        }
     }
 
     public void updateQuarter(Quarter quarter) {

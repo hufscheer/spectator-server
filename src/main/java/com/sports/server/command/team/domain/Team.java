@@ -3,7 +3,7 @@ package com.sports.server.command.team.domain;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueStatic;
+import com.sports.server.command.league.domain.LeagueStatistic;
 import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
@@ -54,16 +54,16 @@ public class Team extends BaseEntity<Team> {
     private List<GameTeam> gameTeams = new ArrayList<>();
 
     @OneToMany(mappedBy = "firstWinnerTeam")
-    private List<LeagueStatic> firstWinLeagueStatics = new ArrayList<>();
+    private List<LeagueStatistic> firstWinLeagueStatistics = new ArrayList<>();
 
     @OneToMany(mappedBy = "secondWinnerTeam")
-    private List<LeagueStatic> secondWinLeagueStatics = new ArrayList<>();
+    private List<LeagueStatistic> secondWinLeagueStatistics = new ArrayList<>();
 
     @OneToMany(mappedBy = "mostCheeredTeam")
-    private List<LeagueStatic> mostCheeredLeagueStatics = new ArrayList<>();
+    private List<LeagueStatistic> mostCheeredLeagueStatistics = new ArrayList<>();
 
     @OneToMany(mappedBy = "mostCheerTalksTeam")
-    private List<LeagueStatic> mostCheerTalksLeagueStatics = new ArrayList<>();
+    private List<LeagueStatistic> mostCheerTalksLeagueStatistics = new ArrayList<>();
 
     public void addPlayer(Player player) {
         TeamPlayer teamPlayer = new TeamPlayer(this, player);
@@ -144,36 +144,36 @@ public class Team extends BaseEntity<Team> {
         this.leagueTeams.add(leagueTeam);
     }
 
-    public void addFirstWinLeagueStatic(LeagueStatic leagueStatic) {
-        this.firstWinLeagueStatics.add(leagueStatic);
+    public void addFirstWinLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.firstWinLeagueStatistics.add(leagueStatistic);
     }
 
-    public void removeFirstWinLeagueStatic(LeagueStatic leagueStatic) {
-        this.firstWinLeagueStatics.remove(leagueStatic);
+    public void removeFirstWinLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.firstWinLeagueStatistics.remove(leagueStatistic);
     }
 
-    public void addSecondWinLeagueStatic(LeagueStatic leagueStatic) {
-        this.secondWinLeagueStatics.add(leagueStatic);
+    public void addSecondWinLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.secondWinLeagueStatistics.add(leagueStatistic);
     }
 
-    public void removeSecondWinLeagueStatic(LeagueStatic leagueStatic) {
-        this.secondWinLeagueStatics.remove(leagueStatic);
+    public void removeSecondWinLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.secondWinLeagueStatistics.remove(leagueStatistic);
     }
 
-    public void addMostCheeredLeagueStatic(LeagueStatic leagueStatic) {
-        this.mostCheeredLeagueStatics.add(leagueStatic);
+    public void addMostCheeredLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.mostCheeredLeagueStatistics.add(leagueStatistic);
     }
 
-    public void removeMostCheeredLeagueStatic(LeagueStatic leagueStatic) {
-        this.mostCheeredLeagueStatics.remove(leagueStatic);
+    public void removeMostCheeredLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.mostCheeredLeagueStatistics.remove(leagueStatistic);
     }
 
-    public void addMostCheerTalksLeagueStatic(LeagueStatic leagueStatic) {
-        this.mostCheerTalksLeagueStatics.add(leagueStatic);
+    public void addMostCheerTalksLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.mostCheerTalksLeagueStatistics.add(leagueStatistic);
     }
 
-    public void removeMostCheerTalksLeagueStatic(LeagueStatic leagueStatic) {
-        this.mostCheerTalksLeagueStatics.remove(leagueStatic);
+    public void removeMostCheerTalksLeagueStatic(LeagueStatistic leagueStatistic) {
+        this.mostCheerTalksLeagueStatistics.remove(leagueStatistic);
     }
 
 }

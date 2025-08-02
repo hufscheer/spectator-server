@@ -10,4 +10,5 @@ public class GameErrorMessages {
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION = "참여하지 않는 선수는 득점을 취소할 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_ISSUE_WARNING_CARD_EXCEPTION = "참여하지 않는 선수는 경고카드를 받을 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION = "참여하지 않는 선수는 경고카드를 취소할 수 없습니다.";
+    public static final String GAME_REQUIRES_TWO_TEAMS = "게임에는 두 팀이 필요합니다.";
 }
