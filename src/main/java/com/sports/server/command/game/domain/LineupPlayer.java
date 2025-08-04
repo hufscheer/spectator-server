@@ -26,7 +26,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     private GameTeam gameTeam;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_team_player_id", nullable = false) //TODO: DB 변경
+    @JoinColumn(name = "league_team_player_id", nullable = false)
     private LeagueTeamPlayer leagueTeamPlayer;
 
     @Column(name = "description", nullable = true)

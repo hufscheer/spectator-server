@@ -5,6 +5,7 @@ import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerState;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LineupPlayerResponse {
 
@@ -65,8 +66,9 @@ public class LineupPlayerResponse {
 					lineupPlayer.isCaptain(),
 					lineupPlayer.getState(),
 					lineupPlayer.isReplaced(),
-					lineupPlayer.getReplacedPlayer() != null ? new PlayerSummary(lineupPlayer.getReplacedPlayer()) : null
-			);
+					Optional.ofNullable(lineupPlayer.getReplacedPlayer())
+							.map(PlayerSummary::new)
+							.orElse(null));
 		}
 	}
 

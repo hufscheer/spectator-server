@@ -25,16 +25,16 @@ public enum Quarter {
                 return quarter;
             }
         }
-        throw new IllegalArgumentException("Quarter not found for name: " + name);
+        throw new IllegalArgumentException("해당 쿼터 이름이 존재하지 않습니다: " + name);
     }
 
     public static Quarter fromId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Quarter ID cannot be null");
+            throw new IllegalArgumentException("쿼터 아이디는 null이 될 수 없습니다.");
         }
         Quarter[] values = Quarter.values();
         if (id < 1 || id > values.length) {
-            throw new IllegalArgumentException("Quarter not found for id: " + id);
+            throw new IllegalArgumentException("해당 아이디의 쿼터가 존재하지 않습니다: " + id);
         }
         return values[(int) (id - 1)];
     }

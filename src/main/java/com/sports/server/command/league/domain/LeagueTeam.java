@@ -26,13 +26,13 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
 
     @Column(name = "total_cheer_count")
-    private Integer totalCheerCount;
+    private int totalCheerCount;
 
     @Column(name = "total_talk_count")
-    private Integer totalTalkCount;
+    private int totalTalkCount;
 
     @Column(name = "ranking")
-    private Integer ranking;
+    private int ranking;
 
     private LeagueTeam(League league,Team team) {
         this.league = league;
@@ -47,10 +47,6 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         league.addLeagueTeam(leagueTeam);
         team.addLeagueTeam(leagueTeam);
         return leagueTeam;
-    }
-
-    void setLeague(League league) {
-        this.league = league;
     }
 
     public void addLeaguePlayer(LeagueTeamPlayer leaguePlayer) {

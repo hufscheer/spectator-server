@@ -49,7 +49,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     private League league;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GameTeam> teams = new ArrayList<>();
+    private List<GameTeam> gameTeams = new ArrayList<>();
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -89,28 +89,25 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public GameTeam getTeam1() {
-        return teams.stream()
+        return gameTeams.stream()
                 .min(Comparator.comparing(GameTeam::getId))
                 .orElseThrow();
     }
 
     public GameTeam getTeam2() {
-        return teams.stream()
+        return gameTeams.stream()
                 .max(Comparator.comparing(GameTeam::getId))
                 .orElseThrow();
     }
 
-    public void addGameTeam(GameTeam team) {
-        if (!this.teams.contains(team)) {
-            this.teams.add(team);
-        }
-        if (team.getGame() != this) {
-            team.setGame(this);
+    public void addGameTeam(GameTeam gameTeam) {
+        if (!this.gameTeams.contains(gameTeam)) {
+            this.gameTeams.add(gameTeam);
         }
     }
 
     public void removeGameTeam(GameTeam team) {
-        this.teams.remove(team);
+        this.gameTeams.remove(team);
     }
 
     public void score(LineupPlayer scorer) {
@@ -138,7 +135,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {
-        return teams.stream()
+        return gameTeams.stream()
                 .filter(scorer::isInTeam)
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(errorMessage));
@@ -197,7 +194,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     private void validateGameTeam(final GameTeam gameTeam) {
-        if (this.teams.stream().noneMatch(team -> team.getId().equals(gameTeam.getId()))) {
+        if (this.gameTeams.stream().noneMatch(team -> team.getId().equals(gameTeam.getId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
         }
     }
@@ -206,7 +203,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.state = state;
     }
 
-    // 이 부분 맞는지 확인
     public void play() {
         this.state = GameState.PLAYING;
         updateQuarter(Quarter.FIRST_HALF);

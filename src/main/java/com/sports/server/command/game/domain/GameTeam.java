@@ -1,7 +1,5 @@
 package com.sports.server.command.game.domain;
 
-import com.sports.server.command.league.domain.LeagueTeamPlayer;
-import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
@@ -105,10 +103,6 @@ public class GameTeam extends BaseEntity<GameTeam> {
         game.addGameTeam(gameTeam);
         team.addGameTeam(gameTeam);
         return gameTeam;
-    }
-
-    void setGame(Game game) {
-        this.game = game;
     }
 
     public void addLineupPlayer(final LineupPlayer lineupPlayer) {

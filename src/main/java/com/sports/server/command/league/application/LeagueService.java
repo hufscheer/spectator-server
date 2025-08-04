@@ -33,17 +33,17 @@ public class LeagueService {
 	}
 
 	public void update(final Member manager, final LeagueRequest.Update request, final Long leagueId) {
-		League league = findLeagueAndValidatePermission(leagueId, manager);
+		League league = findValidatedLeague(leagueId, manager);
 		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()));
 	}
 
     public void delete(final Member manager, final Long leagueId) {
-        League league = findLeagueAndValidatePermission(leagueId, manager);
+        League league = findValidatedLeague(leagueId, manager);
         leagueRepository.delete(league);
     }
 
 	public void registerTeamWithPlayers(final Long leagueId, final LeagueRequest.TeamAndPlayersRegister request, final Member manager) {
-		League league = findLeagueAndValidatePermission(leagueId, manager);
+		League league = findValidatedLeague(leagueId, manager);
 		Team team = entityUtils.getEntity(request.teamId(), Team.class);
 
 		if (leagueTeamRepository.existsByLeagueIdAndTeamId(leagueId, team.getId())) {
@@ -62,24 +62,25 @@ public class LeagueService {
 	}
 
 	public void removeTeamFromLeague(final Member manager, final Long leagueId, final Long teamId){
-		League league = findLeagueAndValidatePermission(leagueId, manager);
+		League league = findValidatedLeague(leagueId, manager);
+		Team team = entityUtils.getEntity(teamId, Team.class);
 
 		LeagueTeam leagueTeam = leagueTeamRepository.findByLeagueIdAndTeamId(leagueId, teamId)
 				.orElseThrow(() -> new IllegalArgumentException("리그에 참가중인 팀이 아닙니다."));
 
 		league.removeLeagueTeam(leagueTeam);
-		leagueTeam.getTeam().removeLeagueTeam(leagueTeam);
+		team.removeLeagueTeam(leagueTeam);
 	}
 
 	public void removePlayerFromLeagueTeamPlayers(final Long leagueId, final Long leagueTeamPlayerId, final Member manager) {
-		findLeagueAndValidatePermission(leagueId, manager);
+		findValidatedLeague(leagueId, manager);
 		LeagueTeamPlayer leagueTeamPlayer = entityUtils.getEntity(leagueTeamPlayerId, LeagueTeamPlayer.class);
 
 		LeagueTeam leagueTeam = leagueTeamPlayer.getLeagueTeam();
 		leagueTeam.removeLeagueTeamPlayer(leagueTeamPlayer);
 	}
 
-	private League findLeagueAndValidatePermission(final Long leagueId, final Member manager) {
+	private League findValidatedLeague(final Long leagueId, final Member manager) {
 		League league = entityUtils.getEntity(leagueId, League.class);
 		if (!league.isManagedBy(manager)) {
 			throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);

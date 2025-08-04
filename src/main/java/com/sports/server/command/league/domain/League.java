@@ -58,9 +58,6 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTopScorer> topScorers = new ArrayList<>();
 
-    @OneToOne(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
-    private LeagueStatistics leagueStatistics;
-
     public League(
             final Member administrator,
             final Organization organization,
@@ -77,15 +74,6 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.maxRound = maxRound;
         this.inProgressRound = maxRound;
         this.isDeleted = false;
-    }
-
-    public void setLeagueStatistics(LeagueStatistics leagueStatistics) {
-        this.leagueStatistics = leagueStatistics;
-
-        // 양방향 연관관계 설정 (무한 루프 방지)
-        if (leagueStatistics.getLeague() != this) {
-            leagueStatistics.setLeague(this);
-        }
     }
 
     public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound) {
@@ -127,10 +115,6 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     public void addLeagueTeam(LeagueTeam leagueTeam) {
         if (!this.leagueTeams.contains(leagueTeam)) {
             this.leagueTeams.add(leagueTeam);
-        }
-
-        if (leagueTeam.getLeague() != this) {
-            leagueTeam.setLeague(this);
         }
     }
 

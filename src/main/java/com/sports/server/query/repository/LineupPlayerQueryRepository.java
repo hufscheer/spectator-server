@@ -11,17 +11,17 @@ public interface LineupPlayerQueryRepository extends Repository<LineupPlayer, Lo
 
     @Query("select lp from LineupPlayer lp " +
             "join fetch lp.gameTeam gt " +
-            "join fetch gt.leagueTeam " +
+            "join fetch gt.team " +
             "left join fetch lp.replacedPlayer rp " +
             "where gt.game.id = :gameId " +
-            "order by lp.number asc")
+            "order by lp.jerseyNumber asc")
     List<LineupPlayer> findPlayersByGameId(@Param("gameId") final Long gameId);
 
     @Query("select lp from LineupPlayer lp " +
             "join fetch lp.gameTeam gt " +
-            "join fetch gt.leagueTeam " +
+            "join fetch gt.team " +
             "where gt.game.id = :gameId " +
             "and lp.isPlaying = true " +
-            "order by lp.number asc")
+            "order by lp.jerseyNumber asc")
     List<LineupPlayer> findPlayingPlayersByGameId(@Param("gameId") final Long gameId);
 }

@@ -34,7 +34,7 @@ public class LeagueController {
 		leagueService.update(member, request, leagueId);
 	}
 
-    // 이 api 필요한지는 모르겠음 - 매니저 서버 ui 나오면 리팩토링 or 삭제
+    // 매니저 서버 ui 확인 필요
     @DeleteMapping("/{leagueId}/teams/{teamId}")
     @ResponseStatus(HttpStatus.OK)
     public void removeTeamFromLeague(@PathVariable Long leagueId,
@@ -51,9 +51,7 @@ public class LeagueController {
         leagueService.registerTeamWithPlayers(leagueId, request, manager);
     }
 
-    // leagueTeamPlayer 에서 개별 선수 삭제
-    // 이 api 필요한지는 모르겠음 - 매니저 서버 ui 나오면 리팩토링 or 삭제
-    // TODO: 쿼리 컨트롤러 -> 리그팀 플레이어 조회 api
+    // 매니저 서버 ui 확인 필요
     @DeleteMapping("/{leagueId}/league-team-players/{leagueTeamPlayerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removePlayerFromLeagueTeamPlayers(@PathVariable final Long leagueId,

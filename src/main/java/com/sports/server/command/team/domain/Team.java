@@ -2,7 +2,6 @@ package com.sports.server.command.team.domain;
 
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.LeagueTeam;
-import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
@@ -27,14 +26,14 @@ public class Team extends BaseEntity<Team> {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "logo_image_url", nullable = false) // TODO:?
+    @Column(name = "logo_image_url", nullable = false)
     private String logoImageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "unit", nullable = true)
     private Unit unit;
 
-    @Column(name = "team_color", nullable = true)
+    @Column(name = "team_color", nullable = true) // nullable: 매니저 서버 로직 확인
     private String teamColor;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -110,7 +109,9 @@ public class Team extends BaseEntity<Team> {
     }
 
     public void addGameTeam(GameTeam gameTeam) {
-        this.gameTeams.add(gameTeam);
+        if (!this.gameTeams.contains(gameTeam)) {
+            this.gameTeams.add(gameTeam);
+        }
     }
 
     public void removeGameTeam(GameTeam gameTeam) {

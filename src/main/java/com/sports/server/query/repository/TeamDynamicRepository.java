@@ -23,7 +23,6 @@ public class TeamDynamicRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     public List<Team> findByLeagueAndRound(final League league, Integer roundNumber) {
-
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(
                 JPAExpressions.selectOne()
@@ -39,7 +38,7 @@ public class TeamDynamicRepository {
             booleanBuilder.and(
                     JPAExpressions.selectOne()
                             .from(game)
-                            .join(game.teams, gameTeam)
+                            .join(game.gameTeams, gameTeam)
                             .where(
                                     game.league.eq(league),
                                     gameTeam.team.eq(team),
