@@ -3,13 +3,15 @@ package com.sports.server.command.game.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.league.application.LeagueStatisticsService;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
@@ -224,6 +226,12 @@ public class GameServiceTest extends ServiceTest {
     @DisplayName("게임 상태를 업데이트할 때")
     class UpdateGameStatusToFinishTest {
 
+        @MockBean
+        private LeagueStatisticsService leagueStatisticsService;
+
+        @Autowired
+        private GameStatusScheduler gameStatusScheduler;
+
         @Test
         @DisplayName("정상적으로 시작한지 5시간이 지난 게임의 상태가 FINISHED로 변경된다")
         void updateGamesOlderThanFiveHoursToFinished() {
@@ -256,6 +264,40 @@ public class GameServiceTest extends ServiceTest {
                             GameState.FINISHED),
                     () -> assertThat(gameFixtureRepository.findByName("오래된 경기2").orElse(null).getState()).isEqualTo(
                             GameState.FINISHED));
+        }
+
+        @Test
+        @DisplayName("결승전 게임이 종료되면 리그 통계가 업데이트된다")
+        void updateLeagueStatisticsWhenFinalGameFinished() {
+            // given
+            LocalDateTime now = LocalDateTime.now(clock);
+
+            League league = entityUtils.getEntity(1L, League.class);
+            Member manager = entityUtils.getEntity(1L, Member.class);
+
+            Game finalGame = new Game(manager, league, "결승전", now.minusHours(6), "videoId", "후반전",
+                    GameState.PLAYING, Round.FINAL, false);
+            gameFixtureRepository.save(finalGame);
+
+            Game nonFinalGame = new Game(manager, league, "준결승전", now.minusHours(6), "videoId", "후반전",
+                    GameState.PLAYING, Round.SEMI_FINAL, false);
+            gameFixtureRepository.save(nonFinalGame);
+
+            // when
+            gameStatusScheduler.scheduleUpdateGameStatusToFinish();
+
+            // then
+            Game updatedFinalGame = gameFixtureRepository.findByName("결승전").orElse(null);
+            Game updatedNonFinalGame = gameFixtureRepository.findByName("준결승전").orElse(null);
+
+            assertAll(
+                    () -> assertThat(updatedFinalGame.getState()).isEqualTo(GameState.FINISHED),
+                    () -> assertThat(updatedNonFinalGame.getState()).isEqualTo(GameState.FINISHED)
+            );
+
+            // updateLeagueStatisticFromFinalGame 메소드가 결승전에 대해서만 호출되었는지 확인
+            verify(leagueStatisticsService, times(1)).updateLeagueStatisticFromFinalGame(updatedFinalGame);
+            verify(leagueStatisticsService, never()).updateLeagueStatisticFromFinalGame(updatedNonFinalGame);
         }
     }
 
