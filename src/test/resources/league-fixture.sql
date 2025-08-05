@@ -93,7 +93,7 @@ VALUES (1, 3, 1, 0),   -- 미컴 축구생각 - 봄동나물진승희
        (10, 7, 10, 5); -- 팀4 - 정선수
 
 -- 게임 데이터
-INSERT INTO games (id, manager_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round)
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round)
 VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'PLAYING', '4강'),
        (2, 1, 1, '두번째로 빠른 경기', '2023-11-12T10:10:00', 'abc123', '2023-11-12T10:10:00', '1st Quarter', 'SCHEDULED', '4강'),
        (3, 1, 1, '세번째로 빠른 경기', '2023-11-12T11:00:00', 'abc123', '2023-11-12T11:15:00', '1st Quarter', 'PLAYING', '4강'),
