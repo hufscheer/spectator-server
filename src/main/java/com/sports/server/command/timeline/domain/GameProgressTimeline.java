@@ -9,9 +9,6 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,8 +27,8 @@ public class GameProgressTimeline extends Timeline {
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "previous_quarter_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "previous_quarter")
     private Quarter previousQuarter;
 
     private LocalDateTime previousQuarterChangedAt;

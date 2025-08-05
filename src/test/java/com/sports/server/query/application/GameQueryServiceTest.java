@@ -28,28 +28,23 @@ public class GameQueryServiceTest extends ServiceTest {
     private final Long validLeagueId = 1L;
     private final int size = 5;
     private final PageRequestDto pageRequestDto = new PageRequestDto(null, size);
-    private final List<Long> sportIds = List.of(1L, 2L);
     private final String stateValue = "SCHEDULED";
     private final List<Long> leagueTeamIds = List.of(1L, 2L);
 
     @Test
     void 존재하지_않는_게임_상태를_조회할_때_예외가_발생한다() {
-
         //given
         String invalidStateValue = "INVALID";
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, invalidStateValue, sportIds,
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, invalidStateValue,
                 null, null);
 
         // when
         assertThrows(CustomException.class,
                 () -> gameQueryService.getAllGames(queryRequestDto, pageRequestDto));
-
     }
-
 
     @Test
     void 날짜순으로_게임들이_반환된다() {
-
         //given
         PageRequestDto pageRequestDto = new PageRequestDto(null, 5);
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L), leagueTeamIds,
@@ -69,7 +64,6 @@ public class GameQueryServiceTest extends ServiceTest {
 
     @Test
     void 시작_날짜가_같은_경우_pk순으로_게임이_반환된다() {
-
         //given
         PageRequestDto pageRequestDto = new PageRequestDto(2L, 5);
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", List.of(1L), leagueTeamIds,
@@ -85,7 +79,6 @@ public class GameQueryServiceTest extends ServiceTest {
         assertThat(games).extracting(GameResponseDto::id)
                 .containsExactly(3L, 4L, 6L, 7L, 5L);
     }
-
 
     @Test
     void 커서를_이용해서_조회하는_경우_게임_시작_시간이_빠른_게임이_아이디가_커서보다_큰_게임보다_먼저_반환된다() {

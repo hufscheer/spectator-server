@@ -71,4 +71,11 @@ public class ReplacementTimeline extends Timeline {
         this.replacedLineupPlayer.deactivatePlayerInGame();
         this.replacedLineupPlayer.deleteReplacedPlayer();
     }
+
+    public String getReplacedPlayerName() {
+        if (replacedLineupPlayer == null) {
+            return null;
+        }
+        return replacedLineupPlayer.getLeagueTeamPlayer().getPlayer().getName();
+    }
 }

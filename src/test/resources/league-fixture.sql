@@ -1,15 +1,5 @@
 SET foreign_key_checks = 0;
 
--- 스포츠
-INSERT INTO sports (id, name)
-VALUES (1, '축구');
-INSERT INTO sports (id, name)
-VALUES (2, '농구');
-INSERT INTO sports (id, name)
-VALUES (3, '롤');
-INSERT INTO sports (id, name)
-VALUES (4, '루미큐브');
-
 -- 오가니제이션
 INSERT INTO organizations (id, name)
 VALUES (1, '훕치치');
@@ -37,14 +27,14 @@ VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00
        (10, 1, 1, '축구 대회', '2099-12-30 00:00:00', '2099-12-31 00:00:00', false, '16강', '16강');
 
 -- 리그의 스포츠
-INSERT INTO league_sports (id, league_id, sport_id)
-VALUES (1, 1, 1);
-INSERT INTO league_sports (id, league_id, sport_id)
-VALUES (2, 2, 2);
-INSERT INTO league_sports (id, league_id, sport_id)
-VALUES (3, 3, 3);
-INSERT INTO league_sports (id, league_id, sport_id)
-VALUES (4, 4, 4);
+INSERT INTO league_sports (id, league_id)
+VALUES (1, 1);
+INSERT INTO league_sports (id, league_id)
+VALUES (2, 2);
+INSERT INTO league_sports (id, league_id)
+VALUES (3, 3);
+INSERT INTO league_sports (id, league_id)
+VALUES (4, 4;
 
 -- 리그의 리그팀
 INSERT INTO league_teams (id, name, logo_image_url, manager_id, organization_id, league_id)
@@ -64,16 +54,16 @@ VALUES (1, '봄동나물진승희', '설명설명설명', 0, 3),
        (4, '여름수박고병룡', '설명설명설명', 3, 3),
        (5, '승희', '설명', 10, 1);
 
-INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at,
+INSERT INTO games (id,manager_id, league_id, name, start_time, video_id, quarter_changed_at,
                    game_quarter, state, round)
-VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'PLAYING', '4강'),
-       (2, 1, 1, 1, '두번째로 빠른 경기', '2023-11-12T10:10:00', 'abc123', '2023-11-12T10:10:00', '1st Quarter', 'SCHEDULED',
+VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'PLAYING', '4강'),
+       (2, 1, 1, '두번째로 빠른 경기', '2023-11-12T10:10:00', 'abc123', '2023-11-12T10:10:00', '1st Quarter', 'SCHEDULED',
         '4강'),
-       (3, 1, 1, 1, '세번째로 빠른 경기', '2023-11-12T11:00:00', 'abc123', '2023-11-12T11:15:00', '1st Quarter', 'PLAYING',
+       (3, 1, 1, '세번째로 빠른 경기', '2023-11-12T11:00:00', 'abc123', '2023-11-12T11:15:00', '1st Quarter', 'PLAYING',
         '4강'),
-       (4, 1, 1, 2, '네번째로 빠른 경기', '2023-11-12T12:00:00', 'abc123', '2023-11-12T12:15:00', '1st Quarter', 'PLAYING',
+       (4, 1, 2, '네번째로 빠른 경기', '2023-11-12T12:00:00', 'abc123', '2023-11-12T12:15:00', '1st Quarter', 'PLAYING',
         '4강'),
-       (5, 1, 1, 1, '예시 경기', '2023-11-12T12:00:00', 'abc123', '2023-11-12T12:15:00', '1st Quarter', 'FINISHED',
+       (5, 1, 1, '예시 경기', '2023-11-12T12:00:00', 'abc123', '2023-11-12T12:15:00', '1st Quarter', 'FINISHED',
         '4강');
 
 INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)

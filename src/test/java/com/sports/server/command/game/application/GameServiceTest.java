@@ -15,7 +15,6 @@ import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
 import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
@@ -25,7 +24,6 @@ import com.sports.server.support.fixture.GameFixtureRepository;
 import com.sports.server.support.fixture.GameTeamFixtureRepository;
 import com.sports.server.support.fixture.LeagueTeamPlayerFixtureRepository;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -232,16 +230,15 @@ public class GameServiceTest extends ServiceTest {
             // given
             LocalDateTime now = LocalDateTime.now(clock);
 
-            Sport sport = entityUtils.getEntity(1L, Sport.class);
             League league = entityUtils.getEntity(1L, League.class);
             Member manager = entityUtils.getEntity(1L, Member.class);
             Round round = Round.ROUND_16;
 
-            Game recentGame = new Game(sport, manager, league, "종료되면 안되는 경기", now.minusHours(4), "videoId", "전반전",
+            Game recentGame = new Game(manager, league, "종료되면 안되는 경기", now.minusHours(4), "videoId", "전반전",
                     GameState.PLAYING, round, false);
-            Game oldGame1 = new Game(sport, manager, league, "오래된 경기1", now.minusHours(5), "videoId", "전반전",
+            Game oldGame1 = new Game(manager, league, "오래된 경기1", now.minusHours(5), "videoId", "전반전",
                     GameState.PLAYING, round, false);
-            Game oldGame2 = new Game(sport, manager, league, "오래된 경기2", now.minusHours(6), "videoId", "전반전",
+            Game oldGame2 = new Game(manager, league, "오래된 경기2", now.minusHours(6), "videoId", "전반전",
                     GameState.PLAYING, round, false);
 
             gameFixtureRepository.save(recentGame);

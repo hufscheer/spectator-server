@@ -11,7 +11,6 @@ public record GameDetailResponse(
         String videoId,
         String gameQuarter,
         String gameName,
-        String sportName,
         List<TeamResponse> gameTeams,
         String state,
         int round,
@@ -24,7 +23,6 @@ public record GameDetailResponse(
                 game.getVideoId(),
                 game.getGameQuarter(),
                 game.getName(),
-                game.getSport().getName(),
                 gameTeams.stream()
                         .sorted(Comparator.comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
@@ -41,13 +39,12 @@ public record GameDetailResponse(
             String logoImageUrl,
             Integer score,
             Integer pkScore
-
     ) {
         public TeamResponse(GameTeam gameTeam) {
             this(
                     gameTeam.getId(),
-                    gameTeam.getLeagueTeam().getName(),
-                    gameTeam.getLeagueTeam().getLogoImageUrl(),
+                    gameTeam.getTeam().getName(),
+                    gameTeam.getTeam().getLogoImageUrl(),
                     gameTeam.getScore(),
                     gameTeam.getPkScore()
             );

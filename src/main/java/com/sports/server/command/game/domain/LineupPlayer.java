@@ -3,19 +3,21 @@ package com.sports.server.command.game.domain;
 import static com.sports.server.command.game.domain.LineupPlayerState.CANDIDATE;
 import static com.sports.server.command.game.domain.LineupPlayerState.STARTER;
 
+import com.sports.server.command.league.domain.LeagueTeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
 
 import java.util.Objects;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
+@Builder
 @Table(name = "lineup_players")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
@@ -23,17 +25,15 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @JoinColumn(name = "game_team_id")
     private GameTeam gameTeam;
 
-    @Column(name = "league_team_player_id", nullable = false)
-    private Long leagueTeamPlayerId;
-
-    @Column(name = "name", nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "league_team_player_id", nullable = false)
+    private LeagueTeamPlayer leagueTeamPlayer;
 
     @Column(name = "description", nullable = true)
     private String description;
 
-    @Column(name = "number", nullable = true)
-    private int number;
+    @Column(name = "jersey_number", nullable = true)
+    private int jerseyNumber;
 
     @Column(name = "is_captain", nullable = false)
     private boolean isCaptain;
@@ -48,6 +48,18 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "replaced_player_id", nullable = true)
     private LineupPlayer replacedPlayer;
+
+    private LineupPlayer(GameTeam gameTeam, LeagueTeamPlayer leagueTeamPlayer, LineupPlayerState state){
+        this.gameTeam = gameTeam;
+        this.leagueTeamPlayer = leagueTeamPlayer;
+        this.state = state;
+    }
+
+    public static LineupPlayer of(GameTeam gameTeam, LeagueTeamPlayer leagueTeamPlayer, LineupPlayerState state) {
+        LineupPlayer lineupPlayer = new LineupPlayer(gameTeam, leagueTeamPlayer, state);
+        gameTeam.addLineupPlayer(lineupPlayer);
+        return lineupPlayer;
+    }
 
     public boolean isReplaced() {
         return replacedPlayer != null;
@@ -94,16 +106,6 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public void deactivatePlayerInGame() {
         this.isPlaying = false;
-    }
-
-    public LineupPlayer(GameTeam gameTeam, Long leagueTeamPlayerId, String name, int number,
-                        boolean isCaptain, LineupPlayerState state) {
-        this.gameTeam = gameTeam;
-        this.leagueTeamPlayerId = leagueTeamPlayerId;
-        this.name = name;
-        this.number = number;
-        this.isCaptain = isCaptain;
-        this.state = state;
     }
 
     public void changePlayerToCaptain() {

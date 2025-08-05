@@ -29,8 +29,8 @@ public record ScoreRecordResponse(
     ) {
         public static Snapshot of(GameTeam gameTeam, Integer score) {
             return new Snapshot(
-                    gameTeam.getLeagueTeam().getName(),
-                    gameTeam.getLeagueTeam().getLogoImageUrl(),
+                    gameTeam.getTeam().getName(),
+                    gameTeam.getTeam().getLogoImageUrl(),
                     score
             );
         }

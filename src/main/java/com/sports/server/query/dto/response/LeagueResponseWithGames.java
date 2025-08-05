@@ -52,8 +52,8 @@ public record LeagueResponseWithGames(
             public static GameTeam of(com.sports.server.command.game.domain.GameTeam gameTeam) {
                 return new GameTeam(
                         gameTeam.getId(),
-                        gameTeam.getLeagueTeam().getName(),
-                        gameTeam.getLeagueTeam().getLogoImageUrl(),
+                        gameTeam.getTeam().getName(),
+                        gameTeam.getTeam().getLogoImageUrl(),
                         gameTeam.getScore(),
                         gameTeam.getPkScore()
                 );
@@ -63,7 +63,7 @@ public record LeagueResponseWithGames(
         public static GameDetail of(final Game game) {
             return new GameDetail(
                     game.getId(), game.getState().name(), game.getStartTime(), game.getIsPkTaken(),
-                    game.getTeams().stream()
+                    game.getGameTeams().stream()
                             .map(GameTeam::of)
                             .toList()
             );

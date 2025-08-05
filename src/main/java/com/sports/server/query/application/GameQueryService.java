@@ -38,7 +38,7 @@ public class GameQueryService {
     public List<GameResponseDto> getAllGames(final GamesQueryRequestDto queryRequestDto,
                                              final PageRequestDto pageRequest) {
 
-        List<Game> games = gameDynamicRepository.findAllByLeagueAndStateAndSports(queryRequestDto, pageRequest);
+        List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
         List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameIds(
                 games.stream()
                         .map(Game::getId)
@@ -49,8 +49,7 @@ public class GameQueryService {
                 .collect(groupingBy(GameTeam::getGame));
 
         return games.stream()
-                .map(game -> new GameResponseDto(game, groupedByGame.getOrDefault(game, new ArrayList<>()),
-                        game.getSport()))
+                .map(game -> new GameResponseDto(game, groupedByGame.getOrDefault(game, new ArrayList<>())))
                 .toList();
     }
 

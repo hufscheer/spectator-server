@@ -1,7 +1,6 @@
 package com.sports.server.command.leagueteam.acceptance;
 
-import com.sports.server.command.leagueteam.dto.LeagueTeamPlayerRequest;
-import com.sports.server.command.leagueteam.dto.LeagueTeamRequest;
+import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -33,7 +32,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         List<LeagueTeamPlayerRequest.Register> playerRegisterRequests = List.of(
                 new LeagueTeamPlayerRequest.Register("name-a", 1, "202000000"),
                 new LeagueTeamPlayerRequest.Register("name-b", 2, "202000000"));
-        LeagueTeamRequest.Register request = new LeagueTeamRequest.Register(
+        TeamRequest.Register request = new TeamRequest.Register(
                 "name", originPrefix + "image", playerRegisterRequests, "color code");
 
         configureMockJwtForEmail(MOCK_EMAIL);
@@ -63,7 +62,7 @@ public class LeagueTeamAcceptanceTest extends AcceptanceTest {
         List<LeagueTeamPlayerRequest.Update> playerUpdateRequests = List.of(
                 new LeagueTeamPlayerRequest.Update(1L, "여름수박진승희", 0, "202000000")
         );
-        LeagueTeamRequest.Update request = new LeagueTeamRequest.Update(
+        TeamRequest.Update request = new TeamRequest.Update(
                 "name", originPrefix + "image", playerRegisterRequests, playerUpdateRequests, List.of(4L));
 
         configureMockJwtForEmail(MOCK_EMAIL);

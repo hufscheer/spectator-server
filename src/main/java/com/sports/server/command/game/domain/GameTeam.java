@@ -1,7 +1,6 @@
 package com.sports.server.command.game.domain;
 
-import com.sports.server.command.leagueteam.domain.LeagueTeam;
-import com.sports.server.command.leagueteam.domain.LeagueTeamPlayer;
+import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.CascadeType;
@@ -36,8 +35,8 @@ public class GameTeam extends BaseEntity<GameTeam> {
     private Game game;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_team_id")
-    private LeagueTeam leagueTeam;
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     @OneToMany(mappedBy = "gameTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineupPlayer> lineupPlayers = new ArrayList<>();
@@ -92,23 +91,24 @@ public class GameTeam extends BaseEntity<GameTeam> {
         }
     }
 
-    public GameTeam(Game game, LeagueTeam leagueTeam) {
+    private GameTeam(Game game, Team team) {
         this.game = game;
-        this.leagueTeam = leagueTeam;
+        this.team = team;
         this.cheerCount = 0;
         this.score = 0;
     }
 
-    public void registerLineup(LeagueTeamPlayer player) {
-        LineupPlayer lineupPlayer = new LineupPlayer(
-                this,
-                player.getId(),
-                player.getName(),
-                player.getNumber(),
-                false,
-                LineupPlayerState.CANDIDATE);
+    public static GameTeam of(Game game, Team team) {
+        GameTeam gameTeam = new GameTeam(game, team);
+        game.addGameTeam(gameTeam);
+        team.addGameTeam(gameTeam);
+        return gameTeam;
+    }
 
-        this.lineupPlayers.add(lineupPlayer);
+    public void addLineupPlayer(final LineupPlayer lineupPlayer) {
+        if (!this.lineupPlayers.contains(lineupPlayer)) {
+            this.lineupPlayers.add(lineupPlayer);
+        }
     }
 
     public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
@@ -139,6 +139,5 @@ public class GameTeam extends BaseEntity<GameTeam> {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 등록된 주장이 존재합니다.");
         }
     }
-
 
 }
