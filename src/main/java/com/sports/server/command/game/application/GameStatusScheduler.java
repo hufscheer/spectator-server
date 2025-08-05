@@ -20,6 +20,7 @@ public class GameStatusScheduler {
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void scheduleUpdateGameStatusToFinish() {
         List<Game> finishedGames = gameService.updateGameStatusToFinish(LocalDateTime.now());
+        finishedGames.forEach(Game::determineResult);
         updateLeagueStatisticsForFinalGames(finishedGames);
     }
 
