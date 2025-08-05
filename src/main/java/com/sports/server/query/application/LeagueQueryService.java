@@ -27,7 +27,7 @@ public class LeagueQueryService {
     private final TeamDynamicRepository teamDynamicRepository;
     private final LeagueTeamPlayerQueryRepository leagueTeamPlayerQueryRepository;
     private final GameQueryRepository gameQueryRepository;
-    private final LegueStatisticsQueryRepository leagueStatisticsQueryRepository;
+    private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
 
     public List<LeagueResponse> findLeagues(Integer year) {
