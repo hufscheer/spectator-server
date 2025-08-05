@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.ToIntFunction;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -211,6 +213,45 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     public void end() {
         this.state = GameState.FINISHED;
         updateQuarter(Quarter.POST_GAME);
+    }
+
+    public void determineResult() {
+        if (gameTeams.size() != 2) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
+        }
+
+        GameTeam team1 = getTeam1();
+        GameTeam team2 = getTeam2();
+
+        if (trySetResultByScore(team1, team2, GameTeam::getScore)) {
+            return;
+        }
+        if (trySetResultByScore(team1, team2, GameTeam::getPkScore)) {
+            return;
+        }
+
+        // 무승부
+        team1.markAsDraw();
+        team2.markAsDraw();
+    }
+
+    private boolean trySetResultByScore(GameTeam team1, GameTeam team2, ToIntFunction<GameTeam> scoreExtractor) {
+        int score1 = scoreExtractor.applyAsInt(team1);
+        int score2 = scoreExtractor.applyAsInt(team2);
+
+        int comparison = Integer.compare(score1, score2);
+
+        if (comparison > 0) {
+            team1.markAsWinner();
+            team2.markAsLoser();
+            return true;
+        }
+        if (comparison < 0) {
+            team1.markAsLoser();
+            team2.markAsWinner();
+            return true;
+        }
+        return false;
     }
 
     public void updateQuarter(Quarter quarter) {

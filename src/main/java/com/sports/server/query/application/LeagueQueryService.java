@@ -3,18 +3,13 @@ package com.sports.server.query.application;
 import static java.util.stream.Collectors.toMap;
 
 import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueProgress;
-import com.sports.server.command.league.domain.LeagueTeam;
-import com.sports.server.command.league.domain.LeagueTeamPlayer;
+import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.*;
-import com.sports.server.query.repository.GameQueryRepository;
-import com.sports.server.query.repository.LeagueQueryRepository;
-import com.sports.server.query.repository.TeamDynamicRepository;
-import com.sports.server.query.repository.LeagueTeamPlayerQueryRepository;
+import com.sports.server.query.repository.*;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +27,7 @@ public class LeagueQueryService {
     private final TeamDynamicRepository teamDynamicRepository;
     private final LeagueTeamPlayerQueryRepository leagueTeamPlayerQueryRepository;
     private final GameQueryRepository gameQueryRepository;
+    private final LegueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
 
     public List<LeagueResponse> findLeagues(Integer year) {
@@ -108,6 +104,15 @@ public class LeagueQueryService {
                 .sorted(comparator)
                 .map(LeagueResponseToManage::of)
                 .toList();
+    }
+
+    public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
+        League league = entityUtils.getEntity(leagueId, League.class);
+        LeagueStatistics leagueStatistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId);
+        if (leagueStatistics == null) {
+            throw new NotFoundException("해당 리그의 통계를 찾을 수 없습니다.");
+        }
+        return new LeagueStatisticsResponse(leagueStatistics);
     }
 
     public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
