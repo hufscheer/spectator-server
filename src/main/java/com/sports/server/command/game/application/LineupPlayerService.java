@@ -2,8 +2,6 @@ package com.sports.server.command.game.application;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.league.domain.LeagueTeamPlayer;
-import com.sports.server.command.league.dto.LeagueTeamRequest;
 import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,11 +35,5 @@ public class LineupPlayerService {
         Game game = entityUtils.getEntity(gameId, Game.class);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         game.revokeCaptainFromPlayer(lineupPlayer);
-    }
-
-    public void changePlayerJerseyNumber(final Long lineupPlayerId, LeagueTeamRequest.UpdateJerseyNumber request) {
-        LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
-        LeagueTeamPlayer leagueTeamPlayer = lineupPlayer.getLeagueTeamPlayer();
-        leagueTeamPlayer.changeJerseyNumber(request.jerseyNumber());
     }
 }

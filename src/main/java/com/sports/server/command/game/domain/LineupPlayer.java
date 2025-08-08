@@ -3,7 +3,7 @@ package com.sports.server.command.game.domain;
 import static com.sports.server.command.game.domain.LineupPlayerState.CANDIDATE;
 import static com.sports.server.command.game.domain.LineupPlayerState.STARTER;
 
-import com.sports.server.command.league.domain.LeagueTeamPlayer;
+import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
@@ -26,14 +26,11 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     private GameTeam gameTeam;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_team_player_id", nullable = false)
-    private LeagueTeamPlayer leagueTeamPlayer;
-
-    @Column(name = "description", nullable = true)
-    private String description;
+    @JoinColumn(name = "player_id", nullable = false)
+    private Player player;
 
     @Column(name = "jersey_number", nullable = true)
-    private int jerseyNumber;
+    private Integer jerseyNumber;
 
     @Column(name = "is_captain", nullable = false)
     private boolean isCaptain;
@@ -49,14 +46,16 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @JoinColumn(name = "replaced_player_id", nullable = true)
     private LineupPlayer replacedPlayer;
 
-    private LineupPlayer(GameTeam gameTeam, LeagueTeamPlayer leagueTeamPlayer, LineupPlayerState state){
+    private LineupPlayer(@NonNull GameTeam gameTeam, @NonNull Player player, @NonNull LineupPlayerState state, Integer jerseyNumber, boolean isCaptain){
         this.gameTeam = gameTeam;
-        this.leagueTeamPlayer = leagueTeamPlayer;
+        this.player = player;
         this.state = state;
+        this.jerseyNumber = jerseyNumber;
+        this.isCaptain = isCaptain;
     }
 
-    public static LineupPlayer of(GameTeam gameTeam, LeagueTeamPlayer leagueTeamPlayer, LineupPlayerState state) {
-        LineupPlayer lineupPlayer = new LineupPlayer(gameTeam, leagueTeamPlayer, state);
+    public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber, boolean isCaptain) {
+        LineupPlayer lineupPlayer = new LineupPlayer(gameTeam, player, state, jerseyNumber, isCaptain);
         gameTeam.addLineupPlayer(lineupPlayer);
         return lineupPlayer;
     }

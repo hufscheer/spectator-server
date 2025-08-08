@@ -6,6 +6,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 public interface GameTeamRepository extends Repository<GameTeam, Long> {
+    void save(GameTeam gameTeam);
 
     @Modifying
     @Query("UPDATE GameTeam t SET t.cheerCount = t.cheerCount + :cheerCount WHERE t.id = :gameTeamId")

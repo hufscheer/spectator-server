@@ -13,7 +13,7 @@ public class PlayerController {
     private final PlayerService playerService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody PlayerRequest.Register request) {
         playerService.register(request);
     }

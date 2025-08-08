@@ -50,8 +50,7 @@ public class LineupPlayerResponse {
 	public record PlayerResponse(
 			Long id,
 			String playerName,
-			String description,
-			int number,
+			Integer jerseyNumber,
 			boolean isCaptain,
 			LineupPlayerState state,
 			boolean isReplaced,
@@ -60,8 +59,7 @@ public class LineupPlayerResponse {
 		public PlayerResponse(LineupPlayer lineupPlayer) {
 			this(
 					lineupPlayer.getId(),
-					lineupPlayer.getLeagueTeamPlayer().getPlayer().getName(),
-					lineupPlayer.getDescription(),
+					lineupPlayer.getPlayer().getName(),
 					lineupPlayer.getJerseyNumber(),
 					lineupPlayer.isCaptain(),
 					lineupPlayer.getState(),
@@ -80,7 +78,7 @@ public class LineupPlayerResponse {
 		public PlayerSummary(LineupPlayer lineupPlayer) {
 			this(
 					lineupPlayer.getId(),
-					lineupPlayer.getLeagueTeamPlayer().getPlayer().getName(),
+					lineupPlayer.getPlayer().getName(),
 					lineupPlayer.getJerseyNumber());
 		}
 	}

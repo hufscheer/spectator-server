@@ -37,19 +37,9 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagueDetail(leagueId));
     }
 
-    @GetMapping("/teams/{leagueTeamId}/players")
-    public ResponseEntity<List<PlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
-        return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));
-    }
-
     @GetMapping("/manager")
     public ResponseEntity<List<LeagueResponseWithInProgressGames>> findLeaguesByManager(final Member member) {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManager(member));
-    }
-
-    @GetMapping("/teams/{leagueTeamId}")
-    public ResponseEntity<LeagueTeamDetailResponse> findLeagueTeam(@PathVariable final Long leagueTeamId) {
-        return ResponseEntity.ok(leagueQueryService.findLeagueTeam(leagueTeamId));
     }
 
     @GetMapping("/{leagueId}/games")

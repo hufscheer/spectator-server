@@ -1,41 +1,33 @@
 package com.sports.server.query.dto.response;
 
-import com.sports.server.command.league.domain.LeagueTeamPlayer;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sports.server.command.player.domain.Player;
-import com.sports.server.command.team.domain.TeamPlayer;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record PlayerResponse(
 	Long playerId,
 	String name,
 	String studentNumber,
-	Integer jerseyNumber
+	Integer jerseyNumber,
+	int totalGoalCount
 ) {
 	public PlayerResponse(final Player player) {
 		this(
 				player.getId(),
 				player.getName(),
 				player.getStudentNumber(),
-				null
+				null,
+				0
 		);
 	}
 
-	public static PlayerResponse of(final LeagueTeamPlayer leagueTeamPlayer) {
-		Player player = leagueTeamPlayer.getPlayer();
+	public static PlayerResponse of(final Player player, final int totalGoalCount) {
 		return new PlayerResponse(
 				player.getId(),
 				player.getName(),
 				player.getStudentNumber(),
-				leagueTeamPlayer.getJerseyNumber()
-		);
-	}
-
-	public static PlayerResponse of(final TeamPlayer teamPlayer) {
-		Player player = teamPlayer.getPlayer();
-		return new PlayerResponse(
-				player.getId(),
-				player.getName(),
-				player.getStudentNumber(),
-				null
+				null,
+				totalGoalCount
 		);
 	}
 }
