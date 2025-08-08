@@ -1,6 +1,8 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.TeamQueryService;
+import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.TeamDetailResponse;
 import com.sports.server.query.dto.response.TeamResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +20,21 @@ import java.util.List;
 public class TeamQueryController {
 
     private final TeamQueryService teamQueryService;
+    private final GameQueryService gameQueryService;
 
-    // 전체 팀 반환
     @GetMapping
     public ResponseEntity<List<TeamResponse>> getAllTeams() {
         return ResponseEntity.ok(teamQueryService.getAllTeams());
     }
 
-    // 팀 선수까지 반환
     @GetMapping("/{teamId}")
     public ResponseEntity<TeamDetailResponse> getTeamDetail(@PathVariable final Long teamId) {
         return ResponseEntity.ok(teamQueryService.getTeamDetail(teamId));
+    }
+
+    @GetMapping("/{teamId}/games")
+    public ResponseEntity<List<GameDetailResponse>> getAllGamesByTeam(@PathVariable final Long teamId) {
+        return ResponseEntity.ok(gameQueryService.getAllGamesDetailByTeam(teamId));
     }
 
 }

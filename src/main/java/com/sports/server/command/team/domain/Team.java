@@ -2,15 +2,16 @@ package com.sports.server.command.team.domain;
 
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.LeagueTeam;
-import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
@@ -19,21 +20,17 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team extends BaseEntity<Team> {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
-
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "logo_image_url", nullable = false)
+    @Column(name = "logo_image_url", nullable = true)
     private String logoImageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "unit", nullable = true)
+    @Column(name = "unit", nullable = false)
     private Unit unit;
 
-    @Column(name = "team_color", nullable = true) // nullable: 매니저 서버 로직 확인
+    @Column(name = "team_color", nullable = false)
     private String teamColor;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,7 +43,7 @@ public class Team extends BaseEntity<Team> {
     private List<GameTeam> gameTeams = new ArrayList<>();
 
     @Builder
-    public Team(@NonNull String name, String logoImageUrl, Unit unit, String teamColor) {
+    public Team(@NonNull String name, String logoImageUrl, @NonNull Unit unit, @NonNull String teamColor) {
         this.name = name;
         this.logoImageUrl = logoImageUrl;
         this.unit = unit;
@@ -62,35 +59,33 @@ public class Team extends BaseEntity<Team> {
         }
     }
 
-    public void addTeamPlayer(Player player) {
+    public void addPlayer(Player player, Integer jerseyNumber) {
         boolean alreadyExists = this.teamPlayers.stream()
                 .anyMatch(tp -> tp.getPlayer().equals(player));
-
         if (alreadyExists) {
-            throw new IllegalStateException("이미 팀에 소속된 선수입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 팀에 소속된 선수입니다.");
         }
-        TeamPlayer teamPlayer = TeamPlayer.builder()
-                .team(this)
-                .player(player)
-                .build();
 
-        this.teamPlayers.add(teamPlayer);
-        player.addTeamPlayer(teamPlayer);
+        TeamPlayer.of(this, player, jerseyNumber);
+    }
+
+    void addTeamPlayerInternal(TeamPlayer teamPlayer) {
+            this.teamPlayers.add(teamPlayer);
     }
 
     public void removeTeamPlayer(Player player) {
         this.teamPlayers.stream()
                 .filter(tp -> tp.getPlayer().equals(player))
                 .findFirst()
-                .ifPresent(teamPlayer -> {
-                    this.teamPlayers.remove(teamPlayer);
-                    player.getTeamPlayers().remove(teamPlayer);
+                .ifPresent(tp -> {
+                    this.teamPlayers.remove(tp);
+                    player.removeTeamPlayer(tp);
                 });
     }
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl, String originPrefix, String replacePrefix) {
         if (!logoImageUrl.contains(originPrefix)) {
-            throw new IllegalStateException("잘못된 이미지 url 입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 이미지 url 입니다.");
         }
         return logoImageUrl.replace(originPrefix, replacePrefix);
     }

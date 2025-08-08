@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/teams")
@@ -13,7 +15,7 @@ public class TeamController {
     private final TeamService teamService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody TeamRequest.Register request) {
         teamService.register(request);
     }
@@ -30,18 +32,18 @@ public class TeamController {
         teamService.deleteLogoImage(teamId);
     }
 
-    @PostMapping("/{teamId}/player")
+    @PostMapping("/{teamId}/players")
     @ResponseStatus(HttpStatus.OK)
-    public void addPlayerToTeam(@PathVariable Long teamId,
-                          @RequestBody TeamRequest.PlayerIdRequest request){
-        teamService.addPlayerToTeam(teamId, request);
+    public void addPlayersToTeam(@PathVariable Long teamId,
+                          @RequestBody List<TeamRequest.TeamPlayerRegister> request){
+        teamService.addPlayersToTeam(teamId, request);
     }
 
-    @DeleteMapping("/{teamId}/player")
-    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{teamId}/players/{playerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePlayerFromTeam(@PathVariable Long teamId,
-                                     @RequestBody TeamRequest.PlayerIdRequest request){
-        teamService.deletePlayerFromTeam(teamId, request);
+                                     @PathVariable Long playerId){
+        teamService.deletePlayerFromTeam(teamId, playerId);
     }
 
 }
