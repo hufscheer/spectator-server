@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.sports.server.command.league.dto.LeagueRequestDto;
+import com.sports.server.command.league.dto.LeagueRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.support.DocumentationTest;
 
@@ -31,9 +31,9 @@ class LeagueControllerTest extends DocumentationTest {
 	void 리그를_생성한다() throws Exception {
 		// given
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequestDto.Register request = new LeagueRequestDto.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime);
+		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime);
 
-        doNothing().when(leagueService).register(any(Member.class), any(LeagueRequestDto.Register.class));
+        doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
 
 		// when
 		ResultActions result = mockMvc.perform(post("/leagues", request)
@@ -87,10 +87,10 @@ class LeagueControllerTest extends DocumentationTest {
 		// given
 		Long leagueId = 5124L;
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequestDto.Update request = new LeagueRequestDto.Update("훕치치배 망고 빨리먹기 대회", fixedDateTime,
+		LeagueRequest.Update request = new LeagueRequest.Update("훕치치배 망고 빨리먹기 대회", fixedDateTime,
 				fixedDateTime, 16);
 
-		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequestDto.Update.class), anyLong());
+		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequest.Update.class), anyLong());
 
 		// when
 		ResultActions result = mockMvc.perform(put("/leagues/{leagueId}", leagueId)
