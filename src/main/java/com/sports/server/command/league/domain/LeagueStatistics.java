@@ -39,6 +39,10 @@ public class LeagueStatistics extends BaseEntity<LeagueStatistics> {
         this.league = league;
     }
 
+    public static LeagueStatistics of(League league) {
+        return new LeagueStatistics(league);
+    }
+
     public void updateFirstWinnerTeam(Team firstWinnerTeam) {
         this.firstWinnerTeam = firstWinnerTeam;
     }

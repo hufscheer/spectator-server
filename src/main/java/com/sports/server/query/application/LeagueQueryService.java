@@ -3,18 +3,14 @@ package com.sports.server.query.application;
 import static java.util.stream.Collectors.toMap;
 
 import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueProgress;
-import com.sports.server.command.league.domain.LeagueTeam;
-import com.sports.server.command.league.domain.LeagueTeamPlayer;
+import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.*;
-import com.sports.server.query.repository.GameQueryRepository;
-import com.sports.server.query.repository.LeagueQueryRepository;
-import com.sports.server.query.repository.TeamDynamicRepository;
-import com.sports.server.query.repository.LeagueTeamPlayerQueryRepository;
+import com.sports.server.query.repository.*;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -32,7 +28,9 @@ public class LeagueQueryService {
     private final TeamDynamicRepository teamDynamicRepository;
     private final LeagueTeamPlayerQueryRepository leagueTeamPlayerQueryRepository;
     private final GameQueryRepository gameQueryRepository;
+    private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
+    private final LeagueTeamQueryRepository leagueTeamQueryRepository;
 
     public List<LeagueResponse> findLeagues(Integer year) {
         return leagueQueryRepository.findByYear(year)
@@ -108,6 +106,28 @@ public class LeagueQueryService {
                 .sorted(comparator)
                 .map(LeagueResponseToManage::of)
                 .toList();
+    }
+
+    public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
+        LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId);
+        List<LeagueTeam> leagueTeams = leagueTeamQueryRepository.findByLeagueId(leagueId);
+
+        return LeagueStatisticsResponse.builder()
+                .leagueStatisticsId(statistics.getId())
+                .firstWinnerTeam(TeamResponse.from(statistics.getFirstWinnerTeam()))
+                .secondWinnerTeam(TeamResponse.from(statistics.getSecondWinnerTeam()))
+                .mostCheeredTeam(createTeamResponseWithStats(statistics.getMostCheeredTeam(), leagueTeams))
+                .mostCheerTalksTeam(createTeamResponseWithStats(statistics.getMostCheerTalksTeam(), leagueTeams))
+                .build();
+    }
+
+    private TeamResponse createTeamResponseWithStats(Team team, List<LeagueTeam> leagueTeams) {
+        LeagueTeam leagueTeam = leagueTeams.stream()
+                .filter(lt -> lt.getTeam().equals(team))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("LeagueTeam not found"));
+
+        return TeamResponse.from(leagueTeam);
     }
 
     public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
