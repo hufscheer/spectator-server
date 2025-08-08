@@ -3,46 +3,45 @@ package com.sports.server.command.league.application;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueStatistics;
-import com.sports.server.command.league.domain.LeagueStatisticsRepository;
-import com.sports.server.command.league.domain.LeagueTeam;
+import com.sports.server.command.league.domain.*;
 import com.sports.server.command.team.domain.Team;
-import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.ToIntFunction;
+
+import static com.sports.server.command.game.domain.Game.MINIMUM_TEAMS;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LeagueStatisticsService {
     private final LeagueStatisticsRepository leagueStatisticsRepository;
-    private final EntityUtils entityUtils;
+    private final LeagueTeamRepository leagueTeamRepository;
 
     @Transactional
-    public Long updateLeagueStatisticFromFinalGame(Game finalGame) {
+    public void updateLeagueStatisticFromFinalGame(Game finalGame) {
         if (finalGame == null || finalGame.getLeague() == null) {
             throw new IllegalArgumentException("유효한 게임 또는 리그 정보가 없습니다.");
         }
 
         League league = finalGame.getLeague();
-        LeagueStatistics leagueStatistics = getOrCreateLeagueStatistics(league);
+        LeagueStatistics leagueStatistics = getLeagueStatistics(league);
 
         updateWinnerTeamsFromGame(finalGame, leagueStatistics);
 
         updateMostCheeredAndTalkedTeams(league, leagueStatistics);
 
-        return leagueStatistics.getId();
     }
 
-    private LeagueStatistics getOrCreateLeagueStatistics(League league) {
-        LeagueStatistics leagueStatistics = league.getLeagueStatistics();
+    private LeagueStatistics getLeagueStatistics(League league) {
+        LeagueStatistics leagueStatistics = leagueStatisticsRepository.findByLeagueId(league.getId());
         if (leagueStatistics == null) {
-            leagueStatistics = new LeagueStatistics(league);
+            leagueStatistics = LeagueStatistics.of(league);
             leagueStatisticsRepository.save(leagueStatistics);
         }
         return leagueStatistics;
@@ -50,30 +49,28 @@ public class LeagueStatisticsService {
 
     private void updateWinnerTeamsFromGame(Game finalGame, LeagueStatistics leagueStatistic) {
         List<GameTeam> teams = finalGame.getGameTeams();
-        if (teams.size() < 2) {
+        if (teams.size() < MINIMUM_TEAMS) {
             return;
         }
 
         League league = leagueStatistic.getLeague();
 
-        // 우승팀 설정
-        teams.stream()
-                .filter(gameTeam -> GameResult.WIN.equals(gameTeam.getResult()))
-                .findFirst()
-                .ifPresent(winner -> {
-                    Team winnerTeam = winner.getTeam();
-                    leagueStatistic.updateFirstWinnerTeam(winnerTeam);
-                    updateLeagueTeamRanking(league, winnerTeam, 1);
-                });
+        updateRankedTeam(teams, GameResult.WIN, 1, league, leagueStatistic::updateFirstWinnerTeam);
+        updateRankedTeam(teams, GameResult.LOSE, 2, league, leagueStatistic::updateSecondWinnerTeam);
+    }
 
-        // 준우승팀 설정
+    private void updateRankedTeam(List<GameTeam> teams,
+                                  GameResult targetResult,
+                                  int ranking,
+                                  League league,
+                                  Consumer<Team> statisticsUpdater) {
         teams.stream()
-                .filter(gameTeam -> GameResult.LOSE.equals(gameTeam.getResult()))
+                .filter(gameTeam -> targetResult.equals(gameTeam.getResult()))
                 .findFirst()
-                .ifPresent(loser -> {
-                    Team loserTeam = loser.getTeam();
-                    leagueStatistic.updateSecondWinnerTeam(loserTeam);
-                    updateLeagueTeamRanking(league, loserTeam, 2);
+                .ifPresent(gameTeam -> {
+                    Team team = gameTeam.getTeam();
+                    statisticsUpdater.accept(team);
+                    updateLeagueTeamRanking(league, team, ranking);
                 });
     }
 
@@ -83,23 +80,21 @@ public class LeagueStatisticsService {
             return;
         }
 
-        // 최다 응원팀 찾기
-        leagueTeams.stream()
-                .max(Comparator.comparing(LeagueTeam::getTotalCheerCount))
-                .map(LeagueTeam::getTeam)
-                .ifPresent(leagueStatistic::updateMostCheeredTeam);
+        findTeamWithMaxValue(leagueTeams, LeagueTeam::getTotalCheerCount, leagueStatistic::updateMostCheeredTeam);
+        findTeamWithMaxValue(leagueTeams, LeagueTeam::getTotalTalkCount, leagueStatistic::updateMostCheerTalksTeam);
+    }
 
-        // 최다 응원 톡 팀 찾기
+    private void findTeamWithMaxValue(List<LeagueTeam> leagueTeams,
+                                      ToIntFunction<LeagueTeam> valueExtractor,
+                                      Consumer<Team> teamUpdater) {
         leagueTeams.stream()
-                .max(Comparator.comparing(LeagueTeam::getTotalTalkCount))
+                .max(Comparator.comparingInt(valueExtractor))
                 .map(LeagueTeam::getTeam)
-                .ifPresent(leagueStatistic::updateMostCheerTalksTeam);
+                .ifPresent(teamUpdater);
     }
 
     private void updateLeagueTeamRanking(League league, Team team, int ranking) {
-        league.getLeagueTeams().stream()
-                .filter(lt -> lt.getTeam().equals(team))
-                .findFirst()
-                .ifPresent(lt -> lt.updateRanking(ranking));
+        leagueTeamRepository.findByLeagueAndTeam(league, team)
+                .ifPresent(leagueTeam -> leagueTeam.updateRanking(ranking));
     }
 }

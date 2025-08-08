@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game extends BaseEntity<Game> implements ManagedEntity {
 
+    public static final int MINIMUM_TEAMS = 2;
     private static final String NAME_OF_PK_QUARTER = "승부차기";
     private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
@@ -216,43 +217,42 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void determineResult() {
-        if (gameTeams.size() != 2) {
+        if (gameTeams.size() != MINIMUM_TEAMS) {
             throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
         }
 
         GameTeam team1 = getTeam1();
         GameTeam team2 = getTeam2();
 
-        if (trySetResultByScore(team1, team2, GameTeam::getScore)) {
-            return;
-        }
-        if (trySetResultByScore(team1, team2, GameTeam::getPkScore)) {
-            return;
-        }
+        int comparison = compareScores(team1, team2, GameTeam::getScore);
 
-        // 무승부
+        if (comparison > 0) {
+            markWinnerAndLoser(team1, team2);
+            return;
+        }
+        if (comparison < 0) {
+            markWinnerAndLoser(team2, team1);
+            return;
+        }
+        markAsDraw(team1, team2);
+    }
+
+    private static void markAsDraw(GameTeam team1, GameTeam team2) {
         team1.markAsDraw();
         team2.markAsDraw();
     }
 
-    private boolean trySetResultByScore(GameTeam team1, GameTeam team2, ToIntFunction<GameTeam> scoreExtractor) {
+    private int compareScores(GameTeam team1, GameTeam team2, ToIntFunction<GameTeam> scoreExtractor) {
         int score1 = scoreExtractor.applyAsInt(team1);
         int score2 = scoreExtractor.applyAsInt(team2);
-
-        int comparison = Integer.compare(score1, score2);
-
-        if (comparison > 0) {
-            team1.markAsWinner();
-            team2.markAsLoser();
-            return true;
-        }
-        if (comparison < 0) {
-            team1.markAsLoser();
-            team2.markAsWinner();
-            return true;
-        }
-        return false;
+        return Integer.compare(score1, score2);
     }
+
+    private void markWinnerAndLoser(GameTeam winner, GameTeam loser) {
+        winner.markAsWinner();
+        loser.markAsLoser();
+    }
+
 
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.getName();

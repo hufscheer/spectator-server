@@ -119,10 +119,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     void 리그_통계를_조회한다() throws Exception {
         // given
         Long leagueId = 1L;
-        TeamResponse firstWinnerTeam = new TeamResponse(1L, "우승팀", "logo1.png", Unit.BUSINESS, "#FF0000");
-        TeamResponse secondWinnerTeam = new TeamResponse(2L, "준우승팀", "logo2.png", Unit.ENGLISH, "#00FF00");
-        TeamResponse mostCheeredTeam = new TeamResponse(3L, "최다응원팀", "logo3.png", Unit.AI_CONVERGENCE, "#0000FF");
-        TeamResponse mostCheerTalksTeam = new TeamResponse(4L, "최다응원톡팀", "logo4.png", Unit.SOCIAL_SCIENCES, "#FFFF00");
+        TeamResponse firstWinnerTeam = new TeamResponse(1L, "우승팀", "logo1.png", Unit.BUSINESS, "#FF0000", null, null);
+        TeamResponse secondWinnerTeam = new TeamResponse(2L, "준우승팀", "logo2.png", Unit.ENGLISH, "#00FF00", null, null);
+        TeamResponse mostCheeredTeam = new TeamResponse(3L, "최다응원팀", "logo3.png", Unit.AI_CONVERGENCE, "#0000FF", 100, null);
+        TeamResponse mostCheerTalksTeam = new TeamResponse(4L, "최다응원톡팀", "logo4.png", Unit.SOCIAL_SCIENCES, "#FFFF00", null, 50);
         
         LeagueStatisticsResponse response = new LeagueStatisticsResponse(
                 1L,

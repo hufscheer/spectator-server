@@ -231,6 +231,29 @@ public class LeagueQueryServiceTest extends ServiceTest {
     }
 
     @Nested
+    @DisplayName("리그 통계를 조회할 때")
+    class findLeagueStatisticTest {
+
+        @Test
+        void 리그_통계를_정상적으로_조회한다() {
+            // given
+            Long leagueId = 1L;
+
+            // when
+            LeagueStatisticsResponse response = leagueQueryService.findLeagueStatistic(leagueId);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.leagueStatisticsId()).isNotNull(),
+                    () -> assertThat(response.firstWinnerTeam()).isNotNull(),
+                    () -> assertThat(response.secondWinnerTeam()).isNotNull(),
+                    () -> assertThat(response.mostCheeredTeam()).isNotNull(),
+                    () -> assertThat(response.mostCheerTalksTeam()).isNotNull()
+            );
+        }
+    }
+
+    @Nested
     @DisplayName("리그와 리그의 경기들을 조회할 때")
     class findLeagueAndGamesTest {
 
