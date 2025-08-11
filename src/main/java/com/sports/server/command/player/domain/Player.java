@@ -1,12 +1,13 @@
 package com.sports.server.command.player.domain;
 
 import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueTeamPlayer;
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +28,10 @@ public class Player extends BaseEntity<Player> {
     private List<TeamPlayer> teamPlayers = new ArrayList<>();
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
-
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTopScorer> leagueTopScorers = new ArrayList<>();
 
     @Builder
-    public Player(@NonNull String name, String studentNumber) {
+    public Player(@NonNull String name, @NonNull String studentNumber) {
         validateStudentNumber(studentNumber);
         this.name = name;
         this.studentNumber = studentNumber;
@@ -46,9 +44,11 @@ public class Player extends BaseEntity<Player> {
     }
 
     public void addTeamPlayer(TeamPlayer teamPlayer) {
-        if (!this.teamPlayers.contains(teamPlayer)) {
-            this.teamPlayers.add(teamPlayer);
-        }
+        this.teamPlayers.add(teamPlayer);
+    }
+
+    public void removeTeamPlayer(TeamPlayer teamPlayer) {
+        this.teamPlayers.remove(teamPlayer);
     }
 
     public void addLeagueTopScorer(LeagueTopScorer leagueTopScorer) {
@@ -61,7 +61,7 @@ public class Player extends BaseEntity<Player> {
 
     private void validateStudentNumber(String studentNumber) {
         if (studentNumber != null && !studentNumber.matches("^[0-9]{9}$")) {
-            throw new IllegalArgumentException("학생번호는 9자리 숫자여야 합니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "학생번호는 9자리 숫자여야 합니다.");
         }
     }
 

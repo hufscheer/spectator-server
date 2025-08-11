@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public record GameDetailResponse(
+        Long gameId,
         LocalDateTime startTime,
         String videoId,
         String gameQuarter,
@@ -14,11 +15,13 @@ public record GameDetailResponse(
         List<TeamResponse> gameTeams,
         String state,
         int round,
-        boolean isPkTaken
+        boolean isPkTaken,
+        String leagueName
 ) {
 
-    public GameDetailResponse(Game game, List<GameTeam> gameTeams) {
+    public GameDetailResponse(Game game, List<GameTeam> gameTeams, String leagueName) {
         this(
+                game.getId(),
                 game.getStartTime(),
                 game.getVideoId(),
                 game.getGameQuarter(),
@@ -29,7 +32,8 @@ public record GameDetailResponse(
                         .toList(),
                 game.getState().name(),
                 game.getRound().getNumber(),
-                game.getIsPkTaken()
+                game.getIsPkTaken(),
+                leagueName
         );
     }
 

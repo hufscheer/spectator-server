@@ -1,15 +1,22 @@
 package com.sports.server.command.team.application;
 
 import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.S3Service;
+import com.sports.server.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,6 +30,7 @@ public class TeamService {
     private String replacePrefix;
 
     private final TeamRepository teamRepository;
+    private final PlayerRepository playerRepository;
     private final EntityUtils entityUtils;
     private final S3Service s3Service;
 
@@ -32,23 +40,43 @@ public class TeamService {
 
         Team team = request.toEntity(imgUrl);
         teamRepository.save(team);
+
+        if (request.teamPlayers() != null && !request.teamPlayers().isEmpty()) {
+            addPlayersToTeam(team.getId(), request.teamPlayers());
+        }
     }
 
-    public void update(TeamRequest.Update request, Long teamId) {
+    public void update(final TeamRequest.Update request, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-        team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, request.unit(), request.teamColor());
+
         s3Service.doesFileExist(team.getLogoImageUrl());
+        team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, request.unit(), request.teamColor());
+
+        if (request.teamPlayers() != null) {
+            addPlayersToTeam(teamId, request.teamPlayers());
+        }
     }
 
-    public void addPlayerToTeam(final Long teamId, final TeamRequest.PlayerIdRequest request){
+    public void addPlayersToTeam(final Long teamId, final List<TeamRequest.TeamPlayerRegister> request){
         Team team = entityUtils.getEntity(teamId, Team.class);
-        Player player = entityUtils.getEntity(request.playerId(), Player.class);
-        team.addTeamPlayer(player);
+
+        List<Long> playerIds = request.stream()
+                .map(TeamRequest.TeamPlayerRegister::playerId)
+                .toList();
+        List<Player> players = playerRepository.findAllById(playerIds);
+
+        Map<Long, Integer> playerJerseyNumbers = request.stream()
+                .collect(Collectors.toMap(TeamRequest.TeamPlayerRegister::playerId, TeamRequest.TeamPlayerRegister::jerseyNumber));
+
+        players.forEach(player -> {
+            Integer jerseyNumber = playerJerseyNumbers.get(player.getId());
+            team.addPlayer(player, jerseyNumber);
+        });
     }
 
-    public void deletePlayerFromTeam(final Long teamId, final TeamRequest.PlayerIdRequest request) {
+    public void deletePlayerFromTeam(final Long teamId, final Long playerId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-        Player player = entityUtils.getEntity(request.playerId(), Player.class);
+        Player player = entityUtils.getEntity(playerId, Player.class);
         team.removeTeamPlayer(player);
     }
 
@@ -59,7 +87,7 @@ public class TeamService {
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl) {
         if (!logoImageUrl.contains(originPrefix)) {
-            throw new IllegalStateException("잘못된 이미지 url 입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 이미지 url 입니다.");
         }
         return logoImageUrl.replace(originPrefix, replacePrefix);
     }

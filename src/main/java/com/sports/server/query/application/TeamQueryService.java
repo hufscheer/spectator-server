@@ -1,6 +1,9 @@
 package com.sports.server.query.application;
 
+import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamDetailResponse;
@@ -10,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +21,9 @@ import java.util.List;
 public class TeamQueryService {
 
     private final TeamQueryRepository teamQueryRepository;
+    private final TeamPlayerRepository teamPlayerRepository;
     private final EntityUtils entityUtils;
+    private final PlayerQueryService playerQueryService;
 
     public List<TeamResponse> getAllTeams(){
         return teamQueryRepository.findAll().stream()
@@ -28,10 +33,19 @@ public class TeamQueryService {
 
     public TeamDetailResponse getTeamDetail(Long teamId){
         Team team = entityUtils.getEntity(teamId, Team.class);
-        List<PlayerResponse> players = team.getTeamPlayers().stream()
-                .map(PlayerResponse::of)
+
+        List<TeamPlayer> teamPlayers = teamQueryRepository.findAllTeamPlayer(teamId);
+        List<Long> playerIds = teamPlayerRepository.findPlayerIdsByTeamId(teamId);
+
+        Map<Long, Integer> playerTotalGoalCountInfo = playerQueryService.getPlayersTotalGoalInfo(playerIds);
+        List<PlayerResponse> playerResponses = teamPlayers.stream()
+                .map(tp -> {
+                    Player player = tp.getPlayer();
+                    int totalGoalCount = playerTotalGoalCountInfo.getOrDefault(player.getId(), 0);
+                    return PlayerResponse.of(player, totalGoalCount, null);
+                })
                 .toList();
 
-        return new TeamDetailResponse(team, players);
+        return new TeamDetailResponse(team, playerResponses);
     }
 }

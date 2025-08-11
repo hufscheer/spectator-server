@@ -2,7 +2,6 @@ package com.sports.server.command.league.dto;
 
 import com.sports.server.command.league.domain.Round;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
@@ -19,13 +18,8 @@ public class LeagueRequest {
 		}
 	}
 
-	public record TeamAndPlayersRegister(
-			Long teamId,
-			List<PlayerInfo> players
-	){}
-
-	public record PlayerInfo(
-			Long playerId
+	public record TeamRegister(
+			Long teamId
 	){}
 
 	public record Update(

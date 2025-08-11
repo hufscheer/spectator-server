@@ -6,7 +6,7 @@ import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
@@ -51,9 +51,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     @JoinColumn(name = "league_id")
     private League league;
 
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GameTeam> gameTeams = new ArrayList<>();
-
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -78,6 +75,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     @Column(name = "is_pk_taken", nullable = false)
     private Boolean isPkTaken;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GameTeam> gameTeams = new ArrayList<>();
 
     public void registerStarter(final LineupPlayer lineupPlayer) {
         GameTeam gameTeam = lineupPlayer.getGameTeam();

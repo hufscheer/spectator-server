@@ -52,11 +52,6 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManager(member));
     }
 
-    @GetMapping("/teams/{leagueTeamId}")
-    public ResponseEntity<LeagueTeamDetailResponse> findLeagueTeam(@PathVariable final Long leagueTeamId) {
-        return ResponseEntity.ok(leagueQueryService.findLeagueTeam(leagueTeamId));
-    }
-
     @GetMapping("/{leagueId}/games")
     public ResponseEntity<LeagueResponseWithGames> findLeagueAndGames(@PathVariable final Long leagueId) {
         return ResponseEntity.ok(leagueQueryService.findLeagueAndGames(leagueId));

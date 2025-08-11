@@ -48,7 +48,7 @@ public class AcceptanceTest {
     protected String mockToken = "mockToken";
 
     @BeforeEach
-    void setUp(
+    protected void setUp(
     ) {
         RestAssured.port = port;
 

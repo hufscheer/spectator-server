@@ -5,10 +5,7 @@ import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity(name = "LeagueTeam")
+@Entity
 @Getter
 @Table(name = "league_teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,9 +18,6 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
-
-    @OneToMany(mappedBy = "leagueTeam", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LeagueTeamPlayer> leagueTeamPlayers = new ArrayList<>();
 
     @Column(name = "total_cheer_count")
     private int totalCheerCount;
@@ -47,16 +41,6 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         league.addLeagueTeam(leagueTeam);
         team.addLeagueTeam(leagueTeam);
         return leagueTeam;
-    }
-
-    public void addLeaguePlayer(LeagueTeamPlayer leaguePlayer) {
-        if (!this.leagueTeamPlayers.contains(leaguePlayer)) {
-            this.leagueTeamPlayers.add(leaguePlayer);
-        }
-    }
-
-    public void removeLeagueTeamPlayer(LeagueTeamPlayer leagueTeamPlayer) {
-        this.leagueTeamPlayers.remove(leagueTeamPlayer);
     }
 
     public void updateTotalCheerCount(Integer totalCheerCount) {

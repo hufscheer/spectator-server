@@ -1,9 +1,7 @@
 package com.sports.server.command.league.application;
 
 import com.sports.server.command.league.domain.*;
-import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.Team;
-import com.sports.server.command.team.domain.TeamPlayerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +13,6 @@ import com.sports.server.common.exception.UnauthorizedException;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -26,7 +22,6 @@ public class LeagueService {
     private final EntityUtils entityUtils;
     private final LeagueRepository leagueRepository;
 	private final LeagueTeamRepository leagueTeamRepository;
-	private final TeamPlayerRepository teamPlayerRepository;
 
 	public void register(final Member manager, final LeagueRequest.Register request) {
 		leagueRepository.save(request.toEntity(manager));
@@ -42,7 +37,7 @@ public class LeagueService {
         leagueRepository.delete(league);
     }
 
-	public void registerTeamWithPlayers(final Long leagueId, final LeagueRequest.TeamAndPlayersRegister request, final Member manager) {
+	public void registerTeam(final Long leagueId, final LeagueRequest.TeamRegister request, final Member manager) {
 		League league = findValidatedLeague(leagueId, manager);
 		Team team = entityUtils.getEntity(request.teamId(), Team.class);
 
@@ -51,13 +46,6 @@ public class LeagueService {
 		}
 
 		LeagueTeam leagueTeam = LeagueTeam.of(league, team);
-		validateTeamPlayers(team, request.players());
-
-		request.players().forEach(playerInfo -> {
-			Player player = entityUtils.getEntity(playerInfo.playerId(), Player.class);
-			LeagueTeamPlayer.of(leagueTeam, player);
-		});
-
 		leagueTeamRepository.save(leagueTeam);
 	}
 
@@ -72,28 +60,11 @@ public class LeagueService {
 		team.removeLeagueTeam(leagueTeam);
 	}
 
-	public void removePlayerFromLeagueTeamPlayers(final Long leagueId, final Long leagueTeamPlayerId, final Member manager) {
-		findValidatedLeague(leagueId, manager);
-		LeagueTeamPlayer leagueTeamPlayer = entityUtils.getEntity(leagueTeamPlayerId, LeagueTeamPlayer.class);
-
-		LeagueTeam leagueTeam = leagueTeamPlayer.getLeagueTeam();
-		leagueTeam.removeLeagueTeamPlayer(leagueTeamPlayer);
-	}
-
 	private League findValidatedLeague(final Long leagueId, final Member manager) {
 		League league = entityUtils.getEntity(leagueId, League.class);
 		if (!league.isManagedBy(manager)) {
 			throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
 		}
 		return league;
-	}
-
-	private void validateTeamPlayers(final Team team, final List<LeagueRequest.PlayerInfo> playersToRegister) {
-		Set<Long> teamPlayerIds = teamPlayerRepository.findPlayerIdsByTeam(team);
-		for (LeagueRequest.PlayerInfo playerInfo : playersToRegister) {
-			if (!teamPlayerIds.contains(playerInfo.playerId())) {
-				throw new IllegalArgumentException("팀 소속이 아닌 선수를 리그에 등록할 수 없습니다.");
-			}
-		}
 	}
 }

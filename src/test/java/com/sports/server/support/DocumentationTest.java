@@ -13,26 +13,18 @@ import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.league.application.LeagueService;
 import com.sports.server.command.league.presentation.LeagueController;
-import com.sports.server.command.team.application.TeamService;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
+import com.sports.server.command.player.application.PlayerService;
+import com.sports.server.command.player.presentation.PlayerController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.command.timeline.application.TimelineService;
 import com.sports.server.command.timeline.presentation.TimelineController;
 import com.sports.server.common.log.TimeLogTemplate;
-import com.sports.server.query.application.CheerTalkQueryService;
-import com.sports.server.query.application.GameQueryService;
-import com.sports.server.query.application.GameTeamQueryService;
-import com.sports.server.query.application.LeagueQueryService;
-import com.sports.server.query.application.LineupPlayerQueryService;
-import com.sports.server.query.application.MemberQueryService;
-import com.sports.server.query.application.TimelineQueryService;
-import com.sports.server.query.presentation.CheerTalkQueryController;
-import com.sports.server.query.presentation.GameQueryController;
-import com.sports.server.query.presentation.LeagueQueryController;
-import com.sports.server.query.presentation.MemberQueryController;
-import com.sports.server.query.presentation.TimelineQueryController;
+import com.sports.server.query.application.*;
+import com.sports.server.query.presentation.*;
+
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +54,9 @@ import org.springframework.test.web.servlet.MockMvc;
                 AuthController.class,
                 LeagueController.class,
                 TimelineController.class,
-                MemberQueryController.class
+                MemberQueryController.class,
+                PlayerController.class,
+                PlayerQueryController.class,
         })
 @Import({
         TimeLogTemplate.class,
@@ -118,7 +112,10 @@ public class DocumentationTest {
     protected AuthService authService;
 
     @MockBean
-    protected TeamService leagueTeamService;
+    protected PlayerService playerService;
+
+    @MockBean
+    protected PlayerQueryService playerQueryService;
 
     @MockBean
     protected JwtUtil jwtUtil;

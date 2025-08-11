@@ -3,7 +3,7 @@ package com.sports.server.query.application;
 import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 
-import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.query.repository.TimelineQueryRepository;

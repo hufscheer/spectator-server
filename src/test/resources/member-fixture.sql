@@ -12,13 +12,13 @@ VALUES (4, '루미큐브 클럽');
 
 -- members 테이블에 데이터 삽입
 -- 비밀번호 1234
-INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
+INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (1, 1, 'john@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-15 10:00:00');
-INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
+INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (2, 1, 'jane@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
         '2024-06-15 09:30:00');
-INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
+INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (3, 2, 'smith@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
         '2024-06-14 17:45:00');
 

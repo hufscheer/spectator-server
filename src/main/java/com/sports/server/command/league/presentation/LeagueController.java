@@ -34,29 +34,19 @@ public class LeagueController {
 		leagueService.update(member, request, leagueId);
 	}
 
-    // 매니저 서버 ui 확인 필요
     @DeleteMapping("/{leagueId}/teams/{teamId}")
     @ResponseStatus(HttpStatus.OK)
-    public void removeTeamFromLeague(@PathVariable Long leagueId,
-                                     @PathVariable Long teamId, Member member) {
+    public void removeTeamFromLeague(@PathVariable final Long leagueId,
+                                     @PathVariable final Long teamId, final Member member) {
         leagueService.removeTeamFromLeague(member, leagueId, teamId);
     }
 
-    // 리그에 팀 추가 + 팀선수 중 리그팀 플레이어로 추가할 선수 선택
     @PostMapping("/{leagueId}/teams")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerTeamWithPlayers(@PathVariable final Long leagueId,
-                                        @RequestBody final LeagueRequest.TeamAndPlayersRegister request,
+                                        @RequestBody final LeagueRequest.TeamRegister request,
                                         final Member manager) {
-        leagueService.registerTeamWithPlayers(leagueId, request, manager);
+        leagueService.registerTeam(leagueId, request, manager);
     }
 
-    // 매니저 서버 ui 확인 필요
-    @DeleteMapping("/{leagueId}/league-team-players/{leagueTeamPlayerId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removePlayerFromLeagueTeamPlayers(@PathVariable final Long leagueId,
-                                                  @PathVariable final Long leagueTeamPlayerId,
-                                                  final Member manager) {
-        leagueService.removePlayerFromLeagueTeamPlayers(leagueId, leagueTeamPlayerId, manager);
-    }
 }

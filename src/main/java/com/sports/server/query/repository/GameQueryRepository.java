@@ -30,4 +30,12 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "WHERE gt.id = :gameTeamId"
     )
     Game findByGameTeamIdWithLeague(@Param("gameTeamId") Long gameTeamId);
+
+    @Query(
+            "SELECT g FROM Game g "
+                    + "JOIN FETCH g.league l "
+                    + "WHERE EXISTS (SELECT 1 FROM GameTeam gt WHERE gt.game = g "
+                    + "AND gt.team.id = :teamId)"
+                    + "ORDER BY g.id DESC ")
+    List<Game> findGamesByTeamId(@Param("teamId") Long teamId);
 }

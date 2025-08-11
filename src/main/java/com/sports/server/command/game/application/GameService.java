@@ -5,14 +5,18 @@ import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +27,7 @@ public class GameService {
     private final EntityUtils entityUtils;
     private final GameRepository gameRepository;
     private final TimelineRepository timelineRepository;
-    private final LeagueTeamRepository leagueTeamRepository;
+    private final TeamPlayerRepository teamPlayerRepository;
 
     @Transactional
     public Long register(final Long leagueId, final GameRequest.Register request, final Member manager) {
@@ -32,7 +36,8 @@ public class GameService {
         league.validateRoundWithinLimit(request.round());
 
         Game game = saveGame(league, manager, request);
-        saveGameTeamsAndLineupPlayers(game, request);
+        registerGameTeamAndLineup(game, request.team1());
+        registerGameTeamAndLineup(game, request.team2());
 
         return game.getId();
     }
@@ -50,28 +55,44 @@ public class GameService {
         return gameRepository.save(game);
     }
 
-    private void saveGameTeamsAndLineupPlayers(Game game, GameRequest.Register request) {
-        Team team1 = entityUtils.getEntity(request.idOfTeam1(), Team.class);
-        Team team2 = entityUtils.getEntity(request.idOfTeam2(), Team.class);
-
-        registerLineup(game, team1);
-        registerLineup(game, team2);
-    }
-
-    private void registerLineup(Game game, Team team) {
-        LeagueTeam leagueTeam = leagueTeamRepository.findByLeagueAndTeam(game.getLeague(), team)
-                .orElseThrow(() -> new IllegalArgumentException("팀이 리그에 등록되지 않았습니다."));
-
+    private void registerGameTeamAndLineup(Game game, GameRequest.TeamLineupInfo teamLineupInfo) {
+        Team team = entityUtils.getEntity(teamLineupInfo.teamId(), Team.class);
         GameTeam gameTeam = GameTeam.of(game, team);
         game.addGameTeam(gameTeam);
 
-        for (LeagueTeamPlayer leagueTeamPlayer : leagueTeam.getLeagueTeamPlayers()) {
+        List<Long> teamPlayerIds = teamLineupInfo.players().stream()
+                .map(GameRequest.PlayerLineupInfo::teamPlayerId)
+                .toList();
+
+        List<TeamPlayer> teamPlayers = teamPlayerRepository.findByTeamPlayerIds(teamPlayerIds);
+        validateTeamPlayers(teamPlayerIds, teamPlayers, team);
+
+        teamPlayers.forEach(teamPlayer -> {
+            GameRequest.PlayerLineupInfo info = teamLineupInfo.players().stream()
+                    .filter(p -> p.teamPlayerId().equals(teamPlayer.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(HttpStatus.NO_CONTENT, "요청 정보를 찾을 수 없습니다."));
+
             LineupPlayer.of(
                     gameTeam,
-                    leagueTeamPlayer,
-                    LineupPlayerState.CANDIDATE
+                    teamPlayer.getPlayer(),
+                    info.state(),
+                    teamPlayer.getJerseyNumber(),
+                    info.isCaptain()
             );
+        });
+    }
+
+    private void validateTeamPlayers(List<Long> requestedIds, List<TeamPlayer> teamPlayers, Team team) {
+        if (teamPlayers.size() != requestedIds.size()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "존재하지 않는 팀 소속 선수 ID가 포함되어 있습니다.");
         }
+
+        teamPlayers.forEach(tp -> {
+            if (!tp.getTeam().equals(team)) {
+                throw new CustomException(HttpStatus.BAD_REQUEST, "다른 팀의 선수를 라인업에 등록할 수 없습니다.");
+            }
+        });
     }
 
     @Transactional

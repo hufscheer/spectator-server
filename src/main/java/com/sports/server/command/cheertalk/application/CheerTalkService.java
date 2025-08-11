@@ -2,23 +2,17 @@ package com.sports.server.command.cheertalk.application;
 
 import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages.CHEER_TALK_CONTAINS_BAD_WORD;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.command.cheertalk.domain.LanguageFilter;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
-import com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportRepository;
-import com.sports.server.command.report.domain.ReportState;
-import com.sports.server.command.report.exception.ReportErrorMessage;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.CustomException;
-import com.sports.server.common.exception.UnauthorizedException;
-import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

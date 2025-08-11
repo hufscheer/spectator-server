@@ -5,7 +5,6 @@ import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequest;
-import com.sports.server.command.league.dto.LeagueTeamRequest;
 import com.sports.server.command.member.domain.Member;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -44,14 +43,6 @@ public class GameController {
         lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
     }
 
-    // 선수 등번호 변경 - 등번호 변경 위치 아직 매니저 서버 ui 에서 안 나옴, 임시 추가
-    @PatchMapping("/lineup-players/{lineupPlayerId}/jersey-number")
-    @ResponseStatus(HttpStatus.OK)
-    public void changePlayerJerseyNumber(@PathVariable final Long lineupPlayerId,
-                                         @RequestBody final LeagueTeamRequest.UpdateJerseyNumber request) {
-        lineupPlayerService.changePlayerJerseyNumber(lineupPlayerId, request);
-    }
-
     @PostMapping("/leagues/{leagueId}/games")
     public ResponseEntity<Long> registerGame(@PathVariable final Long leagueId,
                                              @RequestBody final GameRequest.Register request,
@@ -75,7 +66,6 @@ public class GameController {
         gameService.deleteGame(leagueId, gameId, manager);
     }
 
-    // 게임팀 삭제 로직 - 매니저 서버 ui 확인 필요
     @DeleteMapping("/game-teams/{gameTeamId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGameTeam(@PathVariable final Long gameTeamId, final Member manager) {

@@ -2,7 +2,6 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
-import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -31,6 +30,7 @@ public class GameProgressTimeline extends Timeline {
     @Column(name = "previous_quarter")
     private Quarter previousQuarter;
 
+    @Column(name = "previous_quarter_changed_at")
     private LocalDateTime previousQuarterChangedAt;
 
     public GameProgressTimeline(

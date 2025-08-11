@@ -1,4 +1,4 @@
-package com.sports.server.command.sport.domain;
+package com.sports.server.command.timeline.domain;
 
 import lombok.Getter;
 
