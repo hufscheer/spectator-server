@@ -3,13 +3,15 @@ package com.sports.server.command.game.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.league.application.LeagueStatisticsService;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.leagueteam.domain.LeagueTeam;
@@ -223,7 +225,6 @@ public class GameServiceTest extends ServiceTest {
     @Nested
     @DisplayName("게임 상태를 업데이트할 때")
     class UpdateGameStatusToFinishTest {
-
         @Test
         @DisplayName("정상적으로 시작한지 5시간이 지난 게임의 상태가 FINISHED로 변경된다")
         void updateGamesOlderThanFiveHoursToFinished() {
@@ -258,5 +259,4 @@ public class GameServiceTest extends ServiceTest {
                             GameState.FINISHED));
         }
     }
-
 }

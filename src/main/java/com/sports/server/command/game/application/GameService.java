@@ -43,10 +43,11 @@ public class GameService {
     }
 
     @Transactional
-    public void updateGameStatusToFinish(LocalDateTime now) {
+    public List<Game> updateGameStatusToFinish(LocalDateTime now) {
         LocalDateTime cutoffTime = now.minusHours(5);
         List<Game> games = gameRepository.findGamesOlderThanFiveHours(cutoffTime);
         games.forEach(game -> game.updateState(GameState.FINISHED));
+        return games;
     }
 
     private Game saveGame(League league, Member manager, GameRequest.Register request) {

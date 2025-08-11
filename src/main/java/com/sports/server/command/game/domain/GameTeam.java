@@ -3,14 +3,8 @@ package com.sports.server.command.game.domain;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -49,6 +43,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     @Column(name = "pk_score", nullable = false)
     private int pkScore;
+
+    @Column(name = "result")
+    @Enumerated(EnumType.STRING)
+    private GameResult result;
 
     public void validateCheerCountOfGameTeam(final int cheerCount) {
         if (cheerCount >= MAXIMUM_OF_CHEER_COUNT || cheerCount <= MINIMUM_OF_CHEER_COUNT) {
@@ -140,4 +138,15 @@ public class GameTeam extends BaseEntity<GameTeam> {
         }
     }
 
+    public void markAsWinner() {
+        this.result = GameResult.WIN;
+    }
+
+    public void markAsLoser() {
+        this.result = GameResult.LOSE;
+    }
+
+    public void markAsDraw() {
+        this.result = GameResult.DRAW;
+    }
 }

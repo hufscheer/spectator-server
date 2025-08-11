@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.ToIntFunction;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +39,7 @@ import org.springframework.util.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game extends BaseEntity<Game> implements ManagedEntity {
 
+    public static final int MINIMUM_TEAMS = 2;
     private static final String NAME_OF_PK_QUARTER = "승부차기";
     private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
@@ -212,6 +215,44 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.state = GameState.FINISHED;
         updateQuarter(Quarter.POST_GAME);
     }
+
+    public void determineResult() {
+        if (gameTeams.size() != MINIMUM_TEAMS) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
+        }
+
+        GameTeam team1 = getTeam1();
+        GameTeam team2 = getTeam2();
+
+        int comparison = compareScores(team1, team2, GameTeam::getScore);
+
+        if (comparison > 0) {
+            markWinnerAndLoser(team1, team2);
+            return;
+        }
+        if (comparison < 0) {
+            markWinnerAndLoser(team2, team1);
+            return;
+        }
+        markAsDraw(team1, team2);
+    }
+
+    private static void markAsDraw(GameTeam team1, GameTeam team2) {
+        team1.markAsDraw();
+        team2.markAsDraw();
+    }
+
+    private int compareScores(GameTeam team1, GameTeam team2, ToIntFunction<GameTeam> scoreExtractor) {
+        int score1 = scoreExtractor.applyAsInt(team1);
+        int score2 = scoreExtractor.applyAsInt(team2);
+        return Integer.compare(score1, score2);
+    }
+
+    private void markWinnerAndLoser(GameTeam winner, GameTeam loser) {
+        winner.markAsWinner();
+        loser.markAsLoser();
+    }
+
 
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.getName();

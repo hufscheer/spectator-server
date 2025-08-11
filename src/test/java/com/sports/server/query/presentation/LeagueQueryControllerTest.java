@@ -10,8 +10,13 @@ import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.G
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
+import com.sports.server.query.dto.response.LeagueStatisticsResponse;
+import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
 import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
 import com.sports.server.query.dto.response.LeagueTeamResponse;
+import com.sports.server.query.dto.response.PlayerResponse;
+import com.sports.server.query.dto.response.TeamResponse;
+import com.sports.server.command.team.domain.Unit;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
@@ -106,6 +111,67 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("리그의 팀 로고 이미지 URL®"),
                                 fieldWithPath("[].sizeOfLeagueTeamPlayers").type(JsonFieldType.NUMBER)
                                         .description("리그팀 선수의 인원수")
+                        )
+                ));
+    }
+
+    @Test
+    void 리그_통계를_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+        TeamResponse firstWinnerTeam = new TeamResponse(1L, "우승팀", "logo1.png", Unit.BUSINESS, "#FF0000", null, null);
+        TeamResponse secondWinnerTeam = new TeamResponse(2L, "준우승팀", "logo2.png", Unit.ENGLISH, "#00FF00", null, null);
+        TeamResponse mostCheeredTeam = new TeamResponse(3L, "최다응원팀", "logo3.png", Unit.AI_CONVERGENCE, "#0000FF", 100, null);
+        TeamResponse mostCheerTalksTeam = new TeamResponse(4L, "최다응원톡팀", "logo4.png", Unit.SOCIAL_SCIENCES, "#FFFF00", null, 50);
+        
+        LeagueStatisticsResponse response = new LeagueStatisticsResponse(
+                1L,
+                firstWinnerTeam,
+                secondWinnerTeam,
+                mostCheeredTeam,
+                mostCheerTalksTeam
+        );
+
+        given(leagueQueryService.findLeagueStatistic(leagueId))
+                .willReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/statistics", leagueId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("leagueStatisticsId").type(JsonFieldType.NUMBER).description("리그 통계 ID"),
+                                fieldWithPath("firstWinnerTeam").type(JsonFieldType.OBJECT).description("우승팀 정보"),
+                                fieldWithPath("firstWinnerTeam.id").type(JsonFieldType.NUMBER).description("우승팀 ID"),
+                                fieldWithPath("firstWinnerTeam.name").type(JsonFieldType.STRING).description("우승팀 이름"),
+                                fieldWithPath("firstWinnerTeam.logoImageUrl").type(JsonFieldType.STRING).description("우승팀 로고 이미지 URL"),
+                                fieldWithPath("firstWinnerTeam.unit").type(JsonFieldType.STRING).description("우승팀 소속 단과대학"),
+                                fieldWithPath("firstWinnerTeam.teamColor").type(JsonFieldType.STRING).description("우승팀 색상"),
+                                fieldWithPath("secondWinnerTeam").type(JsonFieldType.OBJECT).description("준우승팀 정보"),
+                                fieldWithPath("secondWinnerTeam.id").type(JsonFieldType.NUMBER).description("준우승팀 ID"),
+                                fieldWithPath("secondWinnerTeam.name").type(JsonFieldType.STRING).description("준우승팀 이름"),
+                                fieldWithPath("secondWinnerTeam.logoImageUrl").type(JsonFieldType.STRING).description("준우승팀 로고 이미지 URL"),
+                                fieldWithPath("secondWinnerTeam.unit").type(JsonFieldType.STRING).description("준우승팀 소속 단과대학"),
+                                fieldWithPath("secondWinnerTeam.teamColor").type(JsonFieldType.STRING).description("준우승팀 색상"),
+                                fieldWithPath("mostCheeredTeam").type(JsonFieldType.OBJECT).description("최다 응원받은 팀 정보"),
+                                fieldWithPath("mostCheeredTeam.id").type(JsonFieldType.NUMBER).description("최다 응원받은 팀 ID"),
+                                fieldWithPath("mostCheeredTeam.name").type(JsonFieldType.STRING).description("최다 응원받은 팀 이름"),
+                                fieldWithPath("mostCheeredTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 응원받은 팀 로고 이미지 URL"),
+                                fieldWithPath("mostCheeredTeam.unit").type(JsonFieldType.STRING).description("최다 응원받은 팀 소속 단과대학"),
+                                fieldWithPath("mostCheeredTeam.teamColor").type(JsonFieldType.STRING).description("최다 응원받은 팀 색상"),
+                                fieldWithPath("mostCheerTalksTeam").type(JsonFieldType.OBJECT).description("최다 응원톡 팀 정보"),
+                                fieldWithPath("mostCheerTalksTeam.id").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 ID"),
+                                fieldWithPath("mostCheerTalksTeam.name").type(JsonFieldType.STRING).description("최다 응원톡 팀 이름"),
+                                fieldWithPath("mostCheerTalksTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 응원톡 팀 로고 이미지 URL"),
+                                fieldWithPath("mostCheerTalksTeam.unit").type(JsonFieldType.STRING).description("최다 응원톡 팀 소속 단과대학"),
+                                fieldWithPath("mostCheerTalksTeam.teamColor").type(JsonFieldType.STRING).description("최다 응원톡 팀 색상")
                         )
                 ));
     }
