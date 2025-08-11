@@ -65,11 +65,11 @@ public class TeamService {
                 .toList();
         List<Player> players = playerRepository.findAllById(playerIds);
 
-        Map<Long, Integer> teamPlayersInfo = request.stream()
+        Map<Long, Integer> playerJerseyNumbers = request.stream()
                 .collect(Collectors.toMap(TeamRequest.TeamPlayerRegister::playerId, TeamRequest.TeamPlayerRegister::jerseyNumber));
 
         players.forEach(player -> {
-            Integer jerseyNumber = teamPlayersInfo.get(player.getId());
+            Integer jerseyNumber = playerJerseyNumbers.get(player.getId());
             team.addPlayer(player, jerseyNumber);
         });
     }

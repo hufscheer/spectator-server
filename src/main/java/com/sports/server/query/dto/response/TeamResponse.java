@@ -1,13 +1,12 @@
 package com.sports.server.query.dto.response;
 
 import com.sports.server.command.team.domain.Team;
-import com.sports.server.command.team.domain.Unit;
 
 public record TeamResponse(
         Long id,
         String name,
         String logoImageUrl,
-        Unit unit,
+        String unit,
         String teamColor
 ) {
     public TeamResponse(final Team team){
@@ -15,7 +14,7 @@ public record TeamResponse(
                 team.getId(),
                 team.getName(),
                 team.getLogoImageUrl(),
-                team.getUnit(),
+                team.getUnit().getName(),
                 team.getTeamColor()
         );
     }

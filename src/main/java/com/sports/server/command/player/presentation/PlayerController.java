@@ -4,7 +4,10 @@ import com.sports.server.command.player.application.PlayerService;
 import com.sports.server.command.player.dto.PlayerRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,8 +17,9 @@ public class PlayerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(@RequestBody PlayerRequest.Register request) {
-        playerService.register(request);
+    public ResponseEntity<Long> register(@RequestBody PlayerRequest.Register request) {
+        Long playerId = playerService.register(request);
+        return ResponseEntity.created(URI.create("/players/" + playerId)).body(playerId);
     }
 
     @PatchMapping("/{playerId}")

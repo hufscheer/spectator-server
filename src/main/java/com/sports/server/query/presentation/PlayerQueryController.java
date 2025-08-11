@@ -22,6 +22,6 @@ public class PlayerQueryController {
 
     @GetMapping("/{playerId}")
     public ResponseEntity<PlayerResponse> getPlayerById(@PathVariable Long playerId){
-        return ResponseEntity.ok(playerQueryService.findPlayer(playerId));
+        return ResponseEntity.ok(playerQueryService.getPlayerDetail(playerId));
     }
 }

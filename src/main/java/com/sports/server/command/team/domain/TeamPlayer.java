@@ -26,7 +26,7 @@ public class TeamPlayer extends BaseEntity<TeamPlayer> {
     @JoinColumn(name = "player_id", nullable = false)
     private Player player;
 
-    @Column(name = "jersey_number", nullable = true)
+    @Column(name = "jersey_number")
     private Integer jerseyNumber;
 
     private TeamPlayer(Team team, Player player, Integer jerseyNumber) {
@@ -37,7 +37,7 @@ public class TeamPlayer extends BaseEntity<TeamPlayer> {
 
     public static TeamPlayer of(Team team, Player player, Integer jerseyNumber) {
         TeamPlayer teamPlayer = new TeamPlayer(team, player, jerseyNumber);
-        team.addTeamPlayerInternal(teamPlayer);
+        team.addTeamPlayer(teamPlayer);
         player.addTeamPlayer(teamPlayer);
         return teamPlayer;
     }

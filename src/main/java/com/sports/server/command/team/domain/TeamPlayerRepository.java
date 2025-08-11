@@ -15,5 +15,11 @@ public interface TeamPlayerRepository extends Repository<TeamPlayer, Long> {
     List<Long> findPlayerIdsByTeamId(@Param("teamId") Long teamId);
 
     @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player WHERE tp.id IN :ids")
-    List<TeamPlayer> findByTeamPlayerIds(@Param("ids") List<Long> teamPlayerIds);
+    List<TeamPlayer> findAllByTeamPlayerIds(@Param("ids") List<Long> teamPlayerIds);
+
+    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.team WHERE tp.player.id = :playerId")
+    List<TeamPlayer> findAllByPlayerId(@Param("playerId") Long playerId);
+
+    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player JOIN FETCH tp.team WHERE tp.player.id IN :playerIds")
+    List<TeamPlayer> findAllByPlayerIds(@Param("playerIds") List<Long> playerIds);
 }

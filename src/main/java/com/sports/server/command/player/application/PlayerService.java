@@ -4,8 +4,10 @@ import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.dto.PlayerRequest;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,11 +18,12 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final EntityUtils entityUtils;
 
-    public void register(final PlayerRequest.Register request){
+    public Long register(final PlayerRequest.Register request){
         validateUniqueStudentNumber(request.studentNumber());
 
         Player player = request.toEntity(request.name(), request.studentNumber());
         playerRepository.save(player);
+        return player.getId();
     }
 
     public void update(final Long playerId, final PlayerRequest.Update request){
@@ -41,7 +44,7 @@ public class PlayerService {
 
     private void validateUniqueStudentNumber(String studentNumber) {
         if (studentNumber != null && playerRepository.existsByStudentNumber(studentNumber)) {
-            throw new IllegalArgumentException("이미 존재하는 학번입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 학번입니다.");
         }
     }
 }

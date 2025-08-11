@@ -23,7 +23,7 @@ public class Team extends BaseEntity<Team> {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "logo_image_url", nullable = true)
+    @Column(name = "logo_image_url")
     private String logoImageUrl;
 
     @Enumerated(EnumType.STRING)
@@ -69,7 +69,7 @@ public class Team extends BaseEntity<Team> {
         TeamPlayer.of(this, player, jerseyNumber);
     }
 
-    void addTeamPlayerInternal(TeamPlayer teamPlayer) {
+    void addTeamPlayer(TeamPlayer teamPlayer) {
             this.teamPlayers.add(teamPlayer);
     }
 

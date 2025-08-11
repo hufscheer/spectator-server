@@ -12,7 +12,7 @@ CREATE TABLE test_sports_live.members
     organization_id  BIGINT                NULL,
     email            VARCHAR(255)          NOT NULL,
     password         VARCHAR(255)          NOT NULL,
-    is_administrator BIT(1)                NOT NULL,
+    is_administrator BOOLEAN               NOT NULL,
     last_login       datetime              NULL,
 
     CONSTRAINT pk_members PRIMARY KEY (id),
@@ -22,10 +22,10 @@ CREATE TABLE test_sports_live.members
 CREATE TABLE test_sports_live.teams
 (
     id               BIGINT AUTO_INCREMENT NOT NULL,
-    unit             VARCHAR(255)          NULL,
+    unit             VARCHAR(255)          NOT NULL,
     name             VARCHAR(255)          NOT NULL,
     logo_image_url   VARCHAR(255)          NULL,
-    team_color       VARCHAR(255)          NOT NULL
+    team_color       VARCHAR(255)          NOT NULL,
 
     CONSTRAINT pk_teams PRIMARY KEY (id)
 );
@@ -45,7 +45,7 @@ CREATE TABLE test_sports_live.team_players
     id            BIGINT AUTO_INCREMENT NOT NULL,
     team_id       BIGINT                NOT NULL,
     player_id     BIGINT                NOT NULL,
-    jersey_number BIGINT                NULL
+    jersey_number INTEGER               NULL,
 
     CONSTRAINT pk_team_players PRIMARY KEY (id),
     CONSTRAINT FK_TEAM_PLAYERS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES test_sports_live.teams (id),
@@ -124,7 +124,7 @@ CREATE TABLE test_sports_live.league_top_scorers
     id          BIGINT AUTO_INCREMENT NOT NULL,
     league_id   BIGINT                NOT NULL,
     player_id   BIGINT                NOT NULL,
-    ranking     INT                   NULL, -- 확인
+    ranking     INT                   NOT NULL,
     goal_count  INT                   NOT NULL DEFAULT 0,
 
     CONSTRAINT pk_league_top_scorers PRIMARY KEY (id),
@@ -163,7 +163,7 @@ CREATE TABLE test_sports_live.lineup_players
     CONSTRAINT pk_lineup_players PRIMARY KEY (id),
     CONSTRAINT FK_LINEUP_PLAYERS_ON_GAME_TEAMS FOREIGN KEY (game_team_id) REFERENCES test_sports_live.game_teams (id),
     CONSTRAINT FK_LINEUP_PLAYERS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES test_sports_live.players (id),
-    CONSTRAINT FK_LINEUP_PLAYERS_ON_REPLACED_PLAYER FOREIGN KEY (lineup_player_id) REFERENCES test_sports_live.lineup_players (id),
+    CONSTRAINT FK_LINEUP_PLAYERS_ON_REPLACED_PLAYER FOREIGN KEY (replaced_player_id) REFERENCES test_sports_live.lineup_players (id),
     CONSTRAINT uc_lineup_player UNIQUE (game_team_id, player_id)
 );
 
