@@ -20,10 +20,16 @@ public class TeamController {
         teamService.register(request);
     }
 
-    @PatchMapping("/{teamId}")
+    @PutMapping("/{teamId}")
     @ResponseStatus(HttpStatus.OK)
     public void update(@RequestBody TeamRequest.Update request, @PathVariable Long teamId) {
         teamService.update(request, teamId);
+    }
+
+    @DeleteMapping("/{teamId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable Long teamId) {
+        teamService.delete(teamId);
     }
 
     @PostMapping("/{teamId}/delete-logo")

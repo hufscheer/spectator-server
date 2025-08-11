@@ -16,14 +16,14 @@ public class LeagueController {
 	private final LeagueService leagueService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody final LeagueRequest.Register request, Member member) {
         leagueService.register(member, request);
     }
 
     @DeleteMapping("/{leagueId}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(final Member member, @PathVariable final Long leagueId) {
+    public void delete(@PathVariable("leagueId") final Long leagueId, final Member member) {
         leagueService.delete(member, leagueId);
     }
 
@@ -34,19 +34,18 @@ public class LeagueController {
 		leagueService.update(member, request, leagueId);
 	}
 
-    @DeleteMapping("/{leagueId}/teams/{teamId}")
-    @ResponseStatus(HttpStatus.OK)
-    public void removeTeamFromLeague(@PathVariable final Long leagueId,
-                                     @PathVariable final Long teamId, final Member member) {
-        leagueService.removeTeamFromLeague(member, leagueId, teamId);
-    }
-
     @PostMapping("/{leagueId}/teams")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerTeamWithPlayers(@PathVariable final Long leagueId,
-                                        @RequestBody final LeagueRequest.TeamRegister request,
-                                        final Member manager) {
-        leagueService.registerTeam(leagueId, request, manager);
+    public void addTeamsToLeague(@PathVariable("leagueId") final Long leagueId,
+                                 @RequestBody final LeagueRequest.Teams request, final Member member) {
+        leagueService.addTeams(member, leagueId, request);
+    }
+
+    @DeleteMapping("/{leagueId}/teams")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeTeamsFromLeague(@PathVariable("leagueId") final Long leagueId,
+                                     @RequestBody final LeagueRequest.Teams request, final Member member) {
+        leagueService.removeTeams(member, leagueId, request);
     }
 
 }

@@ -1,9 +1,12 @@
 package com.sports.server.command.game.application;
 
+import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
@@ -11,9 +14,14 @@ import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,51 +58,6 @@ public class GameService {
         return games;
     }
 
-    private Game saveGame(League league, Member manager, GameRequest.Register request) {
-        Game game = request.toEntity(manager, league);
-        return gameRepository.save(game);
-    }
-
-    private void registerGameTeamAndLineup(Game game, GameRequest.TeamLineupInfo teamLineupInfo) {
-        Team team = entityUtils.getEntity(teamLineupInfo.teamId(), Team.class);
-        GameTeam gameTeam = GameTeam.of(game, team);
-        game.addGameTeam(gameTeam);
-
-        List<Long> teamPlayerIds = teamLineupInfo.players().stream()
-                .map(GameRequest.PlayerLineupInfo::teamPlayerId)
-                .toList();
-
-        List<TeamPlayer> teamPlayers = teamPlayerRepository.findByTeamPlayerIds(teamPlayerIds);
-        validateTeamPlayers(teamPlayerIds, teamPlayers, team);
-
-        teamPlayers.forEach(teamPlayer -> {
-            GameRequest.PlayerLineupInfo info = teamLineupInfo.players().stream()
-                    .filter(p -> p.teamPlayerId().equals(teamPlayer.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new CustomException(HttpStatus.NO_CONTENT, "요청 정보를 찾을 수 없습니다."));
-
-            LineupPlayer.of(
-                    gameTeam,
-                    teamPlayer.getPlayer(),
-                    info.state(),
-                    teamPlayer.getJerseyNumber(),
-                    info.isCaptain()
-            );
-        });
-    }
-
-    private void validateTeamPlayers(List<Long> requestedIds, List<TeamPlayer> teamPlayers, Team team) {
-        if (teamPlayers.size() != requestedIds.size()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "존재하지 않는 팀 소속 선수 ID가 포함되어 있습니다.");
-        }
-
-        teamPlayers.forEach(tp -> {
-            if (!tp.getTeam().equals(team)) {
-                throw new CustomException(HttpStatus.BAD_REQUEST, "다른 팀의 선수를 라인업에 등록할 수 없습니다.");
-            }
-        });
-    }
-
     @Transactional
     public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
@@ -127,11 +90,78 @@ public class GameService {
 
         Game game = gameTeam.getGame();
         if (!game.isManagedBy(manager)) {
-            throw new UnauthorizedException("해당 경기의 팀을 삭제할 권한이 없습니다.");
+            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
 
         game.removeGameTeam(gameTeam);
         team.removeGameTeam(gameTeam);
     }
 
+    private Game saveGame(League league, Member manager, GameRequest.Register request) {
+        Game game = request.toEntity(manager, league);
+        return gameRepository.save(game);
+    }
+
+    private void registerGameTeamAndLineup(Game game, GameRequest.TeamLineupRequest teamLineupInfo) {
+        Team team = entityUtils.getEntity(teamLineupInfo.teamId(), Team.class);
+        GameTeam gameTeam = GameTeam.of(game, team);
+        game.addGameTeam(gameTeam);
+
+        List<Long> teamPlayerIdsRequest = teamLineupInfo.lineupPlayers().stream()
+                .map(GameRequest.LineupPlayerRequest::teamPlayerId)
+                .toList();
+
+        List<TeamPlayer> teamPlayers = teamPlayerRepository.findAllByTeamPlayerIds(teamPlayerIdsRequest);
+        validateTeamPlayers(teamPlayerIdsRequest, teamPlayers, team);
+        registerLineup(gameTeam, teamPlayers, teamLineupInfo);
+    }
+
+    private void registerLineup(GameTeam gameTeam, List<TeamPlayer> teamPlayers, GameRequest.TeamLineupRequest teamLineupRequest){
+        Map<Long, GameRequest.LineupPlayerRequest> request = teamLineupRequest.lineupPlayers().stream()
+                .collect(Collectors.toMap(
+                        GameRequest.LineupPlayerRequest::teamPlayerId,
+                        lineupPlayerRequest -> lineupPlayerRequest
+                ));
+
+        teamPlayers.forEach(teamPlayer -> {
+            GameRequest.LineupPlayerRequest lineupPlayerRequest = request.get(teamPlayer.getId());
+
+            if (lineupPlayerRequest == null) {
+                throw new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION);
+            }
+
+            LineupPlayer.of(
+                    gameTeam,
+                    teamPlayer.getPlayer(),
+                    lineupPlayerRequest.state(),
+                    teamPlayer.getJerseyNumber(),
+                    lineupPlayerRequest.isCaptain()
+            );
+        });
+
+    }
+
+    private void validateTeamPlayers(List<Long> teamPlayerIdsRequest, List<TeamPlayer> teamPlayers, Team team) {
+        if (new HashSet<>(teamPlayerIdsRequest).size() != teamPlayerIdsRequest.size()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "요청에 중복된 선수 ID가 포함되어 있습니다.");
+        }
+
+        Set<Long> teamPlayerIds = teamPlayers.stream()
+                .map(TeamPlayer::getId)
+                .collect(Collectors.toSet());
+
+        teamPlayerIdsRequest.stream()
+                .filter(requestedId -> !teamPlayerIds.contains(requestedId))
+                .findFirst()
+                .ifPresent(invalidId -> {
+                    throw new CustomException(HttpStatus.BAD_REQUEST,
+                            PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION + invalidId);
+                });
+
+        teamPlayers.forEach(tp -> {
+            if (!tp.getTeam().equals(team)) {
+                throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
+            }
+        });
+    }
 }

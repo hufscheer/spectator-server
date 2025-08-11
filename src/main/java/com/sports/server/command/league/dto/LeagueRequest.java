@@ -2,6 +2,7 @@ package com.sports.server.command.league.dto;
 
 import com.sports.server.command.league.domain.Round;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
@@ -11,22 +12,24 @@ public class LeagueRequest {
 		String name,
 		int maxRound,
 		LocalDateTime startAt,
-		LocalDateTime endAt
+		LocalDateTime endAt,
+		List<Long> teamIds
 	) {
 		public League toEntity(final Member manager) {
 			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.from(maxRound));
 		}
 	}
 
-	public record TeamRegister(
-			Long teamId
-	){}
-
 	public record Update(
 		String name,
+		int maxRound,
 		LocalDateTime startAt,
-		LocalDateTime endAt,
-		int maxRound
+		LocalDateTime endAt
+	) {
+	}
+
+	public record Teams(
+			List<Long> teamIds
 	) {
 	}
 }
