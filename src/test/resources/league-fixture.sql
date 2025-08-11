@@ -25,102 +25,52 @@ VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00
        (9, 1, 1, '야구 대회', '2024-01-01 00:00:00', '2099-12-31 00:00:00', false, '16강', '16강'),
        (10, 1, 1, '축구 대회', '2099-12-30 00:00:00', '2099-12-31 00:00:00', false, '16강', '16강');
 
--- 리그의 스포츠
-INSERT INTO league_sports (id, league_id)
-VALUES (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 4);
+-- 팀
+INSERT INTO teams (id, unit, name, logo_image_url, team_color)
+VALUES (1, 'BUSINESS', '경영 야생마', 'https://example.com/logos/wildhorse.png', '#8B0000'),
+       (2, 'BUSINESS', '서어 뻬데뻬', 'https://example.com/logos/pedro.png', '#FF4500'),
+       (3, 'BUSINESS', '미컴 축구생각', 'https://example.com/logos/micom.png', '#1E90FF'),
+       (4, 'BUSINESS', '체교 불사조', 'https://example.com/logos/phoenix.png', '#FFD700'),
+       (5, 'BUSINESS', '컴공 독수리', 'https://example.com/logos/eagle.png', '#4B0082');
 
--- TEAMS 테이블 - 실제 팀 데이터
-INSERT INTO teams (id, organization_id, logo_image_url, name, team_color, unit)
-VALUES (1, 1, 'https://example.com/logo1.png', '경영 야생마', '#FF0000', 'ENGLISH'),
-       (2, 1, 'https://example.com/logo2.png', '서어 뻬데뻬', '#00FF00', 'ENGLISH'),
-       (3, 1, 'https://example.com/logo3.png', '미컴 축구생각', '#0000FF', 'ENGLISH'),
-       (4, 1, 'https://example.com/logo4.png', '새로운 팀', '#FFFF00', 'ENGLISH'),
-       (5, 1, 'https://example.com/logo5.png', '새로운 팀 2', '#FF00FF', 'ENGLISH'),
-       (6, 1, 'https://example.com/logo6.png', '팀3', '#00FFFF', 'ENGLISH'),
-       (7, 1, 'https://example.com/logo7.png', '팀4', '#FFA500', 'ENGLISH');
-
--- LEAGUE_TEAMS 테이블 - 리그와 팀의 매핑
-INSERT INTO league_teams (id, league_id, team_id, ranking, total_cheer_count, total_talk_count)
-VALUES (1, 1, 1, 1, 100, 50),
-       (2, 1, 2, 2, 80, 40),
-       (3, 1, 3, 3, 60, 30),
-       (4, 1, 4, 4, 40, 20),
-       (5, 1, 5, 5, 20, 10),
-       (6, 9, 6, 1, 150, 75),
-       (7, 9, 7, 2, 120, 60);
-
--- PLAYERS 테이블 - 선수 데이터
+-- 선수
 INSERT INTO players (id, name, student_number)
-VALUES (1, '봄동나물진승희', '20200001'),
-       (2, '가을전어이동규', '20200002'),
-       (3, '겨울붕어빵이현제', '20200003'),
-       (4, '여름수박고병룡', '20200004'),
-       (5, '승희', '20200005'),
-       (6, '김선수', '20200006'),
-       (7, '박선수', '20200007'),
-       (8, '이선수', '20200008'),
-       (9, '최선수', '20200009'),
-       (10, '정선수', '20200010');
+VALUES (1, '김승희', '202101001'),
+       (2, '이동규', '202101002'),
+       (3, '이현제', '202202001'),
+       (4, '고병룡', '202202002'),
+       (5, '박주장', '202003001');
 
--- TEAM_PLAYERS 테이블 - 팀과 선수의 매핑
-INSERT INTO team_players (id, team_id, player_id)
+-- 팀-선수 연결
+INSERT INTO team_players (id, team_id, player_id, jersey_number)
+VALUES (1, 1, 3, 9),
+       (2, 1, 4, 11),
+       (3, 3, 1, 10),
+       (4, 3, 2, 7),
+       (5, 4, 5, 1);
+
+-- 리그
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round, in_progress_round)
+VALUES (1, 1, 1, '2025 훕치치 풋살 챔피언십', '2025-08-01T10:00:00', '2025-08-15T22:00:00', false, '8강', '8강'),
+       (2, 1, 1, '2025 훕치치 농구대잔치', '2025-09-01T10:00:00', '2025-09-15T22:00:00', false, '4강', '4강');
+
+-- 리그-팀 연결
+INSERT INTO league_teams (id, league_id, team_id)
 VALUES (1, 1, 1),
-       (2, 1, 5),
-       (3, 3, 1),
-       (4, 3, 2),
-       (5, 3, 3),
-       (6, 3, 4),
-       (7, 6, 6),
-       (8, 6, 7),
-       (9, 7, 8),
-       (10, 7, 9),
-       (11, 7, 10);
+       (2, 1, 2),
+       (3, 1, 3),
+       (4, 2, 4),
+       (5, 2, 5);
 
--- LEAGUE_TEAM_PLAYERS 테이블 - 리그팀과 선수의 매핑
-INSERT INTO league_team_players (id, league_team_id, player_id, jersey_number)
-VALUES (1, 3, 1, 0),   -- 미컴 축구생각 - 봄동나물진승희
-       (2, 3, 2, 2),   -- 미컴 축구생각 - 가을전어이동규
-       (3, 3, 3, 3),   -- 미컴 축구생각 - 겨울붕어빵이현제
-       (4, 3, 4, 4),   -- 미컴 축구생각 - 여름수박고병룡
-       (5, 1, 5, 10),  -- 경영 야생마 - 승희
-       (6, 6, 6, 1),   -- 팀3 - 김선수
-       (7, 6, 7, 2),   -- 팀3 - 박선수
-       (8, 7, 8, 3),   -- 팀4 - 이선수
-       (9, 7, 9, 4),   -- 팀4 - 최선수
-       (10, 7, 10, 5); -- 팀4 - 정선수
+-- 경기
+INSERT INTO games (id, administrator_id, league_id, start_time, name, round, state)
+VALUES (1, 1, 1, '2025-08-05T18:00:00', '8강 1경기', '8강', 'SCHEDULED'),
+       (2, 1, 1, '2025-08-05T19:00:00', '8강 2경기', '8강', 'SCHEDULED');
 
--- 게임 데이터
-INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round)
-VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'PLAYING', '4강'),
-       (2, 1, 1, '두번째로 빠른 경기', '2023-11-12T10:10:00', 'abc123', '2023-11-12T10:10:00', '1st Quarter', 'SCHEDULED', '4강'),
-       (3, 1, 1, '세번째로 빠른 경기', '2023-11-12T11:00:00', 'abc123', '2023-11-12T11:15:00', '1st Quarter', 'PLAYING', '4강'),
-       (4, 1, 2, '네번째로 빠른 경기', '2023-11-12T12:00:00', 'abc123', '2023-11-12T12:15:00', '1st Quarter', 'PLAYING', '4강'),
-       (5, 1, 1, '예시 경기', '2023-11-12T12:00:00', 'abc123', '2023-11-12T12:15:00', '1st Quarter', 'FINISHED', '4강');
-
--- 게임팀 데이터
-INSERT INTO game_teams (game_id, team_id, cheer_count, score, pk_score)
-VALUES (1, 1, 1, 1, 0),  -- 경영 야생마
-       (1, 2, 2, 2, 0),  -- 서어 뻬데뻬
-
-       (2, 2, 1, 0, 0),  -- 서어 뻬데뻬
-       (2, 3, 1, 0, 0),  -- 미컴 축구생각
-
-       (3, 1, 1, 0, 0),  -- 경영 야생마
-       (3, 3, 1, 0, 0),  -- 미컴 축구생각
-
-       (4, 4, 1, 1, 0),  -- 새로운 팀
-       (4, 5, 2, 2, 0),  -- 새로운 팀 2
-
-       (5, 1, 1, 0, 0),  -- 경영 야생마
-       (5, 5, 1, 0, 0);  -- 새로운 팀 2
-
--- LEAGUE_STATISTICS 테이블
-INSERT INTO league_statistics (id, league_id, first_winner_team_id, second_winner_team_id, most_cheered_team_id, most_cheer_talks_team_id)
-VALUES (1, 1, 1, 2, 2, 3),  -- 삼건물 대회: 1등 경영야생마, 2등 서어뻬데뻬, 최다응원 서어뻬데뻬, 최다응원댓글 미컴축구생각
-       (2, 2, 4, 5, 4, 5),  -- 농구대잔치: 1등 새로운팀, 2등 새로운팀2, 최다응원 새로운팀, 최다응원댓글 새로운팀2
-       (3, 9, 6, 7, 6, 7);  -- 야구 대회: 1등 팀3, 2등 팀4, 최다응원 팀3, 최다응원댓글 팀4
+-- 경기-팀
+INSERT INTO game_teams (id, game_id, team_id, score)
+VALUES (1, 1, 1, 0),
+       (2, 1, 2, 0),
+       (3, 2, 3, 0);
 
 SET foreign_key_checks = 1;

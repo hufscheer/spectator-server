@@ -13,6 +13,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -31,7 +32,7 @@ class LeagueControllerTest extends DocumentationTest {
 	void 리그를_생성한다() throws Exception {
 		// given
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime);
+		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of());
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
 
@@ -42,13 +43,14 @@ class LeagueControllerTest extends DocumentationTest {
 			.cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
-        result.andExpect(status().isOk())
+        result.andExpect(status().isCreated())
                 .andDo(restDocsHandler.document(
                                 requestFields(
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("대회 이름"),
                                         fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("대회 진행 라운드 수. 결승은 2"),
                                         fieldWithPath("startAt").type(JsonFieldType.STRING).description("대회 시작 시간"),
-                                        fieldWithPath("endAt").type(JsonFieldType.STRING).description("대회 종료 시간")
+                                        fieldWithPath("endAt").type(JsonFieldType.STRING).description("대회 종료 시간"),
+										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회 참가 팀들의 ID 리스트")
                                 ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -87,8 +89,8 @@ class LeagueControllerTest extends DocumentationTest {
 		// given
 		Long leagueId = 5124L;
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequest.Update request = new LeagueRequest.Update("훕치치배 망고 빨리먹기 대회", fixedDateTime,
-				fixedDateTime, 16);
+		LeagueRequest.Update request = new LeagueRequest.Update("훕치치배 망고 빨리먹기 대회", 16, fixedDateTime,
+				fixedDateTime);
 
 		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequest.Update.class), anyLong());
 
@@ -111,5 +113,59 @@ class LeagueControllerTest extends DocumentationTest {
 					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
 				)
 			));
+	}
+
+	@Test
+	void 리그에_참가하는_팀들을_추가한다() throws Exception {
+		// given
+		Long leagueId = 1L;
+		LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(1L, 2L, 3L, 4L));
+
+		doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
+
+		// when
+		ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/teams", leagueId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(teamsRequest))
+				.cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+		// then
+		result.andExpect(status().isCreated())
+				.andDo(restDocsHandler.document(
+								requestFields(
+										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회에 추가할 참가 팀들의 ID 리스트")
+								),
+								requestCookies(
+										cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+								)
+						)
+				);
+	}
+
+	@Test
+	void 리그에_참가하는_팀들을_삭제한다() throws Exception {
+		// given
+		Long leagueId = 1L;
+		LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(1L, 2L));
+
+		doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
+
+		// when
+		ResultActions result = mockMvc.perform(delete("/leagues/{leagueId}/teams", leagueId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(teamsRequest))
+				.cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+		// then
+		result.andExpect(status().isOk())
+				.andDo(restDocsHandler.document(
+								requestFields(
+										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회에서 삭제할 참가 팀들의 ID 리스트")
+								),
+								requestCookies(
+										cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+								)
+						)
+				);
 	}
 }

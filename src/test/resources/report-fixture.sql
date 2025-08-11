@@ -1,20 +1,20 @@
 SET foreign_key_checks = 0;
 
 
-INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
+INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (1, 1, 'john.doe@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-15 10:00:00'),
        (2, 1, 'jane@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
         '2024-06-15 09:30:00');
 
-INSERT INTO leagues (id, manager_id, organization_id, name, start_at, end_at, is_deleted, max_round, in_progress_round)
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round, in_progress_round)
 VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00', false, '8강', '8강');
 
-INSERT INTO games (id, manager_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
                    state, round)
 VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED', '16강');
 
-INSERT INTO game_teams (game_id, league_team_id, cheer_count, score)
+INSERT INTO game_teams (game_id, team_id, cheer_count, score)
 VALUES (1, 1, 1, 0);
 
 -- 신고할 댓글
