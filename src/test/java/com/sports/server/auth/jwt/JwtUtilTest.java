@@ -23,7 +23,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
 @DatabaseIsolation
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql(scripts = "/member-fixture.sql")
 public class JwtUtilTest {
 

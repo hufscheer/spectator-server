@@ -3,9 +3,7 @@ package com.sports.server.query.application;
 import static org.junit.Assert.assertEquals;
 
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.application.TimelineService;
-import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.ServiceTest;
@@ -18,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql(scripts = "/game-fixture.sql")
 public class LineupPlayerQueryServiceTest extends ServiceTest {
 

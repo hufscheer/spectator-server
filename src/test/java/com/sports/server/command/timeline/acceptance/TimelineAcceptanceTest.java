@@ -16,7 +16,7 @@
 //import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.jdbc.Sql;
 //
-//@ActiveProfiles("dev")
+//@ActiveProfiles("test")
 //@Sql(scripts = "/timeline-fixture.sql")
 //public class TimelineAcceptanceTest extends AcceptanceTest {
 //    private final Long gameId = 1L;

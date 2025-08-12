@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql("/cheer-talk-fixture.sql")
 public class CheerTalkAcceptanceTest extends AcceptanceTest {
 

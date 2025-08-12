@@ -15,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql("/member-fixture.sql")
 public class PlayerServiceTest extends ServiceTest {
     @Autowired

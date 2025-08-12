@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Profile("local")
+@Profile({"local", "test"})
 class H2TableNameExtractor implements TableNameExtractor {
 
     private final EntityManager entityManager;

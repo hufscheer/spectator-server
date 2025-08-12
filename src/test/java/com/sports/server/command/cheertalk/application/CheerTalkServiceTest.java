@@ -15,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql("/cheer-talk-fixture.sql")
 public class CheerTalkServiceTest extends ServiceTest {
 

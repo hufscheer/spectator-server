@@ -25,7 +25,7 @@
 //import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.jdbc.Sql;
 //
-//@ActiveProfiles("dev")
+//@ActiveProfiles("test")
 //@Sql(scripts = "/timeline-fixture.sql")
 //class TimelineServiceTest extends ServiceTest {
 //    @Autowired

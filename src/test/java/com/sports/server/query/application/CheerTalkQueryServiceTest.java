@@ -22,7 +22,7 @@
 //import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.jdbc.Sql;
 //
-//@ActiveProfiles("dev")
+//@ActiveProfiles("test")
 //@Sql("/cheer-talk-fixture.sql")
 //public class CheerTalkQueryServiceTest extends ServiceTest {
 //

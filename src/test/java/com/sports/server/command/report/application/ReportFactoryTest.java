@@ -12,7 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql(scripts = "/report-fixture.sql")
 class ReportFactoryTest extends ServiceTest {
 

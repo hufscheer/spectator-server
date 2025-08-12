@@ -25,7 +25,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql(scripts = "/cheer-talk-fixture.sql")
 class CheerTalkEventHandlerTest extends AcceptanceTest {
 

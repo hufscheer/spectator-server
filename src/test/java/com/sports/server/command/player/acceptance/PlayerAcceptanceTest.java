@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql("/member-fixture.sql")
 public class PlayerAcceptanceTest extends AcceptanceTest {
 

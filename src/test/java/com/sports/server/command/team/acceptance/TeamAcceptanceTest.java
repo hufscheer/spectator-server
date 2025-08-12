@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Sql("/member-fixture.sql")
 public class TeamAcceptanceTest extends AcceptanceTest {
 
