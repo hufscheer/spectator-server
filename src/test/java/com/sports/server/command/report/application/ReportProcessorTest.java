@@ -11,7 +11,9 @@ import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("dev")
 public class ReportProcessorTest extends ServiceTest {
 
     @Autowired

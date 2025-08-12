@@ -57,6 +57,11 @@ public class TeamService {
         }
     }
 
+    public void delete(final Long teamId) {
+        Team team = entityUtils.getEntity(teamId, Team.class);
+        teamRepository.delete(team);
+    }
+
     public void addPlayersToTeam(final Long teamId, final List<TeamRequest.TeamPlayerRegister> request){
         Team team = entityUtils.getEntity(teamId, Team.class);
 

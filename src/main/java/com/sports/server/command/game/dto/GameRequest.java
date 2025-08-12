@@ -19,8 +19,8 @@ public class GameRequest {
             String state,
             LocalDateTime startTime,
             String videoId,
-            TeamLineupInfo team1,
-            TeamLineupInfo team2
+            TeamLineupRequest team1,
+            TeamLineupRequest team2
     ) {
         public Game toEntity(Member administrator, League league) {
             return Game.builder()
@@ -37,18 +37,18 @@ public class GameRequest {
         }
     }
 
-    public record TeamLineupInfo(
+    public record TeamLineupRequest(
             Long teamId,
-            List<PlayerLineupInfo> players
+            List<LineupPlayerRequest> lineupPlayers
     ) {
     }
 
-    public record PlayerLineupInfo(
+    public record LineupPlayerRequest(
             Long teamPlayerId,
             LineupPlayerState state,
             Boolean isCaptain
     ) {
-        public PlayerLineupInfo {
+        public LineupPlayerRequest {
             state = Optional.ofNullable(state).orElse(LineupPlayerState.STARTER);
             isCaptain = Optional.ofNullable(isCaptain).orElse(false);
         }

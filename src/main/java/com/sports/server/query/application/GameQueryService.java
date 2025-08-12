@@ -2,7 +2,9 @@ package com.sports.server.query.application;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.league.domain.League;
+import com.sports.server.command.game.exception.GameErrorMessages;
+import com.sports.server.command.team.domain.Team;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.GameResponseDto;
@@ -17,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -33,34 +37,51 @@ public class GameQueryService {
     private final EntityUtils entityUtils;
 
     public GameDetailResponse getGameDetail(final Long gameId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
-        League league = game.getLeague();
-        List<GameTeam> teams = gameTeamQueryRepository.findAllByGameWithTeam(game);
-        return new GameDetailResponse(game, teams, league.getName());
+        Game game = gameQueryRepository.findGameDetailsById(gameId)
+                .orElseThrow(() -> new NotFoundException(GameErrorMessages.GAME_NOT_FOUND_EXCEPTION));
+        return new GameDetailResponse(game, game.getGameTeams(), game.getLeague().getName());
     }
 
     public List<GameDetailResponse> getAllGamesDetailByTeam(final Long teamId) {
+        entityUtils.getEntity(teamId, Team.class);
+
         List<Game> games = gameQueryRepository.findGamesByTeamId(teamId);
+        if (games.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> gameIds = games.stream().map(Game::getId).toList();
+        List<GameTeam> allGameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
+
+        Map<Long, List<GameTeam>> teamsByGameId = allGameTeams.stream()
+                .collect(Collectors.groupingBy(gameTeam -> gameTeam.getGame().getId()));
+
         return games.stream()
-                .map(game -> getGameDetail(game.getId()))
+                .map(game -> {
+                    List<GameTeam> gameTeams = teamsByGameId.getOrDefault(game.getId(), Collections.emptyList());
+                    return new GameDetailResponse(game, gameTeams, game.getLeague().getName());
+                })
                 .toList();
     }
 
     public List<GameResponseDto> getAllGames(final GamesQueryRequestDto queryRequestDto,
                                              final PageRequestDto pageRequest) {
 
-        List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
-        List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameIds(
-                games.stream()
-                        .map(Game::getId)
-                        .toList()
-        );
+        // TODO: 버그 수정
+        //List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
+        List<Game> games = gameQueryRepository.findAll();
 
-        Map<Game, List<GameTeam>> groupedByGame = gameTeams.stream()
-                .collect(groupingBy(GameTeam::getGame));
+        List<Long> gameIds = games.stream().map(Game::getId).toList();
+        List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
+
+        Map<Long, List<GameTeam>> teamsByGameId = gameTeams.stream()
+                .collect(groupingBy(gameTeam -> gameTeam.getGame().getId()));
 
         return games.stream()
-                .map(game -> new GameResponseDto(game, groupedByGame.getOrDefault(game, new ArrayList<>())))
+                .map(game -> {
+                    List<GameTeam> teams = teamsByGameId.getOrDefault(game.getId(), new ArrayList<>());
+                    return new GameResponseDto(game, teams);
+                })
                 .toList();
     }
 

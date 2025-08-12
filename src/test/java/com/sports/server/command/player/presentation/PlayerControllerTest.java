@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PlayerControllerTest extends DocumentationTest {
 
     @Test
-    void 선수를_등록한다() throws Exception {
+    void 선수를_생성한다() throws Exception {
         // given
         PlayerRequest.Register request = new PlayerRequest.Register("손흥민", "202500001");
 

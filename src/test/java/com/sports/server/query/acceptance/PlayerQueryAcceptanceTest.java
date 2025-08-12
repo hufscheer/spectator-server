@@ -12,12 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@ActiveProfiles("dev")
 public class PlayerQueryAcceptanceTest extends AcceptanceTest {
 
     @Autowired
@@ -30,8 +32,8 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        player1 = new Player("손흥민", "202500001");
-        player2 = new Player("박지성", "202500002");
+        player1 = new Player("손흥민", "202500111");
+        player2 = new Player("박지성", "202500112");
         playerRepository.save(player1);
         playerRepository.save(player2);
     }
@@ -47,7 +49,7 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
 
         // then
         List<PlayerResponse> actual = toResponses(response, PlayerResponse.class);
-        List<PlayerResponse> expected = List.of(new PlayerResponse(player2), new PlayerResponse(player1));
+        List<PlayerResponse> expected = List.of(new PlayerResponse(player1), new PlayerResponse(player2));
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -56,7 +58,7 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 선수를_한명_조회한다(){
+    void 선수를_상세_조회한다(){
         // given
         Long playerId = player1.getId();
         PlayerResponse expected = new PlayerResponse(player1);

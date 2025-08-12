@@ -4,15 +4,18 @@ import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.dto.PlayerRequest;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.support.ServiceTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+@ActiveProfiles("dev")
 @Sql("/member-fixture.sql")
 public class PlayerServiceTest extends ServiceTest {
     @Autowired
@@ -34,7 +37,7 @@ public class PlayerServiceTest extends ServiceTest {
         PlayerRequest.Register request = new PlayerRequest.Register("박지성", duplicatedStudentNumber);
 
         assertThatThrownBy(() -> playerService.register(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("이미 존재하는 학번입니다.");
     }
 

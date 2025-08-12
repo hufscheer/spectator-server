@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 
 class GameTest {
     private Game game;
+    private GameTeam team1;
+    private GameTeam team2;
 
     @BeforeEach
     public void setUp() {
@@ -21,13 +23,20 @@ class GameTest {
                 .set("teams", new ArrayList<>())
                 .sample();
 
-        for (int i = 0; i < 2; i++) {
-            game.addTeam(entityBuilder(GameTeam.class)
-                    .set("game", game)
-                    .set("score", 0)
-                    .set("pkScore", 0)
-                    .sample());
-        }
+        team1 = entityBuilder(GameTeam.class)
+                .set("game", game)
+                .set("score", 0)
+                .set("pkScore", 0)
+                .sample();
+
+        team2 = entityBuilder(GameTeam.class)
+                .set("game", game)
+                .set("score", 0)
+                .set("pkScore", 0)
+                .sample();
+
+        game.addGameTeam(team1);
+        game.addGameTeam(team2);
     }
 
     @Nested
@@ -37,7 +46,7 @@ class GameTest {
         void team1이_득점한다() {
             // given
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam1())
+                    .set("gameTeam", team1)
                     .sample();
 
             // when
@@ -45,8 +54,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(1),
-                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+                    () -> assertThat(team1.getScore()).isEqualTo(1),
+                    () -> assertThat(team2.getScore()).isEqualTo(0)
             );
         }
 
@@ -54,7 +63,7 @@ class GameTest {
         void team2가_득점한다() {
             // given
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam2())
+                    .set("gameTeam", team2)
                     .sample();
 
             // when
@@ -62,8 +71,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
-                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(1)
+                    () -> assertThat(team1.getScore()).isEqualTo(0),
+                    () -> assertThat(team2.getScore()).isEqualTo(1)
             );
         }
 
@@ -86,7 +95,7 @@ class GameTest {
         void team1이_승부차기에서_득점한다() {
             // given
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam1())
+                    .set("gameTeam", team1)
                     .sample();
 
             // when
@@ -94,8 +103,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(1),
-                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+                    () -> assertThat(team1.getPkScore()).isEqualTo(1),
+                    () -> assertThat(team2.getPkScore()).isEqualTo(0)
             );
         }
 
@@ -103,7 +112,7 @@ class GameTest {
         void team2가_승부차기에서_득점한다() {
             // given
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam2())
+                    .set("gameTeam", team2)
                     .sample();
 
             // when
@@ -111,8 +120,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
-                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(1)
+                    () -> assertThat(team1.getPkScore()).isEqualTo(0),
+                    () -> assertThat(team2.getPkScore()).isEqualTo(1)
             );
         }
     }
@@ -127,10 +136,10 @@ class GameTest {
         @BeforeEach
         void setUp() {
             team1Player = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam1())
+                    .set("gameTeam", team1)
                     .sample();
             team2Player = entityBuilder(LineupPlayer.class)
-                    .set("gameTeam", game.getTeam2())
+                    .set("gameTeam", team2)
                     .sample();
         }
 
@@ -144,8 +153,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
-                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+                    () -> assertThat(team1.getScore()).isEqualTo(0),
+                    () -> assertThat(team2.getScore()).isEqualTo(0)
             );
         }
 
@@ -159,8 +168,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
-                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+                    () -> assertThat(team1.getPkScore()).isEqualTo(0),
+                    () -> assertThat(team2.getPkScore()).isEqualTo(0)
             );
         }
 
@@ -174,8 +183,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getPkScore()).isEqualTo(0),
-                    () -> assertThat(game.getTeam2().getPkScore()).isEqualTo(0)
+                    () -> assertThat(team1.getPkScore()).isEqualTo(0),
+                    () -> assertThat(team2.getPkScore()).isEqualTo(0)
             );
         }
 
@@ -189,8 +198,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
-                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(0)
+                    () -> assertThat(team1.getScore()).isEqualTo(0),
+                    () -> assertThat(team2.getScore()).isEqualTo(0)
             );
         }
 
@@ -205,8 +214,8 @@ class GameTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getTeam1().getScore()).isEqualTo(0),
-                    () -> assertThat(game.getTeam2().getScore()).isEqualTo(1)
+                    () -> assertThat(team1.getScore()).isEqualTo(0),
+                    () -> assertThat(team2.getScore()).isEqualTo(1)
             );
         }
 

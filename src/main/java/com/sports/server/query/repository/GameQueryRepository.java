@@ -3,6 +3,8 @@ package com.sports.server.query.repository;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
@@ -38,4 +40,13 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "AND gt.team.id = :teamId)"
                     + "ORDER BY g.id DESC ")
     List<Game> findGamesByTeamId(@Param("teamId") Long teamId);
+
+    @Query("SELECT g FROM Game g " +
+            "JOIN FETCH g.league " +
+            "JOIN FETCH g.gameTeams gt " +
+            "JOIN FETCH gt.team " +
+            "WHERE g.id = :gameId")
+    Optional<Game> findGameDetailsById(@Param("gameId") Long gameId);
+
+    List<Game> findAll();
 }

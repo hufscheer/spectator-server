@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Named.named;
 
-import com.sports.server.command.league.dto.LeagueRequestDto;
+import com.sports.server.command.league.dto.LeagueRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import java.time.LocalDateTime;
@@ -68,7 +68,7 @@ class LeagueTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("leagueUpdateRequestStream")
     @DisplayName("리그 정보 수정 테스트")
-    void 리그_정보_수정(LeagueRequestDto.Update request, List<Function<League, Executable>> assertions) throws Exception {
+    void 리그_정보_수정(LeagueRequest.Update request, List<Function<League, Executable>> assertions) {
         // given
         League sut = new League(
                 manager,
@@ -98,7 +98,7 @@ class LeagueTest {
         return Stream.of(
                 leagueUpdateRequestArgument(
                         "이름이 빈 값이 아닐 경우, 대회 이름, 시작 시간, 종료 시간, 총 라운드 수를 수정한다.",
-                        new LeagueRequestDto.Update(newName, startAt, endAt, maxRound),
+                        new LeagueRequest.Update(newName, maxRound, startAt, endAt),
                         List.of(
                                 (league) -> () -> assertThat(league.getName()).isEqualTo(newName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
@@ -108,7 +108,7 @@ class LeagueTest {
                 ),
                 leagueUpdateRequestArgument(
                         "이름이 빈 값인 경우, 이름을 제외한 시작 시간, 종료 시간, 총 라운드 수를 수정한다.",
-                        new LeagueRequestDto.Update(emptyName, startAt, endAt, maxRound),
+                        new LeagueRequest.Update(emptyName, maxRound, startAt, endAt),
                         List.of(
                                 (league) -> () -> assertThat(league.getName()).isNotEqualTo(emptyName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
@@ -121,7 +121,7 @@ class LeagueTest {
 
     private static Arguments leagueUpdateRequestArgument(
             final String testDisplayName,
-            final LeagueRequestDto.Update request,
+            final LeagueRequest.Update request,
             final List<Function<League, Executable>> assertions) {
         return Arguments.of(
                 named(testDisplayName, request), assertions

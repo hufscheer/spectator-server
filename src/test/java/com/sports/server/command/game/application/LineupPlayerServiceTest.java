@@ -10,8 +10,10 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+@ActiveProfiles("dev")
 @Sql(scripts = "/game-fixture.sql")
 public class LineupPlayerServiceTest extends ServiceTest {
 

@@ -14,8 +14,7 @@ public class GamesQueryRequestDto {
     private List<Long> leagueTeamIds;
     private Integer round;
 
-    public GamesQueryRequestDto(Long league_id, String state, List<Long> league_team_id,
-                                Integer round) {
+    public GamesQueryRequestDto(Long league_id, String state, List<Long> league_team_id, Integer round) {
         this.leagueId = league_id;
         this.stateValue = state;
         this.leagueTeamIds = league_team_id;

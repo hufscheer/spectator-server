@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -88,5 +89,17 @@ public class Player extends BaseEntity<Player> {
             leagueTopScorer.updateRanking(ranking);
             leagueTopScorer.updateGoalCount(goalCount);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Player player)) return false;
+        return Objects.equals(getStudentNumber(), player.getStudentNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getStudentNumber());
     }
 }

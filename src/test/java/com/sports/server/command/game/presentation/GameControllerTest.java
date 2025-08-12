@@ -11,11 +11,14 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
-import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -98,15 +101,34 @@ public class GameControllerTest extends DocumentationTest {
 
     @Test
     void 경기를_등록한다() throws Exception {
-
         // given
         Long leagueId = 1L;
-        Long idOfTeam1 = 1L;
-        Long idOfTeam2 = 2L;
-        GameRequestDto.Register requestDto = new GameRequestDto.Register("경기 이름", 16, "경기전", "SCHEDULED",
-                LocalDateTime.of(2024, 9, 11, 12, 0, 0), idOfTeam1, idOfTeam2, "videoId");
-
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+        List<GameRequest.LineupPlayerRequest> team1LineupPlayers = List.of(
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
+                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false)
+        );
+        GameRequest.TeamLineupRequest team1 = new GameRequest.TeamLineupRequest(1L, team1LineupPlayers);
+
+        List<GameRequest.LineupPlayerRequest> team2LineupPlayers = List.of(
+                new GameRequest.LineupPlayerRequest(3L, LineupPlayerState.STARTER, true),
+                new GameRequest.LineupPlayerRequest(4L, LineupPlayerState.CANDIDATE, false)
+        );
+        GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, team2LineupPlayers);
+
+        // 최종 요청 DTO 생성
+        GameRequest.Register requestDto = new GameRequest.Register(
+                "결승전",
+                2,
+                "결승",
+                "SCHEDULED",
+                LocalDateTime.of(2025, 11, 11, 19, 0, 0),
+                "youtube video url",
+                team1,
+                team2
+        );
+
 
         // when
         ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/games", leagueId)
@@ -123,16 +145,25 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("경기의 이름"),
-                                fieldWithPath("round").type(JsonFieldType.NUMBER).description("라운드의 설명 ex. 4강->4, 결승->2"),
-                                fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
-                                fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태"),
-                                fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작 날짜 및 시각"),
-                                fieldWithPath("idOfTeam1").type(JsonFieldType.NUMBER)
-                                        .description("경기게 참여하는 첫번째 리그팀의 아이디"),
-                                fieldWithPath("idOfTeam2").type(JsonFieldType.NUMBER)
-                                        .description("경기게 참여하는 두번째 리그팀의 아이디"),
-                                fieldWithPath("videoId").type(JsonFieldType.STRING)
-                                        .description("경기 영상 링크")
+                                fieldWithPath("round").type(JsonFieldType.NUMBER).description("라운드 (16강, 8강, 4강, 결승)"),
+                                fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터 정보 (사용자 지정 문자열)"),
+                                fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태 (SCHEDULED, PLAYING, FINISHED)"),
+                                fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
+                                fieldWithPath("videoId").type(JsonFieldType.STRING).description("경기 영상 링크 (nullable)").optional(),
+
+                                fieldWithPath("team1").type(JsonFieldType.OBJECT).description("첫 번째 팀의 라인업 정보"),
+                                fieldWithPath("team1.teamId").type(JsonFieldType.NUMBER).description("첫 번째 팀의 ID"),
+                                fieldWithPath("team1.lineupPlayers").type(JsonFieldType.ARRAY).description("첫 번째 팀의 라인업 선수 목록"),
+                                fieldWithPath("team1.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수의 ID"),
+                                fieldWithPath("team1.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태"),
+                                fieldWithPath("team1.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부"),
+
+                                fieldWithPath("team2").type(JsonFieldType.OBJECT).description("두 번째 팀의 라인업 정보"),
+                                fieldWithPath("team2.teamId").type(JsonFieldType.NUMBER).description("두 번째 팀의 ID"),
+                                fieldWithPath("team2.lineupPlayers").type(JsonFieldType.ARRAY).description("두 번째 팀의 라인업 선수 목록"),
+                                fieldWithPath("team2.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수의 ID"),
+                                fieldWithPath("team2.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태"),
+                                fieldWithPath("team2.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -149,7 +180,7 @@ public class GameControllerTest extends DocumentationTest {
         // given
         Long leagueId = 1L;
         Long gameId = 1L;
-        GameRequestDto.Update requestDto = new GameRequestDto.Update(
+        GameRequest.Update requestDto = new GameRequest.Update(
                 "게임 이름", 16, "전반전", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
         );
 

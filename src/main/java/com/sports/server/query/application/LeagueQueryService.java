@@ -12,9 +12,7 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 
 import com.sports.server.query.dto.response.*;
-import com.sports.server.query.repository.GameQueryRepository;
-import com.sports.server.query.repository.LeagueQueryRepository;
-import com.sports.server.query.repository.TeamDynamicRepository;
+import com.sports.server.query.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -59,6 +57,14 @@ public class LeagueQueryService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
     }
 
+//    public List<PlayerResponse> findPlayersByLeagueTeam(Long leagueTeamId) {
+//        List<LeagueTeamPlayer> leagueTeamPlayers = leagueTeamPlayerQueryRepository.findByLeagueTeamId(leagueTeamId);
+//
+//        return leagueTeamPlayers.stream()
+//                .map(PlayerResponse::of)
+//                .toList();
+//    }
+
     public List<LeagueResponseWithInProgressGames> findLeaguesByManager(final Member member) {
         List<League> leagues = leagueQueryRepository.findByManager(member);
         Map<League, List<Game>> gamesForLeagues = getGamesForLeague(leagues);
@@ -76,6 +82,13 @@ public class LeagueQueryService {
                 .collect(toMap(league -> league,
                         gameQueryRepository::findPlayingGamesByLeagueWithGameTeams));
     }
+
+//    public LeagueTeamDetailResponse findLeagueTeam(final Long leagueTeamId) {
+//        LeagueTeam leagueTeam = entityUtils.getEntity(leagueTeamId, LeagueTeam.class);
+//        List<LeagueTeamPlayer> leagueTeamPlayers = leagueTeamPlayerQueryRepository.findByLeagueTeamId(
+//                leagueTeam.getId());
+//        return LeagueTeamDetailResponse.of(leagueTeam, leagueTeamPlayers);
+//    }
 
     public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
         League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId)
@@ -97,27 +110,27 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
-        LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId);
-        List<LeagueTeam> leagueTeams = leagueTeamQueryRepository.findByLeagueId(leagueId);
+//    public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
+//        LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId);
+//        List<LeagueTeam> leagueTeams = leagueTeamQueryRepository.findByLeagueId(leagueId);
+//
+//        return LeagueStatisticsResponse.builder()
+//                .leagueStatisticsId(statistics.getId())
+//                .firstWinnerTeam(TeamResponse.from(statistics.getFirstWinnerTeam()))
+//                .secondWinnerTeam(TeamResponse.from(statistics.getSecondWinnerTeam()))
+//                .mostCheeredTeam(createTeamResponseWithStats(statistics.getMostCheeredTeam(), leagueTeams))
+//                .mostCheerTalksTeam(createTeamResponseWithStats(statistics.getMostCheerTalksTeam(), leagueTeams))
+//                .build();
+//    }
 
-        return LeagueStatisticsResponse.builder()
-                .leagueStatisticsId(statistics.getId())
-                .firstWinnerTeam(TeamResponse.from(statistics.getFirstWinnerTeam()))
-                .secondWinnerTeam(TeamResponse.from(statistics.getSecondWinnerTeam()))
-                .mostCheeredTeam(createTeamResponseWithStats(statistics.getMostCheeredTeam(), leagueTeams))
-                .mostCheerTalksTeam(createTeamResponseWithStats(statistics.getMostCheerTalksTeam(), leagueTeams))
-                .build();
-    }
-
-    private TeamResponse createTeamResponseWithStats(Team team, List<LeagueTeam> leagueTeams) {
-        LeagueTeam leagueTeam = leagueTeams.stream()
-                .filter(lt -> lt.getTeam().equals(team))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("LeagueTeam not found"));
-
-        return TeamResponse.from(leagueTeam);
-    }
+//    private TeamResponse createTeamResponseWithStats(Team team, List<LeagueTeam> leagueTeams) {
+//        LeagueTeam leagueTeam = leagueTeams.stream()
+//                .filter(lt -> lt.getTeam().equals(team))
+//                .findFirst()
+//                .orElseThrow(() -> new NotFoundException("LeagueTeam not found"));
+//
+//        return TeamResponse.from(leagueTeam);
+//    }
 
     public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
             Map.entry(LeagueProgress.IN_PROGRESS.getDescription(), 1),
