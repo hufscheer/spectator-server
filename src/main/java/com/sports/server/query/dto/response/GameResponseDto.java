@@ -2,7 +2,7 @@ package com.sports.server.query.dto.response;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.sport.domain.Sport;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -15,10 +15,9 @@ public record GameResponseDto(
         int round,
         String videoId,
         List<TeamResponse> gameTeams,
-        String sportsName,
         boolean isPkTaken
 ) {
-    public GameResponseDto(final Game game, final List<GameTeam> gameTeams, final Sport sport) {
+    public GameResponseDto(final Game game, final List<GameTeam> gameTeams) {
         this(
                 game.getId(),
                 game.getStartTime(),
@@ -30,7 +29,6 @@ public record GameResponseDto(
                         .sorted(Comparator.comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
                         .toList(),
-                sport.getName(),
                 game.getIsPkTaken()
         );
     }
@@ -45,8 +43,8 @@ public record GameResponseDto(
         public TeamResponse(GameTeam gameTeam) {
             this(
                     gameTeam.getId(),
-                    gameTeam.getLeagueTeam().getName(),
-                    gameTeam.getLeagueTeam().getLogoImageUrl(),
+                    gameTeam.getTeam().getName(),
+                    gameTeam.getTeam().getLogoImageUrl(),
                     gameTeam.getScore(),
                     gameTeam.getPkScore()
             );

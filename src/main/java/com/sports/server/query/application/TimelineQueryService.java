@@ -3,7 +3,7 @@ package com.sports.server.query.application;
 import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 
-import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.query.repository.TimelineQueryRepository;
@@ -27,7 +27,7 @@ public class TimelineQueryService {
 
         return timelines.keySet()
                 .stream()
-                .sorted(comparingLong(Quarter::getOrder).thenComparing(Quarter::getId).reversed())
+                .sorted(comparingLong(Quarter::getOrder).reversed())
                 .map(quarter -> TimelineResponse.of(
                         quarter.getName(),
                         timelines.get(quarter)

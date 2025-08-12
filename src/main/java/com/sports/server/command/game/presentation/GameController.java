@@ -4,10 +4,11 @@ import com.sports.server.command.game.application.GameService;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
-import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.member.domain.Member;
 import jakarta.validation.Valid;
 import java.net.URI;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,26 +45,31 @@ public class GameController {
 
     @PostMapping("/leagues/{leagueId}/games")
     public ResponseEntity<Long> registerGame(@PathVariable final Long leagueId,
-                                             @RequestBody final GameRequestDto.Register requestDto,
+                                             @RequestBody final GameRequest.Register request,
                                              final Member member) {
-        Long gameId = gameService.register(leagueId, requestDto, member);
+        Long gameId = gameService.register(leagueId, request, member);
         return ResponseEntity.created(URI.create("/games/" + gameId)).body(gameId);
     }
 
     @PutMapping("/leagues/{leagueId}/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateGame(@PathVariable final Long leagueId,
-                           @PathVariable final Long gameId,
-                           @RequestBody final GameRequestDto.Update requestDto,
-                           final Member member) {
-        gameService.updateGame(leagueId, gameId, requestDto, member);
+    public void updateGame(@PathVariable final Long leagueId, @PathVariable final Long gameId,
+                           @RequestBody final GameRequest.Update request, final Member member) {
+        gameService.updateGame(leagueId, gameId, request, member);
     }
 
+    // restdocs 에서 API 에러(테스트 코드에 오류있는 듯)
     @DeleteMapping("/leagues/{leagueId}/{gameId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGame(@PathVariable final Long leagueId,
                            @PathVariable final Long gameId, final Member manager) {
         gameService.deleteGame(leagueId, gameId, manager);
+    }
+
+    @DeleteMapping("/game-teams/{gameTeamId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGameTeam(@PathVariable final Long gameTeamId, final Member manager) {
+        gameService.deleteGameTeam(gameTeamId, manager);
     }
 
     @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register")

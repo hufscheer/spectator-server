@@ -17,7 +17,7 @@ public class LineupPlayerResponse {
 		public Playing(GameTeam gameTeam, List<LineupPlayer> lineupPlayers) {
 			this(
 					gameTeam.getId(),
-					gameTeam.getLeagueTeam().getName(),
+					gameTeam.getTeam().getName(),
 					lineupPlayers.stream()
 							.map(PlayerResponse::new)
 							.toList()
@@ -34,7 +34,7 @@ public class LineupPlayerResponse {
 		public All(GameTeam gameTeam, List<LineupPlayer> lineupPlayers) {
 			this(
 					gameTeam.getId(),
-					gameTeam.getLeagueTeam().getName(),
+					gameTeam.getTeam().getName(),
 					lineupPlayers.stream()
 							.filter(lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.STARTER))
 							.map(LineupPlayerResponse.PlayerResponse::new)
@@ -50,17 +50,23 @@ public class LineupPlayerResponse {
 	public record PlayerResponse(
 			Long id,
 			String playerName,
-			String description,
-			int number,
+			Integer jerseyNumber,
 			boolean isCaptain,
 			LineupPlayerState state,
 			boolean isReplaced,
 			PlayerSummary replacedPlayer
 	) {
-		public PlayerResponse(LineupPlayer player) {
-			this(player.getId(), player.getName(), player.getDescription(), player.getNumber(), player.isCaptain(),
-					player.getState(), player.isReplaced(),
-					player.getReplacedPlayer() != null ? new PlayerSummary(player.getReplacedPlayer()) : null);
+		public PlayerResponse(LineupPlayer lineupPlayer) {
+			this(
+					lineupPlayer.getId(),
+					lineupPlayer.getPlayer().getName(),
+					lineupPlayer.getJerseyNumber(),
+					lineupPlayer.isCaptain(),
+					lineupPlayer.getState(),
+					lineupPlayer.isReplaced(),
+					Optional.ofNullable(lineupPlayer.getReplacedPlayer())
+							.map(PlayerSummary::new)
+							.orElse(null));
 		}
 	}
 
@@ -69,8 +75,11 @@ public class LineupPlayerResponse {
 			String playerName,
 			int number
 	) {
-		public PlayerSummary(LineupPlayer player) {
-			this(player.getId(), player.getName(), player.getNumber());
+		public PlayerSummary(LineupPlayer lineupPlayer) {
+			this(
+					lineupPlayer.getId(),
+					lineupPlayer.getPlayer().getName(),
+					lineupPlayer.getJerseyNumber());
 		}
 	}
 }

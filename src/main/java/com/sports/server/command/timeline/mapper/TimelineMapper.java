@@ -2,7 +2,7 @@ package com.sports.server.command.timeline.mapper;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.sport.domain.Quarter;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
@@ -84,7 +84,7 @@ public class TimelineMapper {
     }
 
     private Quarter getQuarter(Long quarterId) {
-        return entityUtils.getEntity(quarterId, Quarter.class);
+        return Quarter.fromId(quarterId);
     }
 
     private LineupPlayer getPlayer(Long playerId) {

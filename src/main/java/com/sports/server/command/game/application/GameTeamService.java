@@ -5,6 +5,9 @@ import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
+import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,6 @@ public class GameTeamService {
 
     private final GameTeamRepository gameTeamRepository;
     private final EntityUtils entityUtils;
-
 
     public void updateCheerCount(final Long gameId, final CheerCountUpdateRequest cheerCountUpdateRequest) {
         Game game = entityUtils.getEntity(gameId, Game.class);

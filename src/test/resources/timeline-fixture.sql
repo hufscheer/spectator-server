@@ -1,28 +1,25 @@
 SET
     foreign_key_checks = 0;
 
-INSERT INTO members (id, organization_id, email, password, is_manager, last_login)
+INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'),
        (2, 2, 'non.manager@example.com', 'password123', FALSE, '2024-07-01 10:00:00');
 
--- 스포츠
-INSERT INTO sports (id, name)
-VALUES (1, '농구');
 -- 농구 쿼터
-INSERT INTO quarters (id, name, sports_id, _order)
-VALUES (1, '1쿼터', 1, 1),
-       (2, '2쿼터', 1, 2),
-       (3, '3쿼터', 1, 3),
-       (4, '4쿼터', 1, 4);
+INSERT INTO quarters (id, name, _order)
+VALUES (1, '1쿼터', 1),
+       (2, '2쿼터', 2),
+       (3, '3쿼터', 3),
+       (4, '4쿼터', 4);
 
 -- 경기
-INSERT INTO games (id, sport_id, manager_id, league_id, name, start_time, video_id, quarter_changed_at,
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
                    game_quarter, state, round)
-VALUES (1, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'PLAYING', '4강'),
-       (2, 1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'FINISHED', '4강');
+VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'PLAYING', '4강'),
+       (2, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '3쿼터', 'FINISHED', '4강');
 
 -- 팀
-INSERT INTO league_teams (name, logo_image_url, manager_id, organization_id, league_id)
+INSERT INTO league_teams (name, logo_image_url, administrator_id, organization_id, league_id)
 VALUES ('팀A', 'http://example.com/logo_a.png', 1, 1, 1),
        ('팀B', 'http://example.com/logo_b.png', 2, 1, 1);
 

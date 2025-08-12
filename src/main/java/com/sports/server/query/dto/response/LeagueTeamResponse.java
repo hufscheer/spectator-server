@@ -1,17 +1,17 @@
 package com.sports.server.query.dto.response;
 
-import com.sports.server.command.leagueteam.domain.LeagueTeam;
+import com.sports.server.command.team.domain.Team;
 
 public record LeagueTeamResponse(
-        Long leagueTeamId,
+        Long teamId,
         String teamName,
         String logoImageUrl,
-        Integer sizeOfLeagueTeamPlayers
+        Integer sizeOfTeamPlayers
 ) {
-    public LeagueTeamResponse(final LeagueTeam leagueTeam) {
+    public LeagueTeamResponse(final Team team) {
         this(
-                leagueTeam.getId(), leagueTeam.getName(), leagueTeam.getLogoImageUrl(),
-                leagueTeam.getLeagueTeamPlayers().size()
+                team.getId(), team.getName(), team.getLogoImageUrl(),
+                team.getTeamPlayers().size()
         );
     }
 }

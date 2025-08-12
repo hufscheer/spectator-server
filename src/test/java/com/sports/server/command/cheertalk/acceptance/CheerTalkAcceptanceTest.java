@@ -11,8 +11,10 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+@ActiveProfiles("dev")
 @Sql("/cheer-talk-fixture.sql")
 public class CheerTalkAcceptanceTest extends AcceptanceTest {
 

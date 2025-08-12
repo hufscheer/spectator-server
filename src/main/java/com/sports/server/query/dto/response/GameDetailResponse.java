@@ -7,31 +7,33 @@ import java.util.Comparator;
 import java.util.List;
 
 public record GameDetailResponse(
+        Long gameId,
         LocalDateTime startTime,
         String videoId,
         String gameQuarter,
         String gameName,
-        String sportName,
         List<TeamResponse> gameTeams,
         String state,
         int round,
-        boolean isPkTaken
+        boolean isPkTaken,
+        String leagueName
 ) {
 
-    public GameDetailResponse(Game game, List<GameTeam> gameTeams) {
+    public GameDetailResponse(Game game, List<GameTeam> gameTeams, String leagueName) {
         this(
+                game.getId(),
                 game.getStartTime(),
                 game.getVideoId(),
                 game.getGameQuarter(),
                 game.getName(),
-                game.getSport().getName(),
                 gameTeams.stream()
                         .sorted(Comparator.comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
                         .toList(),
                 game.getState().name(),
                 game.getRound().getNumber(),
-                game.getIsPkTaken()
+                game.getIsPkTaken(),
+                leagueName
         );
     }
 
@@ -41,13 +43,12 @@ public record GameDetailResponse(
             String logoImageUrl,
             Integer score,
             Integer pkScore
-
     ) {
         public TeamResponse(GameTeam gameTeam) {
             this(
                     gameTeam.getId(),
-                    gameTeam.getLeagueTeam().getName(),
-                    gameTeam.getLeagueTeam().getLogoImageUrl(),
+                    gameTeam.getTeam().getName(),
+                    gameTeam.getTeam().getLogoImageUrl(),
                     gameTeam.getScore(),
                     gameTeam.getPkScore()
             );

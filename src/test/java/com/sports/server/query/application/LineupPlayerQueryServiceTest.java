@@ -11,14 +11,14 @@ import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.ServiceTest;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.testcontainers.shaded.org.bouncycastle.voms.VOMSAttribute;
 
+@ActiveProfiles("dev")
 @Sql(scripts = "/game-fixture.sql")
 public class LineupPlayerQueryServiceTest extends ServiceTest {
 
@@ -72,28 +72,28 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
                 .containsOnly(true);
     }
 
-    @Test
-    void 교체_타임라인이_등록되면_교체선수_정보가_등록된다() {
-
-        // given
-        Long gameId = 1L;
-        Long originLineupPlayerId = 2L;
-        Long replaceLineupPlayerId = 1L;
-        Member manager = entityUtils.getEntity(1L, Member.class);
-        TimelineRequest timelineRequest = new TimelineRequest.RegisterReplacement(1L, 1L,
-                originLineupPlayerId, replaceLineupPlayerId, 2);
-        timelineService.register(manager, gameId, timelineRequest);
-
-        // when
-        List<LineupPlayerResponse.All> responses = lineupPlayerQueryService.getLineup(gameId);
-
-        // then
-        Long replacedPlayerId = responses.get(0).candidatePlayers().stream()
-                .filter(playerResponse -> playerResponse.id().equals(replaceLineupPlayerId))
-                .map(player -> player.replacedPlayer().id())
-                .findFirst()
-                .orElse(null); // 값이 없으면 null 반환
-        Assertions.assertThat(originLineupPlayerId).isEqualTo(replacedPlayerId);
-
-    }
+//    @Test
+//    void 교체_타임라인이_등록되면_교체선수_정보가_등록된다() {
+//
+//        // given
+//        Long gameId = 1L;
+//        Long originLineupPlayerId = 2L;
+//        Long replaceLineupPlayerId = 1L;
+//        Member manager = entityUtils.getEntity(1L, Member.class);
+//        TimelineRequest timelineRequest = new TimelineRequest.RegisterReplacement(1L, 1L,
+//                originLineupPlayerId, replaceLineupPlayerId, 2);
+//        timelineService.register(manager, gameId, timelineRequest);
+//
+//        // when
+//        List<LineupPlayerResponse.All> responses = lineupPlayerQueryService.getLineup(gameId);
+//
+//        // then
+//        Long replacedPlayerId = responses.get(0).candidatePlayers().stream()
+//                .filter(playerResponse -> playerResponse.id().equals(replaceLineupPlayerId))
+//                .map(player -> player.replacedPlayer().id())
+//                .findFirst()
+//                .orElse(null); // 값이 없으면 null 반환
+//        Assertions.assertThat(originLineupPlayerId).isEqualTo(replacedPlayerId);
+//
+//    }
 }

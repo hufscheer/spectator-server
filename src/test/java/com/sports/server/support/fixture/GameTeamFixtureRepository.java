@@ -9,8 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface GameTeamFixtureRepository extends JpaRepository<GameTeam, Long> {
     @Query("SELECT gt FROM GameTeam gt " +
-            "JOIN FETCH gt.leagueTeam lt " +
-            "JOIN FETCH gt.lineupPlayers lup " +
+            "JOIN FETCH gt.team " +
+            "LEFT JOIN FETCH gt.lineupPlayers lp " +
+            "LEFT JOIN FETCH lp.player " +
             "WHERE gt.game = :game")
     List<GameTeam> findByGame(@Param("game") Game game);
 }
