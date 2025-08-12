@@ -10,7 +10,6 @@ import com.sports.server.query.dto.response.TeamResponse;
 import com.sports.server.query.repository.PlayerQueryRepository;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -29,6 +27,7 @@ public class PlayerQueryService {
     private final EntityUtils entityUtils;
     private final TimelineQueryRepository timelineQueryRepository;
     private final TeamPlayerRepository teamPlayerRepository;
+    private final PlayerInfoProvider playerInfoProvider;
 
     public List<PlayerResponse> getAllPlayers(){
         List<Player> players = playerQueryRepository.findAll();
@@ -48,7 +47,7 @@ public class PlayerQueryService {
                         )
                 ));
 
-        Map<Long, Integer> playerTotalGoalCountInfo = getPlayersTotalGoalInfo(playerIds);
+        Map<Long, Integer> playerTotalGoalCountInfo = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
         return players.stream()
                 .map(player -> {
                     Long playerId = player.getId();
@@ -70,18 +69,18 @@ public class PlayerQueryService {
         return PlayerResponse.of(player, countPlayerTotalGoal(playerId), teams);
     }
 
-    public Map<Long, Integer> getPlayersTotalGoalInfo(List<Long> playerIds){
-        if (playerIds == null || playerIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        List<PlayerGoalCount> results = timelineQueryRepository.countTotalGoalsByPlayerId(playerIds);
-        return results.stream()
-                .collect(Collectors.toMap(
-                        PlayerGoalCount::playerId,
-                        dto -> dto.playerTotalGoalCount().intValue()
-                ));
-    }
+//    public Map<Long, Integer> getPlayersTotalGoalInfo(List<Long> playerIds){
+//        if (playerIds == null || playerIds.isEmpty()) {
+//            return Collections.emptyMap();
+//        }
+//
+//        List<PlayerGoalCount> results = timelineQueryRepository.countTotalGoalsByPlayerId(playerIds);
+//        return results.stream()
+//                .collect(Collectors.toMap(
+//                        PlayerGoalCount::playerId,
+//                        dto -> dto.playerTotalGoalCount().intValue()
+//                ));
+//    }
 
     private int countPlayerTotalGoal(Long playerId){
         return timelineQueryRepository.countTotalGoalsByPlayerId(playerId);

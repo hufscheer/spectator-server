@@ -123,7 +123,7 @@ public class GameService {
                         lineupPlayerRequest -> lineupPlayerRequest
                 ));
 
-        teamPlayers.forEach(teamPlayer -> {
+        for (TeamPlayer teamPlayer : teamPlayers) {
             GameRequest.LineupPlayerRequest lineupPlayerRequest = request.get(teamPlayer.getId());
 
             if (lineupPlayerRequest == null) {
@@ -137,7 +137,7 @@ public class GameService {
                     teamPlayer.getJerseyNumber(),
                     lineupPlayerRequest.isCaptain()
             );
-        });
+        }
 
     }
 
@@ -154,12 +154,11 @@ public class GameService {
                 .filter(requestedId -> !teamPlayerIds.contains(requestedId))
                 .findFirst()
                 .ifPresent(invalidId -> {
-                    throw new CustomException(HttpStatus.BAD_REQUEST,
-                            PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION + invalidId);
+                    throw new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION + invalidId);
                 });
 
         teamPlayers.forEach(tp -> {
-            if (!tp.getTeam().equals(team)) {
+            if (!tp.getTeam().getId().equals(team.getId())) {
                 throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
             }
         });

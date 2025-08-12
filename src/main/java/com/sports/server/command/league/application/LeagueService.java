@@ -6,6 +6,7 @@ import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import com.sports.server.common.exception.UnauthorizedException;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -34,7 +36,7 @@ public class LeagueService {
 		League league = leagueRepository.save(request.toEntity(manager));
 
 		List<Team> teams = teamRepository.findAllById(request.teamIds());
-		if (teams.size() != request.teamIds().size()) {
+		if (teams.size() != new HashSet<>(request.teamIds()).size()) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, TeamErrorMessages.TEAM_NOT_FOUND_EXCEPTION);
 		}
 
@@ -57,13 +59,13 @@ public class LeagueService {
 
 	public League addTeams(final Member administrator, final Long leagueId, final LeagueRequest.Teams request) {
 		League league = leagueRepository.findWithTeamsById(leagueId)
-				.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "리그를 찾을 수 없습니다."));
+				.orElseThrow(() -> new NotFoundException("리그를 찾을 수 없습니다."));
 		findValidatedLeague(leagueId, administrator);
 
 		List<Long> requestedTeamIds = request.teamIds();
 		List<Team> teams = teamRepository.findAllById(requestedTeamIds);
 		if (teams.size() != requestedTeamIds.size()) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, TeamErrorMessages.TEAMS_NOT_EXIST_INCLUDED_EXCEPTION);
+			throw new NotFoundException(TeamErrorMessages.TEAMS_NOT_EXIST_INCLUDED_EXCEPTION);
 		}
 
 		List<Long> existingTeamIds = leagueTeamRepository.findTeamIdsByLeagueIdAndTeamIdIn(leagueId, requestedTeamIds);
@@ -72,7 +74,7 @@ public class LeagueService {
 				.toList();
 
 		if (teamsToAdd.isEmpty()) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, TeamErrorMessages.INVALID_LEAGUE_TEAMS_REQUEST_EXCEPTION);
+			throw new CustomException(HttpStatus.BAD_REQUEST, "이미 해당 리그에 참가중인 팀입니다.");
 		}
 
 		List<LeagueTeam> leagueTeams = teamsToAdd.stream()
@@ -88,7 +90,7 @@ public class LeagueService {
 		List<Long> teamIdsToRemove = request.teamIds();
 
 		long foundCount = leagueTeamRepository.countByLeagueIdAndTeamIdIn(leagueId, teamIdsToRemove);
-		if (foundCount != teamIdsToRemove.size()) {
+		if (foundCount != new HashSet<>(teamIdsToRemove).size()) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_EXIST_IN_LEAGUE_TEAM_EXCEPTION);
 		}
 

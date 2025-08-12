@@ -12,15 +12,14 @@
 //        String teamColor,
 //        List<PlayerResponse> players
 //) {
-//    public static LeagueTeamDetailResponse of(final LeagueTeam leagueTeam, final List<LeagueTeamPlayer> leagueTeamPlayers) {
+//    public static LeagueTeamDetailResponse of(final LeagueTeam leagueTeam, final List<PlayerResponse> players) {
 //        Team team = leagueTeam.getTeam();
 //        return new LeagueTeamDetailResponse(
 //                team.getLogoImageUrl(),
 //                team.getName(),
 //                team.getTeamColor(),
-//                leagueTeamPlayers.stream()
-//                        .map(PlayerResponse::of)
-//                        .toList()
+//                players
 //        );
 //    }
 //}
+// TODO: 필요없으면 삭제
