@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-@ActiveProfiles("test")
 @Sql(scripts = "/report-fixture.sql")
 class ReportEventHandlerTest extends ServiceTest {
 

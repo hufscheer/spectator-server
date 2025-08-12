@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-@ActiveProfiles("test")
 @Sql(scripts = "/game-fixture.sql")
 class GameLeagueTeamQueryServiceTest extends ServiceTest {
 

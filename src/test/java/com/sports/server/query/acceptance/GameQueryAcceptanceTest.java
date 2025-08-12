@@ -20,7 +20,6 @@
 //import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.jdbc.Sql;
 //
-//@ActiveProfiles("test")
 //@Sql(scripts = "/game-fixture.sql")
 //public class GameQueryAcceptanceTest extends AcceptanceTest {
 //

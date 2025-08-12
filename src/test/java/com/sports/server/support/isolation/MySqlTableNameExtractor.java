@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Profile({"ci", "test"})
+@Profile("ci")
 class MySqlTableNameExtractor implements TableNameExtractor{
 
     private final EntityManager entityManager;

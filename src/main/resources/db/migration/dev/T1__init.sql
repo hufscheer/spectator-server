@@ -1,4 +1,4 @@
-CREATE TABLE test_sports_live.organizations
+CREATE TABLE organizations
 (
     id         BIGINT AUTO_INCREMENT NOT NULL,
     name       VARCHAR(255)          NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE test_sports_live.organizations
     CONSTRAINT pk_organizations      PRIMARY KEY (id)
 );
 
-CREATE TABLE test_sports_live.members
+CREATE TABLE members
 (
     id               BIGINT AUTO_INCREMENT NOT NULL,
     organization_id  BIGINT                NULL,
@@ -16,10 +16,10 @@ CREATE TABLE test_sports_live.members
     last_login       datetime              NULL,
 
     CONSTRAINT pk_members PRIMARY KEY (id),
-    CONSTRAINT FK_MEMBER_ON_ORGANIZATIONS FOREIGN KEY (organization_id) REFERENCES test_sports_live.organizations (id)
+    CONSTRAINT FK_MEMBER_ON_ORGANIZATIONS FOREIGN KEY (organization_id) REFERENCES organizations (id)
 );
 
-CREATE TABLE test_sports_live.teams
+CREATE TABLE teams
 (
     id               BIGINT AUTO_INCREMENT NOT NULL,
     unit             VARCHAR(255)          NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE test_sports_live.teams
     CONSTRAINT pk_teams PRIMARY KEY (id)
 );
 
-CREATE TABLE test_sports_live.players
+CREATE TABLE players
 (
     id             BIGINT AUTO_INCREMENT NOT NULL,
     name           VARCHAR(255)          NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE test_sports_live.players
     CONSTRAINT uc_players_student_number UNIQUE (student_number)
 );
 
-CREATE TABLE test_sports_live.team_players
+CREATE TABLE team_players
 (
     id            BIGINT AUTO_INCREMENT NOT NULL,
     team_id       BIGINT                NOT NULL,
@@ -48,12 +48,12 @@ CREATE TABLE test_sports_live.team_players
     jersey_number INTEGER               NULL,
 
     CONSTRAINT pk_team_players PRIMARY KEY (id),
-    CONSTRAINT FK_TEAM_PLAYERS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES test_sports_live.teams (id),
-    CONSTRAINT FK_TEAM_PLAYERS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES test_sports_live.players (id),
+    CONSTRAINT FK_TEAM_PLAYERS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES teams (id),
+    CONSTRAINT FK_TEAM_PLAYERS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES players (id),
     CONSTRAINT uc_team_player UNIQUE (team_id, player_id)
 );
 
-CREATE TABLE test_sports_live.leagues
+CREATE TABLE leagues
 (
     id                BIGINT AUTO_INCREMENT NOT NULL,
     organization_id   BIGINT                NOT NULL,
@@ -66,11 +66,11 @@ CREATE TABLE test_sports_live.leagues
     in_progress_round VARCHAR(255)          NULL,
 
     CONSTRAINT pk_leagues PRIMARY KEY (id),
-    CONSTRAINT FK_LEAGUES_ON_ORGANIZATIONS FOREIGN KEY (organization_id) REFERENCES test_sports_live.organizations (id),
-    CONSTRAINT FK_LEAGUES_ON_MEMBERS FOREIGN KEY (administrator_id) REFERENCES test_sports_live.members (id)
+    CONSTRAINT FK_LEAGUES_ON_ORGANIZATIONS FOREIGN KEY (organization_id) REFERENCES organizations (id),
+    CONSTRAINT FK_LEAGUES_ON_MEMBERS FOREIGN KEY (administrator_id) REFERENCES members (id)
 );
 
-CREATE TABLE test_sports_live.games
+CREATE TABLE games
 (
     id                 BIGINT AUTO_INCREMENT NOT NULL,
     administrator_id   BIGINT                NULL,
@@ -85,11 +85,11 @@ CREATE TABLE test_sports_live.games
     is_pk_taken        BOOLEAN               NOT NULL DEFAULT FALSE,
 
     CONSTRAINT pk_games PRIMARY KEY (id),
-    CONSTRAINT FK_GAMES_ON_MEMBERS FOREIGN KEY (administrator_id) REFERENCES test_sports_live.members (id),
-    CONSTRAINT FK_GAMES_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES test_sports_live.leagues (id)
+    CONSTRAINT FK_GAMES_ON_MEMBERS FOREIGN KEY (administrator_id) REFERENCES members (id),
+    CONSTRAINT FK_GAMES_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES leagues (id)
 );
 
-CREATE TABLE test_sports_live.game_teams
+CREATE TABLE game_teams
 (
     id          BIGINT AUTO_INCREMENT NOT NULL,
     game_id     BIGINT                NOT NULL,
@@ -97,14 +97,15 @@ CREATE TABLE test_sports_live.game_teams
     cheer_count INT                   NOT NULL DEFAULT 0,
     score       INT                   NOT NULL DEFAULT 0,
     pk_score    INT                   NOT NULL DEFAULT 0,
+    result      VARCHAR(255)          NULL,
 
     CONSTRAINT pk_game_teams PRIMARY KEY (id),
-    CONSTRAINT FK_GAME_TEAMS_ON_GAMES FOREIGN KEY (game_id) REFERENCES test_sports_live.games (id),
-    CONSTRAINT FK_GAME_TEAMS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES test_sports_live.teams (id),
+    CONSTRAINT FK_GAME_TEAMS_ON_GAMES FOREIGN KEY (game_id) REFERENCES games (id),
+    CONSTRAINT FK_GAME_TEAMS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES teams (id),
     CONSTRAINT uc_game_team UNIQUE (game_id, team_id)
 );
 
-CREATE TABLE test_sports_live.league_teams
+CREATE TABLE league_teams
 (
     id                BIGINT AUTO_INCREMENT NOT NULL,
     league_id         BIGINT                NOT NULL,
@@ -114,12 +115,12 @@ CREATE TABLE test_sports_live.league_teams
     ranking           INT                   NULL,
 
     CONSTRAINT pk_league_teams PRIMARY KEY (id),
-    CONSTRAINT FK_LEAGUE_TEAMS_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES test_sports_live.leagues (id),
-    CONSTRAINT FK_LEAGUE_TEAMS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES test_sports_live.teams (id),
+    CONSTRAINT FK_LEAGUE_TEAMS_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES leagues (id),
+    CONSTRAINT FK_LEAGUE_TEAMS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES teams (id),
     CONSTRAINT uc_league_team UNIQUE (league_id, team_id)
 );
 
-CREATE TABLE test_sports_live.league_top_scorers
+CREATE TABLE league_top_scorers
 (
     id          BIGINT AUTO_INCREMENT NOT NULL,
     league_id   BIGINT                NOT NULL,
@@ -128,11 +129,11 @@ CREATE TABLE test_sports_live.league_top_scorers
     goal_count  INT                   NOT NULL DEFAULT 0,
 
     CONSTRAINT pk_league_top_scorers PRIMARY KEY (id),
-    CONSTRAINT FK_LEAGUE_TOP_SCORERS_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES test_sports_live.leagues (id),
-    CONSTRAINT FK_LEAGUE_TOP_SCORERS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES test_sports_live.players (id)
+    CONSTRAINT FK_LEAGUE_TOP_SCORERS_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES leagues (id),
+    CONSTRAINT FK_LEAGUE_TOP_SCORERS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES players (id)
 );
 
-CREATE TABLE test_sports_live.league_statistics
+CREATE TABLE league_statistics
 (
     id                         BIGINT AUTO_INCREMENT NOT NULL,
     league_id                  BIGINT                NOT NULL,
@@ -142,14 +143,14 @@ CREATE TABLE test_sports_live.league_statistics
     most_cheer_talks_team_id   BIGINT                NULL,
 
     CONSTRAINT pk_league_statistics PRIMARY KEY (id),
-    CONSTRAINT FK_LEAGUE_STATISTICS_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES test_sports_live.leagues (id),
-    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_FIRST_WINNER FOREIGN KEY (first_winner_team_id) REFERENCES test_sports_live.teams (id),
-    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_SECOND_WINNER FOREIGN KEY (second_winner_team_id) REFERENCES test_sports_live.teams (id),
-    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_MOST_CHEERED FOREIGN KEY (most_cheered_team_id) REFERENCES test_sports_live.teams (id),
-    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_MOST_TALKS FOREIGN KEY (most_cheer_talks_team_id) REFERENCES test_sports_live.teams (id)
+    CONSTRAINT FK_LEAGUE_STATISTICS_ON_LEAGUES FOREIGN KEY (league_id) REFERENCES leagues (id),
+    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_FIRST_WINNER FOREIGN KEY (first_winner_team_id) REFERENCES teams (id),
+    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_SECOND_WINNER FOREIGN KEY (second_winner_team_id) REFERENCES teams (id),
+    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_MOST_CHEERED FOREIGN KEY (most_cheered_team_id) REFERENCES teams (id),
+    CONSTRAINT FK_LEAGUE_STATISTICS_ON_TEAMS_MOST_TALKS FOREIGN KEY (most_cheer_talks_team_id) REFERENCES teams (id)
 );
 
-CREATE TABLE test_sports_live.lineup_players
+CREATE TABLE lineup_players
 (
     id                 BIGINT AUTO_INCREMENT NOT NULL,
     game_team_id       BIGINT                NOT NULL,
@@ -161,13 +162,13 @@ CREATE TABLE test_sports_live.lineup_players
     replaced_player_id BIGINT                NULL,
 
     CONSTRAINT pk_lineup_players PRIMARY KEY (id),
-    CONSTRAINT FK_LINEUP_PLAYERS_ON_GAME_TEAMS FOREIGN KEY (game_team_id) REFERENCES test_sports_live.game_teams (id),
-    CONSTRAINT FK_LINEUP_PLAYERS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES test_sports_live.players (id),
-    CONSTRAINT FK_LINEUP_PLAYERS_ON_REPLACED_PLAYER FOREIGN KEY (replaced_player_id) REFERENCES test_sports_live.lineup_players (id),
+    CONSTRAINT FK_LINEUP_PLAYERS_ON_GAME_TEAMS FOREIGN KEY (game_team_id) REFERENCES game_teams (id),
+    CONSTRAINT FK_LINEUP_PLAYERS_ON_PLAYERS FOREIGN KEY (player_id) REFERENCES players (id),
+    CONSTRAINT FK_LINEUP_PLAYERS_ON_REPLACED_PLAYER FOREIGN KEY (replaced_player_id) REFERENCES lineup_players (id),
     CONSTRAINT uc_lineup_player UNIQUE (game_team_id, player_id)
 );
 
-CREATE TABLE test_sports_live.cheer_talks
+CREATE TABLE cheer_talks
 (
     id           BIGINT AUTO_INCREMENT NOT NULL,
     game_team_id BIGINT                NOT NULL,
@@ -176,10 +177,10 @@ CREATE TABLE test_sports_live.cheer_talks
     is_blocked   BOOLEAN               NOT NULL DEFAULT FALSE,
 
     CONSTRAINT pk_cheer_talks PRIMARY KEY (id),
-    CONSTRAINT FK_CHEER_TALKS_ON_GAME_TEAMS FOREIGN KEY (game_team_id) REFERENCES test_sports_live.game_teams (id)
+    CONSTRAINT FK_CHEER_TALKS_ON_GAME_TEAMS FOREIGN KEY (game_team_id) REFERENCES game_teams (id)
 );
 
-CREATE TABLE test_sports_live.reports
+CREATE TABLE reports
 (
     id            BIGINT AUTO_INCREMENT NOT NULL,
     cheer_talk_id BIGINT                NOT NULL,
@@ -187,10 +188,10 @@ CREATE TABLE test_sports_live.reports
     state         VARCHAR(255)          NOT NULL,
 
     CONSTRAINT pk_reports PRIMARY KEY (id),
-    CONSTRAINT FK_REPORTS_ON_CHEER_TALKS FOREIGN KEY (cheer_talk_id) REFERENCES test_sports_live.cheer_talks (id)
+    CONSTRAINT FK_REPORTS_ON_CHEER_TALKS FOREIGN KEY (cheer_talk_id) REFERENCES cheer_talks (id)
 );
 
-CREATE TABLE test_sports_live.timelines
+CREATE TABLE timelines
 (
     id                          BIGINT AUTO_INCREMENT NOT NULL,
     type                        VARCHAR(255)          NOT NULL,
@@ -212,10 +213,10 @@ CREATE TABLE test_sports_live.timelines
     warning_card_type           VARCHAR(255)          NULL,
 
     CONSTRAINT pk_timelines PRIMARY KEY (id),
-    CONSTRAINT FK_TIMELINES_ON_GAMES FOREIGN KEY (game_id) REFERENCES test_sports_live.games (id),
-    CONSTRAINT FK_TIMELINES_ON_GAME_TEAMS_1 FOREIGN KEY (game_team1_id) REFERENCES test_sports_live.game_teams (id),
-    CONSTRAINT FK_TIMELINES_ON_GAME_TEAMS_2 FOREIGN KEY (game_team2_id) REFERENCES test_sports_live.game_teams (id),
-    CONSTRAINT FK_TIMELINES_ON_ORIGIN_LINEUP_PLAYERS FOREIGN KEY (origin_lineup_player_id) REFERENCES test_sports_live.lineup_players (id),
-    CONSTRAINT FK_TIMELINES_ON_REPLACED_LINEUP_PLAYERS FOREIGN KEY (replaced_lineup_player_id) REFERENCES test_sports_live.lineup_players (id),
-    CONSTRAINT FK_TIMELINES_ON_LINEUP_PLAYERS_SCORER FOREIGN KEY (scorer_id) REFERENCES test_sports_live.lineup_players (id)
+    CONSTRAINT FK_TIMELINES_ON_GAMES FOREIGN KEY (game_id) REFERENCES games (id),
+    CONSTRAINT FK_TIMELINES_ON_GAME_TEAMS_1 FOREIGN KEY (game_team1_id) REFERENCES game_teams (id),
+    CONSTRAINT FK_TIMELINES_ON_GAME_TEAMS_2 FOREIGN KEY (game_team2_id) REFERENCES game_teams (id),
+    CONSTRAINT FK_TIMELINES_ON_ORIGIN_LINEUP_PLAYERS FOREIGN KEY (origin_lineup_player_id) REFERENCES lineup_players (id),
+    CONSTRAINT FK_TIMELINES_ON_REPLACED_LINEUP_PLAYERS FOREIGN KEY (replaced_lineup_player_id) REFERENCES lineup_players (id),
+    CONSTRAINT FK_TIMELINES_ON_LINEUP_PLAYERS_SCORER FOREIGN KEY (scorer_id) REFERENCES lineup_players (id)
 );

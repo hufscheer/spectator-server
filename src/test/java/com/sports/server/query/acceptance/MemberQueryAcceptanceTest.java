@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-@ActiveProfiles("test")
 @Sql("/member-fixture.sql")
 public class MemberQueryAcceptanceTest extends AcceptanceTest {
 

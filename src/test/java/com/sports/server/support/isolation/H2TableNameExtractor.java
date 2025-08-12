@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Profile({"local", "test"})
+@Profile("local")
 class H2TableNameExtractor implements TableNameExtractor {
 
     private final EntityManager entityManager;
@@ -23,7 +23,7 @@ class H2TableNameExtractor implements TableNameExtractor {
         return tables.stream()
                 .map(table -> (String) table[0])
                 .map(String::toLowerCase)
-                .filter(name -> !name.equals("flyway_test_schema_history"))
+                .filter(name -> !name.equals("flyway_schema_history"))
                 .toList();
     }
 }

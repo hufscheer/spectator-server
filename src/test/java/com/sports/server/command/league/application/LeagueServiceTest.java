@@ -24,7 +24,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
-@ActiveProfiles("test")
 @Sql("/league-fixture.sql")
 public class LeagueServiceTest extends ServiceTest {
     @Autowired

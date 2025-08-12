@@ -17,13 +17,12 @@ import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
 @DatabaseIsolation
-@ActiveProfiles("test")
 @Sql(scripts = "/member-fixture.sql")
 public class JwtUtilTest {
 
@@ -35,9 +34,11 @@ public class JwtUtilTest {
 
     private Member member;
 
-    private final String secretKey = "hufs-cheer";
+    @Value("${jwt.secret-key}")
+    private String secretKey;
 
-    private final Long tokenValidTime = 36000L;
+    @Value("${jwt.valid-time}")
+    private Long tokenValidTime;
 
     private final String emailOfMember = "john@example.com";
 
@@ -62,22 +63,17 @@ public class JwtUtilTest {
     }
 
     @Test
-    public void 만료된_토큰을_검증하면_예외가_발생한다() throws InterruptedException {
-        long shortValidityTime = 1000L;
-
-        // JWtProvider 의 createAccessToken 메서드와 동일
-        Date now = new Date();
-        String token = JWT.create()
+    public void 만료된_토큰을_검증하면_예외가_발생한다() {
+        // 이미 만료된 토큰 생성 (과거 시간으로 설정)
+        Date pastTime = new Date(System.currentTimeMillis() - 10000L); // 10초 전
+        String expiredToken = JWT.create()
                 .withSubject(member.getEmail())
-                .withExpiresAt(new Date(now.getTime() + shortValidityTime))
+                .withExpiresAt(pastTime)
                 .withClaim("id", member.getId())
                 .withClaim("email", member.getEmail())
                 .sign(Algorithm.HMAC512(secretKey));
 
-        // 토큰 만료까지 대기
-        Thread.sleep(2000);
-
-        Exception exception = assertThrows(UnauthorizedException.class, () -> jwtUtil.validateToken(token));
+        Exception exception = assertThrows(UnauthorizedException.class, () -> jwtUtil.validateToken(expiredToken));
         assertEquals(AuthorizationErrorMessages.TOKEN_EXPIRED_EXCEPTION, exception.getMessage());
     }
 

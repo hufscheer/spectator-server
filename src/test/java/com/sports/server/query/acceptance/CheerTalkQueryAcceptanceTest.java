@@ -19,7 +19,6 @@
 //import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.jdbc.Sql;
 //
-//@ActiveProfiles("test")
 //@Sql(scripts = "/cheer-talk-fixture.sql")
 //class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
 //

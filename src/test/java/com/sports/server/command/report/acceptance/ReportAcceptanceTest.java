@@ -23,7 +23,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
-@ActiveProfiles("test")
 @Sql(scripts = "/report-fixture.sql")
 class ReportAcceptanceTest extends AcceptanceTest {
 

@@ -26,7 +26,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +38,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-@ActiveProfiles("test")
 @Sql("/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
 
