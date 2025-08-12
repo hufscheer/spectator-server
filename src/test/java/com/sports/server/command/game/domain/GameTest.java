@@ -16,6 +16,7 @@ class GameTest {
     private Game game;
     private GameTeam team1;
     private GameTeam team2;
+    private GameTeam team3;
 
     @BeforeEach
     public void setUp() {
@@ -30,6 +31,12 @@ class GameTest {
                 .sample();
 
         team2 = entityBuilder(GameTeam.class)
+                .set("game", game)
+                .set("score", 0)
+                .set("pkScore", 0)
+                .sample();
+
+        team3 = entityBuilder(GameTeam.class)
                 .set("game", game)
                 .set("score", 0)
                 .set("pkScore", 0)
@@ -254,11 +261,8 @@ class GameTest {
     @Test
     void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
         // given
-        GameTeam gameTeam = entityBuilder(GameTeam.class)
-                .sample();
-
         LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
-                .set("gameTeam", gameTeam)
+                .set("gameTeam", team3)
                 .sample();
 
         // when & then

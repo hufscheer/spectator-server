@@ -192,7 +192,7 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
                                 fieldWithPath("warnedLineupPlayerId").type(JsonFieldType.NUMBER).description("경고 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("경고 시간"),
-                                fieldWithPath("cardType").type(JsonFieldType.STRING).description("경고 카드 종류")
+                                fieldWithPath("cardType").type(JsonFieldType.STRING).description("경고 카드 종류(YELLOW, RED)")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
