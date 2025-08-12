@@ -10,8 +10,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+@ActiveProfiles("dev")
 @Sql("/member-fixture.sql")
 public class MemberQueryAcceptanceTest extends AcceptanceTest {
 

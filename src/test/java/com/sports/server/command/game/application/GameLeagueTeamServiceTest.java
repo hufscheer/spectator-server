@@ -13,8 +13,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+@ActiveProfiles("dev")
 @Sql(scripts = "/game-fixture.sql")
 class GameLeagueTeamServiceTest extends ServiceTest {
 

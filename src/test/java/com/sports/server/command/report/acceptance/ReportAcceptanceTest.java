@@ -18,10 +18,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+@ActiveProfiles("dev")
 @Sql(scripts = "/report-fixture.sql")
 class ReportAcceptanceTest extends AcceptanceTest {
 

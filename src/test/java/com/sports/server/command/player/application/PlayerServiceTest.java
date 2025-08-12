@@ -10,10 +10,12 @@ import com.sports.server.support.ServiceTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+@ActiveProfiles("dev")
 @Sql("/member-fixture.sql")
 public class PlayerServiceTest extends ServiceTest {
     @Autowired
