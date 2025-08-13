@@ -1,7 +1,6 @@
 package com.sports.server.query.application;
 
 import com.sports.server.command.player.domain.Player;
-import com.sports.server.command.team.domain.PlayerGoalCount;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
@@ -9,6 +8,7 @@ import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamResponse;
 import com.sports.server.query.repository.PlayerQueryRepository;
 import com.sports.server.query.repository.TimelineQueryRepository;
+import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,19 +68,6 @@ public class PlayerQueryService {
 
         return PlayerResponse.of(player, countPlayerTotalGoal(playerId), teams);
     }
-
-//    public Map<Long, Integer> getPlayersTotalGoalInfo(List<Long> playerIds){
-//        if (playerIds == null || playerIds.isEmpty()) {
-//            return Collections.emptyMap();
-//        }
-//
-//        List<PlayerGoalCount> results = timelineQueryRepository.countTotalGoalsByPlayerId(playerIds);
-//        return results.stream()
-//                .collect(Collectors.toMap(
-//                        PlayerGoalCount::playerId,
-//                        dto -> dto.playerTotalGoalCount().intValue()
-//                ));
-//    }
 
     private int countPlayerTotalGoal(Long playerId){
         return timelineQueryRepository.countTotalGoalsByPlayerId(playerId);

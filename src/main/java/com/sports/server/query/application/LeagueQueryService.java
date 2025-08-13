@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,13 +106,6 @@ public class LeagueQueryService {
                 .collect(toMap(league -> league,
                         gameQueryRepository::findPlayingGamesByLeagueWithGameTeams));
     }
-
-//    public LeagueTeamDetailResponse findLeagueTeam(final Long leagueTeamId) {
-//        LeagueTeam leagueTeam = entityUtils.getEntity(leagueTeamId, LeagueTeam.class);
-//        List<PlayerResponse> players = findPlayersByLeagueTeam(leagueTeamId);
-//
-//        return LeagueTeamDetailResponse.of(leagueTeam, players);
-//    }
 
     public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
         League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId)

@@ -9,6 +9,7 @@ import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamDetailResponse;
 import com.sports.server.query.dto.response.TeamResponse;
 import com.sports.server.query.repository.TeamQueryRepository;
+import com.sports.server.query.support.PlayerInfoProvider;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

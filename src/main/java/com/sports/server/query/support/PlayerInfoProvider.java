@@ -1,4 +1,4 @@
-package com.sports.server.query.application;
+package com.sports.server.query.support;
 
 import com.sports.server.command.team.domain.PlayerGoalCount;
 import com.sports.server.query.repository.TimelineQueryRepository;
