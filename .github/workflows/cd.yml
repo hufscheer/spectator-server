@@ -71,7 +71,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY }}
           script: |
-            docker rm -f $(docker ps -qa)
-            docker rmi $(docker images -q)
+            docker rm -f $(docker ps -qa) || true
             docker pull ${{ secrets.DOCKER_IMG }}
-            docker-compose -f docker-compose.yml up -d
+            docker compose -f docker-compose.yml up -d
