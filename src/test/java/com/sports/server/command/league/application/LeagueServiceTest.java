@@ -19,7 +19,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -92,7 +91,7 @@ public class LeagueServiceTest extends ServiceTest {
             assertThatThrownBy(
                     () -> leagueService.addTeams(manager, leagueId, teamsRequest))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage(TeamErrorMessages.INVALID_LEAGUE_TEAMS_REQUEST_EXCEPTION);
+                    .hasMessage("이미 해당 리그에 참가중인 팀입니다.");
         }
 
         @Test

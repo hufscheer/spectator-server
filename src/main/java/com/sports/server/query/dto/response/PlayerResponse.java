@@ -2,6 +2,7 @@ package com.sports.server.query.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.team.domain.TeamPlayer;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,7 @@ public record PlayerResponse(
 	String name,
 	String studentNumber,
 	Integer jerseyNumber,
-	int totalGoalCount,
+	Integer totalGoalCount,
 	List<TeamResponse> teams
 ) {
 	public PlayerResponse(final Player player) {
@@ -34,6 +35,18 @@ public record PlayerResponse(
 				null,
 				totalGoalCount,
 				teams
+		);
+	}
+
+	public static PlayerResponse of(final TeamPlayer teamPlayer, final int totalGoalCount) {
+		Player player = teamPlayer.getPlayer();
+		return new PlayerResponse(
+				player.getId(),
+				player.getName(),
+				player.getStudentNumber(),
+				teamPlayer.getJerseyNumber(),
+				totalGoalCount,
+				null
 		);
 	}
 }

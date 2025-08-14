@@ -53,7 +53,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 ReportController.class,
                 CheerTalkQueryController.class,
                 GameQueryController.class,
-                //LeagueQueryController.class,
+                LeagueQueryController.class,
                 TeamController.class,
                 TeamQueryController.class,
                 TimelineQueryController.class,

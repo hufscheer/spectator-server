@@ -118,13 +118,21 @@ operation::league-controller-test/리그를_생성한다[snippets='http-request,
 
 operation::league-controller-test/리그를_수정한다[snippets='http-request,request-fields,http-response']
 
+=== 리그 삭제
+
+operation::league-controller-test/리그를_삭제한다[snippets='http-request,path-parameters,http-response']
+
+== 리그 참가 팀 추가
+
+operation::league-controller-test/리그에_참가하는_팀들을_추가한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+
+== 리그 참가 팀 삭제
+
+operation::league-controller-test/리그에_참가하는_팀들을_삭제한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+
 === 리그 전체 조회
 
 operation::league-query-controller-test/리그_전체를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
-
-=== 리그에 해당하는 스포츠 전체 조회
-
-operation::league-query-controller-test/리그의_해당하는_스포츠_전체를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 리그에 해당하는 리그팀 전체 조회
 
@@ -133,18 +141,6 @@ operation::league-query-controller-test/리그의_모든_리그팀을_라운드�
 === 리그에 해당하는 선수 전체 조회
 
 operation::league-query-controller-test/리그팀의_모든_선수를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
-
-=== 리그팀 등록
-
-operation::league-team-controller-test/리그팀을_등록한다[snippets='http-request,request-fields,http-response']
-
-=== 리그팀 수정
-
-operation::league-team-controller-test/리그팀을_수정한다[snippets='http-request,path-parameters,request-fields,http-response']
-
-=== 리그팀 삭제
-
-operation::league-team-controller-test/리그팀을_삭제한다[snippets='http-request,path-parameters,http-response']
 
 === 리그 상세 조회
 
@@ -157,10 +153,6 @@ operation::league-query-controller-test/매니저가_생성한_모든_리그와_
 === 매니저가 생성한 리그 전체 조회(대회 관리 화면)
 
 operation::league-query-controller-test/매니저가_생성한_모든_리그를_조회한다[snippets='http-request,http-response,response-fields']
-
-=== 리그 삭제
-
-operation::league-controller-test/리그를_삭제한다[snippets='http-request,path-parameters,http-response']
 
 === 리그팀 상세 조회
 
@@ -200,12 +192,6 @@ operation::timeline-query-controller-test/타임라인을_조회한다[snippets=
 
 operation::timeline-controller-test/타임라인을_삭제한다[snippets='http-request,request-cookies,path-parameters,http-response']
 
-== 스포츠 API
-
-=== 스포츠 전체 조회
-
-operation::sport-query-controller-test/스포츠를_전체_조회한다[snippets='http-request,http-response,response-fields']
-
 == 사용자 API
 
 === 사용자 로그인
@@ -215,3 +201,60 @@ operation::auth-controller-test/로그인을_한다[snippets='http-request,reque
 === 사용자 정보 조회
 
 operation::sport-query-controller-test/스포츠를_전체_조회한다[snippets='http-request,http-response,response-fields']
+
+== 선수 API
+
+=== 선수 생성
+
+operation::player-controller-test/선수를_생성한다[snippets='http-request,request-fields,http-response']
+
+=== 선수 수정
+
+operation::player-controller-test/선수_정보를_수정한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+=== 선수 삭제
+
+operation::player-controller-test/선수를_삭제한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+=== 선수 전체 조회
+
+operation::player-query-controller-test/선수_전체를_조회한다[snippets='http-request,http-response,response-fields']
+
+=== 선수 상세 조회
+
+operation::player-query-controller-test/선수를_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+== 팀 API
+
+=== 팀 생성
+
+operation::team-controller-test/팀을_생성한다[snippets='http-request,request-cookies,request-fields,http-response']
+
+=== 팀 삭제
+
+operation::team-controller-test/팀을_삭제한다[snippets='http-request,request-cookies,path-parameters,request-fields,http-response']
+
+=== 팀 수정
+
+operation::team-controller-test/팀_정보를_수정한다[snippets='http-request,request-cookies,path-parameters,request-fields,http-response']
+
+=== 팀 선수 추가
+
+operation::team-controller-test/팀에_선수들을_추가한다[snippets='http-request,request-cookies,path-parameters,request-fields,http-response']
+
+=== 팀 선수 삭제
+
+operation::team-controller-test/팀에서_선수를_제거한다[snippets='http-request,request-cookies,path-parameters,http-response']
+
+=== 전체 팀 조회
+
+operation::team-query-controller-test/모든_팀을_조회한다[snippets='http-request,http-response,response-fields']
+
+=== 팀 상세 조회
+
+operation::team-query-controller-test/팀을_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 팀이 참가한 모든 경기 조회
+
+operation::team-query-controller-test/팀이_참가한_모든_경기를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+

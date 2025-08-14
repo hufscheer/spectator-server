@@ -5,9 +5,13 @@ import static java.util.stream.Collectors.toMap;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueProgress;
+import com.sports.server.command.league.domain.LeagueTeam;
+import com.sports.server.command.league.domain.LeagueTeamRepository;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.Team;
 
+import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 
@@ -15,9 +19,12 @@ import com.sports.server.query.dto.response.*;
 import com.sports.server.query.repository.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +37,12 @@ public class LeagueQueryService {
     private final LeagueQueryRepository leagueQueryRepository;
     private final TeamDynamicRepository teamDynamicRepository;
     private final GameQueryRepository gameQueryRepository;
+    private final LeagueTeamRepository leagueTeamRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
+    private final TeamPlayerRepository teamPlayerRepository;
     private final LeagueTeamQueryRepository leagueTeamQueryRepository;
+    private final PlayerInfoProvider playerInfoProvider;
 
     public List<LeagueResponse> findLeagues(Integer year) {
         return leagueQueryRepository.findByYear(year)
@@ -57,13 +67,27 @@ public class LeagueQueryService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
     }
 
-//    public List<PlayerResponse> findPlayersByLeagueTeam(Long leagueTeamId) {
-//        List<LeagueTeamPlayer> leagueTeamPlayers = leagueTeamPlayerQueryRepository.findByLeagueTeamId(leagueTeamId);
-//
-//        return leagueTeamPlayers.stream()
-//                .map(PlayerResponse::of)
-//                .toList();
-//    }
+    public List<PlayerResponse> findPlayersByLeagueTeam(Long leagueTeamId) {
+        LeagueTeam leagueTeam = entityUtils.getEntity(leagueTeamId, LeagueTeam.class);
+        Team team = leagueTeam.getTeam();
+
+        List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(team.getId());
+        if (teamPlayers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> playerIds = teamPlayers.stream()
+                .map(tp -> tp.getPlayer().getId())
+                .toList();
+
+        Map<Long, Integer> goalCountMap = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
+        return teamPlayers.stream()
+                .map(teamPlayer -> {
+                    int totalGoals = goalCountMap.getOrDefault(teamPlayer.getPlayer().getId(), 0);
+                    return PlayerResponse.of(teamPlayer, totalGoals);
+                })
+                .toList();
+    }
 
     public List<LeagueResponseWithInProgressGames> findLeaguesByManager(final Member member) {
         List<League> leagues = leagueQueryRepository.findByManager(member);
@@ -82,13 +106,6 @@ public class LeagueQueryService {
                 .collect(toMap(league -> league,
                         gameQueryRepository::findPlayingGamesByLeagueWithGameTeams));
     }
-
-//    public LeagueTeamDetailResponse findLeagueTeam(final Long leagueTeamId) {
-//        LeagueTeam leagueTeam = entityUtils.getEntity(leagueTeamId, LeagueTeam.class);
-//        List<LeagueTeamPlayer> leagueTeamPlayers = leagueTeamPlayerQueryRepository.findByLeagueTeamId(
-//                leagueTeam.getId());
-//        return LeagueTeamDetailResponse.of(leagueTeam, leagueTeamPlayers);
-//    }
 
     public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
         League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId)

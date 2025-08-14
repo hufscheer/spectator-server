@@ -9,6 +9,7 @@ import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamDetailResponse;
 import com.sports.server.query.dto.response.TeamResponse;
 import com.sports.server.query.repository.TeamQueryRepository;
+import com.sports.server.query.support.PlayerInfoProvider;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class TeamQueryService {
     private final TeamQueryRepository teamQueryRepository;
     private final TeamPlayerRepository teamPlayerRepository;
     private final EntityUtils entityUtils;
-    private final PlayerQueryService playerQueryService;
+    private final PlayerInfoProvider playerInfoProvider;
 
     public List<TeamResponse> getAllTeams(){
         return teamQueryRepository.findAll().stream()
@@ -37,7 +38,7 @@ public class TeamQueryService {
         List<TeamPlayer> teamPlayers = teamQueryRepository.findAllTeamPlayer(teamId);
         List<Long> playerIds = teamPlayerRepository.findPlayerIdsByTeamId(teamId);
 
-        Map<Long, Integer> playerTotalGoalCountInfo = playerQueryService.getPlayersTotalGoalInfo(playerIds);
+        Map<Long, Integer> playerTotalGoalCountInfo = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
         List<PlayerResponse> playerResponses = teamPlayers.stream()
                 .map(tp -> {
                     Player player = tp.getPlayer();
