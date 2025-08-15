@@ -52,9 +52,9 @@ public class TeamService {
         s3Service.doesFileExist(team.getLogoImageUrl());
         team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, request.unit(), request.teamColor());
 
-        if (request.teamPlayers() != null) {
-            addPlayersToTeam(teamId, request.teamPlayers());
-        }
+//        if (request.teamPlayers() != null) {
+//            addPlayersToTeam(teamId, request.teamPlayers());
+//        }
     }
 
     public void delete(final Long teamId) {

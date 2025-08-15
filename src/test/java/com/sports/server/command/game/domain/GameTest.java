@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 class GameTest {
     private Game game;
+    private Game game2;
     private GameTeam team1;
     private GameTeam team2;
     private GameTeam team3;
@@ -21,6 +22,10 @@ class GameTest {
     @BeforeEach
     public void setUp() {
         game = entityBuilder(Game.class)
+                .set("teams", new ArrayList<>())
+                .sample();
+
+        game2 = entityBuilder(Game.class)
                 .set("teams", new ArrayList<>())
                 .sample();
 
@@ -44,6 +49,7 @@ class GameTest {
 
         game.addGameTeam(team1);
         game.addGameTeam(team2);
+        game2.addGameTeam(team3);
     }
 
     @Nested
