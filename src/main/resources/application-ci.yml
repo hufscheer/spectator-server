@@ -4,6 +4,10 @@ spring:
     url: jdbc:tc:mysql:8.0:///test_container_test
     username: root
     password: password
+  flyway:
+    locations: classpath:db/migration/dev
+    table: flyway_test_schema_history
+    sql-migration-prefix: T
   jpa:
     show-sql: false
     properties:
