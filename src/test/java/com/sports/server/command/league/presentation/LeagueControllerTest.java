@@ -1,8 +1,7 @@
 package com.sports.server.command.league.presentation;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -121,7 +120,7 @@ class LeagueControllerTest extends DocumentationTest {
 		Long leagueId = 1L;
 		LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(1L, 2L, 3L, 4L));
 
-		doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
+		when(leagueService.addTeams(any(Member.class), anyLong(), any(LeagueRequest.Teams.class))).thenReturn(null);
 
 		// when
 		ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/teams", leagueId)
@@ -132,6 +131,9 @@ class LeagueControllerTest extends DocumentationTest {
 		// then
 		result.andExpect(status().isCreated())
 				.andDo(restDocsHandler.document(
+								pathParameters(
+										parameterWithName("leagueId").description("팀을 추가할 리그의 ID")
+								),
 								requestFields(
 										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회에 추가할 참가 팀들의 ID 리스트")
 								),
@@ -148,7 +150,7 @@ class LeagueControllerTest extends DocumentationTest {
 		Long leagueId = 1L;
 		LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(1L, 2L));
 
-		doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
+		doNothing().when(leagueService).removeTeams(any(Member.class), anyLong(), any(LeagueRequest.Teams.class));
 
 		// when
 		ResultActions result = mockMvc.perform(delete("/leagues/{leagueId}/teams", leagueId)
@@ -159,6 +161,9 @@ class LeagueControllerTest extends DocumentationTest {
 		// then
 		result.andExpect(status().isOk())
 				.andDo(restDocsHandler.document(
+								pathParameters(
+										parameterWithName("leagueId").description("팀을 삭제할 리그의 ID")
+								),
 								requestFields(
 										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회에서 삭제할 참가 팀들의 ID 리스트")
 								),

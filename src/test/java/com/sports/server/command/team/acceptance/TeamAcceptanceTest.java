@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -69,16 +68,16 @@ public class TeamAcceptanceTest extends AcceptanceTest {
                 .unit(Unit.SOCIAL_SCIENCES)
                 .logoImageUrl(originPrefix + "logo-url").build());
 
-        List<TeamRequest.TeamPlayerRegister> playersToUpdate = List.of(
-                new TeamRequest.TeamPlayerRegister(3L, 99)
-        );
+//        List<TeamRequest.TeamPlayerRegister> playersToUpdate = List.of(
+//                new TeamRequest.TeamPlayerRegister(3L, 99)
+//        );
 
         TeamRequest.Update request = new TeamRequest.Update(
                 "국제통상학과 무역풍",
                 originPrefix + "logo-url",
                 Unit.BUSINESS,
-                "#FFFFFF",
-                playersToUpdate
+                "#FFFFFF"
+                //playersToUpdate
         );
         configureMockJwtForEmail("john@example.com");
 
@@ -87,7 +86,7 @@ public class TeamAcceptanceTest extends AcceptanceTest {
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .put("/teams/{teamId}", savedTeam.getId())
+                .patch("/teams/{teamId}", savedTeam.getId())
                 .then().log().all()
                 .extract();
 
