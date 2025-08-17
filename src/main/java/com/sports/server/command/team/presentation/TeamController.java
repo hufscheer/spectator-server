@@ -27,7 +27,7 @@ public class TeamController {
     }
 
     @DeleteMapping("/{teamId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long teamId) {
         teamService.delete(teamId);
     }

@@ -109,6 +109,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
         }
     }
 
+    public void removeLineupPlayer(LineupPlayer lineupPlayer) {
+        this.lineupPlayers.remove(lineupPlayer);
+    }
+
     public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
         validateLineupPlayer(lineupPlayer);
         isCaptainExists(lineupPlayer);

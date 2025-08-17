@@ -5,6 +5,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TeamPlayerRepository extends Repository<TeamPlayer, Long> {
     void save(TeamPlayer teamPlayer);
@@ -25,4 +26,6 @@ public interface TeamPlayerRepository extends Repository<TeamPlayer, Long> {
 
     @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player JOIN FETCH tp.team WHERE tp.player.id IN :playerIds")
     List<TeamPlayer> findAllByPlayerIds(@Param("playerIds") List<Long> playerIds);
+
+    Optional<TeamPlayer> findById(Long id);
 }

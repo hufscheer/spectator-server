@@ -100,7 +100,7 @@ public class GameControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 경기를_등록한다() throws Exception {
+    void 게임을_등록한다() throws Exception {
         // given
         Long leagueId = 1L;
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
@@ -175,7 +175,7 @@ public class GameControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 경기를_수정한다() throws Exception {
+    void 게임을_수정한다() throws Exception {
 
         // given
         Long leagueId = 1L;
@@ -214,7 +214,7 @@ public class GameControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 경기를_삭제한다() throws Exception {
+    void 게임을_삭제한다() throws Exception {
         // given
         Long leagueId = 1L;
         Long gameId = 1L;
@@ -230,6 +230,60 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID"),
                                 parameterWithName("gameId").description("게임의 ID")
+                        )
+                ));
+    }
+
+    @Test
+    void 게임팀_라인업에_선수를_추가한다() throws Exception {
+        // given
+        Long gameTeamId = 1L;
+        GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
+                5L, LineupPlayerState.CANDIDATE, false
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/game-teams/{gameTeamId}/lineup-players", gameTeamId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameTeamId").description("라인업 선수를 추가할 게임팀의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("teamPlayerId").type(JsonFieldType.NUMBER).description("추가할 선수의 팀플레이어 ID"),
+                                fieldWithPath("state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE)"),
+                                fieldWithPath("isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 게임팀_라인업에서_선수를_삭제한다() throws Exception {
+        // given
+        Long gameTeamId = 1L;
+        Long lineupPlayerId = 10L;
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}", gameTeamId, lineupPlayerId)
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+        // then
+        result.andExpect(status().isNoContent())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameTeamId").description("게임팀의 ID"),
+                                parameterWithName("lineupPlayerId").description("게임팀에서 삭제할 라인업 선수의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
