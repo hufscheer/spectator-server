@@ -57,18 +57,24 @@ public class LineupPlayerService {
 
         validatePlayerForLineup(gameTeam, teamPlayer);
 
-        LineupPlayer.of(
+        LineupPlayer lineupPlayer = LineupPlayer.of(
                 gameTeam,
                 teamPlayer.getPlayer(),
                 request.state(),
                 teamPlayer.getJerseyNumber(),
                 request.isCaptain()
         );
+        lineupPlayerRepository.save(lineupPlayer);
+        gameTeam.addLineupPlayer(lineupPlayer);
     }
 
     public void removePlayerFromLineup(final Long gameTeamId, final Long lineupPlayerId) {
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
+
+        if (!lineupPlayer.getGameTeam().getId().equals(gameTeamId)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);
+        }
         gameTeam.removeLineupPlayer(lineupPlayer);
     }
 
@@ -78,7 +84,7 @@ public class LineupPlayerService {
         }
 
         if (lineupPlayerRepository.existsByGameTeamAndPlayer(gameTeam, teamPlayer.getPlayer())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 라인업에 등록된 선수입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.ALREADY_REGISTERED_IN_LINEUP);
         }
     }
 }

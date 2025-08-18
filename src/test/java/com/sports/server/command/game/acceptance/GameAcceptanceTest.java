@@ -18,7 +18,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql(scripts = "/game-fixture.sql")
@@ -135,31 +134,37 @@ public class GameAcceptanceTest extends AcceptanceTest {
         );
     }
 
-//    @Test
-//    void 새로운_경기를_등록한다() {
-//        //given
-//        Long leagueId = 1L;
-//        GameRequest.TeamLineupRequest team1 = new GameRequest.TeamLineupRequest(6L, List.of());
-//        GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(7L, List.of());
-//
-//        GameRequest.Register requestDto = new GameRequest.Register("경기 이름", 16, "전반전", "SCHEDULED",
-//                LocalDateTime.now(), null, team1, team2);
-//
-//        configureMockJwtForEmail(MOCK_EMAIL);
-//
-//        // when
-//        ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                .cookie(COOKIE_NAME, mockToken)
-//                .pathParam("leagueId", leagueId)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .body(requestDto)
-//                .post("/leagues/{leagueId}/games", leagueId)
-//                .then().log().all()
-//                .extract();
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-//    }
+    @Test
+    void 새로운_경기를_등록한다() {
+        //given
+        Long leagueId = 1L;
+
+        GameRequest.TeamLineupRequest team1 = new GameRequest.TeamLineupRequest(1L, List.of(
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
+                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false),
+                new GameRequest.LineupPlayerRequest(3L, LineupPlayerState.STARTER, false)
+        ));
+
+        GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, List.of());
+
+        GameRequest.Register request = new GameRequest.Register("경기 이름", 16, "전반전", "SCHEDULED",
+                LocalDateTime.now(), null, team1, team2);
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .pathParam("leagueId", leagueId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/leagues/{leagueId}/games", leagueId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
 
     @Test
     void 경기_정보를_수정한_후_다시_가져와_확인한다() {

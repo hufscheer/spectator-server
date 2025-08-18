@@ -97,10 +97,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
     public static GameTeam of(Game game, Team team) {
-        GameTeam gameTeam = new GameTeam(game, team);
-        game.addGameTeam(gameTeam);
-        team.addGameTeam(gameTeam);
-        return gameTeam;
+        return new GameTeam(game, team);
     }
 
     public void addLineupPlayer(final LineupPlayer lineupPlayer) {

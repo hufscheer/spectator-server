@@ -36,7 +36,7 @@ operation::cheer-talk-controller-test/응원톡을_가리기_취소한다[snippe
 
 operation::cheer-talk-query-controller-test/리그의_차단되지_않은_응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
 
-== 게임 API (보수 중)
+== 게임 API
 
 === 게임 상세 조회
 
