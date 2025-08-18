@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -41,10 +43,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
 
             chain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (UnauthorizedException e) {
+            log.debug("JWT 인증 실패: {}", e.getMessage());
             SecurityContextHolder.clearContext();
             authEntryPoint.commence(request, response, new AuthenticationException(e.getMessage()) {
             });
+        } catch (AuthenticationException e) {
+            log.debug("인증 예외 발생: {}", e.getMessage());
+            SecurityContextHolder.clearContext();
+            authEntryPoint.commence(request, response, e);
+        } catch (Exception e) {
+            log.error("JWT 필터에서 예상치 못한 예외 발생", e);
+            throw e;
         }
     }
 
