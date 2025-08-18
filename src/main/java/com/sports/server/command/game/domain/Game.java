@@ -273,7 +273,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
             cancelPk();
         }
 
-        this.gameQuarter = quarter.getName();
+        if (quarter == null) {
+            this.gameQuarter = null;
+        } else {
+            this.gameQuarter = quarter.getName();
+        }
         this.quarterChangedAt = changedAt;
     }
 
