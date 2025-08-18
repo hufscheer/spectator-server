@@ -4232,12 +4232,12 @@ Content-Length: 1525
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/score HTTP/1.1
 Content-Type: application/json
-Content-Length: 99
+Content-Length: 108
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "recordedQuarterId" : 2,
+  "recordedQuarter" : "FIRST_HALF",
   "recordedAt" : 10,
   "gameTeamId" : 1,
   "scoreLineupPlayerId" : 1
@@ -4289,9 +4289,9 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 Id</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarterId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 Id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>scoreLineupPlayerId</code></p></td>
@@ -4326,12 +4326,12 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/replacement HTTP/1.1
 Content-Type: application/json
-Content-Length: 134
+Content-Length: 143
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "recordedQuarterId" : 1,
+  "recordedQuarter" : "FIRST_HALF",
   "recordedAt" : 5,
   "gameTeamId" : 1,
   "originLineupPlayerId" : 2,
@@ -4384,9 +4384,9 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 Id</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarterId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 Id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>originLineupPlayerId</code></p></td>
@@ -4426,12 +4426,12 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/progress HTTP/1.1
 Content-Type: application/json
-Content-Length: 90
+Content-Length: 100
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "recordedQuarterId" : 1,
+  "recordedQuarter" : "SECOND_HALF",
   "recordedAt" : 10,
   "gameProgressType" : "QUARTER_START"
 }</code></pre>
@@ -4477,19 +4477,19 @@ Cookie: HCC_SES=temp-cookie
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarterId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 Id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedAt</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">교체 시간</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기록 시간</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameProgressType</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">변경할 게임 진행 상황</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">변경할 게임 진행 상황 (QUARTER_START, GAME_END)</p></td>
 </tr>
 </tbody>
 </table>
@@ -4514,12 +4514,12 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/pk HTTP/1.1
 Content-Type: application/json
-Content-Length: 110
+Content-Length: 125
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "recordedQuarterId" : 2,
+  "recordedQuarter" : "PENALTY_SHOOTOUT",
   "recordedAt" : 10,
   "gameTeamId" : 1,
   "scorerId" : 1,
@@ -4572,9 +4572,9 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 Id</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarterId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 Id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>scorerId</code></p></td>
@@ -4614,15 +4614,15 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /games/1/timelines/warning-card HTTP/1.1
 Content-Type: application/json
-Content-Length: 125
+Content-Length: 135
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "recordedQuarterId" : 1,
+  "recordedQuarter" : "SECOND_HALF",
   "recordedAt" : 10,
-  "gameTeamId" : 2,
-  "warnedLineupPlayerId" : 3,
+  "gameTeamId" : 1,
+  "warnedLineupPlayerId" : 2,
   "cardType" : "YELLOW"
 }</code></pre>
 </div>
@@ -4672,9 +4672,9 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 Id</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarterId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 Id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordedQuarter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>warnedLineupPlayerId</code></p></td>
@@ -5074,7 +5074,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Fri, 22 Aug 2025 01:04:22 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 25 Aug 2025 06:48:17 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -6304,11 +6304,11 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 588
+Content-Length: 589
 
 [ {
   "gameId" : 1,
-  "startTime" : "2025-08-15T10:05:05.34612",
+  "startTime" : "2025-08-18T15:48:38.975132",
   "videoId" : "video-id",
   "gameQuarter" : "전반전",
   "gameName" : "혁명 대전 결승",
@@ -6434,7 +6434,7 @@ Content-Length: 588
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-08-15 09:44:55 +0900
+Last updated 2025-08-17 14:24:07 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
