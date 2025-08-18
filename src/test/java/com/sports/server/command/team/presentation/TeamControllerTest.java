@@ -85,7 +85,7 @@ public class TeamControllerTest extends DocumentationTest {
         );
 
         // then
-        result.andExpect(status().isOk())
+        result.andExpect(status().isNoContent())
                 .andDo(restDocsHandler.document(
                                 pathParameters(
                                         parameterWithName("teamId").description("팀의 ID")),
@@ -100,18 +100,11 @@ public class TeamControllerTest extends DocumentationTest {
     void 팀_정보를_수정한다() throws Exception {
         // given
         Long teamId = 1L;
-//        List<TeamRequest.TeamPlayerRegister> teamPlayersRequest = List.of(
-//                new TeamRequest.TeamPlayerRegister(1L, 1),
-//                new TeamRequest.TeamPlayerRegister(2L, 7),
-//                new TeamRequest.TeamPlayerRegister(3L, 10)
-//        );
-
         TeamRequest.Update request = new TeamRequest.Update(
                 "국제통상학과 무역풍",
                 "logo-image-url",
                 Unit.BUSINESS,
                 "team-color"
-                //teamPlayersRequest
         );
 
         doNothing().when(teamService).update(any(TeamRequest.Update.class), anyLong());
@@ -133,9 +126,6 @@ public class TeamControllerTest extends DocumentationTest {
                                         fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("변경할 팀의 로고 이미지 url"),
                                         fieldWithPath("unit").type(JsonFieldType.STRING).description("변경할 팀의 소속"),
                                         fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 대표 색의 hexCode")
-//                                        fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("팀에 추가할 선수들 목록"),
-//                                        fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 Id"),
-//                                        fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호(nullable)")
                                 ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

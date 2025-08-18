@@ -268,6 +268,7 @@ class GameTest {
     void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
         // given
         LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
+                .set("id", 999L)
                 .set("gameTeam", team3)
                 .sample();
 

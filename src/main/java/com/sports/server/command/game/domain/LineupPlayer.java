@@ -55,9 +55,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     }
 
     public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber, boolean isCaptain) {
-        LineupPlayer lineupPlayer = new LineupPlayer(gameTeam, player, state, jerseyNumber, isCaptain);
-        gameTeam.addLineupPlayer(lineupPlayer);
-        return lineupPlayer;
+        return new LineupPlayer(gameTeam, player, state, jerseyNumber, isCaptain);
     }
 
     public boolean isReplaced() {
