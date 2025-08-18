@@ -50,7 +50,7 @@ public class LineupPlayerService {
         game.revokeCaptainFromPlayer(lineupPlayer);
     }
 
-    public void addPlayerToLineup(final Long gameTeamId, final GameRequest.LineupPlayerRequest request) {
+    public Long addPlayerToLineup(final Long gameTeamId, final GameRequest.LineupPlayerRequest request) {
         GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
         TeamPlayer teamPlayer = teamPlayerRepository.findById(request.teamPlayerId())
                 .orElseThrow(() -> new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION));
@@ -66,6 +66,7 @@ public class LineupPlayerService {
         );
         lineupPlayerRepository.save(lineupPlayer);
         gameTeam.addLineupPlayer(lineupPlayer);
+        return lineupPlayer.getId();
     }
 
     public void removePlayerFromLineup(final Long gameTeamId, final Long lineupPlayerId) {

@@ -2470,7 +2470,7 @@ Cookie: HCC_SES=temp-cookie
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>quarter</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 쿼터 (경기전, 전반전, 후반전, 연장전, 승부차기, 경기후)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>state</code></p></td>
@@ -2666,7 +2666,7 @@ Cookie: HCC_SES=temp-cookie
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>quarter</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터 (경기전, 전반전, 후반전, 연장전, 승부차기, 경기후)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">쿼터</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>state</code></p></td>
@@ -2759,7 +2759,6 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 Content-Type: application/json
 Content-Length: 72
 Host: www.api.hufstreaming.site
-Cookie: HCC_SES=temp-cookie
 
 {
   "teamPlayerId" : 5,
@@ -2787,27 +2786,6 @@ Cookie: HCC_SES=temp-cookie
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeamId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">라인업 선수를 추가할 게임팀의 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_게임팀에_라인업_선수_추가_request_cookies"><a class="link" href="#_게임팀에_라인업_선수_추가_request_cookies">Request cookies</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HCC_SES</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">로그인을 통해 얻은 토큰</p></td>
 </tr>
 </tbody>
 </table>
@@ -2850,26 +2828,20 @@ Cookie: HCC_SES=temp-cookie
 <h4 id="_게임팀에_라인업_선수_추가_http_response"><a class="link" href="#_게임팀에_라인업_선수_추가_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 1
+
+0</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_게임팀으로부터_라인업_선수_삭제"><a class="link" href="#_게임팀으로부터_라인업_선수_삭제">게임팀으로부터 라인업 선수 삭제</a></h3>
-<div class="sect3">
-<h4 id="_게임팀으로부터_라인업_선수_삭제_http_request"><a class="link" href="#_게임팀으로부터_라인업_선수_삭제_http_request">HTTP request</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /game-teams/1/lineup-players/10 HTTP/1.1
-Host: www.api.hufstreaming.site
-Cookie: HCC_SES=temp-cookie</code></pre>
-</div>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_게임팀으로부터_라인업_선수_삭제_path_parameters"><a class="link" href="#_게임팀으로부터_라인업_선수_삭제_path_parameters">Path parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
@@ -2892,27 +2864,6 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>lineupPlayerId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀에서 삭제할 라인업 선수의 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_게임팀으로부터_라인업_선수_삭제_request_cookies"><a class="link" href="#_게임팀으로부터_라인업_선수_삭제_request_cookies">Request cookies</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HCC_SES</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">로그인을 통해 얻은 토큰</p></td>
 </tr>
 </tbody>
 </table>
@@ -5440,7 +5391,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 25 Aug 2025 04:00:15 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 25 Aug 2025 07:05:41 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -6652,7 +6603,7 @@ Content-Length: 589
 
 [ {
   "gameId" : 1,
-  "startTime" : "2025-08-18T13:00:28.867821",
+  "startTime" : "2025-08-18T16:06:22.782269",
   "videoId" : "video-id",
   "gameQuarter" : "전반전",
   "gameName" : "혁명 대전 결승",
@@ -6778,7 +6729,7 @@ Content-Length: 589
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-08-18 11:33:08 +0900
+Last updated 2025-08-18 13:48:39 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

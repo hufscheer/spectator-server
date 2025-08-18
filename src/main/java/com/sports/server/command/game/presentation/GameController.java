@@ -61,8 +61,8 @@ public class GameController {
     @DeleteMapping("/leagues/{leagueId}/{gameId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGame(@PathVariable final Long leagueId,
-                           @PathVariable final Long gameId, final Member manager) {
-        gameService.deleteGame(leagueId, gameId, manager);
+                           @PathVariable final Long gameId, final Member member) {
+        gameService.deleteGame(leagueId, gameId, member);
     }
 
     @DeleteMapping("/game-teams/{gameTeamId}")
@@ -86,10 +86,10 @@ public class GameController {
     }
 
     @PostMapping("/game-teams/{gameTeamId}/lineup-players")
-    @ResponseStatus(HttpStatus.OK)
-    public void addPlayerToLineup(@PathVariable final Long gameTeamId,
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long addPlayerToLineup(@PathVariable final Long gameTeamId,
                                   @RequestBody final GameRequest.LineupPlayerRequest request) {
-        lineupPlayerService.addPlayerToLineup(gameTeamId, request);
+        return lineupPlayerService.addPlayerToLineup(gameTeamId, request);
     }
 
     @DeleteMapping("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}")

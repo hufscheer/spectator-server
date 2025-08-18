@@ -138,7 +138,7 @@ VALUES (1, 1, 1, 1, 1, 0),
 
 
 INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing)
-VALUES -- 축구 대전(game_id = 1) A팀(game_team_id = 1) 선수
+VALUES -- game_id = 1, game_team_id = 1
        (1, 1, 11, 1, false, 'CANDIDATE', false),
        (2, 1, 12, 2, false, 'STARTER', false),
        (3, 1, 13, 3, false, 'STARTER', false),

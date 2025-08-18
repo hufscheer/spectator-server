@@ -142,7 +142,7 @@ public class GameControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("경기의 총 라운드 ex. 16강->16"),
-                                fieldWithPath("quarter").type(JsonFieldType.STRING).description("게임의 쿼터 (경기전, 전반전, 후반전, 연장전, 승부차기, 경기후)"),
+                                fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태 (SCHEDULED, PLAYING, FINISHED)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING).description("경기 영상 링크 (nullable)").optional(),
@@ -194,7 +194,7 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER)
                                         .description("변경할 경기의 라운드 ex. 16강->16, 결승->2"),
-                                fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터 (경기전, 전반전, 후반전, 연장전, 승부차기, 경기후)"),
+                                fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태 (SCHEDULED, PLAYING, FINISHED)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING)
@@ -238,11 +238,10 @@ public class GameControllerTest extends DocumentationTest {
         // when
         ResultActions result = mockMvc.perform(post("/game-teams/{gameTeamId}/lineup-players", gameTeamId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+                .content(objectMapper.writeValueAsString(request)));
 
         // then
-        result.andExpect(status().isOk())
+        result.andExpect(status().isCreated())
                 .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameTeamId").description("라인업 선수를 추가할 게임팀의 ID")
@@ -251,9 +250,6 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("teamPlayerId").type(JsonFieldType.NUMBER).description("추가할 선수의 팀플레이어 ID"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE)"),
                                 fieldWithPath("isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부")
-                        ),
-                        requestCookies(
-                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
@@ -265,8 +261,7 @@ public class GameControllerTest extends DocumentationTest {
         Long lineupPlayerId = 10L;
 
         // when
-        ResultActions result = mockMvc.perform(delete("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}", gameTeamId, lineupPlayerId)
-                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+        ResultActions result = mockMvc.perform(delete("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}", gameTeamId, lineupPlayerId));
 
         // then
         result.andExpect(status().isNoContent())
@@ -274,9 +269,6 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("gameTeamId").description("게임팀의 ID"),
                                 parameterWithName("lineupPlayerId").description("게임팀에서 삭제할 라인업 선수의 ID")
-                        ),
-                        requestCookies(
-                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }

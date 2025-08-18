@@ -78,11 +78,11 @@ operation::game-controller-test/게임을_삭제한다[snippets='http-request,pa
 
 === 게임팀에 라인업 선수 추가
 
-operation::game-controller-test/게임팀_라인업에_선수를_추가한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+operation::game-controller-test/게임팀_라인업에_선수를_추가한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 === 게임팀으로부터 라인업 선수 삭제
 
-operation::game-controller-test/게임팀_라인업에서_선수를_삭제한다[snippets='http-request,path-parameters,request-cookies']
+operation::game-controller-test/게임팀_라인업에서_선수를_삭제한다[snippets='path-parameters']
 
 === 라인업 선수 선발로 변경
 
