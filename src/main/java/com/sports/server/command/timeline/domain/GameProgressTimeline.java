@@ -74,8 +74,9 @@ public class GameProgressTimeline extends Timeline {
     public void rollback() {
         game.updateQuarter(previousQuarter, previousQuarterChangedAt);
 
-        if (gameProgressType == GameProgressType.QUARTER_START && previousQuarter.getName()
-                .equals(NAME_OF_BEFORE_GAME_QUARTER)) {
+        if (gameProgressType == GameProgressType.QUARTER_START &&
+                previousQuarter != null &&
+                previousQuarter.getName().equals(NAME_OF_BEFORE_GAME_QUARTER)) {
             game.updateState(GameState.SCHEDULED);
         }
 
