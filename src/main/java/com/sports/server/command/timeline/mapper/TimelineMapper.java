@@ -2,7 +2,6 @@ package com.sports.server.command.timeline.mapper;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
@@ -34,7 +33,7 @@ public class TimelineMapper {
                                           TimelineRequest.RegisterScore scoreRequest) {
         return ScoreTimeline.score(
                 game,
-                getQuarter(scoreRequest.getRecordedQuarterId()),
+                scoreRequest.getRecordedQuarter(),
                 scoreRequest.getRecordedAt(),
                 getPlayer(scoreRequest.getScoreLineupPlayerId())
         );
@@ -44,7 +43,7 @@ public class TimelineMapper {
                                                       TimelineRequest.RegisterReplacement replacementRequest) {
         return new ReplacementTimeline(
                 game,
-                getQuarter(replacementRequest.getRecordedQuarterId()),
+                replacementRequest.getRecordedQuarter(),
                 replacementRequest.getRecordedAt(),
                 getPlayer(replacementRequest.getOriginLineupPlayerId()),
                 getPlayer(replacementRequest.getReplacementLineupPlayerId())
@@ -55,7 +54,7 @@ public class TimelineMapper {
                                         TimelineRequest.RegisterProgress progressRequest) {
         return new GameProgressTimeline(
                 game,
-                getQuarter(progressRequest.getRecordedQuarterId()),
+                progressRequest.getRecordedQuarter(),
                 progressRequest.getRecordedAt(),
                 progressRequest.getGameProgressType()
         );
@@ -65,7 +64,7 @@ public class TimelineMapper {
                                     TimelineRequest.RegisterPk pkRequest) {
         return new PKTimeline(
                 game,
-                getQuarter(pkRequest.getRecordedQuarterId()),
+                pkRequest.getRecordedQuarter(),
                 pkRequest.getRecordedAt(),
                 getPlayer(pkRequest.getScorerId()),
                 pkRequest.getIsSuccess()
@@ -76,15 +75,11 @@ public class TimelineMapper {
                                                       TimelineRequest.RegisterWarningCard warningCardRequest) {
         return new WarningCardTimeline(
                 game,
-                getQuarter(warningCardRequest.getRecordedQuarterId()),
+                warningCardRequest.getRecordedQuarter(),
                 warningCardRequest.getRecordedAt(),
                 getPlayer(warningCardRequest.getWarnedLineupPlayerId()),
                 warningCardRequest.getCardType()
         );
-    }
-
-    private Quarter getQuarter(Long quarterId) {
-        return Quarter.fromId(quarterId);
     }
 
     private LineupPlayer getPlayer(Long playerId) {
