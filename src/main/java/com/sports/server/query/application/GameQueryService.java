@@ -66,23 +66,20 @@ public class GameQueryService {
 
     public List<GameResponseDto> getAllGames(final GamesQueryRequestDto queryRequestDto,
                                              final PageRequestDto pageRequest) {
+            List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
 
-        // TODO: 버그 수정
-        //List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
-        List<Game> games = gameQueryRepository.findAll();
+            List<Long> gameIds = games.stream().map(Game::getId).toList();
+            List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
 
-        List<Long> gameIds = games.stream().map(Game::getId).toList();
-        List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
+            Map<Long, List<GameTeam>> teamsByGameId = gameTeams.stream()
+                    .collect(groupingBy(gameTeam -> gameTeam.getGame().getId()));
 
-        Map<Long, List<GameTeam>> teamsByGameId = gameTeams.stream()
-                .collect(groupingBy(gameTeam -> gameTeam.getGame().getId()));
-
-        return games.stream()
-                .map(game -> {
-                    List<GameTeam> teams = teamsByGameId.getOrDefault(game.getId(), new ArrayList<>());
-                    return new GameResponseDto(game, teams);
-                })
-                .toList();
+            return games.stream()
+                    .map(game -> {
+                        List<GameTeam> teams = teamsByGameId.getOrDefault(game.getId(), new ArrayList<>());
+                        return new GameResponseDto(game, teams);
+                    })
+                    .toList();
     }
 
     public VideoResponse getVideo(Long gameId) {

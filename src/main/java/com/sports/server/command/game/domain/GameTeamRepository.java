@@ -11,4 +11,6 @@ public interface GameTeamRepository extends Repository<GameTeam, Long> {
     @Modifying
     @Query("UPDATE GameTeam t SET t.cheerCount = t.cheerCount + :cheerCount WHERE t.id = :gameTeamId")
     void updateCheerCount(@Param("gameTeamId") Long gameTeamId, @Param("cheerCount") int cheerCount);
+
+    long countByTeamIdAndResult(Long teamId, GameResult result);
 }

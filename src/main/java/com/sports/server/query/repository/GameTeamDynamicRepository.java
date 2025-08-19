@@ -18,10 +18,6 @@ public class GameTeamDynamicRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     public List<Long> findAllByLeagueTeamIds(final List<Long> leagueTeamIds) {
-        if (leagueTeamIds == null || leagueTeamIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
         return jpaQueryFactory
                 .select(gameTeam.game.id)
                 .from(gameTeam)
@@ -31,6 +27,7 @@ public class GameTeamDynamicRepository {
                                 .from(leagueTeam)
                                 .where(leagueTeam.id.in(leagueTeamIds))
                 ))
+                .distinct()
                 .fetch();
     }
 }

@@ -2,8 +2,8 @@ SET foreign_key_checks = 0;
 
 -- 조직 생성
 INSERT INTO organizations (id, name)
-VALUES (1, 'Test Organization'),
-       (2, 'Another Organization');
+VALUES (1, '외대 축구부'),
+       (2, '총학생회');
 
 -- 관리자 계정 생성
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
@@ -12,30 +12,33 @@ VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'
 
 -- 팀 생성
 INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'A Unit', '팀A', 'http://example.com/logo_a.png', '#FF0000'),
-       (2, 'B Unit', '팀B', 'http://example.com/logo_b.png', '#0000FF');
+VALUES (1, 'SOCIAL_SCIENCES', '팀A', 'http://example.com/logo_a.png', '#FF0000'),
+       (2, 'ETC', '팀B', 'http://example.com/logo_b.png', '#0000FF'),
+       (3, 'ENGLISH', '팀C', 'http://example.com/logo_c.png', '#0000FF'),
+       (4, 'SOCIAL_SCIENCES', '팀D', 'http://example.com/logo_d.png', '#0000FF');
 
 -- 선수 생성
 INSERT INTO players (id, name, student_number)
-VALUES (1, '선수1', '2021001'),
-       (2, '선수2', '2021002'),
-       (3, '선수3', '2021003'),
-       (4, '선수4', '2021004'),
-       (5, '선수5', '2021005'),
-       (6, '선수6', '2021006'),
-       (7, '선수7', '2021007'),
-       (8, '선수8', '2021008'),
-       (9, '선수9', '2021009'),
-       (10, '선수10', '2021010');
+VALUES (1, '선수1', '202100001'),
+       (2, '선수2', '202100002'),
+       (3, '선수3', '202100003'),
+       (4, '선수4', '202100004'),
+       (5, '선수5', '202100005'),
+       (6, '선수6', '202100006'),
+       (7, '선수7', '202100007'),
+       (8, '선수8', '202100008'),
+       (9, '선수9', '202100009'),
+       (10, '선수10', '202100010');
 
 -- 팀 선수 연결
 INSERT INTO team_players (id, team_id, player_id, jersey_number)
-VALUES (1, 1, 1, 1),
+VALUES (1, 1, 1, 1), -- 팀 1 선수들
        (2, 1, 2, 2),
        (3, 1, 3, 3),
        (4, 1, 4, 4),
        (5, 1, 5, 5),
-       (6, 2, 6, 6),
+
+       (6, 2, 6, 6), -- 팀 2 선수들
        (7, 2, 7, 7),
        (8, 2, 8, 8),
        (9, 2, 9, 9),

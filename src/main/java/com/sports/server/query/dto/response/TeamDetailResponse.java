@@ -9,15 +9,42 @@ public record TeamDetailResponse(
         String logoImageUrl,
         String unit,
         String teamColor,
-        List<PlayerResponse> teamPlayers
+        int winCount, int drawCount, int loseCount,
+        List<TeamTopScorer> topScorers,
+        List<Trophy> trophies
 ) {
-    public TeamDetailResponse(final Team team, final List<PlayerResponse> teamPlayers){
+    public TeamDetailResponse(final Team team, final TeamDetailResponse.TeamGameResult teamGameResult,
+                              final List<TeamTopScorer> topScorers, final List<Trophy> trophies){
         this(
                 team.getName(),
                 team.getLogoImageUrl(),
                 team.getUnit().getName(),
                 team.getTeamColor(),
-                teamPlayers
+                teamGameResult.winCount(),  teamGameResult.drawCount(),  teamGameResult.loseCount(),
+                topScorers,
+                trophies
         );
     }
+
+    public record TeamGameResult(
+            int winCount, int drawCount, int loseCount
+    ){
+    }
+
+    public record TeamTopScorer(
+            Long playerId,
+            String admissionYear,
+            int rank,
+            String playerName,
+            int totalGoals
+    ){
+    }
+
+    public record Trophy(
+            Long leagueId,
+            String leagueName,
+            String trophyType
+    ) {
+    }
+
 }
