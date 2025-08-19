@@ -58,12 +58,11 @@ public class GameController {
         gameService.updateGame(leagueId, gameId, request, member);
     }
 
-    // restdocs 에서 API 에러(테스트 코드에 오류있는 듯)
     @DeleteMapping("/leagues/{leagueId}/{gameId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGame(@PathVariable final Long leagueId,
-                           @PathVariable final Long gameId, final Member manager) {
-        gameService.deleteGame(leagueId, gameId, manager);
+                           @PathVariable final Long gameId, final Member member) {
+        gameService.deleteGame(leagueId, gameId, member);
     }
 
     @DeleteMapping("/game-teams/{gameTeamId}")
@@ -84,5 +83,19 @@ public class GameController {
     public void revokeCaptainFromPlayer(@PathVariable final Long gameId,
                                         @PathVariable final Long lineupPlayerId) {
         lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId);
+    }
+
+    @PostMapping("/game-teams/{gameTeamId}/lineup-players")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long addPlayerToLineup(@PathVariable final Long gameTeamId,
+                                  @RequestBody final GameRequest.LineupPlayerRequest request) {
+        return lineupPlayerService.addPlayerToLineup(gameTeamId, request);
+    }
+
+    @DeleteMapping("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removePlayerFromLineup(@PathVariable final Long gameTeamId,
+                                       @PathVariable final Long lineupPlayerId) {
+        lineupPlayerService.removePlayerFromLineup(gameTeamId, lineupPlayerId);
     }
 }

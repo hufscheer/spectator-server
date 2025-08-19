@@ -83,7 +83,7 @@ public class PlayerControllerTest extends DocumentationTest {
                 .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
-        result.andExpect(status().isOk())
+        result.andExpect(status().isNoContent())
                 .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("playerId").description("선수의 ID")

@@ -36,14 +36,16 @@ public class GameService {
     private final GameRepository gameRepository;
     private final TimelineRepository timelineRepository;
     private final TeamPlayerRepository teamPlayerRepository;
+    private final LineupPlayerRepository lineupPlayerRepository;
+    private final GameTeamRepository gameTeamRepository;
 
     @Transactional
-    public Long register(final Long leagueId, final GameRequest.Register request, final Member manager) {
+    public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        PermissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, administrator);
         league.validateRoundWithinLimit(request.round());
 
-        Game game = saveGame(league, manager, request);
+        Game game = saveGame(league, administrator, request);
         registerGameTeamAndLineup(game, request.team1());
         registerGameTeamAndLineup(game, request.team2());
 
@@ -105,11 +107,13 @@ public class GameService {
     private void registerGameTeamAndLineup(Game game, GameRequest.TeamLineupRequest teamLineupInfo) {
         Team team = entityUtils.getEntity(teamLineupInfo.teamId(), Team.class);
         GameTeam gameTeam = GameTeam.of(game, team);
+        gameTeamRepository.save(gameTeam);
         game.addGameTeam(gameTeam);
+        team.addGameTeam(gameTeam);
 
         List<Long> teamPlayerIdsRequest = teamLineupInfo.lineupPlayers().stream()
-                .map(GameRequest.LineupPlayerRequest::teamPlayerId)
-                .toList();
+                    .map(GameRequest.LineupPlayerRequest::teamPlayerId)
+                    .toList();
 
         List<TeamPlayer> teamPlayers = teamPlayerRepository.findAllByTeamPlayerIds(teamPlayerIdsRequest);
         validateTeamPlayers(teamPlayerIdsRequest, teamPlayers, team);
@@ -130,15 +134,16 @@ public class GameService {
                 throw new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION);
             }
 
-            LineupPlayer.of(
+            LineupPlayer lineupPlayer = LineupPlayer.of(
                     gameTeam,
                     teamPlayer.getPlayer(),
                     lineupPlayerRequest.state(),
                     teamPlayer.getJerseyNumber(),
                     lineupPlayerRequest.isCaptain()
             );
+            lineupPlayerRepository.save(lineupPlayer);
+            gameTeam.addLineupPlayer(lineupPlayer);
         }
-
     }
 
     private void validateTeamPlayers(List<Long> teamPlayerIdsRequest, List<TeamPlayer> teamPlayers, Team team) {
