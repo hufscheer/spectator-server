@@ -67,7 +67,9 @@ VALUES (1, 1, 1, '삼건물 대회', '2024-11-09 00:00:00', '2025-11-20 00:00:00
 
 
 INSERT INTO league_teams (league_id, team_id)
-VALUES (1, 3), -- 삼건물 대회 참가 팀들
+VALUES (1, 1), -- 삼건물 대회(league_id = 1) 참가 팀들
+       (1, 2),
+       (1, 3),
        (1, 4),
        (1, 6),
        (1, 7),
@@ -104,7 +106,7 @@ VALUES (1, 1, 1, '축구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T1
 
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score)
 VALUES (1, 1, 1, 1, 1, 0),
-       (2, 1, 2, 2, 2, 0),
+       (2, 1, 2, 2, 2, 0), -- 문제지점
        (3, 2, 2, 1, 0, 0),
        (4, 2, 3, 1, 0, 0),
        (5, 3, 1, 1, 0, 0),
@@ -138,14 +140,14 @@ VALUES (1, 1, 1, 1, 1, 0),
 
 
 INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing)
-VALUES -- game_id = 1, game_team_id = 1
+VALUES -- 축구 대전(game_id = 1), A팀(game_team_id = 1) 라인업 선수
        (1, 1, 11, 1, false, 'CANDIDATE', false),
        (2, 1, 12, 2, false, 'STARTER', false),
        (3, 1, 13, 3, false, 'STARTER', false),
        (4, 1, 14, 4, false, 'STARTER', false),
        (5, 1, 15, 5, false, 'STARTER', true),
 
-       -- 축구 대전(game_id = 1) B팀(game_team_id = 2) 선수
+       -- 축구 대전(game_id = 1), B팀(game_team_id = 2) 라인업 선수
        (6, 2, 16, 1, true, 'STARTER', false),
        (7, 2, 17, 2, false, 'STARTER', false),
        (8, 2, 18, 3, false, 'STARTER', false),

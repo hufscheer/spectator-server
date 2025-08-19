@@ -31,6 +31,7 @@ public class GameTeamDynamicRepository {
                                 .from(leagueTeam)
                                 .where(leagueTeam.id.in(leagueTeamIds))
                 ))
+                .distinct()
                 .fetch();
     }
 }

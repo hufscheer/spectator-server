@@ -1,8 +1,11 @@
 package com.sports.server.query.support;
 
 import com.sports.server.command.team.domain.PlayerGoalCount;
+import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,5 +32,10 @@ public class PlayerInfoProvider {
                         PlayerGoalCount::playerId,
                         dto -> dto.playerTotalGoalCount().intValue()
                 ));
+    }
+
+    public List<PlayerGoalCountWithRank> getTeamTop20Scorers(Long teamId) {
+        Pageable top20Request = PageRequest.of(0, 20);
+        return timelineQueryRepository.findTopScorersByTeamId(teamId, top20Request);
     }
 }

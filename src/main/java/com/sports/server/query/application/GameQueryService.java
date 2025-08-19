@@ -67,9 +67,7 @@ public class GameQueryService {
     public List<GameResponseDto> getAllGames(final GamesQueryRequestDto queryRequestDto,
                                              final PageRequestDto pageRequest) {
 
-        // TODO: 버그 수정
-        //List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
-        List<Game> games = gameQueryRepository.findAll();
+        List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
 
         List<Long> gameIds = games.stream().map(Game::getId).toList();
         List<GameTeam> gameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);

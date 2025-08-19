@@ -1,8 +1,14 @@
 package com.sports.server.command.team.domain;
 
+import com.sports.server.command.team.exception.TeamErrorMessages;
+import com.sports.server.common.exception.NotFoundException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.stream.Stream;
 
 @Getter
+@RequiredArgsConstructor
 public enum Unit {
     ENGLISH("영어대학"),
     OCCIDENTAL_LANGUAGES("서양어대학"),
@@ -23,7 +29,10 @@ public enum Unit {
 
     private final String name;
 
-    Unit(String name) {
-        this.name = name;
+    public static Unit from(String englishName) {
+        return Stream.of(values())
+                .filter(u -> u.name().equals(englishName))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION));
     }
 }

@@ -20,7 +20,7 @@ VALUES (1, 'BUSINESS', '경영 야생마', 'https://example.com/logos/wildhorse.
 
 -- 4. 선수
 INSERT INTO players (id, name, student_number)
-VALUES (1, '김승희', '202101001'),
+VALUES (1, '진승희', '202101001'),
        (2, '이동규', '202101002'),
        (3, '이현제', '202202001'),
        (4, '고병룡', '202202002'),

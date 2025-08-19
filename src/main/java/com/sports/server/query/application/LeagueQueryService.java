@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LeagueQueryService {
 
     private final LeagueQueryRepository leagueQueryRepository;
-    private final TeamDynamicRepository teamDynamicRepository;
+    private final TeamQueryDynamicRepositoryImpl teamDynamicRepository;
     private final GameQueryRepository gameQueryRepository;
     private final LeagueTeamRepository leagueTeamRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;

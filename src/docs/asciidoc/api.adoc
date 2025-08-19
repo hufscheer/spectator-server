@@ -248,11 +248,15 @@ operation::team-controller-test/팀에서_선수를_제거한다[snippets='http-
 
 === 전체 팀 조회
 
-operation::team-query-controller-test/모든_팀을_조회한다[snippets='http-request,http-response,response-fields']
+operation::team-query-controller-test/모든_팀을_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
 
 === 팀 상세 조회
 
 operation::team-query-controller-test/팀을_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 팀에 소속된 모든 선수 조회
+
+operation::team-query-controller-test/팀에_소속된_모든_선수를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 팀이 참가한 모든 경기 조회
 

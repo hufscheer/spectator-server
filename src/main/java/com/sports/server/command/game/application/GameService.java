@@ -38,12 +38,15 @@ public class GameService {
     private final TeamPlayerRepository teamPlayerRepository;
     private final LineupPlayerRepository lineupPlayerRepository;
     private final GameTeamRepository gameTeamRepository;
+    private final LeagueTeamRepository leagueTeamRepository;
 
     @Transactional
     public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
         league.validateRoundWithinLimit(request.round());
+
+        validateGameTeamsInLeague(league, request.team1(), request.team2());
 
         Game game = saveGame(league, administrator, request);
         registerGameTeamAndLineup(game, request.team1());
@@ -168,4 +171,13 @@ public class GameService {
             }
         });
     }
+
+    private void validateGameTeamsInLeague(League league, GameRequest.TeamLineupRequest team1, GameRequest.TeamLineupRequest team2) {
+        Set<Long> leagueTeamIds = new HashSet<>(leagueTeamRepository.findTeamIdsByLeagueId(league.getId()));
+
+        if (!leagueTeamIds.contains(team1.teamId()) || !leagueTeamIds.contains(team2.teamId())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.TEAM_NOT_IN_LEAGUE_TEAM);
+        }
+    }
+
 }

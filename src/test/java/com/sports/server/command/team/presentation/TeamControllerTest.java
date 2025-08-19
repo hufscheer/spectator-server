@@ -57,7 +57,11 @@ public class TeamControllerTest extends DocumentationTest {
                                 requestFields(
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("팀 이름"),
                                         fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("팀의 로고 이미지 url"),
-                                        fieldWithPath("unit").type(JsonFieldType.STRING).description("팀의 소속 (ENGLISH, OCCIDENTAL_LANGUAGES, ASIAN_LANGUAGES_AND_CULTURE, CHINESE_STUDIES, JAPANESE_STUDIES, SOCIAL_SCIENCES, BUSINESS_AND_ECONOMICS, BUSINESS, EDUCATION, AI_CONVERGENCE, INTERNATIONAL_STUDIES, LANGUAGE_AND_DIPLOMACY, LANGUAGE_AND_TRADE, KOREAN_AS_A_FOREIGN_LANGUAGE, LIBERAL_ARTS, ETC)"),
+                                        fieldWithPath("unit").type(JsonFieldType.STRING).description("팀의 소속 (ENGLISH, OCCIDENTAL_LANGUAGES," +
+                                                " ASIAN_LANGUAGES_AND_CULTURE, CHINESE_STUDIES, JAPANESE_STUDIES," +
+                                                " SOCIAL_SCIENCES, BUSINESS_AND_ECONOMICS, BUSINESS, EDUCATION," +
+                                                " AI_CONVERGENCE, INTERNATIONAL_STUDIES, LANGUAGE_AND_DIPLOMACY," +
+                                                " LANGUAGE_AND_TRADE, KOREAN_AS_A_FOREIGN_LANGUAGE, LIBERAL_ARTS, ETC)"),
                                         fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 대표 색의 hexCode"),
                                         fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("팀에 추가할 선수들 목록 (없다면 빈 리스트)"),
                                         fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 Id"),
