@@ -95,7 +95,7 @@ public class TeamQueryService {
         return topScorers.stream()
                 .map(ts -> new TeamDetailResponse.TeamTopScorer(
                         ts.playerId(),
-                        ts.studentNumber().substring(ADMISSION_YEAR_START_INDEX, ADMISSION_YEAR_END_INDEX),
+                        ts.studentNumber() != null ? ts.studentNumber().substring(ADMISSION_YEAR_START_INDEX, ADMISSION_YEAR_END_INDEX) : null,
                         ts.rank().intValue(),
                         ts.playerName(),
                         ts.goalCount().intValue()

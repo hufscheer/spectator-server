@@ -145,7 +145,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
                                 fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("[].round").type(JsonFieldType.NUMBER)
-                                        .description("게임 라운드 ex. 4강->4, 결승->2"),
+                                        .description("라운드의 이름 ex. 4강->4, 결승->2"),
                                 fieldWithPath("[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
                                 fieldWithPath("[].isPkTaken").type(JsonFieldType.BOOLEAN)
                                         .description("승부차기 진출 여부"),
