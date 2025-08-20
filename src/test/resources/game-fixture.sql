@@ -66,14 +66,14 @@ VALUES (1, 1, 1, '삼건물 대회', '2024-11-09 00:00:00', '2025-11-20 00:00:00
        (2, 3, 2, '외대 월드컵', '2024-12-01 00:00:00', '2025-12-31 00:00:00', '8강', '8강', false);
 
 
-INSERT INTO league_teams (league_id, team_id)
-VALUES (1, 1), -- 삼건물 대회(league_id = 1) 참가 팀들
-       (1, 2),
-       (1, 3),
-       (1, 4),
-       (1, 6),
-       (1, 7),
-       (2, 5); -- 외대 월드컵 참가 팀
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (1, 1, 1), -- 삼건물 대회(league_id = 1) 참가 팀들
+       (2, 1, 2),
+       (3, 1, 3),
+       (4, 1, 4),
+       (5, 1, 6),
+       (6, 1, 7),
+       (7, 2, 5); -- 외대 월드컵 참가 팀
 
 
 INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,

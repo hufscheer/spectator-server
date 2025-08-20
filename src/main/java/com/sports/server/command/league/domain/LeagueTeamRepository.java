@@ -14,8 +14,6 @@ public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
     @Query("SELECT lt.team.id FROM LeagueTeam lt WHERE lt.league.id = :leagueId AND lt.team.id IN :teamIds")
     List<Long> findTeamIdsByLeagueIdAndTeamIdIn(@Param("leagueId") Long leagueId, @Param("teamIds") List<Long> teamIds);
 
-    void deleteByLeagueIdAndTeamIdIn(Long leagueId, List<Long> teamIds);
-
     long countByLeagueIdAndTeamIdIn(Long leagueId, List<Long> teamIds);
 
     @Query("SELECT lt.team.id FROM LeagueTeam lt WHERE lt.league.id = :leagueId")

@@ -39,7 +39,11 @@ public class LeagueTeamQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly("팀 A", "팀 B", "팀 C", "팀 D", "팀 F", "팀 G"),
                 () -> assertThat(actual)
                         .map(LeagueTeamResponse::teamId)
-                        .containsExactly(1L, 2L, 3L, 4L, 6L, 7L)
+                        .containsExactly(1L, 2L, 3L, 4L, 6L, 7L),
+                () -> assertThat(actual)
+                        .map(LeagueTeamResponse::leagueTeamId)
+                        .containsExactly(1L, 2L, 3L, 4L, 5L, 6L)
+
 
         );
     }
@@ -68,6 +72,9 @@ public class LeagueTeamQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactlyInAnyOrder("팀 B", "팀 D"),
                 () -> assertThat(actual)
                         .map(LeagueTeamResponse::teamId)
+                        .containsExactly(2L, 4L),
+                () -> assertThat(actual)
+                        .map(LeagueTeamResponse::leagueTeamId)
                         .containsExactly(2L, 4L)
         );
     }

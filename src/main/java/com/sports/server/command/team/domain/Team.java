@@ -51,9 +51,15 @@ public class Team extends BaseEntity<Team> {
     }
 
     public void update(String name, String logoImageUrl, String originPrefix, String replacePrefix, Unit unit, String teamColor) {
-        this.name = name;
-        this.unit = unit;
-        this.teamColor = teamColor;
+        if (name != null) {
+            this.name = name;
+        }
+        if (unit != null) {
+            this.unit = unit;
+        }
+        if (teamColor != null) {
+            this.teamColor = teamColor;
+        }
         if (logoImageUrl != null && !logoImageUrl.equals(this.logoImageUrl)) {
             this.logoImageUrl = changeLogoImageUrlToBeSaved(logoImageUrl, originPrefix, replacePrefix);
         }

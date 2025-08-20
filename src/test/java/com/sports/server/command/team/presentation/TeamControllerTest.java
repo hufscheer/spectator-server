@@ -176,21 +176,19 @@ public class TeamControllerTest extends DocumentationTest {
     @Test
     void 팀에서_선수를_제거한다() throws Exception {
         // given
-        Long teamId = 1L;
-        Long playerId = 1L;
+        Long teamPlayerId = 1L;
 
-        doNothing().when(teamService).deletePlayerFromTeam(anyLong(), anyLong());
+        doNothing().when(teamService).deleteTeamPlayer(anyLong());
 
         // when
-        ResultActions result = mockMvc.perform(delete("/teams/{teamId}/players/{playerId}", teamId, playerId)
+        ResultActions result = mockMvc.perform(delete("/teams/team-players/{teamPlayerId}", teamPlayerId)
                 .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
         result.andExpect(status().isNoContent())
                 .andDo(restDocsHandler.document(
                         pathParameters(
-                                parameterWithName("teamId").description("선수가 소속된 팀의 ID"),
-                                parameterWithName("playerId").description("제거할 선수의 ID")
+                                parameterWithName("teamPlayerId").description("제거할 팀선수 ID")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

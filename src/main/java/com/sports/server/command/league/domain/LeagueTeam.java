@@ -5,8 +5,6 @@ import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Objects;
-
 @Entity
 @Getter
 @Table(name = "league_teams")
@@ -43,19 +41,6 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         league.addLeagueTeam(leagueTeam);
         team.addLeagueTeam(leagueTeam);
         return leagueTeam;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (!(o instanceof LeagueTeam that)) return false;
-        return Objects.equals(getLeague(), that.getLeague()) && Objects.equals(getTeam(), that.getTeam());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getLeague(), getTeam());
     }
 
     public void updateTotalCheerCount(Integer totalCheerCount) {

@@ -64,9 +64,9 @@ public class GameService {
     }
 
     @Transactional
-    public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member manager) {
+    public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        PermissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, administrator);
         league.validateRoundWithinLimit(request.round());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
@@ -79,9 +79,9 @@ public class GameService {
     }
 
     @Transactional
-    public void deleteGame(Long leagueId, Long gameId, final Member manager) {
+    public void deleteGame(Long leagueId, Long gameId, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        PermissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, administrator);
 
         Game game = entityUtils.getEntity(gameId, Game.class);
         timelineRepository.deleteByGame(game);
@@ -89,21 +89,18 @@ public class GameService {
     }
 
     @Transactional
-    public void deleteGameTeam(final Long gameTeamId, final Member manager) {
+    public void deleteGameTeam(final Long gameTeamId, final Member administrator) {
         GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
-        Team team = gameTeam.getTeam();
-
         Game game = gameTeam.getGame();
-        if (!game.isManagedBy(manager)) {
+
+        if (!game.isManagedBy(administrator)) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
-
         game.removeGameTeam(gameTeam);
-        team.removeGameTeam(gameTeam);
     }
 
-    private Game saveGame(League league, Member manager, GameRequest.Register request) {
-        Game game = request.toEntity(manager, league);
+    private Game saveGame(League league, Member administrator, GameRequest.Register request) {
+        Game game = request.toEntity(administrator, league);
         return gameRepository.save(game);
     }
 

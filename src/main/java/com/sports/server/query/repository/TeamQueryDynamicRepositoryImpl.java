@@ -5,11 +5,11 @@ import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
 import static com.sports.server.command.league.domain.QLeagueTeam.leagueTeam;
 import static com.sports.server.command.team.domain.QTeam.team;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.Round;
 import java.util.List;
 
@@ -25,15 +25,14 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Team> findByLeagueAndRound(final League league, Integer roundNumber) {
-        BooleanBuilder conditions = DynamicBooleanBuilder.builder()
-                .and(() -> teamsParticipatesInLeague(league))
-                .and(() -> teamsPlayedInRound(league, roundNumber))
-                .build();
-
+    public List<LeagueTeam> findByLeagueAndRound(final League league, Integer roundNumber) {
         return jpaQueryFactory
-                .selectFrom(team)
-                .where(conditions)
+                .selectFrom(leagueTeam)
+                .join(leagueTeam.team, team).fetchJoin()
+                .where(
+                        leagueTeam.league.eq(league),
+                        teamsPlayedInRound(league, roundNumber)
+                )
                 .orderBy(team.name.asc())
                 .fetch();
     }
@@ -49,30 +48,21 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
                 .fetch();
     }
 
-    private BooleanExpression teamsParticipatesInLeague(final League league) {
-        return JPAExpressions.selectOne()
-                .from(leagueTeam)
-                .where(
-                        leagueTeam.team.eq(team),
-                        leagueTeam.league.eq(league)
-                ).exists();
-    }
-
     private BooleanExpression teamsPlayedInRound(final League league, final Integer roundNumber) {
         if (!Round.isValidNumber(roundNumber)) {
             return null;
         }
-
         Round round = Round.from(roundNumber);
-        return JPAExpressions.selectOne()
-                .from(game)
-                .join(game.gameTeams, gameTeam)
-                .where(
-                        game.league.eq(league),
-                        gameTeam.team.eq(team),
-                        game.round.eq(round)
-                )
-                .exists();
+
+        return leagueTeam.team.id.in(
+                JPAExpressions.select(gameTeam.team.id)
+                        .from(gameTeam)
+                        .join(gameTeam.game, game)
+                        .where(
+                                game.league.eq(league),
+                                game.round.eq(round)
+                        )
+        );
     }
 
     private BooleanExpression teamsInUnits(final List<Unit> units) {

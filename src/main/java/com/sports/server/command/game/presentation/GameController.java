@@ -67,8 +67,8 @@ public class GameController {
 
     @DeleteMapping("/game-teams/{gameTeamId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteGameTeam(@PathVariable final Long gameTeamId, final Member manager) {
-        gameService.deleteGameTeam(gameTeamId, manager);
+    public void deleteGameTeam(@PathVariable final Long gameTeamId, final Member member) {
+        gameService.deleteGameTeam(gameTeamId, member);
     }
 
     @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register")

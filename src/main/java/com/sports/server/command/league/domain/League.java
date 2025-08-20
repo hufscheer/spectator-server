@@ -120,5 +120,8 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     public void removeLeagueTeam(LeagueTeam leagueTeam) {
         this.leagueTeams.remove(leagueTeam);
+        if (leagueTeam.getTeam() != null) {
+            leagueTeam.getTeam().removeLeagueTeam(leagueTeam);
+        }
     }
 }

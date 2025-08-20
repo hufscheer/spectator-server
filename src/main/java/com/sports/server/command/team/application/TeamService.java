@@ -3,6 +3,7 @@ package com.sports.server.command.team.application;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.EntityUtils;
@@ -48,13 +49,8 @@ public class TeamService {
 
     public void update(final TeamRequest.Update request, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-
         s3Service.doesFileExist(team.getLogoImageUrl());
         team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, request.unit(), request.teamColor());
-
-//        if (request.teamPlayers() != null) {
-//            addPlayersToTeam(teamId, request.teamPlayers());
-//        }
     }
 
     public void delete(final Long teamId) {
@@ -79,9 +75,10 @@ public class TeamService {
         });
     }
 
-    public void deletePlayerFromTeam(final Long teamId, final Long playerId) {
-        Team team = entityUtils.getEntity(teamId, Team.class);
-        Player player = entityUtils.getEntity(playerId, Player.class);
+    public void deleteTeamPlayer(final Long teamPlayerId) {
+        TeamPlayer teamPlayer = entityUtils.getEntity(teamPlayerId, TeamPlayer.class);
+        Team team = teamPlayer.getTeam();
+        Player player = teamPlayer.getPlayer();
         team.removeTeamPlayer(player);
     }
 

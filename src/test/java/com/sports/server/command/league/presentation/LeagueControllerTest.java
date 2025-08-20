@@ -31,7 +31,7 @@ class LeagueControllerTest extends DocumentationTest {
 	void 리그를_생성한다() throws Exception {
 		// given
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of());
+		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of(1L, 2L));
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
 
@@ -46,10 +46,10 @@ class LeagueControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                                 requestFields(
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("대회 이름"),
-                                        fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("대회 진행 라운드 수. 결승은 2"),
+                                        fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("대회의 총 라운드 수 (결승 -> 2)"),
                                         fieldWithPath("startAt").type(JsonFieldType.STRING).description("대회 시작 시간"),
                                         fieldWithPath("endAt").type(JsonFieldType.STRING).description("대회 종료 시간"),
-										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회 참가 팀들의 ID 리스트")
+										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회 참가 팀들의 teamId 배열 (없다면 빈 배열)")
                                 ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

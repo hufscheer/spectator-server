@@ -66,7 +66,7 @@ public class TeamQueryService {
                 .map(tp -> {
                     Player player = tp.getPlayer();
                     int totalGoalCount = playerTotalGoalCountInfo.getOrDefault(player.getId(), 0);
-                    return PlayerResponse.of(player, totalGoalCount, null);
+                    return PlayerResponse.of(player, tp.getId(), totalGoalCount, null);
                 })
                 .toList();
     }

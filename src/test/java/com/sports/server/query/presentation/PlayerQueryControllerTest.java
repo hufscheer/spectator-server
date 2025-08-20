@@ -33,9 +33,9 @@ public class PlayerQueryControllerTest extends DocumentationTest {
         );
 
         List<PlayerResponse> responses = List.of(
-                new PlayerResponse(1L, "선수1", "202500001", null, 0, teamResponses1),
-                new PlayerResponse(2L, "선수2", "202500002", null, 5, teamResponses2),
-                new PlayerResponse(3L, "선수3", "202500003", null, 10, Collections.emptyList())
+                new PlayerResponse(1L, null, "선수1", "202500001", null, 0, teamResponses1),
+                new PlayerResponse(2L, null, "선수2", "202500002", null, 5, teamResponses2),
+                new PlayerResponse(3L, null, "선수3", "202500003", null, 10, Collections.emptyList())
         );
 
         given(playerQueryService.getAllPlayers())
@@ -72,7 +72,7 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                 new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9"),
                 new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl1", "사회과학대학", "#92A8D1")
         );
-        PlayerResponse response = new PlayerResponse(playerId, "선수1", "202500001", null,  0, teamResponses);
+        PlayerResponse response = new PlayerResponse(playerId, null, "선수1", "202500001", null,  0, teamResponses);
         given(playerQueryService.getPlayerDetail(playerId))
                 .willReturn(response);
 

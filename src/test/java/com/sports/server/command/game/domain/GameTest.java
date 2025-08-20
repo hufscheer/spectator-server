@@ -22,26 +22,31 @@ class GameTest {
     @BeforeEach
     public void setUp() {
         game = entityBuilder(Game.class)
+                .set("id", 1L)
                 .set("teams", new ArrayList<>())
                 .sample();
 
         game2 = entityBuilder(Game.class)
+                .set("id", 1L)
                 .set("teams", new ArrayList<>())
                 .sample();
 
         team1 = entityBuilder(GameTeam.class)
+                .set("id", 1L)
                 .set("game", game)
                 .set("score", 0)
                 .set("pkScore", 0)
                 .sample();
 
         team2 = entityBuilder(GameTeam.class)
+                .set("id", 2L)
                 .set("game", game)
                 .set("score", 0)
                 .set("pkScore", 0)
                 .sample();
 
         team3 = entityBuilder(GameTeam.class)
+                .set("id", 3L)
                 .set("game", game)
                 .set("score", 0)
                 .set("pkScore", 0)
@@ -268,7 +273,6 @@ class GameTest {
     void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
         // given
         LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
-                .set("id", 999L)
                 .set("gameTeam", team3)
                 .sample();
 
