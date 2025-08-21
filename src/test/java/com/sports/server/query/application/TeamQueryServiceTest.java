@@ -124,7 +124,9 @@ public class TeamQueryServiceTest extends ServiceTest {
                     () -> assertThat(response.topScorers().get(0).playerName()).isEqualTo("선수2"),
                     () -> assertThat(response.topScorers().get(0).totalGoals()).isEqualTo(1),
                     () -> assertThat(response.topScorers().get(0).admissionYear()).isEqualTo("21"),
-                    () -> assertThat(response.trophies()).isEmpty()
+                    () -> assertThat(response.trophies().get(0).leagueId()).isEqualTo(1L),
+                    () -> assertThat(response.trophies().get(0).leagueName()).isEqualTo("테스트 리그"),
+                    () -> assertThat(response.trophies().get(0).trophyType()).isEqualTo("우승")
             );
         }
     }

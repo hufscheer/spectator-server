@@ -4,7 +4,6 @@ import com.sports.server.command.league.domain.*;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
-import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import org.springframework.http.HttpStatus;

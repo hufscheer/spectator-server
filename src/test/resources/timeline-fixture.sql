@@ -141,4 +141,8 @@ VALUES (1, 1, '화이팅!', '2023-11-12 10:05:00', FALSE),
        (2, 2, '우리팀 최고!', '2023-11-12 10:10:00', FALSE),
        (3, 1, '좋은 경기!', '2023-11-12 10:15:00', FALSE);
 
+-- 리그 통계
+INSERT INTO league_statistics (id, league_id, first_winner_team_id, second_winner_team_id, most_cheered_team_id, most_cheer_talks_team_id)
+VALUES (1, 1, 1, 2, 1, 2);
+
 SET foreign_key_checks = 1;

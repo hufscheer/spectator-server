@@ -2,19 +2,24 @@ package com.sports.server.command.team.application;
 
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
+import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TeamService {
 
+    private final TeamPlayerRepository teamPlayerRepository;
     @Value("${image.origin-prefix}")
     private String originPrefix;
 
@@ -66,13 +72,21 @@ public class TeamService {
                 .toList();
         List<Player> players = playerRepository.findAllById(playerIds);
 
+        if (players.size() != new HashSet<>(playerIds).size()) {
+            throw new NotFoundException(PlayerErrorMessages.PLAYER_NOT_EXIST_EXCEPTION);
+        }
+
         Map<Long, Integer> playerJerseyNumbers = request.stream()
                 .collect(Collectors.toMap(TeamRequest.TeamPlayerRegister::playerId, TeamRequest.TeamPlayerRegister::jerseyNumber));
 
+        List<TeamPlayer> newTeamPlayers = new ArrayList<>();
         players.forEach(player -> {
             Integer jerseyNumber = playerJerseyNumbers.get(player.getId());
-            team.addPlayer(player, jerseyNumber);
+            TeamPlayer teamPlayer = team.addPlayer(player, jerseyNumber);
+            newTeamPlayers.add(teamPlayer);
         });
+
+        teamPlayerRepository.saveAll(newTeamPlayers);
     }
 
     public void deleteTeamPlayer(final Long teamPlayerId) {
