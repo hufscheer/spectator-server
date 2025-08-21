@@ -10,7 +10,6 @@ import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.dto.LeagueRequest;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
@@ -106,7 +105,7 @@ public class LeagueServiceTest extends ServiceTest {
             assertThatThrownBy(
                     () -> leagueService.addTeams(manager, leagueId, teamsRequest))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage(TeamErrorMessages.TEAMS_NOT_EXIST_INCLUDED_EXCEPTION);
+                    .hasMessage(LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
         }
     }
 

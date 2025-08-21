@@ -51,10 +51,10 @@ public class LeagueService {
 	public League addTeams(final Member administrator, final Long leagueId, final LeagueRequest.Teams request) {
 		League league = findValidatedLeague(leagueId, administrator);
 
-		List<Long> requestedTeamIds = request.teamIds();
-		List<Team> teams = findValidatedTeams(requestedTeamIds);
+		List<Long> teamIdsToAdd = request.teamIds();
+		List<Team> teams = findValidatedTeams(teamIdsToAdd);
 
-		List<Long> existingTeamIds = leagueTeamRepository.findTeamIdsByLeagueIdAndTeamIdIn(leagueId, requestedTeamIds);
+		List<Long> existingTeamIds = leagueTeamRepository.findTeamIdsByLeagueIdAndTeamIdIn(leagueId, teamIdsToAdd);
 		List<Team> teamsToAdd = teams.stream()
 				.filter(team -> !existingTeamIds.contains(team.getId()))
 				.toList();
@@ -68,17 +68,17 @@ public class LeagueService {
 
 	public void removeTeams(final Member administrator, final Long leagueId, final LeagueRequest.Teams request){
 		League league = findValidatedLeague(leagueId, administrator);
-		List<Long> teamIdsToRemove = request.teamIds();
 
-		long foundCount = leagueTeamRepository.countByLeagueIdAndTeamIdIn(leagueId, teamIdsToRemove);
-		if (foundCount != new HashSet<>(teamIdsToRemove).size()) {
+		List<Long> teamIdsToRemove = request.teamIds();
+		findValidatedTeams(teamIdsToRemove);
+		if (teamIdsToRemove == null || teamIdsToRemove.isEmpty()) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
 
-		List<LeagueTeam> leagueTeamsToRemove = league.getLeagueTeams().stream()
-				.filter(lt -> teamIdsToRemove.contains(lt.getTeam().getId()))
-				.toList();
-
+		List<LeagueTeam> leagueTeamsToRemove = leagueTeamRepository.findAllByLeagueAndTeamIdsIn(leagueId, teamIdsToRemove);
+		if (leagueTeamsToRemove.size() != new HashSet<>(teamIdsToRemove).size()) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
+		}
 		leagueTeamsToRemove.forEach(league::removeLeagueTeam);
 	}
 
@@ -97,7 +97,7 @@ public class LeagueService {
 
 		List<Team> teams = teamRepository.findAllById(teamIds);
 		if (teams.size() != teamIds.size()) {
-			throw new NotFoundException(TeamErrorMessages.TEAMS_NOT_EXIST_INCLUDED_EXCEPTION);
+			throw new NotFoundException(LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
 		return teams;
 	}
