@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Sql("/member-fixture.sql")
+@Sql("/team-fixture.sql")
 public class TeamAcceptanceTest extends AcceptanceTest {
 
     @Autowired
@@ -68,16 +68,11 @@ public class TeamAcceptanceTest extends AcceptanceTest {
                 .unit(Unit.SOCIAL_SCIENCES)
                 .logoImageUrl(originPrefix + "logo-url").build());
 
-//        List<TeamRequest.TeamPlayerRegister> playersToUpdate = List.of(
-//                new TeamRequest.TeamPlayerRegister(3L, 99)
-//        );
-
         TeamRequest.Update request = new TeamRequest.Update(
                 "국제통상학과 무역풍",
                 originPrefix + "logo-url",
                 Unit.BUSINESS,
                 "#FFFFFF"
-                //playersToUpdate
         );
         configureMockJwtForEmail("john@example.com");
 

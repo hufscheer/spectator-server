@@ -109,8 +109,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
-    public void removeGameTeam(GameTeam team) {
-        this.gameTeams.remove(team);
+    public void removeGameTeam(GameTeam gameTeam) {
+        this.gameTeams.remove(gameTeam);
+        if (gameTeam.getTeam() != null) {
+            gameTeam.getTeam().removeGameTeam(gameTeam);
+        }
     }
 
     public void score(LineupPlayer scorer) {

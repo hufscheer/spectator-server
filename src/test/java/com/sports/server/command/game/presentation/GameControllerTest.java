@@ -150,16 +150,16 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("team1").type(JsonFieldType.OBJECT).description("경기에 참가할 첫 번째 팀"),
                                 fieldWithPath("team1.teamId").type(JsonFieldType.NUMBER).description("첫 번째 팀의 ID"),
                                 fieldWithPath("team1.lineupPlayers").type(JsonFieldType.ARRAY).description("첫 번째 팀의 라인업 선수 리스트 (없다면 빈 리스트)"),
-                                fieldWithPath("team1.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수의 ID"),
-                                fieldWithPath("team1.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE)"),
-                                fieldWithPath("team1.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부"),
+                                fieldWithPath("team1.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수로 추가할 팀선수 ID"),
+                                fieldWithPath("team1.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE). 기본값: `STARTER`"),
+                                fieldWithPath("team1.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부. 기본값: `false`"),
 
                                 fieldWithPath("team2").type(JsonFieldType.OBJECT).description("경기에 참가할 두 번째 팀"),
                                 fieldWithPath("team2.teamId").type(JsonFieldType.NUMBER).description("두 번째 팀의 ID"),
                                 fieldWithPath("team2.lineupPlayers").type(JsonFieldType.ARRAY).description("두 번째 팀의 라인업 선수 리스트 (없다면 빈 리스트)"),
-                                fieldWithPath("team2.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수의 ID"),
-                                fieldWithPath("team2.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE)"),
-                                fieldWithPath("team2.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부")
+                                fieldWithPath("team2.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수로 추가할 팀선수 ID"),
+                                fieldWithPath("team2.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE). 기본값: `STARTER`"),
+                                fieldWithPath("team2.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부. 기본값: `false`")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

@@ -56,7 +56,7 @@ public class LeagueQueryService {
 
         return teamDynamicRepository.findByLeagueAndRound(league, round)
                 .stream()
-                .map(LeagueTeamResponse::new)
+                .map(leagueTeam -> new LeagueTeamResponse(leagueTeam.getTeam(), leagueTeam.getId()))
                 .toList();
     }
 

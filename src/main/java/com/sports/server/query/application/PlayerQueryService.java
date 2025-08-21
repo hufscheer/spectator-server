@@ -53,7 +53,7 @@ public class PlayerQueryService {
                     Long playerId = player.getId();
                     List<TeamResponse> teams = playerTeamsMap.getOrDefault(playerId, Collections.emptyList());
                     int totalGoals = playerTotalGoalCountInfo.getOrDefault(playerId, 0);
-                    return PlayerResponse.of(player, totalGoals, teams);
+                    return PlayerResponse.of(player, null, totalGoals, teams);
                 })
                 .toList();
     }
@@ -66,7 +66,7 @@ public class PlayerQueryService {
                 .map(teamPlayer -> new TeamResponse(teamPlayer.getTeam()))
                 .toList();
 
-        return PlayerResponse.of(player, countPlayerTotalGoal(playerId), teams);
+        return PlayerResponse.of(player, null, countPlayerTotalGoal(playerId), teams);
     }
 
     private int countPlayerTotalGoal(Long playerId){

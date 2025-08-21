@@ -36,6 +36,7 @@ public class TeamQueryService {
 
     private static final int ADMISSION_YEAR_START_INDEX = 2;
     private static final int ADMISSION_YEAR_END_INDEX = 4;
+
     private static final String FIRST_WIN = "우승";
     private static final String SECOND_WIN = "준우승";
 
@@ -66,7 +67,7 @@ public class TeamQueryService {
                 .map(tp -> {
                     Player player = tp.getPlayer();
                     int totalGoalCount = playerTotalGoalCountInfo.getOrDefault(player.getId(), 0);
-                    return PlayerResponse.of(player, totalGoalCount, null);
+                    return PlayerResponse.of(player, tp.getId(), totalGoalCount, null);
                 })
                 .toList();
     }

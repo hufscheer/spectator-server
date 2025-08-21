@@ -22,6 +22,11 @@ public class BaseEntity<T extends AbstractAggregateRoot<T>> extends AbstractAggr
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BaseEntity<?> that = (BaseEntity<?>) o;
+
+        if (this.id == null || that.id == null) {
+            return false;
+        }
+
         return id.equals(that.id);
     }
 

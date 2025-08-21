@@ -28,7 +28,6 @@ public class TeamRequest {
             String logoImageUrl,
             Unit unit,
             String teamColor
-            //List<TeamPlayerRegister> teamPlayers
     ) {}
 
     public record TeamPlayerRegister(

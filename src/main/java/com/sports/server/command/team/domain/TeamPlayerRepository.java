@@ -1,17 +1,12 @@
 package com.sports.server.command.team.domain;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface TeamPlayerRepository extends Repository<TeamPlayer, Long> {
-    void save(TeamPlayer teamPlayer);
-
-    void delete(TeamPlayer teamPlayer);
-
+public interface TeamPlayerRepository extends JpaRepository<TeamPlayer, Long> {
     @Query("SELECT tp.player.id FROM TeamPlayer tp WHERE tp.team.id = :teamId")
     List<Long> findPlayerIdsByTeamId(@Param("teamId") Long teamId);
 
@@ -26,6 +21,4 @@ public interface TeamPlayerRepository extends Repository<TeamPlayer, Long> {
 
     @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player JOIN FETCH tp.team WHERE tp.player.id IN :playerIds")
     List<TeamPlayer> findAllByPlayerIds(@Param("playerIds") List<Long> playerIds);
-
-    Optional<TeamPlayer> findById(Long id);
 }

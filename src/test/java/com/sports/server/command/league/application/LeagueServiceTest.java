@@ -6,10 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.dto.LeagueRequest;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
@@ -91,7 +91,7 @@ public class LeagueServiceTest extends ServiceTest {
             assertThatThrownBy(
                     () -> leagueService.addTeams(manager, leagueId, teamsRequest))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage("이미 해당 리그에 참가중인 팀입니다.");
+                    .hasMessage("추가할 수 있는 팀이 존재하지 않습니다.");
         }
 
         @Test
@@ -105,7 +105,7 @@ public class LeagueServiceTest extends ServiceTest {
             assertThatThrownBy(
                     () -> leagueService.addTeams(manager, leagueId, teamsRequest))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage(TeamErrorMessages.TEAMS_NOT_EXIST_INCLUDED_EXCEPTION);
+                    .hasMessage(LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
         }
     }
 
@@ -114,6 +114,7 @@ public class LeagueServiceTest extends ServiceTest {
     class RemoveLeagueTeamTest {
         @Test
         void 리그팀에_포함되지_않는_팀은_삭제할_수_없다(){
+            // given
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
             LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(100L, 101L));
@@ -122,11 +123,12 @@ public class LeagueServiceTest extends ServiceTest {
             assertThatThrownBy(
                     () -> leagueService.removeTeams(manager, leagueId, teamsRequest))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage(LeagueErrorMessages.TEAMS_NOT_EXIST_IN_LEAGUE_TEAM_EXCEPTION);
+                    .hasMessage(LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
         }
 
         @Test
         void 빈_팀_리스트이면_예외가_발생한다(){
+            // given
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
             LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(100L, 101L));
@@ -135,7 +137,25 @@ public class LeagueServiceTest extends ServiceTest {
             assertThatThrownBy(
                     () -> leagueService.removeTeams(manager, leagueId, teamsRequest))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage(LeagueErrorMessages.TEAMS_NOT_EXIST_IN_LEAGUE_TEAM_EXCEPTION);
+                    .hasMessage(LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
+        }
+
+        @Test
+        void 삭제한_이후에는_해당_팀_객체를_찾을_수_없다(){
+            // given
+            Long leagueId = 1L;
+            Long teamIdToRemove = 1L;
+            Long leagueTeamIdToRemove = 1L;
+            Member manager = entityUtils.getEntity(1L, Member.class);
+
+            // when
+            LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(teamIdToRemove));
+            leagueService.removeTeams(manager, leagueId, teamsRequest);
+
+            // then
+            assertThatThrownBy(
+                    () -> entityUtils.getEntity(leagueTeamIdToRemove, LeagueTeam.class))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

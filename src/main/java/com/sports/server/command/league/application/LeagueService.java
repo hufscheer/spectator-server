@@ -4,7 +4,6 @@ import com.sports.server.command.league.domain.*;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
-import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -32,14 +31,57 @@ public class LeagueService {
 	private final LeagueTeamRepository leagueTeamRepository;
 	private final TeamRepository teamRepository;
 
-	public void register(final Member manager, final LeagueRequest.Register request) {
-		League league = leagueRepository.save(request.toEntity(manager));
+	public void register(final Member administrator, final LeagueRequest.Register request) {
+		League league = leagueRepository.save(request.toEntity(administrator));
+		List<Team> teams = findValidatedTeams(request.teamIds());
+		saveLeagueTeams(league, teams);
+	}
 
-		List<Team> teams = teamRepository.findAllById(request.teamIds());
-		if (teams.size() != new HashSet<>(request.teamIds()).size()) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, TeamErrorMessages.TEAM_NOT_FOUND_EXCEPTION);
+	public void update(final Member administrator, final LeagueRequest.Update request, final Long leagueId) {
+		League league = findValidatedLeague(leagueId, administrator);
+		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()));
+	}
+
+    public void delete(final Member administrator, final Long leagueId) {
+        League league = findValidatedLeague(leagueId, administrator);
+        leagueRepository.delete(league);
+    }
+
+	public League addTeams(final Member administrator, final Long leagueId, final LeagueRequest.Teams request) {
+		League league = findValidatedLeague(leagueId, administrator);
+
+		List<Long> teamIdsToAdd = request.teamIds();
+		List<Team> teams = findValidatedTeams(teamIdsToAdd);
+
+		List<Long> existingTeamIds = leagueTeamRepository.findTeamIdsByLeagueIdAndTeamIdIn(leagueId, teamIdsToAdd);
+		List<Team> teamsToAdd = teams.stream()
+				.filter(team -> !existingTeamIds.contains(team.getId()))
+				.toList();
+
+		if (teamsToAdd.isEmpty()) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "추가할 수 있는 팀이 존재하지 않습니다.");
+		}
+		saveLeagueTeams(league, teamsToAdd);
+		return league;
+	}
+
+	public void removeTeams(final Member administrator, final Long leagueId, final LeagueRequest.Teams request){
+		League league = findValidatedLeague(leagueId, administrator);
+
+		List<Long> teamIdsToRemove = request.teamIds();
+		findValidatedTeams(teamIdsToRemove);
+		if (teamIdsToRemove == null || teamIdsToRemove.isEmpty()) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
 
+		List<LeagueTeam> leagueTeamsToRemove = leagueTeamRepository.findAllByLeagueAndTeamIdsIn(leagueId, teamIdsToRemove);
+		if (leagueTeamsToRemove.size() != new HashSet<>(teamIdsToRemove).size()) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
+		}
+		leagueTeamsToRemove.forEach(league::removeLeagueTeam);
+	}
+
+	private void saveLeagueTeams(League league, List<Team> teams){
 		List<LeagueTeam> leagueTeams = teams.stream()
 				.map(team -> LeagueTeam.of(league, team))
 				.toList();
@@ -47,59 +89,21 @@ public class LeagueService {
 		leagueTeamRepository.saveAll(leagueTeams);
 	}
 
-	public void update(final Member manager, final LeagueRequest.Update request, final Long leagueId) {
-		League league = findValidatedLeague(leagueId, manager);
-		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()));
-	}
-
-    public void delete(final Member manager, final Long leagueId) {
-        League league = findValidatedLeague(leagueId, manager);
-        leagueRepository.delete(league);
-    }
-
-	public League addTeams(final Member administrator, final Long leagueId, final LeagueRequest.Teams request) {
-		League league = leagueRepository.findWithTeamsById(leagueId)
-				.orElseThrow(() -> new NotFoundException("리그를 찾을 수 없습니다."));
-		findValidatedLeague(leagueId, administrator);
-
-		List<Long> requestedTeamIds = request.teamIds();
-		List<Team> teams = teamRepository.findAllById(requestedTeamIds);
-		if (teams.size() != requestedTeamIds.size()) {
-			throw new NotFoundException(TeamErrorMessages.TEAMS_NOT_EXIST_INCLUDED_EXCEPTION);
+	private List<Team> findValidatedTeams(final List<Long> teamIds) {
+		if (new HashSet<>(teamIds).size() != teamIds.size()) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "요청에 중복된 팀 ID가 포함되어 있습니다.");
 		}
 
-		List<Long> existingTeamIds = leagueTeamRepository.findTeamIdsByLeagueIdAndTeamIdIn(leagueId, requestedTeamIds);
-		List<Team> teamsToAdd = teams.stream()
-				.filter(team -> !existingTeamIds.contains(team.getId()))
-				.toList();
-
-		if (teamsToAdd.isEmpty()) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, "이미 해당 리그에 참가중인 팀입니다.");
+		List<Team> teams = teamRepository.findAllById(teamIds);
+		if (teams.size() != teamIds.size()) {
+			throw new NotFoundException(LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
-
-		List<LeagueTeam> leagueTeams = teamsToAdd.stream()
-				.map(team -> LeagueTeam.of(league, team))
-				.toList();
-
-		leagueTeamRepository.saveAll(leagueTeams);
-		return league;
+		return teams;
 	}
 
-	public void removeTeams(final Member manager, final Long leagueId, final LeagueRequest.Teams request){
-		findValidatedLeague(leagueId, manager);
-		List<Long> teamIdsToRemove = request.teamIds();
-
-		long foundCount = leagueTeamRepository.countByLeagueIdAndTeamIdIn(leagueId, teamIdsToRemove);
-		if (foundCount != new HashSet<>(teamIdsToRemove).size()) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_EXIST_IN_LEAGUE_TEAM_EXCEPTION);
-		}
-
-		leagueTeamRepository.deleteByLeagueIdAndTeamIdIn(leagueId, request.teamIds()); // bulk 연산
-	}
-
-	private League findValidatedLeague(final Long leagueId, final Member manager) {
+	private League findValidatedLeague(final Long leagueId, final Member administrator) {
 		League league = entityUtils.getEntity(leagueId, League.class);
-		if (!league.isManagedBy(manager)) {
+		if (!league.isManagedBy(administrator)) {
 			throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
 		}
 		return league;

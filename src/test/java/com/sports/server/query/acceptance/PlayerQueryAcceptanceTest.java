@@ -47,7 +47,7 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
 
         // then
         List<PlayerResponse> actual = toResponses(response, PlayerResponse.class);
-        List<PlayerResponse> expected = List.of(new PlayerResponse(player1), new PlayerResponse(player2));
+        List<PlayerResponse> expected = List.of(new PlayerResponse(player1, null), new PlayerResponse(player2, null));
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -59,7 +59,7 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
     void 선수를_상세_조회한다(){
         // given
         Long playerId = player1.getId();
-        PlayerResponse expected = new PlayerResponse(player1);
+        PlayerResponse expected = new PlayerResponse(player1, null);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
