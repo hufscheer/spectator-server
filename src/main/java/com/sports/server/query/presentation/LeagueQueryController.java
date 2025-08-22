@@ -37,12 +37,11 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagueDetail(leagueId));
     }
 
-    // TODO: 필요없으면 삭제
-//    @GetMapping("/{leagueId}/statistics")
-//    public ResponseEntity<LeagueStatisticsResponse> findLeagueStatistics(@PathVariable Long leagueId) {
-//        return ResponseEntity.ok(leagueQueryService.findLeagueStatistic(leagueId));
-//    }
-//
+    @GetMapping("/{leagueId}/statistics")
+    public ResponseEntity<LeagueStatisticsResponse> findLeagueStatistics(@PathVariable Long leagueId) {
+        return ResponseEntity.ok(leagueQueryService.findLeagueStatistic(leagueId));
+    }
+
     @GetMapping("/teams/{leagueTeamId}/players")
     public ResponseEntity<List<PlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
         return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));

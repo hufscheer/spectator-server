@@ -71,8 +71,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
 
         List<LeagueTeamResponse> responses = List.of(
-                new LeagueTeamResponse(1L, 10L, "경영 야생마", "s3:logoImageUrl1", 3),
-                new LeagueTeamResponse(2L, 11L, "서어 뻬데뻬", "s3:logoImageUrl2", 6)
+                new LeagueTeamResponse(1L, 10L, "경영 야생마", "s3:logoImageUrl1", 3, 0, 0),
+                new LeagueTeamResponse(2L, 11L, "서어 뻬데뻬", "s3:logoImageUrl2", 6, 0, 0)
         );
 
         given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2))

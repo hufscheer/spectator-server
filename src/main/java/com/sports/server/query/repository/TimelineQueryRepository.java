@@ -44,4 +44,21 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
             "ORDER BY COUNT(st.id) DESC, p.name ASC")
     List<PlayerGoalCountWithRank> findTopScorersByTeamId(@Param("teamId") Long teamId, Pageable pageable);
 
+    @Query("SELECT new com.sports.server.command.team.domain.PlayerGoalCountWithRank(" +
+            "       p.id, " +
+            "       p.studentNumber, " +
+            "       p.name, " +
+            "       COUNT(st.id), " +
+            "       RANK() OVER (ORDER BY COUNT(st.id) DESC)) " +
+            "FROM ScoreTimeline st " +
+            "JOIN st.scorer sc " +
+            "JOIN sc.player p " +
+            "JOIN p.teamPlayers tp " +
+            "JOIN tp.team t " +
+            "WHERE t.league.id = :leagueId " +
+            "GROUP BY p.id, p.studentNumber, p.name " +
+            "HAVING COUNT(st.id) > 0 " +
+            "ORDER BY COUNT(st.id) DESC, p.name ASC")
+    List<PlayerGoalCountWithRank> findTopScorersByLeagueId(@Param("leagueId") Long leagueId, Pageable pageable);
+
 }

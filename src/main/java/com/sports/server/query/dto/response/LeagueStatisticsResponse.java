@@ -7,7 +7,7 @@ public record LeagueStatisticsResponse(
         Long leagueStatisticsId,
         TeamResponse firstWinnerTeam,
         TeamResponse secondWinnerTeam,
-        TeamResponse mostCheeredTeam,
-        TeamResponse mostCheerTalksTeam
+        LeagueTeamResponse mostCheeredTeam,
+        LeagueTeamResponse mostCheerTalksTeam
 ) {
 }
