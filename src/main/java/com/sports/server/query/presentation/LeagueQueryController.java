@@ -42,6 +42,11 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagueStatistic(leagueId));
     }
 
+    @GetMapping("/{leagueId}/top-scorers")
+    public ResponseEntity<List<LeagueTopScorerResponse>> findTopScorersByLeague(@PathVariable Long leagueId) {
+        return ResponseEntity.ok(leagueQueryService.findTopScorersByLeagueId(leagueId));
+    }
+
     @GetMapping("/teams/{leagueTeamId}/players")
     public ResponseEntity<List<PlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
         return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));

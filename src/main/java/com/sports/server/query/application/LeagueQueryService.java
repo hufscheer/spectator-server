@@ -6,13 +6,13 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.Team;
-
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.LeagueTopScorerResponse;
 import com.sports.server.query.repository.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +23,8 @@ import java.util.Map;
 
 import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,7 @@ public class LeagueQueryService {
     private final TeamPlayerRepository teamPlayerRepository;
     private final LeagueTeamQueryRepository leagueTeamQueryRepository;
     private final PlayerInfoProvider playerInfoProvider;
+    private final LeagueTopScorerRepository leagueTopScorerRepository;
 
     public List<LeagueResponse> findLeagues(Integer year) {
         return leagueQueryRepository.findByYear(year)
@@ -144,6 +147,13 @@ public class LeagueQueryService {
                 .orElseThrow(() -> new NotFoundException("LeagueTeam not found"));
 
         return new LeagueTeamResponse(leagueTeam);
+    }
+
+    public List<LeagueTopScorerResponse> findTopScorersByLeagueId(Long leagueId) {
+        return leagueTopScorerRepository.findByLeagueId(leagueId)
+                .stream()
+                .map(LeagueTopScorerResponse::from)
+                .toList();
     }
 
     public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
