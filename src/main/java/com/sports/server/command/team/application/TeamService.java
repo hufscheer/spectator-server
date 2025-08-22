@@ -3,10 +3,7 @@ package com.sports.server.command.team.application;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
-import com.sports.server.command.team.domain.Team;
-import com.sports.server.command.team.domain.TeamPlayer;
-import com.sports.server.command.team.domain.TeamPlayerRepository;
-import com.sports.server.command.team.domain.TeamRepository;
+import com.sports.server.command.team.domain.*;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.S3Service;
@@ -18,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +50,10 @@ public class TeamService {
     public void update(final TeamRequest.Update request, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
         s3Service.doesFileExist(team.getLogoImageUrl());
-        team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, request.unit(), request.teamColor());
+        Unit unit = Optional.ofNullable(request.unit())
+                .map(Unit::from)
+                .orElse(null);
+        team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, unit, request.teamColor());
     }
 
     public void delete(final Long teamId) {

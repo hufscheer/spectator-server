@@ -39,7 +39,7 @@ public class TeamAcceptanceTest extends AcceptanceTest {
         TeamRequest.Register request = new TeamRequest.Register(
                 "경영 야생마",
                 originPrefix + "logo-url",
-                Unit.BUSINESS,
+                "경영대학",
                 "#FF0000",
                 playersToRegister
         );
@@ -71,7 +71,7 @@ public class TeamAcceptanceTest extends AcceptanceTest {
         TeamRequest.Update request = new TeamRequest.Update(
                 "국제통상학과 무역풍",
                 originPrefix + "logo-url",
-                Unit.BUSINESS,
+                "경영대학",
                 "#FFFFFF"
         );
         configureMockJwtForEmail("john@example.com");

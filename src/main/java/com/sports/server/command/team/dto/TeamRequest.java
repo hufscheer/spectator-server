@@ -9,7 +9,7 @@ public class TeamRequest {
     public record Register(
             String name,
             String logoImageUrl,
-            Unit unit,
+            String unit,
             String teamColor,
             List<TeamPlayerRegister> teamPlayers
     ) {
@@ -17,7 +17,7 @@ public class TeamRequest {
             return Team.builder()
                     .name(this.name)
                     .logoImageUrl(logoImageUrl)
-                    .unit(this.unit)
+                    .unit(Unit.from(this.unit))
                     .teamColor(this.teamColor)
                     .build();
         }
@@ -26,7 +26,7 @@ public class TeamRequest {
     public record Update(
             String name,
             String logoImageUrl,
-            Unit unit,
+            String unit,
             String teamColor
     ) {}
 

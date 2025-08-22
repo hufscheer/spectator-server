@@ -40,7 +40,7 @@ public class TeamQueryServiceTest extends ServiceTest {
         @Test
         void 하나의_단위로_필터링하여_조회한다() {
             // given
-            List<String> units = List.of("SOCIAL_SCIENCES");
+            List<String> units = List.of("사회과학대학");
 
             // when
             List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units);
@@ -56,7 +56,7 @@ public class TeamQueryServiceTest extends ServiceTest {
         @Test
         void 여러_단위로_필터링하여_조회한다() {
             // given
-            List<String> units = List.of("SOCIAL_SCIENCES", "ETC");
+            List<String> units = List.of("사회과학대학", "기타");
 
             // when
             List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units);
@@ -70,7 +70,7 @@ public class TeamQueryServiceTest extends ServiceTest {
         @Test
         void 존재하지_않는_단위로_필터링하면_예외가_발생한다() {
             // given
-            List<String> units = List.of("INVALID_UNIT");
+            List<String> units = List.of("INVALID UNIT");
 
             // when & then
             assertThatThrownBy(() -> teamQueryService.getAllTeamsByUnits(units))

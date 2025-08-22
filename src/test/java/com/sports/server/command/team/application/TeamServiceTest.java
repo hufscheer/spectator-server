@@ -3,6 +3,7 @@ package com.sports.server.command.team.application;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.team.domain.*;
 import com.sports.server.command.team.dto.TeamRequest;
+import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.CustomException;
@@ -62,12 +63,28 @@ public class TeamServiceTest extends ServiceTest {
                     new TeamRequest.TeamPlayerRegister(2L, 7));
 
             TeamRequest.Register request = new TeamRequest.Register("name", "invalid-logo-url",
-                    Unit.SOCIAL_SCIENCES,"color code", playerRegisterRequests);
+                    "사회과학대학","color code", playerRegisterRequests);
 
             // when & then
             assertThatThrownBy(() -> teamService.register(request))
                     .isInstanceOf(CustomException.class)
                     .hasMessage("잘못된 이미지 url 입니다.");
+        }
+
+        @Test
+        void 존재하지_않는_단위를_요청할_경우_예외가_발생한다() {
+            // given
+            List<TeamRequest.TeamPlayerRegister> playerRegisterRequests = List.of(
+                    new TeamRequest.TeamPlayerRegister(1L, 10),
+                    new TeamRequest.TeamPlayerRegister(2L, 7));
+
+            TeamRequest.Register request = new TeamRequest.Register("name", imageUrl,
+                    "invalid unit","color code", playerRegisterRequests);
+
+            // when & then
+            assertThatThrownBy(() -> teamService.register(request))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
         }
     }
 
@@ -116,6 +133,18 @@ public class TeamServiceTest extends ServiceTest {
             // when & then
             assertThatThrownBy(() -> teamService.update(request, teamId))
                     .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 존재하지_않는_단위를_요청할_경우_예외가_발생한다(){
+            // given
+            Long teamId =  1L;
+            TeamRequest.Update request = new TeamRequest.Update(null, null, "invalid unit", null);
+
+            // when & then
+            assertThatThrownBy(() -> teamService.update(request, teamId))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
         }
     }
 
