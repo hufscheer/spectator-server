@@ -29,9 +29,9 @@ public enum Unit {
 
     private final String name;
 
-    public static Unit from(String englishName) {
+    public static Unit from(String koreanName) {
         return Stream.of(values())
-                .filter(u -> u.name().equals(englishName))
+                .filter(u -> u.getName().equals(koreanName))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION));
     }

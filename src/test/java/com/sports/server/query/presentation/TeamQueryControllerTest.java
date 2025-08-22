@@ -26,7 +26,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
     @Test
     void 모든_팀을_단위별로_조회한다() throws Exception {
         // given
-        List<String> units = List.of("SOCIAL_SCIENCES", "ENGLISH");
+        List<String> units = List.of("사회과학대학", "영어대학");
         List<TeamResponse> response = List.of(
                 new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9"),
                 new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl2", "사회과학대학", "#92A8D1"),
@@ -37,19 +37,16 @@ public class TeamQueryControllerTest extends DocumentationTest {
 
         // when
         ResultActions result = mockMvc.perform(get("/teams")
-                .param("units", "SOCIAL_SCIENCES", "ENGLISH")
+                .param("units", "사회과학대학", "영어대학")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("units").description("필터링할 소속 단위 리스트 (ENGLISH, OCCIDENTAL_LANGUAGES," +
-                                        " ASIAN_LANGUAGES_AND_CULTURE, CHINESE_STUDIES," +
-                                        " JAPANESE_STUDIES, SOCIAL_SCIENCES, BUSINESS_AND_ECONOMICS," +
-                                        " BUSINESS, EDUCATION, AI_CONVERGENCE, INTERNATIONAL_STUDIES," +
-                                        " LANGUAGE_AND_DIPLOMACY, LANGUAGE_AND_TRADE, KOREAN_AS_A_FOREIGN_LANGUAGE," +
-                                        " LIBERAL_ARTS, ETC)").optional()
+                                parameterWithName("units").description("필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학," +
+                                        " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD학부, LT학부," +
+                                        " KFL학부, 자유전공학부, 기타)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("팀의 ID"),

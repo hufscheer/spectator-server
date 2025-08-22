@@ -38,7 +38,7 @@ public class TeamControllerTest extends DocumentationTest {
         TeamRequest.Register request = new TeamRequest.Register(
                 "정치외교학과 PSD",
                 "logo-image-url",
-                Unit.SOCIAL_SCIENCES,
+                "사회과학대학",
                 "team-color",
                 teamPlayersRequest
         );
@@ -57,11 +57,8 @@ public class TeamControllerTest extends DocumentationTest {
                                 requestFields(
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("팀 이름"),
                                         fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("팀의 로고 이미지 url"),
-                                        fieldWithPath("unit").type(JsonFieldType.STRING).description("팀의 소속 (ENGLISH, OCCIDENTAL_LANGUAGES," +
-                                                " ASIAN_LANGUAGES_AND_CULTURE, CHINESE_STUDIES, JAPANESE_STUDIES," +
-                                                " SOCIAL_SCIENCES, BUSINESS_AND_ECONOMICS, BUSINESS, EDUCATION," +
-                                                " AI_CONVERGENCE, INTERNATIONAL_STUDIES, LANGUAGE_AND_DIPLOMACY," +
-                                                " LANGUAGE_AND_TRADE, KOREAN_AS_A_FOREIGN_LANGUAGE, LIBERAL_ARTS, ETC)"),
+                                        fieldWithPath("unit").type(JsonFieldType.STRING).description("팀의 소속 (영어대학, 서양어대학, 아시아언어문화대학, 중국학대학," +
+                                                " 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD학부, LT학부, KFL학부, 자유전공학부, 기타)"),
                                         fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 대표 색의 hexCode"),
                                         fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("팀에 추가할 선수들 목록 (없다면 빈 리스트)"),
                                         fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 Id"),
@@ -107,7 +104,7 @@ public class TeamControllerTest extends DocumentationTest {
         TeamRequest.Update request = new TeamRequest.Update(
                 "국제통상학과 무역풍",
                 "logo-image-url",
-                Unit.BUSINESS,
+                "경영대학",
                 "team-color"
         );
 
@@ -181,7 +178,7 @@ public class TeamControllerTest extends DocumentationTest {
         doNothing().when(teamService).deleteTeamPlayer(anyLong());
 
         // when
-        ResultActions result = mockMvc.perform(delete("/teams/team-players/{teamPlayerId}", teamPlayerId)
+        ResultActions result = mockMvc.perform(delete("/team-players/{teamPlayerId}", teamPlayerId)
                 .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
