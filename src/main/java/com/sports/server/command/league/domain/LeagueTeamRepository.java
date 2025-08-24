@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
-    Optional<LeagueTeam> findByLeagueAndTeam(League league, Team team);
+    @Query("SELECT lt FROM LeagueTeam lt WHERE lt.league = :league AND lt.team = :team")
+    Optional<LeagueTeam> findByLeagueAndTeam(@Param("league") League league, @Param("team") Team team);
 
     @Query("SELECT lt.team.id FROM LeagueTeam lt WHERE lt.league.id = :leagueId AND lt.team.id IN :teamIds")
     List<Long> findTeamIdsByLeagueIdAndTeamIdIn(@Param("leagueId") Long leagueId, @Param("teamIds") List<Long> teamIds);
@@ -20,4 +21,6 @@ public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
 
     @Query("SELECT lt.team.id FROM LeagueTeam lt WHERE lt.league.id = :leagueId")
     List<Long> findTeamIdsByLeagueId(@Param("leagueId") Long leagueId);
+
+    List<LeagueTeam> findByLeagueId(Long id);
 }

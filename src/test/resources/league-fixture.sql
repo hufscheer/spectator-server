@@ -50,14 +50,14 @@ VALUES (1, 1, 1),
 
 -- 8. 경기
 INSERT INTO games (id, administrator_id, league_id, start_time, name, round, state)
-VALUES (1, 1, 1, '2025-08-05 18:00:00', '8강 1경기', '8강', 'SCHEDULED'),
+VALUES (1, 1, 1, '2025-08-05 18:00:00', '결승전', '결승', 'FINISHED'),
        (2, 1, 1, '2025-08-05 19:00:00', '8강 2경기', '8강', 'SCHEDULED');
 
--- 9. 경기-팀 연결 (2번 경기에 상대팀 추가)
-INSERT INTO game_teams (id, game_id, team_id, score)
-VALUES (1, 1, 1, 0),
-       (2, 1, 2, 0),
-       (3, 2, 3, 0),
-       (4, 2, 4, 0); -- 2번 경기에 4번 팀을 상대팀으로 추가
+-- 9. 경기-팀 연결
+INSERT INTO game_teams (id, game_id, team_id, score, result)
+VALUES (1, 1, 1, 2, 'WIN'),
+       (2, 1, 2, 1, 'LOSE'),
+       (3, 2, 3, 0, null),
+       (4, 2, 4, 0, null);
 
 SET foreign_key_checks = 1;

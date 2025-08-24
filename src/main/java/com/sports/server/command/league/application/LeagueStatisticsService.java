@@ -5,6 +5,7 @@ import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.query.repository.GameTeamQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import static com.sports.server.command.game.domain.Game.MINIMUM_TEAMS;
 public class LeagueStatisticsService {
     private final LeagueStatisticsRepository leagueStatisticsRepository;
     private final LeagueTeamRepository leagueTeamRepository;
+    private final GameTeamQueryRepository gameTeamQueryRepository;
 
     @Transactional
     public void updateLeagueStatisticFromFinalGame(Game finalGame) {
@@ -48,7 +50,7 @@ public class LeagueStatisticsService {
     }
 
     private void updateWinnerTeamsFromGame(Game finalGame, LeagueStatistics leagueStatistic) {
-        List<GameTeam> teams = finalGame.getGameTeams();
+        List<GameTeam> teams = gameTeamQueryRepository.findAllByGame(finalGame);
         if (teams.size() < MINIMUM_TEAMS) {
             return;
         }
@@ -75,7 +77,7 @@ public class LeagueStatisticsService {
     }
 
     private void updateMostCheeredAndTalkedTeams(League league, LeagueStatistics leagueStatistic) {
-        List<LeagueTeam> leagueTeams = league.getLeagueTeams();
+        List<LeagueTeam> leagueTeams = leagueTeamRepository.findByLeagueId(league.getId());
         if (leagueTeams.isEmpty()) {
             return;
         }
