@@ -38,7 +38,6 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
     class UpdateLeagueStatisticFromFinalGameTest {
 
         @Test
-        @DisplayName("유효한 게임이 주어지면 리그 통계가 업데이트된다")
         void 유효한_게임이_주어지면_리그_통계가_업데이트된다() {
             // given
             Game finalGame = entityUtils.getEntity(1L, Game.class);
@@ -53,7 +52,6 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("승리팀과 준우승팀이 올바르게 업데이트된다")
         void 승리팀과_준우승팀이_올바르게_업데이트된다() {
             // given
             Game finalGame = entityUtils.getEntity(1L, Game.class);
@@ -81,7 +79,6 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("최다 응원팀과 최다 대화팀이 올바르게 업데이트된다")
         void 최다_응원팀과_최다_대화팀이_올바르게_업데이트된다() {
             // given
             Game finalGame = entityUtils.getEntity(1L, Game.class);
@@ -97,7 +94,6 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("게임이 null이면 예외가 발생한다")
         void 게임이_null이면_예외가_발생한다() {
             // when & then
             assertThatThrownBy(() -> leagueStatisticsService.updateLeagueStatisticFromFinalGame(null))
@@ -106,7 +102,6 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("게임에 리그 정보가 없으면 예외가 발생한다")
         void 게임에_리그_정보가_없으면_예외가_발생한다() {
             // given
             Game gameWithoutLeague = Game.builder()
@@ -120,7 +115,6 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("게임팀이 최소 팀 수보다 적으면 업데이트하지 않는다")
         void 게임팀이_최소_팀_수보다_적으면_업데이트하지_않는다() {
             // given
             Game gameWithInsufficientTeams = entityUtils.getEntity(2L, Game.class); // 팀 수가 부족한 게임

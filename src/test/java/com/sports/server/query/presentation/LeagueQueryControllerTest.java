@@ -1,7 +1,6 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.team.domain.Unit;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.GameTeam;
@@ -185,7 +184,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new LeagueTopScorerResponse(3L, "이현제", "202202001", 3, 2)
         );
         
-        given(leagueQueryService.findTopScorersByLeagueId(leagueId))
+        given(leagueQueryService.findTop20ScorersByLeagueId(leagueId))
                 .willReturn(responses);
 
         // when

@@ -44,7 +44,7 @@ public class LeagueQueryController {
 
     @GetMapping("/{leagueId}/top-scorers")
     public ResponseEntity<List<LeagueTopScorerResponse>> findTopScorersByLeague(@PathVariable Long leagueId) {
-        return ResponseEntity.ok(leagueQueryService.findTopScorersByLeagueId(leagueId));
+        return ResponseEntity.ok(leagueQueryService.findTop20ScorersByLeagueId(leagueId));
     }
 
     @GetMapping("/teams/{leagueTeamId}/players")

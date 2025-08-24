@@ -7,6 +7,7 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.league.domain.LeagueTopScorerRepository;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,7 +34,6 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
     class UpdateTopScorersForLeagueTest {
 
         @Test
-        @DisplayName("유효한 리그 ID가 주어지면 득점왕 정보가 업데이트된다")
         void 유효한_리그_ID가_주어지면_득점왕_정보가_업데이트된다() {
             // given
             Long leagueId = 1L;
@@ -48,19 +48,17 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 리그 ID가 주어지면 예외가 발생한다")
         void 존재하지_않는_리그_ID가_주어지면_예외가_발생한다() {
             // given
             Long invalidLeagueId = 999L;
 
             // when & then
             assertThatThrownBy(() -> leagueTopScorerService.updateTopScorersForLeague(invalidLeagueId))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("League not found");
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessageContaining("League을(를) 찾을 수 없습니다");
         }
 
         @Test
-        @DisplayName("리그의 득점왕이 순위별로 올바르게 저장된다")
         void 리그의_득점왕이_순위별로_올바르게_저장된다() {
             // given
             Long leagueId = 1L;
@@ -71,13 +69,22 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
             // then
             List<LeagueTopScorer> topScorers = leagueTopScorerRepository.findByLeagueId(leagueId);
             assertThat(topScorers).isNotEmpty();
-            
-            // 순위가 올바르게 설정되었는지 확인
-            for (LeagueTopScorer topScorer : topScorers) {
-                assertThat(topScorer.getRanking()).isPositive();
-                assertThat(topScorer.getGoalCount()).isNotNegative();
-                assertThat(topScorer.getPlayer()).isNotNull();
-                assertThat(topScorer.getLeague().getId()).isEqualTo(leagueId);
+
+            for (int i = 0; i < topScorers.size() - 1; i++) {
+                LeagueTopScorer current = topScorers.get(i);
+                LeagueTopScorer next = topScorers.get(i + 1);
+                
+                // 골 수가 내림차순으로 정렬되었는지 확인
+                assertThat(current.getGoalCount()).isGreaterThanOrEqualTo(next.getGoalCount());
+                
+                // 동점이 아닌 경우 순위가 증가하는지 확인
+                if (!current.getGoalCount().equals(next.getGoalCount())) {
+                    assertThat(next.getRanking()).isGreaterThan(current.getRanking());
+                }
+                // 동점인 경우 같은 순위인지 확인
+                else {
+                    assertThat(next.getRanking()).isEqualTo(current.getRanking());
+                }
             }
         }
     }

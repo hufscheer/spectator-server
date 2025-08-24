@@ -23,8 +23,6 @@ import java.util.Map;
 
 import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -135,21 +133,30 @@ public class LeagueQueryService {
                 .leagueStatisticsId(statistics.getId())
                 .firstWinnerTeam(new TeamResponse(statistics.getFirstWinnerTeam()))
                 .secondWinnerTeam(new TeamResponse(statistics.getSecondWinnerTeam()))
-                .mostCheeredTeam(createLeagueTeamResponse(statistics.getMostCheeredTeam(), leagueTeams))
-                .mostCheerTalksTeam(createLeagueTeamResponse(statistics.getMostCheerTalksTeam(), leagueTeams))
+                .mostCheeredTeam(createLeagueTeamResponseWithCheerCount(statistics.getMostCheeredTeam(), leagueTeams))
+                .mostCheerTalksTeam(createLeagueTeamResponseWithTotalTalkCount(statistics.getMostCheerTalksTeam(), leagueTeams))
                 .build();
     }
 
-    private LeagueTeamResponse createLeagueTeamResponse(Team team, List<LeagueTeam> leagueTeams) {
+    private LeagueTeamResponse createLeagueTeamResponseWithCheerCount(Team team, List<LeagueTeam> leagueTeams) {
         LeagueTeam leagueTeam = leagueTeams.stream()
                 .filter(lt -> lt.getTeam().equals(team))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("LeagueTeam not found"));
+                .orElseThrow(() -> new NotFoundException("리그팀을 찾을 수 없습니다"));
 
-        return new LeagueTeamResponse(leagueTeam);
+        return LeagueTeamResponse.ofWithCheerCount(leagueTeam);
     }
 
-    public List<LeagueTopScorerResponse> findTopScorersByLeagueId(Long leagueId) {
+    private LeagueTeamResponse createLeagueTeamResponseWithTotalTalkCount(Team team, List<LeagueTeam> leagueTeams) {
+        LeagueTeam leagueTeam = leagueTeams.stream()
+                .filter(lt -> lt.getTeam().equals(team))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("리그팀을 찾을 수 없습니다"));
+
+        return LeagueTeamResponse.ofWithTotalTalkCount(leagueTeam);
+    }
+
+    public List<LeagueTopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {
         return leagueTopScorerRepository.findByLeagueId(leagueId)
                 .stream()
                 .map(LeagueTopScorerResponse::from)
