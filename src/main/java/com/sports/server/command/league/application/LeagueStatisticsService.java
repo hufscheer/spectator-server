@@ -5,7 +5,7 @@ import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.team.domain.Team;
-import com.sports.server.query.repository.GameTeamQueryRepository;
+import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,21 +23,17 @@ import static com.sports.server.command.game.domain.Game.MINIMUM_TEAMS;
 public class LeagueStatisticsService {
     private final LeagueStatisticsRepository leagueStatisticsRepository;
     private final LeagueTeamRepository leagueTeamRepository;
-    private final GameTeamQueryRepository gameTeamQueryRepository;
+    private final EntityUtils entityUtils;
 
     @Transactional
-    public void updateLeagueStatisticFromFinalGame(Game finalGame) {
-        if (finalGame == null || finalGame.getLeague() == null) {
-            throw new IllegalArgumentException("유효한 게임 또는 리그 정보가 없습니다.");
-        }
+    public void updateLeagueStatisticFromFinalGame(Long finalGameId) {
+        Game finalGame = entityUtils.getEntity(finalGameId, Game.class);
 
         League league = finalGame.getLeague();
         LeagueStatistics leagueStatistics = getLeagueStatistics(league);
 
         updateWinnerTeamsFromGame(finalGame, leagueStatistics);
-
         updateMostCheeredAndTalkedTeams(league, leagueStatistics);
-
     }
 
     private LeagueStatistics getLeagueStatistics(League league) {
@@ -50,7 +46,7 @@ public class LeagueStatisticsService {
     }
 
     private void updateWinnerTeamsFromGame(Game finalGame, LeagueStatistics leagueStatistic) {
-        List<GameTeam> teams = gameTeamQueryRepository.findAllByGame(finalGame);
+        List<GameTeam> teams = finalGame.getGameTeams();
         if (teams.size() < MINIMUM_TEAMS) {
             return;
         }
@@ -77,7 +73,7 @@ public class LeagueStatisticsService {
     }
 
     private void updateMostCheeredAndTalkedTeams(League league, LeagueStatistics leagueStatistic) {
-        List<LeagueTeam> leagueTeams = leagueTeamRepository.findByLeagueId(league.getId());
+        List<LeagueTeam> leagueTeams = league.getLeagueTeams();
         if (leagueTeams.isEmpty()) {
             return;
         }
