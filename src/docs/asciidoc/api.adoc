@@ -70,6 +70,10 @@ operation::game-query-controller-test/응원_횟수를_조회한다[snippets='ht
 
 operation::game-query-controller-test/출전_선수를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 연도와 월로 게임 검색
+
+operation::game-query-controller-test/연도와_월로_게임을_검색한다[snippets='http-request,query-parameters,http-response,response-fields']
+
 == 라인업 API
 
 === 게임 라인업 조회
@@ -141,6 +145,10 @@ operation::league-controller-test/리그에_참가하는_팀들을_삭제한다[
 === 리그 전체 조회
 
 operation::league-query-controller-test/리그_전체를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
+
+=== 연도와 이름으로 리그 검색
+
+operation::league-query-controller-test/연도와_이름으로_리그를_검색한다[snippets='http-request,query-parameters,http-response,response-fields']
 
 === 리그에 해당하는 리그팀 전체 조회
 

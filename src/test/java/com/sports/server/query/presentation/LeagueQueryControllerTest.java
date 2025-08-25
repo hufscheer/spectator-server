@@ -500,5 +500,44 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 ));
     }
 
+    @Test
+    void 연도와_이름으로_리그를_검색한다() throws Exception {
+        // given
+        int year = 2024;
+        String name = "삼건물";
+        
+        List<LeagueResponse> responses = List.of(
+                new LeagueResponse(1L, "삼건물대회", 16, 4, "종료"),
+                new LeagueResponse(2L, "삼건물 토너먼트", 8, 8, "진행 중")
+        );
+
+        given(leagueQueryService.findLeaguesByYearAndName(year, name))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/search")
+                .queryParam("year", String.valueOf(year))
+                .queryParam("name", name)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("year").description("리그의 연도"),
+                                parameterWithName("name").description("검색할 리그 이름 (부분 검색)")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
+                                fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
+                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER)
+                                        .description("현재 진행 중인 라운드"),
+                                fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태")
+                        )
+                ));
+    }
+
 }
 
