@@ -46,7 +46,7 @@ public class LeagueStatisticsService {
     }
 
     private void updateWinnerTeamsFromGame(Game finalGame, LeagueStatistics leagueStatistic) {
-        List<GameTeam> teams = finalGame.getGameTeams();
+        List<GameTeam> teams = gameTeamQueryRepository.findAllByGame(finalGame);
         if (teams.size() < MINIMUM_TEAMS) {
             return;
         }
@@ -73,7 +73,7 @@ public class LeagueStatisticsService {
     }
 
     private void updateMostCheeredAndTalkedTeams(League league, LeagueStatistics leagueStatistic) {
-        List<LeagueTeam> leagueTeams = league.getLeagueTeams();
+        List<LeagueTeam> leagueTeams = leagueTeamRepository.findByLeagueId(league.getId());
         if (leagueTeams.isEmpty()) {
             return;
         }

@@ -38,4 +38,9 @@ public class PlayerInfoProvider {
         Pageable top20Request = PageRequest.of(0, 20);
         return timelineQueryRepository.findTopScorersByTeamId(teamId, top20Request);
     }
+
+    public List<PlayerGoalCountWithRank> getLeagueTop20Scorers(Long leagueId) {
+        Pageable top20Request = PageRequest.of(0, 20);
+        return timelineQueryRepository.findTopScorersByLeagueId(leagueId, top20Request);
+    }
 }
