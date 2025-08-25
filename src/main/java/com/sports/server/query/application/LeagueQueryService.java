@@ -49,6 +49,13 @@ public class LeagueQueryService {
                 .toList();
     }
 
+    public List<LeagueResponse> findLeaguesByYearAndName(Integer year, String name) {
+        return leagueQueryRepository.findByYearAndName(year, name)
+                .stream()
+                .map(LeagueResponse::new)
+                .toList();
+    }
+
     public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
         League league = entityUtils.getEntity(leagueId, League.class);
 

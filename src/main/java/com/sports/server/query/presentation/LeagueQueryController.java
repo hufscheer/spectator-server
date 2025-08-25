@@ -25,6 +25,13 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagues(year));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<LeagueResponse>> findLeaguesByYearAndName(
+            @RequestParam Integer year,
+            @RequestParam String name) {
+        return ResponseEntity.ok(leagueQueryService.findLeaguesByYearAndName(year, name));
+    }
+
     @GetMapping("/{leagueId}/teams")
     public ResponseEntity<List<LeagueTeamResponse>> findLeagueTeamsByLeague(
             @PathVariable Long leagueId,
