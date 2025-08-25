@@ -13,7 +13,6 @@ import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.support.ServiceTest;
-import com.sports.server.support.fixture.GameFixtureRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
