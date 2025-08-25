@@ -27,6 +27,6 @@ public class GameStatusScheduler {
     private void updateLeagueStatisticsForFinalGames(List<Game> finishedGames) {
         finishedGames.stream()
                 .filter(game -> Round.FINAL.equals(game.getRound()) && game.getLeague() != null)
-                .forEach(leagueStatisticsService::updateLeagueStatisticFromFinalGame);
+                .forEach(game -> leagueStatisticsService.updateLeagueStatisticFromFinalGame(game.getId()));
     }
 }
