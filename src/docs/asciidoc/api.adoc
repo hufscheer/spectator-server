@@ -166,6 +166,14 @@ operation::league-query-controller-test/매니저가_생성한_모든_리그를_
 
 operation::league-query-controller-test/리그의_정보와_리그에_속한_모든_경기를_조회한다[snippets='http-request,http-response,response-fields']
 
+=== 리그 통계 조회
+
+operation::league-query-controller-test/리그_통계를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 리그 득점왕 조회
+
+operation::league-query-controller-test/리그_득점왕을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
 == 타임라인 API
 
 === 득점 타임라인 생성

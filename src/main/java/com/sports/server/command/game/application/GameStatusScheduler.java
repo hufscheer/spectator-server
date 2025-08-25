@@ -30,7 +30,7 @@ public class GameStatusScheduler {
         finishedGames.stream()
                 .filter(game -> Round.FINAL.equals(game.getRound()) && game.getLeague() != null)
                 .forEach(game -> {
-                    leagueStatisticsService.updateLeagueStatisticFromFinalGame(game);
+                    leagueStatisticsService.updateLeagueStatisticFromFinalGame(game.getId());
                     leagueTopScorerService.updateTopScorersForLeague(game.getLeague().getId());
                 });
     }

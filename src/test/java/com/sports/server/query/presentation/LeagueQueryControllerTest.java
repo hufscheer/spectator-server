@@ -102,7 +102,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].sizeOfTeamPlayers").type(JsonFieldType.NUMBER)
                                         .description("리그팀 선수의 인원수"),
                                 fieldWithPath("[].cheerCount").type(JsonFieldType.NUMBER).description("응원 수"),
-                                fieldWithPath("[].cheerTalksCount").description("치어톡 수")
+                                fieldWithPath("[].cheerTalksCount").description("응원톡 수")
                         )
                 ));
     }
@@ -112,8 +112,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // given
         Long leagueId = 1L;
         
-        TeamResponse firstWinnerTeam = new TeamResponse(1L, "경영 야생마", "s3:logoImageUrl1", "경영", "#FF0000");
-        TeamResponse secondWinnerTeam = new TeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2", "경영", "#0000FF");
+        TeamResponse firstWinnerTeam = new TeamResponse(1L, "경영 야생마", "s3:logoImageUrl1", "사회과학대학", "#FF0000");
+        TeamResponse secondWinnerTeam = new TeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2", "사회과학대학", "#0000FF");
         
         LeagueTeamResponse mostCheeredTeam = new LeagueTeamResponse(1L, 1L, "경영 야생마", "s3:logoImageUrl1", 3, 100, 50);
         LeagueTeamResponse mostCheerTalksTeam = new LeagueTeamResponse(2L, 2L, "서어 뻬데뻬", "s3:logoImageUrl2", 4, 80, 120);
@@ -145,13 +145,13 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("firstWinnerTeam.id").type(JsonFieldType.NUMBER).description("1위 팀 ID"),
                                 fieldWithPath("firstWinnerTeam.name").type(JsonFieldType.STRING).description("1위 팀 이름"),
                                 fieldWithPath("firstWinnerTeam.logoImageUrl").type(JsonFieldType.STRING).description("1위 팀 로고 이미지 URL"),
-                                fieldWithPath("firstWinnerTeam.unit").type(JsonFieldType.STRING).description("1위 팀 단위"),
+                                fieldWithPath("firstWinnerTeam.unit").type(JsonFieldType.STRING).description("1위 팀 소속"),
                                 fieldWithPath("firstWinnerTeam.teamColor").type(JsonFieldType.STRING).description("1위 팀 컬러"),
                                 fieldWithPath("secondWinnerTeam").type(JsonFieldType.OBJECT).description("2위 팀 정보"),
                                 fieldWithPath("secondWinnerTeam.id").type(JsonFieldType.NUMBER).description("2위 팀 ID"),
                                 fieldWithPath("secondWinnerTeam.name").type(JsonFieldType.STRING).description("2위 팀 이름"),
                                 fieldWithPath("secondWinnerTeam.logoImageUrl").type(JsonFieldType.STRING).description("2위 팀 로고 이미지 URL"),
-                                fieldWithPath("secondWinnerTeam.unit").type(JsonFieldType.STRING).description("2위 팀 단위"),
+                                fieldWithPath("secondWinnerTeam.unit").type(JsonFieldType.STRING).description("2위 팀 소속"),
                                 fieldWithPath("secondWinnerTeam.teamColor").type(JsonFieldType.STRING).description("2위 팀 컬러"),
                                 fieldWithPath("mostCheeredTeam").type(JsonFieldType.OBJECT).description("최다 응원 팀 정보"),
                                 fieldWithPath("mostCheeredTeam.leagueTeamId").type(JsonFieldType.NUMBER).description("최다 응원 팀의 리그팀 ID"),
@@ -160,15 +160,15 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("mostCheeredTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 응원 팀 로고 이미지 URL"),
                                 fieldWithPath("mostCheeredTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("최다 응원 팀 선수 수"),
                                 fieldWithPath("mostCheeredTeam.cheerCount").type(JsonFieldType.NUMBER).description("최다 응원 팀 응원 수"),
-                                fieldWithPath("mostCheeredTeam.cheerTalksCount").type(JsonFieldType.NUMBER).description("최다 응원 팀 치어톡 수"),
-                                fieldWithPath("mostCheerTalksTeam").type(JsonFieldType.OBJECT).description("최다 치어톡 팀 정보"),
-                                fieldWithPath("mostCheerTalksTeam.leagueTeamId").type(JsonFieldType.NUMBER).description("최다 치어톡 팀의 리그팀 ID"),
-                                fieldWithPath("mostCheerTalksTeam.teamId").type(JsonFieldType.NUMBER).description("최다 치어톡 팀 ID"),
-                                fieldWithPath("mostCheerTalksTeam.teamName").type(JsonFieldType.STRING).description("최다 치어톡 팀 이름"),
-                                fieldWithPath("mostCheerTalksTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 치어톡 팀 로고 이미지 URL"),
-                                fieldWithPath("mostCheerTalksTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("최다 치어톡 팀 선수 수"),
-                                fieldWithPath("mostCheerTalksTeam.cheerCount").type(JsonFieldType.NUMBER).description("최다 치어톡 팀 응원 수"),
-                                fieldWithPath("mostCheerTalksTeam.cheerTalksCount").type(JsonFieldType.NUMBER).description("최다 치어톡 팀 치어톡 수")
+                                fieldWithPath("mostCheeredTeam.cheerTalksCount").type(JsonFieldType.NUMBER).description("최다 응원 팀 응원톡 수"),
+                                fieldWithPath("mostCheerTalksTeam").type(JsonFieldType.OBJECT).description("최다 응원톡 팀 정보"),
+                                fieldWithPath("mostCheerTalksTeam.leagueTeamId").type(JsonFieldType.NUMBER).description("최다 응원톡 팀의 리그팀 ID"),
+                                fieldWithPath("mostCheerTalksTeam.teamId").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 ID"),
+                                fieldWithPath("mostCheerTalksTeam.teamName").type(JsonFieldType.STRING).description("최다 응원톡 팀 이름"),
+                                fieldWithPath("mostCheerTalksTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 응원톡 팀 로고 이미지 URL"),
+                                fieldWithPath("mostCheerTalksTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 선수 수"),
+                                fieldWithPath("mostCheerTalksTeam.cheerCount").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 응원 수"),
+                                fieldWithPath("mostCheerTalksTeam.cheerTalksCount").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 응원톡 수")
                         )
                 ));
     }
