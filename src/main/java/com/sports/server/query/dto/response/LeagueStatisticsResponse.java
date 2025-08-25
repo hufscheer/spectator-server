@@ -4,9 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record LeagueStatisticsResponse(
-        Long leagueStatisticsId,
-        TeamResponse firstWinnerTeam,
-        TeamResponse secondWinnerTeam,
+        LeagueTeamResponse firstWinnerTeam,
+        LeagueTeamResponse secondWinnerTeam,
         LeagueTeamResponse mostCheeredTeam,
         LeagueTeamResponse mostCheerTalksTeam
 ) {

@@ -28,4 +28,16 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
                 .fetch();
     }
 
+    @Override
+    public List<Game> findByYearAndMonth(Integer year, Integer month) {
+        return jpaQueryFactory
+                .selectFrom(game)
+                .where(DynamicBooleanBuilder.builder()
+                        .and(() -> game.startTime.year().eq(year))
+                        .and(() -> game.startTime.month().eq(month))
+                        .build())
+                .orderBy(game.startTime.asc(), game.id.asc())
+                .fetch();
+    }
+
 }

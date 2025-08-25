@@ -7,4 +7,6 @@ import java.util.List;
 public interface LeagueQueryDynamicRepository {
 
     List<League> findByYear(Integer year);
+
+    List<League> findByYearAndName(Integer year, String name);
 }
