@@ -14,7 +14,6 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
 
     @Query("select t from Timeline t " +
             "join fetch t.game g " +
-            "join fetch t.recordedQuarter rq " +
             "where t.game.id = :gameId " +
             "order by t.recordedAt desc, t.id desc")
     List<Timeline> findByGameId(Long gameId);
