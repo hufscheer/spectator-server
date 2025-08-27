@@ -180,6 +180,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("게임의 ID"),
+                                fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("이 경기가 소속된 리그 id"),
                                 fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("이 경기가 소속된 리그 이름"),
                                 fieldWithPath("[].startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),
                                 fieldWithPath("[].videoId").type(JsonFieldType.STRING).description("경기 영상 URL"),
