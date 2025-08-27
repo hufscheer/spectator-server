@@ -34,7 +34,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(gameId,
-                startTime, "videoId", "전반전", "여름축구", gameTeams, "PLAYING", 4, false, "외대 월드컵"
+                startTime, "videoId", "전반전", "여름축구", gameTeams, "PLAYING", 4, false, 1L, "외대 월드컵"
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);
@@ -68,6 +68,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("게임 상태"),
                                 fieldWithPath("isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),
+                                fieldWithPath("leagueId").type(JsonFieldType.NUMBER).description("게임이 소속된 리그 id"),
                                 fieldWithPath("leagueName").type(JsonFieldType.STRING).description("게임이 소속된 리그 이름")
                         )
                 ));
@@ -396,8 +397,8 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         
         List<GameDetailResponse> responses = List.of(
-                new GameDetailResponse(1L, startTime1, "video1", "전반전", "4강", gameTeams1, "FINISHED", 4, false, "춘계리그"),
-                new GameDetailResponse(2L, startTime2, "video2", "후반전", "결승", gameTeams2, "PLAYING", 2, false, "춘계리그")
+                new GameDetailResponse(1L, startTime1, "video1", "전반전", "4강", gameTeams1, "FINISHED", 4, false, 1L, "춘계리그"),
+                new GameDetailResponse(2L, startTime2, "video2", "후반전", "결승", gameTeams2, "PLAYING", 2, false, 1L, "춘계리그")
         );
 
         given(gameQueryService.getGamesByYearAndMonth(year, month))
@@ -435,6 +436,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("[].state").type(JsonFieldType.STRING).description("게임 상태"),
                                 fieldWithPath("[].isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),
+                                fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("게임이 소속된 리그 id"),
                                 fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("게임이 소속된 리그 이름")
                         )
                 ));

@@ -40,7 +40,7 @@ public class GameQueryService {
     public GameDetailResponse getGameDetail(final Long gameId) {
         Game game = gameQueryRepository.findGameDetailsById(gameId)
                 .orElseThrow(() -> new NotFoundException(GameErrorMessages.GAME_NOT_FOUND_EXCEPTION));
-        return new GameDetailResponse(game, game.getGameTeams(), game.getLeague().getName());
+        return new GameDetailResponse(game, game.getGameTeams());
     }
 
     public List<GameDetailResponse> getAllGamesDetailByTeam(final Long teamId) {
@@ -93,7 +93,7 @@ public class GameQueryService {
         return games.stream()
                 .map(game -> {
                     List<GameTeam> gameTeams = teamsByGameId.getOrDefault(game.getId(), Collections.emptyList());
-                    return new GameDetailResponse(game, gameTeams, game.getLeague().getName());
+                    return new GameDetailResponse(game, gameTeams);
                 })
                 .toList();
     }

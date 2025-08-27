@@ -161,9 +161,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
 
         List<GameDetailResponse> response = List.of(
                 new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", "후반전", "혁명 대전 결승",
-                        gameTeams1, "PLAYING", 2, false, "혁명 대전"),
+                        gameTeams1, "PLAYING", 2, false,1L, "혁명 대전"),
                 new GameDetailResponse(2L, LocalDateTime.of(2024, 10, 10, 13, 0, 0), "video-id", "승부차기", "외교 대전 4강",
-                        gameTeams2, "FINISHED", 4, true, "외교 대전")
+                        gameTeams2, "FINISHED", 4, true, 2L,"외교 대전")
         );
 
         given(gameQueryService.getAllGamesDetailByTeam(teamId)).willReturn(response);
