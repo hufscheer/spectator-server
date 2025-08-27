@@ -25,16 +25,4 @@ public class LeagueQueryDynamicRepositoryImpl implements LeagueQueryDynamicRepos
                 .orderBy(league.startAt.desc(), league.endAt.desc())
                 .fetch();
     }
-
-    @Override
-    public List<League> findByYearAndName(Integer year, String name) {
-        return queryFactory
-                .selectFrom(league)
-                .where(DynamicBooleanBuilder.builder()
-                        .and(() -> league.startAt.year().eq(year))
-                        .and(() -> league.name.contains(name))
-                        .build())
-                .orderBy(league.startAt.desc(), league.endAt.desc())
-                .fetch();
-    }
 }
