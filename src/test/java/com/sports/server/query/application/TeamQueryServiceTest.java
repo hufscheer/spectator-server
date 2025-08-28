@@ -142,6 +142,24 @@ public class TeamQueryServiceTest extends ServiceTest {
         }
 
         @Test
+        void 성공적으로_팀의_모든_선수를_조회한다() {
+            // given
+            Long teamId = 1L; // 팀A
+
+            // when
+            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.teamPlayers()).hasSize(5),
+                    () -> assertThat(response.teamPlayers()).extracting(PlayerResponse::name)
+                            .containsExactlyInAnyOrder("선수1", "선수2", "선수3", "선수4", "선수5"),
+                    () -> assertThat(response.teamPlayers()).extracting(PlayerResponse::totalGoalCount)
+                            .containsExactlyInAnyOrder(0, 1, 3, 0, 0)
+            );
+        }
+
+        @Test
         void 팀의_득점왕을_성공적으로_조회한다() {
             // given
             Long teamId = 1L;

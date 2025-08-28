@@ -78,8 +78,9 @@ public class TeamQueryService {
         TeamDetailResponse.TeamGameResult teamGameResult = getTeamGameResult(teamId);
         List<TeamDetailResponse.TeamTopScorer> scorers = getTeamTop20Scorers(teamId);
         List<TeamDetailResponse.Trophy> trophies = getTrophies(teamId);
+        List<PlayerResponse> teamPlayers = getAllTeamPlayers(teamId);
 
-        return new TeamDetailResponse(team, teamGameResult, scorers, trophies);
+        return new TeamDetailResponse(team, teamPlayers, teamGameResult, scorers, trophies);
     }
 
     private TeamDetailResponse.TeamGameResult getTeamGameResult(Long teamId){
