@@ -9,4 +9,6 @@ import java.util.List;
 public interface GameDynamicRepository {
     List<Game> findAllByLeagueAndState(final GamesQueryRequestDto gamesQueryRequestDto,
                                        final PageRequestDto pageRequestDto);
+
+    List<Game> findByYearAndMonth(Integer year, Integer month);
 }

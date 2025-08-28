@@ -14,6 +14,7 @@ import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.repository.GameDynamicRepository;
 import com.sports.server.query.repository.GameQueryRepository;
 import com.sports.server.query.repository.GameTeamQueryRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,29 +40,14 @@ public class GameQueryService {
     public GameDetailResponse getGameDetail(final Long gameId) {
         Game game = gameQueryRepository.findGameDetailsById(gameId)
                 .orElseThrow(() -> new NotFoundException(GameErrorMessages.GAME_NOT_FOUND_EXCEPTION));
-        return new GameDetailResponse(game, game.getGameTeams(), game.getLeague().getName());
+        return new GameDetailResponse(game, game.getGameTeams());
     }
 
     public List<GameDetailResponse> getAllGamesDetailByTeam(final Long teamId) {
         entityUtils.getEntity(teamId, Team.class);
 
         List<Game> games = gameQueryRepository.findGamesByTeamId(teamId);
-        if (games.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Long> gameIds = games.stream().map(Game::getId).toList();
-        List<GameTeam> allGameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
-
-        Map<Long, List<GameTeam>> teamsByGameId = allGameTeams.stream()
-                .collect(Collectors.groupingBy(gameTeam -> gameTeam.getGame().getId()));
-
-        return games.stream()
-                .map(game -> {
-                    List<GameTeam> gameTeams = teamsByGameId.getOrDefault(game.getId(), Collections.emptyList());
-                    return new GameDetailResponse(game, gameTeams, game.getLeague().getName());
-                })
-                .toList();
+        return getGameDetailResponses(games);
     }
 
     public List<GameResponseDto> getAllGames(final GamesQueryRequestDto queryRequestDto,
@@ -85,5 +71,30 @@ public class GameQueryService {
     public VideoResponse getVideo(Long gameId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
         return new VideoResponse(game.getVideoId());
+    }
+
+    public List<GameDetailResponse> getGamesByYearAndMonth(Integer year, Integer month) {
+        List<Game> games = gameDynamicRepository.findByYearAndMonth(year, month);
+        return getGameDetailResponses(games);
+    }
+
+    @NotNull
+    private List<GameDetailResponse> getGameDetailResponses(List<Game> games) {
+        if (games.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> gameIds = games.stream().map(Game::getId).toList();
+        List<GameTeam> allGameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
+
+        Map<Long, List<GameTeam>> teamsByGameId = allGameTeams.stream()
+                .collect(Collectors.groupingBy(gameTeam -> gameTeam.getGame().getId()));
+
+        return games.stream()
+                .map(game -> {
+                    List<GameTeam> gameTeams = teamsByGameId.getOrDefault(game.getId(), Collections.emptyList());
+                    return new GameDetailResponse(game, gameTeams);
+                })
+                .toList();
     }
 }

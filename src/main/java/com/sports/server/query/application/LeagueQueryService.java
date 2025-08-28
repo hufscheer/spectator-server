@@ -130,9 +130,8 @@ public class LeagueQueryService {
         List<LeagueTeam> leagueTeams = leagueTeamQueryRepository.findByLeagueId(leagueId);
 
         return LeagueStatisticsResponse.builder()
-                .leagueStatisticsId(statistics.getId())
-                .firstWinnerTeam(new TeamResponse(statistics.getFirstWinnerTeam()))
-                .secondWinnerTeam(new TeamResponse(statistics.getSecondWinnerTeam()))
+                .firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeams))
+                .secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeams))
                 .mostCheeredTeam(createLeagueTeamResponseWithCheerCount(statistics.getMostCheeredTeam(), leagueTeams))
                 .mostCheerTalksTeam(createLeagueTeamResponseWithTotalTalkCount(statistics.getMostCheerTalksTeam(), leagueTeams))
                 .build();
@@ -154,6 +153,15 @@ public class LeagueQueryService {
                 .orElseThrow(() -> new NotFoundException("리그팀을 찾을 수 없습니다"));
 
         return LeagueTeamResponse.ofWithTotalTalkCount(leagueTeam);
+    }
+
+    private LeagueTeamResponse createLeagueTeamResponseForWinner(Team team, List<LeagueTeam> leagueTeams) {
+        LeagueTeam leagueTeam = leagueTeams.stream()
+                .filter(lt -> lt.getTeam().equals(team))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("리그팀을 찾을 수 없습니다"));
+
+        return new LeagueTeamResponse(team, leagueTeam.getId());
     }
 
     public List<LeagueTopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {

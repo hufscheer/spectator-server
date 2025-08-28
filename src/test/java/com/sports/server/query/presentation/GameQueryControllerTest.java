@@ -34,7 +34,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(gameId,
-                startTime, "videoId", "전반전", "여름축구", gameTeams, "PLAYING", 4, false, "외대 월드컵"
+                startTime, "videoId", "전반전", "여름축구", gameTeams, "PLAYING", 4, false, 1L, "외대 월드컵"
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);
@@ -68,6 +68,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("게임 상태"),
                                 fieldWithPath("isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),
+                                fieldWithPath("leagueId").type(JsonFieldType.NUMBER).description("게임이 소속된 리그 id"),
                                 fieldWithPath("leagueName").type(JsonFieldType.STRING).description("게임이 소속된 리그 이름")
                         )
                 ));
@@ -373,6 +374,70 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .type(JsonFieldType.NUMBER)
                                         .optional()
                                         .description("교체된 선수의 등번호")
+                        )
+                ));
+    }
+
+    @Test
+    void 연도와_월로_게임을_검색한다() throws Exception {
+        // given
+        int year = 2024;
+        int month = 3;
+        
+        LocalDateTime startTime1 = LocalDateTime.of(2024, 3, 15, 14, 0, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2024, 3, 20, 16, 0, 0);
+        
+        List<GameDetailResponse.TeamResponse> gameTeams1 = List.of(
+                new GameDetailResponse.TeamResponse(1L, "A팀", "logo1.com", 2, 0),
+                new GameDetailResponse.TeamResponse(2L, "B팀", "logo2.com", 1, 0)
+        );
+        List<GameDetailResponse.TeamResponse> gameTeams2 = List.of(
+                new GameDetailResponse.TeamResponse(3L, "C팀", "logo3.com", 0, 0),
+                new GameDetailResponse.TeamResponse(4L, "D팀", "logo4.com", 1, 0)
+        );
+        
+        List<GameDetailResponse> responses = List.of(
+                new GameDetailResponse(1L, startTime1, "video1", "전반전", "4강", gameTeams1, "FINISHED", 4, false, 1L, "춘계리그"),
+                new GameDetailResponse(2L, startTime2, "video2", "후반전", "결승", gameTeams2, "PLAYING", 2, false, 1L, "춘계리그")
+        );
+
+        given(gameQueryService.getGamesByYearAndMonth(year, month))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/search")
+                .queryParam("year", String.valueOf(year))
+                .queryParam("month", String.valueOf(month))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("year").description("게임이 진행되는 연도"),
+                                parameterWithName("month").description("게임이 진행되는 월")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("게임 ID"),
+                                fieldWithPath("[].startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
+                                fieldWithPath("[].videoId").type(JsonFieldType.STRING).description("게임 비디오 ID"),
+                                fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
+                                fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
+                                fieldWithPath("[].round").type(JsonFieldType.NUMBER).description("게임의 라운드"),
+                                fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                        .description("게임팀의 ID"),
+                                fieldWithPath("[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                        .description("게임팀의 이름"),
+                                fieldWithPath("[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("게임팀의 이미지 URL"),
+                                fieldWithPath("[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
+                                        .description("게임팀의 승부차기 점수"),
+                                fieldWithPath("[].gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
+                                fieldWithPath("[].state").type(JsonFieldType.STRING).description("게임 상태"),
+                                fieldWithPath("[].isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),
+                                fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("게임이 소속된 리그 id"),
+                                fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("게임이 소속된 리그 이름")
                         )
                 ));
     }

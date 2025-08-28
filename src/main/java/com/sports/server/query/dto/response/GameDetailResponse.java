@@ -16,10 +16,11 @@ public record GameDetailResponse(
         String state,
         int round,
         boolean isPkTaken,
+        Long leagueId,
         String leagueName
 ) {
 
-    public GameDetailResponse(Game game, List<GameTeam> gameTeams, String leagueName) {
+    public GameDetailResponse(Game game, List<GameTeam> gameTeams) {
         this(
                 game.getId(),
                 game.getStartTime(),
@@ -33,7 +34,8 @@ public record GameDetailResponse(
                 game.getState().name(),
                 game.getRound().getNumber(),
                 game.getIsPkTaken(),
-                leagueName
+                game.getLeague().getId(),
+                game.getLeague().getName()
         );
     }
 
