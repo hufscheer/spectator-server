@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.GameResponseDto;
+import com.sports.server.query.dto.response.LeagueWithGamesResponse;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -81,16 +82,19 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
-        List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
+        List<LeagueWithGamesResponse> gamesWithLeague = toResponses(response, LeagueWithGamesResponse.class);
+        LeagueWithGamesResponse gameWithLeague = gamesWithLeague.get(0);
+        List<GameResponseDto> games = gameWithLeague.games();
+
         assertAll(
                 () -> assertThat(games).hasSize(9),
-
                 () -> assertThat(games)
                         .map(GameResponseDto::id)
-                        .containsExactly(1L, 2L, 3L, 4L, 6L, 7L, 5L, 8L, 9L),
+                        .containsExactly(9L, 8L, 5L, 7L, 6L, 4L, 3L, 2L, 1L),
 
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(1L))
+                        .usingRecursiveFieldByFieldElementComparator() // 중첩 객체 비교를 위해 추가
                         .containsExactly(
                                 new GameResponseDto(
                                         1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
@@ -104,6 +108,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         ),
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(2L))
+                        .usingRecursiveFieldByFieldElementComparator() // 중첩 객체 비교를 위해 추가
                         .containsExactly(
                                 new GameResponseDto(
                                         2L, LocalDateTime.of(2023, 11, 12, 10, 10, 0),
@@ -116,7 +121,6 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                                 )
                         )
         );
-
     }
 
     @Test
