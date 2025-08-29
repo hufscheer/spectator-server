@@ -1,6 +1,7 @@
 package com.sports.server.query.repository;
 
 import static com.sports.server.command.game.domain.QGame.game;
+import static com.sports.server.command.league.domain.QLeague.league;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.game.domain.Game;
@@ -22,8 +23,9 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
                                                        final PageRequestDto pageRequestDto) {
         return jpaQueryFactory
                 .selectFrom(game)
+                .join(game.league, league).fetchJoin()
                 .where(conditionMapper.mapBooleanCondition(gameQueryRequestDto, pageRequestDto))
-                .orderBy(game.startTime.asc(), game.id.asc())
+                .orderBy(game.startTime.desc(), game.id.desc())
                 .limit(pageRequestDto.size())
                 .fetch();
     }

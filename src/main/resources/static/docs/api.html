@@ -2002,7 +2002,7 @@ Host: www.api.hufstreaming.site</code></pre>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>state</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 상태</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임의 상태 (default: PLAYING)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>cursor</code></p></td>
@@ -2032,50 +2032,54 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 891
+Content-Length: 1054
 
 [ {
-  "id" : 1,
-  "startTime" : "2024-01-19T13:00:00",
-  "gameQuarter" : "전반전",
-  "gameName" : "4강",
-  "round" : 4,
-  "videoId" : "abc123",
-  "gameTeams" : [ {
-    "gameTeamId" : 1,
-    "gameTeamName" : "A팀",
-    "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "pkScore" : 0
+  "leagueId" : 1,
+  "leagueName" : "2025 외대월드컵",
+  "games" : [ {
+    "id" : 1,
+    "startTime" : "2024-01-19T13:00:00",
+    "gameQuarter" : "전반전",
+    "gameName" : "4강",
+    "round" : 4,
+    "videoId" : "abc123",
+    "gameTeams" : [ {
+      "gameTeamId" : 1,
+      "gameTeamName" : "A팀",
+      "logoImageUrl" : "logo.com",
+      "score" : 2,
+      "pkScore" : 0
+    }, {
+      "gameTeamId" : 2,
+      "gameTeamName" : "B팀",
+      "logoImageUrl" : "logo.com",
+      "score" : 1,
+      "pkScore" : 0
+    } ],
+    "isPkTaken" : false
   }, {
-    "gameTeamId" : 2,
-    "gameTeamName" : "B팀",
-    "logoImageUrl" : "logo.com",
-    "score" : 1,
-    "pkScore" : 0
-  } ],
-  "isPkTaken" : false
-}, {
-  "id" : 2,
-  "startTime" : "2024-01-19T13:00:00",
-  "gameQuarter" : "1쿼터",
-  "gameName" : "결승전",
-  "round" : 2,
-  "videoId" : "abc123",
-  "gameTeams" : [ {
-    "gameTeamId" : 3,
-    "gameTeamName" : "C팀",
-    "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "pkScore" : 0
-  }, {
-    "gameTeamId" : 4,
-    "gameTeamName" : "D팀",
-    "logoImageUrl" : "logo.com",
-    "score" : 2,
-    "pkScore" : 0
-  } ],
-  "isPkTaken" : false
+    "id" : 2,
+    "startTime" : "2024-01-19T13:00:00",
+    "gameQuarter" : "1쿼터",
+    "gameName" : "결승전",
+    "round" : 2,
+    "videoId" : "abc123",
+    "gameTeams" : [ {
+      "gameTeamId" : 3,
+      "gameTeamName" : "C팀",
+      "logoImageUrl" : "logo.com",
+      "score" : 2,
+      "pkScore" : 0
+    }, {
+      "gameTeamId" : 4,
+      "gameTeamName" : "D팀",
+      "logoImageUrl" : "logo.com",
+      "score" : 2,
+      "pkScore" : 0
+    } ],
+    "isPkTaken" : false
+  } ]
 } ]</code></pre>
 </div>
 </div>
@@ -2097,62 +2101,82 @@ Content-Length: 891
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그 목록</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].leagueId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].leagueName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임 목록</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].id</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임의 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].startTime</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].startTime</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임 시작 시간</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameQuarter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].gameQuarter</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임 쿼터</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].gameName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].round</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].round</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">라운드의 이름 ex. 4강&#8594;4, 결승&#8594;2</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].videoId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].videoId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기 영상 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].isPkTaken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].isPkTaken</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">승부차기 진출 여부</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].gameTeamId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].gameTeams[].gameTeamId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 ID</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].gameTeamName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].gameTeams[].gameTeamName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].logoImageUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].gameTeams[].logoImageUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 이미지 URL</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].score</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].gameTeams[].score</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 현재 점수</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].pkScore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].games[].gameTeams[].pkScore</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 승부차기 점수</p></td>
 </tr>
@@ -6022,7 +6046,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 4 Sep 2025 01:50:57 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Fri, 5 Sep 2025 17:27:12 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -6995,7 +7019,7 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 <h4 id="_전체_팀_조회_http_request"><a class="link" href="#_전체_팀_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /teams?units=SOCIAL_SCIENCES&amp;units=ENGLISH HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /teams?units=%EC%82%AC%ED%9A%8C%EA%B3%BC%ED%95%99%EB%8C%80%ED%95%99&amp;units=%EC%98%81%EC%96%B4%EB%8C%80%ED%95%99 HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -7017,7 +7041,7 @@ Host: www.api.hufstreaming.site</code></pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>units</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">필터링할 소속 단위 (ENGLISH, OCCIDENTAL_LANGUAGES, ASIAN_LANGUAGES_AND_CULTURE, CHINESE_STUDIES, JAPANESE_STUDIES, SOCIAL_SCIENCES, BUSINESS_AND_ECONOMICS, BUSINESS, EDUCATION, AI_CONVERGENCE, INTERNATIONAL_STUDIES, LANGUAGE_AND_DIPLOMACY, LANGUAGE_AND_TRADE, KOREAN_AS_A_FOREIGN_LANGUAGE, LIBERAL_ARTS, ETC)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학, 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD학부, LT학부, KFL학부, 자유전공학부, 기타)</p></td>
 </tr>
 </tbody>
 </table>
@@ -7031,7 +7055,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 593
+Content-Length: 454
 
 [ {
   "id" : 1,
@@ -7050,12 +7074,6 @@ Content-Length: 593
   "name" : "영어영문학과",
   "logoImageUrl" : "s3:logoImageUrl2",
   "unit" : "영어대학",
-  "teamColor" : "#92A8D1"
-}, {
-  "id" : 4,
-  "name" : "국어교육과",
-  "logoImageUrl" : "s3:logoImageUrl2",
-  "unit" : "사범대학",
   "teamColor" : "#92A8D1"
 } ]</code></pre>
 </div>
@@ -7660,7 +7678,7 @@ Content-Length: 1179
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-08-28 10:21:04 +0900
+Last updated 2025-08-28 15:54:46 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
