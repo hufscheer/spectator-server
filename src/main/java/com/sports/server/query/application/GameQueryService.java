@@ -56,11 +56,22 @@ public class GameQueryService {
             return Collections.emptyList();
         }
 
+        List<Long> gameIds = games.stream().map(Game::getId).toList();
+        List<GameTeam> allGameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
+        Map<Long, List<GameTeam>> teamsByGameId = allGameTeams.stream()
+                .collect(groupingBy(gameTeam -> gameTeam.getGame().getId()));
+
         Map<League, List<Game>> gamesByLeague = games.stream()
                 .collect(Collectors.groupingBy(Game::getLeague));
 
         return gamesByLeague.entrySet().stream()
-                .map(g -> new LeagueWithGamesResponse(g.getKey(), g.getValue()))
+                .map(entry -> {
+                    League league = entry.getKey();
+                    List<GameResponseDto> gameResponses = entry.getValue().stream()
+                            .map(game -> new GameResponseDto(game, teamsByGameId.getOrDefault(game.getId(), Collections.emptyList())))
+                            .toList();
+                    return new LeagueWithGamesResponse(league.getId(), league.getName(), gameResponses);
+                })
                 .sorted(Comparator.comparing(LeagueWithGamesResponse::leagueId).reversed())
                 .toList();
     }
