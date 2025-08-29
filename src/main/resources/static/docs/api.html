@@ -3828,7 +3828,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h4 id="_리그_전체_조회_http_request"><a class="link" href="#_리그_전체_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues?year=2024 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues?year=2025&amp;leagueProgress=FINISHED&amp;cursor=5&amp;size=5 HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -3852,6 +3852,18 @@ Host: www.api.hufstreaming.site</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>year</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">리그의 연도</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>leagueProgress</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 진행 상태 (BEFORE_START, IN_PROGRESS, FINISHED)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cursor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이징 커서</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이징 사이즈</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -3864,20 +3876,34 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 263
+Content-Length: 622
 
 [ {
   "leagueId" : 1,
-  "name" : "리그 첫번째",
+  "name" : "2025 외대 월드컵",
   "maxRound" : 16,
-  "inProgressRound" : 4,
-  "leagueProgress" : "종료"
+  "inProgressRound" : 2,
+  "leagueProgress" : "종료",
+  "winnerTeam" : "정치외교학과 DPS"
 }, {
   "leagueId" : 2,
-  "name" : "리그 두번째",
+  "name" : "2025 트로이카",
   "maxRound" : 32,
   "inProgressRound" : 32,
   "leagueProgress" : "진행 중"
+}, {
+  "leagueId" : 3,
+  "name" : "2025 삼건물대회",
+  "maxRound" : 16,
+  "inProgressRound" : 2,
+  "leagueProgress" : "종료",
+  "winnerTeam" : "경영대학 야생마"
+}, {
+  "leagueId" : 4,
+  "name" : "2100 화성 월드컵",
+  "maxRound" : 8,
+  "inProgressRound" : 8,
+  "leagueProgress" : "시작전"
 } ]</code></pre>
 </div>
 </div>
@@ -3922,6 +3948,11 @@ Content-Length: 263
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].leagueProgress</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">현재 대회 진행 상태</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].winnerTeam</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대회의 우승팀 이름</p></td>
 </tr>
 </tbody>
 </table>
@@ -6022,7 +6053,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 4 Sep 2025 01:50:57 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Fri, 5 Sep 2025 05:35:00 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -6995,7 +7026,7 @@ Cookie: HCC_SES=temp-cookie</code></pre>
 <h4 id="_전체_팀_조회_http_request"><a class="link" href="#_전체_팀_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /teams?units=SOCIAL_SCIENCES&amp;units=ENGLISH HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /teams?units=%EC%82%AC%ED%9A%8C%EA%B3%BC%ED%95%99%EB%8C%80%ED%95%99&amp;units=%EC%98%81%EC%96%B4%EB%8C%80%ED%95%99 HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -7017,7 +7048,7 @@ Host: www.api.hufstreaming.site</code></pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>units</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">필터링할 소속 단위 (ENGLISH, OCCIDENTAL_LANGUAGES, ASIAN_LANGUAGES_AND_CULTURE, CHINESE_STUDIES, JAPANESE_STUDIES, SOCIAL_SCIENCES, BUSINESS_AND_ECONOMICS, BUSINESS, EDUCATION, AI_CONVERGENCE, INTERNATIONAL_STUDIES, LANGUAGE_AND_DIPLOMACY, LANGUAGE_AND_TRADE, KOREAN_AS_A_FOREIGN_LANGUAGE, LIBERAL_ARTS, ETC)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학, 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD학부, LT학부, KFL학부, 자유전공학부, 기타)</p></td>
 </tr>
 </tbody>
 </table>
@@ -7031,7 +7062,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 593
+Content-Length: 454
 
 [ {
   "id" : 1,
@@ -7050,12 +7081,6 @@ Content-Length: 593
   "name" : "영어영문학과",
   "logoImageUrl" : "s3:logoImageUrl2",
   "unit" : "영어대학",
-  "teamColor" : "#92A8D1"
-}, {
-  "id" : 4,
-  "name" : "국어교육과",
-  "logoImageUrl" : "s3:logoImageUrl2",
-  "unit" : "사범대학",
   "teamColor" : "#92A8D1"
 } ]</code></pre>
 </div>
@@ -7660,7 +7685,7 @@ Content-Length: 1179
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-08-28 10:21:04 +0900
+Last updated 2025-08-28 15:54:46 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
