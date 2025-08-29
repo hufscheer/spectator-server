@@ -43,7 +43,7 @@ public class LeagueQueryController {
     }
 
     @GetMapping("/{leagueId}/top-scorers")
-    public ResponseEntity<List<LeagueTopScorerResponse>> findTopScorersByLeague(@PathVariable Long leagueId) {
+    public ResponseEntity<List<TopScorerResponse>> findTopScorersByLeague(@PathVariable Long leagueId) {
         return ResponseEntity.ok(leagueQueryService.findTop20ScorersByLeagueId(leagueId));
     }
 
@@ -65,5 +65,10 @@ public class LeagueQueryController {
     @GetMapping("/manager/manage")
     public ResponseEntity<List<LeagueResponseToManage>> findLeaguesByManagerToManage(final Member manager) {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManagerToManage(manager));
+    }
+
+    @GetMapping("/top-scorers/year/{year}")
+    public ResponseEntity<List<TopScorerResponse>> findTop5ScorersByYear(@PathVariable Integer year) {
+        return ResponseEntity.ok(leagueQueryService.findTop5ScorersByYear(year));
     }
 }

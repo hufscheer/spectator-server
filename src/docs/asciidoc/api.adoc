@@ -178,6 +178,11 @@ operation::league-query-controller-test/리그_통계를_조회한다[snippets='
 
 operation::league-query-controller-test/리그_득점왕을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 연도별 득점왕 조회
+
+operation::league-query-controller-test/연도별_득점왕_상위_5명을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+
 == 타임라인 API
 
 === 득점 타임라인 생성
