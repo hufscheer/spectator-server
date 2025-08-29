@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TeamQueryControllerTest extends DocumentationTest {
 
     @Test
-    void 모든_팀을_단위별로_조회한다() throws Exception {
+    void 모든_팀을_조회한다() throws Exception {
         // given
         List<String> units = List.of("사회과학대학", "영어대학");
         List<TeamResponse> response = List.of(

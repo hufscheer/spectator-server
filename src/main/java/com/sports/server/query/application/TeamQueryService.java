@@ -4,13 +4,13 @@ import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueStatistics;
-import com.sports.server.command.league.domain.LeagueStatisticsRepository;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.*;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamDetailResponse;
 import com.sports.server.query.dto.response.TeamResponse;
+import com.sports.server.query.repository.LeagueStatisticsQueryRepository;
 import com.sports.server.query.repository.TeamQueryDynamicRepository;
 import com.sports.server.query.repository.TeamQueryRepository;
 import com.sports.server.query.support.PlayerInfoProvider;
@@ -32,7 +32,7 @@ public class TeamQueryService {
     private final EntityUtils entityUtils;
     private final PlayerInfoProvider playerInfoProvider;
     private final GameTeamRepository gameTeamRepository;
-    private final LeagueStatisticsRepository leagueStatisticsRepository;
+    private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
 
     private static final int ADMISSION_YEAR_START_INDEX = 2;
     private static final int ADMISSION_YEAR_END_INDEX = 4;
@@ -106,7 +106,7 @@ public class TeamQueryService {
     }
 
     private List<TeamDetailResponse.Trophy> getTrophies(Long teamId) {
-        List<LeagueStatistics> statistics = leagueStatisticsRepository.findTrophiesByTeamId(teamId);
+        List<LeagueStatistics> statistics = leagueStatisticsQueryRepository.findTrophiesByTeamId(teamId);
 
         return statistics.stream()
                 .flatMap(stat -> {
