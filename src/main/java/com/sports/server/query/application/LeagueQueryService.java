@@ -9,8 +9,10 @@ import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.NotFoundException;
 
+import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueTopScorerResponse;
 import com.sports.server.query.repository.*;
@@ -20,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +37,6 @@ public class LeagueQueryService {
     private final LeagueQueryRepository leagueQueryRepository;
     private final TeamQueryDynamicRepositoryImpl teamDynamicRepository;
     private final GameQueryRepository gameQueryRepository;
-    private final LeagueTeamRepository leagueTeamRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
     private final TeamPlayerRepository teamPlayerRepository;
@@ -42,10 +44,25 @@ public class LeagueQueryService {
     private final PlayerInfoProvider playerInfoProvider;
     private final LeagueTopScorerRepository leagueTopScorerRepository;
 
-    public List<LeagueResponse> findLeagues(Integer year) {
-        return leagueQueryRepository.findByYear(year)
+    public List<LeagueResponse> findLeagues(LeagueQueryRequestDto queryRequestDto, PageRequestDto pageRequest) {
+        List<League> leagues = leagueQueryRepository.findLeagues(queryRequestDto, pageRequest);
+        if (leagues.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> leagueIds = leagues.stream().map(League::getId).toList();
+        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(leagueIds)
                 .stream()
-                .map(LeagueResponse::new)
+                .collect(Collectors.toMap(
+                        LeagueWinnerInfo::leagueId,
+                        LeagueWinnerInfo::winnerTeamName
+                ));
+
+        return leagues.stream()
+                .map(league -> {
+                    String winnerTeamName = firstWinnerTeamsInfo.get(league.getId());
+                    return new LeagueResponse(league, winnerTeamName);
+                })
                 .toList();
     }
 
@@ -127,41 +144,37 @@ public class LeagueQueryService {
 
     public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
         LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId);
-        List<LeagueTeam> leagueTeams = leagueTeamQueryRepository.findByLeagueId(leagueId);
+
+        Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeamQueryRepository.findByLeagueId(leagueId).stream()
+                .collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));
 
         return LeagueStatisticsResponse.builder()
-                .firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeams))
-                .secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeams))
-                .mostCheeredTeam(createLeagueTeamResponseWithCheerCount(statistics.getMostCheeredTeam(), leagueTeams))
-                .mostCheerTalksTeam(createLeagueTeamResponseWithTotalTalkCount(statistics.getMostCheerTalksTeam(), leagueTeams))
+                .firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeamsInfo))
+                .secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeamsInfo))
+                .mostCheeredTeam(LeagueTeamResponse.ofWithCheerCount(
+                        findLeagueTeamFor(statistics.getMostCheeredTeam(), leagueTeamsInfo)))
+                .mostCheerTalksTeam(LeagueTeamResponse.ofWithTotalTalkCount(
+                        findLeagueTeamFor(statistics.getMostCheerTalksTeam(), leagueTeamsInfo)))
                 .build();
     }
 
-    private LeagueTeamResponse createLeagueTeamResponseWithCheerCount(Team team, List<LeagueTeam> leagueTeams) {
-        LeagueTeam leagueTeam = leagueTeams.stream()
-                .filter(lt -> lt.getTeam().equals(team))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("리그팀을 찾을 수 없습니다"));
-
-        return LeagueTeamResponse.ofWithCheerCount(leagueTeam);
-    }
-
-    private LeagueTeamResponse createLeagueTeamResponseWithTotalTalkCount(Team team, List<LeagueTeam> leagueTeams) {
-        LeagueTeam leagueTeam = leagueTeams.stream()
-                .filter(lt -> lt.getTeam().equals(team))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("리그팀을 찾을 수 없습니다"));
-
-        return LeagueTeamResponse.ofWithTotalTalkCount(leagueTeam);
-    }
-
-    private LeagueTeamResponse createLeagueTeamResponseForWinner(Team team, List<LeagueTeam> leagueTeams) {
-        LeagueTeam leagueTeam = leagueTeams.stream()
-                .filter(lt -> lt.getTeam().equals(team))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("리그팀을 찾을 수 없습니다"));
-
+    private LeagueTeamResponse createLeagueTeamResponseForWinner(Team team, Map<Long, LeagueTeam> leagueTeamsInfo) {
+        if (team == null) {
+            return null;
+        }
+        LeagueTeam leagueTeam = findLeagueTeamFor(team, leagueTeamsInfo);
         return new LeagueTeamResponse(team, leagueTeam.getId());
+    }
+
+    private LeagueTeam findLeagueTeamFor(Team team, Map<Long, LeagueTeam> leagueTeamsInfo) {
+        if (team == null) {
+            return null;
+        }
+        LeagueTeam leagueTeam = leagueTeamsInfo.get(team.getId());
+        if (leagueTeam == null) {
+            throw new NotFoundException("리그팀을 찾을 수 없습니다: " + team.getName());
+        }
+        return leagueTeam;
     }
 
     public List<LeagueTopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {

@@ -33,17 +33,21 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // given
         List<LeagueResponse> responses = List.of(
-                new LeagueResponse(1L, "리그 첫번째", 16, 4, "종료"),
-                new LeagueResponse(2L, "리그 두번째", 32, 32, "진행 중")
+                new LeagueResponse(1L, "2025 외대 월드컵", 16, 2, "종료", "정치외교학과 DPS"),
+                new LeagueResponse(2L, "2025 트로이카", 32, 32, "진행 중", null),
+                new LeagueResponse(3L, "2025 삼건물대회", 16, 2, "종료", "경영대학 야생마"),
+                new LeagueResponse(4L, "2100 화성 월드컵", 8, 8, "시작전", null)
         );
 
-        int year = 2024;
-        given(leagueQueryService.findLeagues(year))
+        given(leagueQueryService.findLeagues(any(), any()))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues")
-                .queryParam("year", String.valueOf(year))
+                .queryParam("year", String.valueOf(2025))
+                .queryParam("leagueProgress", "FINISHED")
+                .queryParam("cursor", String.valueOf(5))
+                .queryParam("size", String.valueOf(5))
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -51,15 +55,18 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("year").description("리그의 연도")
+                                parameterWithName("year").description("리그의 연도"),
+                                parameterWithName("leagueProgress").description("리그의 진행 상태 (BEFORE_START, IN_PROGRESS, FINISHED)"),
+                                parameterWithName("cursor").description("페이징 커서"),
+                                parameterWithName("size").description("페이징 사이즈")
                         ),
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
-                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER)
-                                        .description("현재 진행 중인 라운드"),
-                                fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태")
+                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER).description("현재 진행 중인 라운드"),
+                                fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
+                                fieldWithPath("[].winnerTeamName").type(JsonFieldType.STRING).description("대회의 우승팀 이름").optional()
                         )
                 ));
     }
