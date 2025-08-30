@@ -25,7 +25,7 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
                 .selectFrom(game)
                 .join(game.league, league).fetchJoin()
                 .where(conditionMapper.mapBooleanCondition(gameQueryRequestDto, pageRequestDto))
-                .orderBy(game.startTime.desc(), game.id.desc())
+                .orderBy(game.startTime.asc(), game.id.asc())
                 .limit(pageRequestDto.size())
                 .fetch();
     }

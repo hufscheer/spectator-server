@@ -90,7 +90,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(games).hasSize(9),
                 () -> assertThat(games)
                         .map(GameResponseDto::id)
-                        .containsExactly(9L, 8L, 5L, 7L, 6L, 4L, 3L, 2L, 1L),
+                        .containsExactly(1L, 2L, 3L, 4L, 6L, 7L, 5L, 8L, 9L),
 
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(1L))

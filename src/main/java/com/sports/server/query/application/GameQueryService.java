@@ -72,7 +72,6 @@ public class GameQueryService {
                             .toList();
                     return new LeagueWithGamesResponse(league.getId(), league.getName(), gameResponses);
                 })
-                .sorted(Comparator.comparing(LeagueWithGamesResponse::leagueId).reversed())
                 .toList();
     }
 

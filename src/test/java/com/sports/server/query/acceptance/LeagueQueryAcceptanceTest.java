@@ -83,7 +83,7 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                             .map(LeagueResponse::inProgressRound)
                             .containsExactly(16, 8, 16, 16, 4),
                     () -> assertThat(actual)
-                            .map(LeagueResponse::winnerTeam)
+                            .map(LeagueResponse::winnerTeamName)
                             .containsExactly("서어 뻬데뻬", "경영 야생마", "컴공 독수리", "체교 불사조", "미컴 축구생각")
             );
         }

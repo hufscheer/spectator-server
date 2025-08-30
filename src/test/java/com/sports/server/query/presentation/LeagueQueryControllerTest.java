@@ -66,7 +66,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
                                 fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER).description("현재 진행 중인 라운드"),
                                 fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
-                                fieldWithPath("[].winnerTeam").type(JsonFieldType.STRING).description("대회의 우승팀 이름").optional()
+                                fieldWithPath("[].winnerTeamName").type(JsonFieldType.STRING).description("대회의 우승팀 이름").optional()
                         )
                 ));
     }

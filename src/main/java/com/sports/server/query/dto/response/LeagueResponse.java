@@ -13,15 +13,15 @@ public record LeagueResponse(
 	int maxRound,
 	int inProgressRound,
 	String leagueProgress,
-	String winnerTeam
+	String winnerTeamName
 ) {
-	public LeagueResponse(League league, String winnerTeam) {
+	public LeagueResponse(League league, String winnerTeamName) {
 		this(
 			league.getId(),
 			league.getName(),
 			league.getMaxRound().getNumber(),
 			league.getInProgressRound().getNumber(),
-			LeagueProgress.getProgressDescription(LocalDateTime.now(), league), winnerTeam
+			LeagueProgress.getProgressDescription(LocalDateTime.now(), league), winnerTeamName
 		);
 	}
 }

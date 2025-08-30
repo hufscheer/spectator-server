@@ -51,15 +51,11 @@ public class LeagueQueryService {
         }
 
         List<Long> leagueIds = leagues.stream().map(League::getId).toList();
-
-        final int LEAGUE_ID_INDEX = 0;
-        final int TEAM_NAME_INDEX = 1;
-
-        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamNamesByLeagueIds(leagueIds)
+        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(leagueIds)
                 .stream()
                 .collect(Collectors.toMap(
-                        info -> (Long) info[LEAGUE_ID_INDEX],
-                        info -> (String) info[TEAM_NAME_INDEX]
+                        LeagueWinnerInfo::leagueId,
+                        LeagueWinnerInfo::winnerTeamName
                 ));
 
         return leagues.stream()
