@@ -1,27 +1,53 @@
 package com.sports.server.query.dto.response;
 
 import com.sports.server.command.league.domain.LeagueTopScorer;
+import com.sports.server.command.player.domain.Player;
 
-public record LeagueTopScorerResponse(
+public record TopScorerResponse(
         Long playerId,
         String playerName,
-        String studentNumber,
+        String admissionYear,
         Integer ranking,
         Integer goalCount
 ) {
     private static final int ADMISSION_YEAR_START_INDEX = 2;
     private static final int ADMISSION_YEAR_END_INDEX = 4;
 
-    public static LeagueTopScorerResponse from(LeagueTopScorer leagueTopScorer) {
+    public static TopScorerResponse from(LeagueTopScorer leagueTopScorer) {
         String studentNumber = leagueTopScorer.getPlayer().getStudentNumber();
         String admissionYear = extractAdmissionYear(studentNumber);
 
-        return new LeagueTopScorerResponse(
+        return new TopScorerResponse(
                 leagueTopScorer.getPlayer().getId(),
                 leagueTopScorer.getPlayer().getName(),
                 admissionYear,
                 leagueTopScorer.getRanking(),
                 leagueTopScorer.getGoalCount()
+        );
+    }
+
+    public static TopScorerResponse of(Player player, Integer totalGoals) {
+        String studentNumber = player.getStudentNumber();
+        String admissionYear = extractAdmissionYear(studentNumber);
+
+        return new TopScorerResponse(
+                player.getId(),
+                player.getName(),
+                admissionYear,
+                null,
+                totalGoals
+        );
+    }
+
+    public static TopScorerResponse of(Long playerId, String studentNumber, String playerName, Integer totalGoals, Integer ranking) {
+        String admissionYear = extractAdmissionYear(studentNumber);
+
+        return new TopScorerResponse(
+                playerId,
+                playerName,
+                admissionYear,
+                ranking,
+                totalGoals
         );
     }
 

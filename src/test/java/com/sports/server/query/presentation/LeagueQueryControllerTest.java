@@ -181,10 +181,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // given
         Long leagueId = 1L;
         
-        List<LeagueTopScorerResponse> responses = List.of(
-                new LeagueTopScorerResponse(1L, "진승희", "202101001", 1, 5),
-                new LeagueTopScorerResponse(2L, "이동규", "202101002", 2, 3),
-                new LeagueTopScorerResponse(3L, "이현제", "202202001", 3, 2)
+        List<TopScorerResponse> responses = List.of(
+                new TopScorerResponse(1L, "진승희", "20", 1, 5),
+                new TopScorerResponse(2L, "이동규", "20", 2, 3),
+                new TopScorerResponse(3L, "이현제", "20", 3, 2)
         );
         
         given(leagueQueryService.findTop20ScorersByLeagueId(leagueId))
@@ -203,7 +203,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
                                 fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
-                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 입학 년도"),
                                 fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위"),
                                 fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("득점 수")
                         )
@@ -499,6 +499,45 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("경기 팀 점수"),
                                 fieldWithPath("finishedGames[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
                                         .description("경기 팀 승부차기 점수")
+                        )
+                ));
+    }
+
+    @Test
+    void 연도별_득점왕을_조회한다() throws Exception {
+        // given
+        Integer year = 2024;
+        
+        List<TopScorerResponse> responses = List.of(
+                new TopScorerResponse(1L, "김득점", "22", 1, 15),
+                new TopScorerResponse(2L, "이골잡이", "21", 2, 12),
+                new TopScorerResponse(3L, "박슈터", "23", 3, 10),
+                new TopScorerResponse(4L, "최킬러", "22", 4, 8),
+                new TopScorerResponse(5L, "정스트라이커", "21", 5, 7)
+        );
+        
+        given(leagueQueryService.findTopScorersByYear(year, 5))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/top-scorers")
+                .queryParam("year", String.valueOf(year))
+                .queryParam("limit", "5")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("year").description("조회할 연도 (default 값 2025)"),
+                                parameterWithName("limit").description("조회할 선수 수 (default 값 5)")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
+                                fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위").optional(),
+                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수 (해당 연도 모든 리그 합산)")
                         )
                 ));
     }

@@ -12,9 +12,10 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.NotFoundException;
 
+import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
-import com.sports.server.query.dto.response.LeagueTopScorerResponse;
+import com.sports.server.query.dto.response.TopScorerResponse;
 import com.sports.server.query.repository.*;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -177,10 +179,18 @@ public class LeagueQueryService {
         return leagueTeam;
     }
 
-    public List<LeagueTopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {
+    public List<TopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {
         return leagueTopScorerRepository.findByLeagueId(leagueId)
                 .stream()
-                .map(LeagueTopScorerResponse::from)
+                .map(TopScorerResponse::from)
+                .toList();
+    }
+
+    public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {
+        List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, limit));
+        
+        return results.stream()
+                .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))
                 .toList();
     }
 
