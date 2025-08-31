@@ -182,9 +182,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         
         List<TopScorerResponse> responses = List.of(
-                new TopScorerResponse(1L, "진승희", "202101001", 1, 5),
-                new TopScorerResponse(2L, "이동규", "202101002", 2, 3),
-                new TopScorerResponse(3L, "이현제", "202202001", 3, 2)
+                new TopScorerResponse(1L, "진승희", "20", 1, 5),
+                new TopScorerResponse(2L, "이동규", "20", 2, 3),
+                new TopScorerResponse(3L, "이현제", "20", 3, 2)
         );
         
         given(leagueQueryService.findTop20ScorersByLeagueId(leagueId))
@@ -203,7 +203,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
                                 fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
-                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 입학 년도"),
                                 fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위"),
                                 fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("득점 수")
                         )
