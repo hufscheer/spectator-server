@@ -5154,24 +5154,24 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 365
+Content-Length: 344
 
 [ {
   "playerId" : 1,
   "playerName" : "진승희",
-  "studentNumber" : "202101001",
+  "admissionYear" : "20",
   "ranking" : 1,
   "goalCount" : 5
 }, {
   "playerId" : 2,
   "playerName" : "이동규",
-  "studentNumber" : "202101002",
+  "admissionYear" : "20",
   "ranking" : 2,
   "goalCount" : 3
 }, {
   "playerId" : 3,
   "playerName" : "이현제",
-  "studentNumber" : "202202001",
+  "admissionYear" : "20",
   "ranking" : 3,
   "goalCount" : 2
 } ]</code></pre>
@@ -5205,9 +5205,9 @@ Content-Length: 365
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].studentNumber</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].admissionYear</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">선수 학번</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선수 입학 년도</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].ranking</code></p></td>
@@ -5255,31 +5255,31 @@ Content-Length: 587
 [ {
   "playerId" : 1,
   "playerName" : "김득점",
-  "studentNumber" : "22",
+  "admissionYear" : "22",
   "ranking" : 1,
   "goalCount" : 15
 }, {
   "playerId" : 2,
   "playerName" : "이골잡이",
-  "studentNumber" : "21",
+  "admissionYear" : "21",
   "ranking" : 2,
   "goalCount" : 12
 }, {
   "playerId" : 3,
   "playerName" : "박슈터",
-  "studentNumber" : "23",
+  "admissionYear" : "23",
   "ranking" : 3,
   "goalCount" : 10
 }, {
   "playerId" : 4,
   "playerName" : "최킬러",
-  "studentNumber" : "22",
+  "admissionYear" : "22",
   "ranking" : 4,
   "goalCount" : 8
 }, {
   "playerId" : 5,
   "playerName" : "정스트라이커",
-  "studentNumber" : "21",
+  "admissionYear" : "21",
   "ranking" : 5,
   "goalCount" : 7
 } ]</code></pre>
@@ -5313,7 +5313,7 @@ Content-Length: 587
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수 이름</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].studentNumber</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].admissionYear</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수 학번</p></td>
 </tr>
@@ -6186,7 +6186,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 7 Sep 2025 02:37:27 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 7 Sep 2025 08:30:55 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -7221,9 +7221,47 @@ Content-Length: 454
 </div>
 <div class="sect3">
 <h4 id="_전체_팀_조회_response_fields"><a class="link" href="#_전체_팀_조회_response_fields">Response fields</a></h4>
-<div class="paragraph">
-<p>Snippet response-fields not found for operation::team-query-controller-test/모든_팀을_조회한다</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">팀의 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">팀의 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].logoImageUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">팀의 로고 이미지 URL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].unit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">팀의 소속 단위</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].teamColor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">팀의 대표 색상</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect2">
