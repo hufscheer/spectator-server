@@ -67,8 +67,11 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManagerToManage(manager));
     }
 
-    @GetMapping("/top-scorers/year/{year}")
-    public ResponseEntity<List<TopScorerResponse>> findTop5ScorersByYear(@PathVariable Integer year) {
-        return ResponseEntity.ok(leagueQueryService.findTop5ScorersByYear(year));
+    @GetMapping("/top-scorers")
+    public ResponseEntity<List<TopScorerResponse>> findTopScorersByYear(
+            @RequestParam(defaultValue = "2025") Integer year,
+            @RequestParam(defaultValue = "5") Integer limit
+    ) {
+        return ResponseEntity.ok(leagueQueryService.findTopScorersByYear(year,limit));
     }
 }

@@ -39,6 +39,18 @@ public record TopScorerResponse(
         );
     }
 
+    public static TopScorerResponse of(Long playerId, String studentNumber, String playerName, Integer totalGoals, Integer ranking) {
+        String admissionYear = extractAdmissionYear(studentNumber);
+
+        return new TopScorerResponse(
+                playerId,
+                playerName,
+                admissionYear,
+                ranking,
+                totalGoals
+        );
+    }
+
     private static String extractAdmissionYear(String studentNumber) {
         if (studentNumber == null || studentNumber.length() < ADMISSION_YEAR_END_INDEX) {
             return null;

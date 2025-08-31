@@ -497,7 +497,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 연도별_득점왕_상위_5명을_조회한다() throws Exception {
+    void 연도별_득점왕을_조회한다() throws Exception {
         // given
         Integer year = 2024;
         
@@ -509,18 +509,21 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new TopScorerResponse(5L, "정스트라이커", "21", 5, 7)
         );
         
-        given(leagueQueryService.findTop5ScorersByYear(year))
+        given(leagueQueryService.findTopScorersByYear(year, 5))
                 .willReturn(responses);
 
         // when
-        ResultActions result = mockMvc.perform(get("/leagues/top-scorers/year/{year}", year)
+        ResultActions result = mockMvc.perform(get("/leagues/top-scorers")
+                .queryParam("year", String.valueOf(year))
+                .queryParam("limit", "5")
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
-                        pathParameters(
-                                parameterWithName("year").description("조회할 연도")
+                        queryParameters(
+                                parameterWithName("year").description("조회할 연도"),
+                                parameterWithName("limit").description("조회할 선수 수")
                         ),
                         responseFields(
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),

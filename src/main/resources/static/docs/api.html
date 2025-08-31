@@ -5174,7 +5174,7 @@ Content-Length: 365
 <h4 id="_연도별_득점왕_조회_http_request"><a class="link" href="#_연도별_득점왕_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/top-scorers/year/2024 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/top-scorers?year=2024&amp;limit=5 HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -5182,25 +5182,9 @@ Host: www.api.hufstreaming.site</code></pre>
 </div>
 <div class="sect3">
 <h4 id="_연도별_득점왕_조회_path_parameters"><a class="link" href="#_연도별_득점왕_조회_path_parameters">Path parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /leagues/top-scorers/year/{year}</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>year</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">조회할 연도</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Snippet path-parameters not found for operation::league-query-controller-test/연도별_득점왕을_조회한다</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_연도별_득점왕_조회_http_response"><a class="link" href="#_연도별_득점왕_조회_http_response">HTTP response</a></h4>
@@ -6147,7 +6131,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Fri, 5 Sep 2025 05:52:03 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 7 Sep 2025 02:37:27 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -7695,7 +7679,7 @@ Content-Length: 1179
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-08-29 14:49:46 +0900
+Last updated 2025-08-31 11:34:26 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

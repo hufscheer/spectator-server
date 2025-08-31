@@ -11,7 +11,7 @@ import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 
-import com.sports.server.query.dto.PlayerGoalSummary;
+import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.TopScorerResponse;
 import com.sports.server.query.repository.*;
@@ -173,11 +173,11 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    public List<TopScorerResponse> findTop5ScorersByYear(Integer year) {
-        List<PlayerGoalSummary> results = leagueTopScorerRepository.findTop5PlayersByYearWithTotalGoals(year, PageRequest.of(0, 5));
+    public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {
+        List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, limit));
         
         return results.stream()
-                .map(result -> TopScorerResponse.of(result.player(), result.totalGoals().intValue()))
+                .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))
                 .toList();
     }
 
