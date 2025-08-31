@@ -1,17 +1,15 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.LeagueQueryService;
+import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/leagues")
@@ -21,8 +19,11 @@ public class LeagueQueryController {
     private final LeagueQueryService leagueQueryService;
 
     @GetMapping
-    public ResponseEntity<List<LeagueResponse>> findLeagues(@RequestParam(required = false) Integer year) {
-        return ResponseEntity.ok(leagueQueryService.findLeagues(year));
+    public ResponseEntity<List<LeagueResponse>> findLeagues(
+            @ModelAttribute LeagueQueryRequestDto queryRequestDto,
+            @ModelAttribute PageRequestDto pageRequest
+    ) {
+        return ResponseEntity.ok(leagueQueryService.findLeagues(queryRequestDto, pageRequest));
     }
 
     @GetMapping("/{leagueId}/teams")

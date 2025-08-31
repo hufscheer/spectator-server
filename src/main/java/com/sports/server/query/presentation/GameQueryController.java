@@ -37,7 +37,7 @@ public class GameQueryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GameResponseDto>> getAllGames(
+    public ResponseEntity<List<LeagueWithGamesResponse>> getAllGames(
             @ModelAttribute GamesQueryRequestDto queryRequestDto,
             @ModelAttribute PageRequestDto pageRequest) {
         return ResponseEntity.ok(gameQueryService.getAllGames(queryRequestDto, pageRequest));
