@@ -6,7 +6,7 @@ import com.sports.server.command.player.domain.Player;
 public record TopScorerResponse(
         Long playerId,
         String playerName,
-        String studentNumber,
+        String admissionYear,
         Integer ranking,
         Integer goalCount
 ) {

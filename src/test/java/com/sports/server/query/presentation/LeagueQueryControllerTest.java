@@ -522,13 +522,13 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("year").description("조회할 연도"),
-                                parameterWithName("limit").description("조회할 선수 수")
+                                parameterWithName("year").description("조회할 연도 (default 값 2025)"),
+                                parameterWithName("limit").description("조회할 선수 수 (default 값 5)")
                         ),
                         responseFields(
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
                                 fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
-                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
                                 fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위").optional(),
                                 fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수 (해당 연도 모든 리그 합산)")
                         )
