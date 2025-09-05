@@ -60,7 +60,7 @@ VALUES (1, 1, 1),
 
 
 INSERT INTO games (id, administrator_id, league_id, start_time, name, round, state)
-VALUES (1, 1, 1, '2025-08-05 18:00:00', '결승전', '결승', 'FINISHED'),
+VALUES (1, 1, 1, '2025-08-05 18:00:00', '결승전', '결승', 'PLAYING'),
        (2, 1, 1, '2025-08-05 19:00:00', '8강 2경기', '8강', 'SCHEDULED');
 
 
@@ -79,6 +79,14 @@ VALUES (1, 1, 2, 1, 2),
        (5, 5, 4, 5, 4),
        (6, 1, 3, 3, 1),
        (7, 2, 4, 4, 2);
+
+
+INSERT INTO league_top_scorers (id, league_id, player_id, ranking, goal_count)
+VALUES (1, 1, 1, 1, 5),
+       (2, 1, 2, 2, 3),
+       (3, 1, 3, 3, 2),
+       (4, 2, 4, 1, 4),
+       (5, 2, 5, 2, 2);
 
 
 SET foreign_key_checks = 1;
