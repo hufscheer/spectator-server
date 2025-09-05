@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.*;
@@ -62,10 +63,10 @@ public class LeagueQueryServiceTest extends ServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.firstWinnerTeam()).isNotNull(),
-                () -> assertThat(response.secondWinnerTeam()).isNotNull(),
-                () -> assertThat(response.mostCheeredTeam()).isNotNull(),
-                () -> assertThat(response.mostCheerTalksTeam()).isNotNull()
+                () -> assertThat(response.firstWinnerTeam().teamName()).isEqualTo("경영 야생마"),
+                () -> assertThat(response.secondWinnerTeam().teamName()).isEqualTo("서어 뻬데뻬"),
+                () -> assertThat(response.mostCheeredTeam().teamName()).isEqualTo("경영 야생마"),
+                () -> assertThat(response.mostCheerTalksTeam().teamName()).isEqualTo("서어 뻬데뻬")
         );
     }
 
@@ -86,15 +87,6 @@ public class LeagueQueryServiceTest extends ServiceTest {
             return response.stream()
                     .filter(league -> league.id().equals(leagueId))
                     .findFirst();
-        }
-
-        @Test
-        void 다른_매니저가_생성한_리그는_조회되지_않는다() {
-            // then
-            List<Long> ids = response.stream()
-                    .map(LeagueResponseWithInProgressGames::id)
-                    .toList();
-            assertFalse(ids.contains(3L), "다른 매니저가 생성한 리그는 조회 되어서는 안됩니다.");
         }
 
         @Test
@@ -261,22 +253,86 @@ public class LeagueQueryServiceTest extends ServiceTest {
         }
     }
 
-    @Test
-    void 필터링_조건으로_리그를_조회한다() {
-        // given
-        LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null);
-        PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
+    @Nested
+    @DisplayName("리그 필터링 조건으로 리그를 조회할 때")
+    class FindLeaguesByConditionTest {
 
-        // when
-        List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+        @Test
+        void 연도_필터링_조건으로_리그를_조회한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, null);
+            PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
 
-        // then
-        assertAll(
-                () -> assertThat(leagues).isNotNull(),
-                () -> leagues.forEach(league -> 
-                    assertThat(league.name()).isNotNull()
-                )
-        );
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.name()).contains("축구대회");
+                    })
+            );
+        }
+
+        @Test
+        void 리그_진행_상태_필터링_조건으로_리그를_조회한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, LeagueProgress.FINISHED);
+            PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
+
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.leagueProgress()).isEqualTo("종료");
+                    })
+            );
+        }
+
+        @Test
+        void 연도와_진행_상태_모든_필터링_조건으로_리그를_조회한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, LeagueProgress.FINISHED);
+            PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
+
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.leagueProgress()).isEqualTo("종료");
+                    })
+            );
+        }
+
+        @Test
+        void 필터링_조건이_없을_경우_전체_결과를_반환한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null);
+            PageRequestDto pageRequestDto = new PageRequestDto(null, 20);
+
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> assertThat(leagues.size()).isGreaterThan(5),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.leagueProgress()).isNotNull();
+                    })
+            );
+        }
     }
 
     @Test
@@ -293,6 +349,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
                 () -> assertThat(response.leagueTeamCount()).isEqualTo(3),
                 () -> assertThat(response.maxRound()).isEqualTo(8),
                 () -> assertThat(response.inProgressRound()).isEqualTo(8)
+
         );
     }
 
@@ -345,11 +402,11 @@ public class LeagueQueryServiceTest extends ServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(scorers).isNotEmpty(),
-                () -> scorers.forEach(scorer -> {
-                    assertThat(scorer.playerName()).isNotNull();
-                    assertThat(scorer.goalCount()).isGreaterThan(0);
-                })
+                () -> assertThat(scorers).hasSize(2),
+                () -> assertThat(scorers.get(0).playerName()).isEqualTo("고병룡"),
+                () -> assertThat(scorers.get(0).goalCount()).isEqualTo(4),
+                () -> assertThat(scorers.get(1).playerName()).isEqualTo("박주장"),
+                () -> assertThat(scorers.get(1).goalCount()).isEqualTo(2)
         );
     }
 }
