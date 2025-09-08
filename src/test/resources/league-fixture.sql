@@ -61,14 +61,17 @@ VALUES (1, 1, 1),
 
 INSERT INTO games (id, administrator_id, league_id, start_time, name, round, state)
 VALUES (1, 1, 1, '2025-08-05 18:00:00', '결승전', '결승', 'PLAYING'),
-       (2, 1, 1, '2025-08-05 19:00:00', '8강 2경기', '8강', 'SCHEDULED');
+       (2, 1, 1, '2025-08-05 19:00:00', '8강 2경기', '8강', 'SCHEDULED'),
+       (3, 1, 2, '2025-02-10 18:00:00', '리그2 경기', '4강', 'FINISHED');
 
 
-INSERT INTO game_teams (id, game_id, team_id, score, result)
-VALUES (1, 1, 1, 2, 'WIN'),
-       (2, 1, 2, 1, 'LOSE'),
-       (3, 2, 3, 0, null),
-       (4, 2, 4, 0, null);
+INSERT INTO game_teams (id, game_id, team_id, score, result, cheer_count)
+VALUES (1, 1, 1, 2, 'WIN', 150),
+       (2, 1, 2, 1, 'LOSE', 100),
+       (3, 2, 3, 0, null, 75),
+       (4, 2, 4, 0, null, 50),
+       (5, 3, 4, 1, 'WIN', 30),
+       (6, 3, 5, 0, 'LOSE', 0);
 
 
 INSERT INTO league_statistics (league_id, first_winner_team_id, second_winner_team_id, most_cheered_team_id, most_cheer_talks_team_id)
@@ -87,6 +90,17 @@ VALUES (1, 1, 1, 1, 5),
        (3, 1, 3, 3, 2),
        (4, 2, 4, 1, 4),
        (5, 2, 5, 2, 2);
+
+
+INSERT INTO cheer_talks (id, created_at, content, is_blocked, game_team_id)
+VALUES (1, '2025-08-05 18:10:00', '경영 야생마 화이팅!', false, 1),
+       (2, '2025-08-05 18:15:00', '멋진 골이었어요!', false, 1),
+       (3, '2025-08-05 18:20:00', '서어 뻬데뻬 응원합니다!', false, 2),
+       (4, '2025-08-05 18:25:00', '다음 골 기대합니다!', false, 2),
+       (5, '2025-08-05 19:10:00', '미컴 축구생각 파이팅!', false, 3),
+       (6, '2025-08-05 19:15:00', '스팸 메시지', true, 3),
+       (7, '2025-08-05 19:20:00', '체교 불사조 응원!', false, 4),
+       (8, '2025-02-10 18:10:00', '체교 불사조 화이팅!', false, 5);
 
 
 SET foreign_key_checks = 1;
