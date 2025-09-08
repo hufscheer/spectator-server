@@ -19,5 +19,5 @@ public interface GameTeamRepository extends Repository<GameTeam, Long> {
     @Query("SELECT SUM(gt.cheerCount) FROM GameTeam gt " +
            "JOIN gt.game g " +
            "WHERE gt.team.id = :teamId AND g.league.id = :leagueId")
-    Integer sumCheerCountByTeamIdAndLeagueId(@Param("teamId") Long teamId, @Param("leagueId") Long leagueId);
+    Long sumCheerCountByTeamIdAndLeagueId(@Param("teamId") Long teamId, @Param("leagueId") Long leagueId);
 }

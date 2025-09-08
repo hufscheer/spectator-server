@@ -1,11 +1,10 @@
 package com.sports.server.command.league.application;
 
 import com.sports.server.command.league.domain.*;
+import com.sports.server.command.league.dto.LeagueTeamStats;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
-import com.sports.server.command.game.domain.GameTeamRepository;
-import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -22,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,8 +33,6 @@ public class LeagueService {
     private final LeagueRepository leagueRepository;
 	private final LeagueTeamRepository leagueTeamRepository;
 	private final TeamRepository teamRepository;
-	private final GameTeamRepository gameTeamRepository;
-	private final CheerTalkRepository cheerTalkRepository;
 
 	public void register(final Member administrator, final LeagueRequest.Register request) {
 		League league = leagueRepository.save(request.toEntity(administrator));
@@ -87,15 +86,23 @@ public class LeagueService {
 
 	public void updateTotalCheerCountsAndTotalTalkCount(final Long leagueId) {
 		List<LeagueTeam> leagueTeams = leagueTeamRepository.findByLeagueId(leagueId);
-		
+		List<LeagueTeamStats> statsResults = leagueTeamRepository.findLeagueTeamStatsWithCounts(leagueId);
+
+		Map<Long, LeagueTeamStats> statsMap = statsResults.stream()
+			.collect(Collectors.toMap(
+				LeagueTeamStats::leagueTeamId,
+				stats -> stats
+			));
+
 		for (LeagueTeam leagueTeam : leagueTeams) {
-			Integer totalCheerCount = gameTeamRepository.sumCheerCountByTeamIdAndLeagueId(
-				leagueTeam.getTeam().getId(), leagueId);
-			Long totalTalkCount = cheerTalkRepository.countCheerTalksByTeamIdAndLeagueId(
-				leagueTeam.getTeam().getId(), leagueId);
-			
-			leagueTeam.updateTotalCheerCount(totalCheerCount != null ? totalCheerCount : 0);
-			leagueTeam.updateTotalTalkCount(totalTalkCount != null ? totalTalkCount.intValue() : 0);
+			LeagueTeamStats stats = statsMap.get(leagueTeam.getId());
+			if (stats != null) {
+				leagueTeam.updateTotalCheerCount(stats.totalCheerCount().intValue());
+				leagueTeam.updateTotalTalkCount(stats.totalTalkCount().intValue());
+			} else {
+				leagueTeam.updateTotalCheerCount(0);
+				leagueTeam.updateTotalTalkCount(0);
+			}
 		}
 	}
 

@@ -3,6 +3,7 @@ package com.sports.server.command.league.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.league.domain.League;
@@ -220,6 +221,15 @@ public class LeagueServiceTest extends ServiceTest {
             
             assertThat(team5.getTotalCheerCount()).isEqualTo(0);
             assertThat(team5.getTotalTalkCount()).isEqualTo(0);
+        }
+
+        @Test
+        void 리그팀이_없는_경우_정상_종료된다(){
+            //given
+            Long  leagueId = 10L; // 팀, 경기 등이 없는 삭제된 리그
+
+            //when & then
+            assertDoesNotThrow(() -> leagueService.updateTotalCheerCountsAndTotalTalkCount(leagueId));
         }
     }
 }
