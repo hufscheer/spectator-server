@@ -95,14 +95,11 @@ public class LeagueService {
 			));
 
 		for (LeagueTeam leagueTeam : leagueTeams) {
-			LeagueTeamStats stats = statsMap.get(leagueTeam.getId());
-			if (stats != null) {
-				leagueTeam.updateTotalCheerCount(stats.totalCheerCount().intValue());
-				leagueTeam.updateTotalTalkCount(stats.totalTalkCount().intValue());
-			} else {
-				leagueTeam.updateTotalCheerCount(0);
-				leagueTeam.updateTotalTalkCount(0);
-			}
+			LeagueTeamStats stats = statsMap.getOrDefault(leagueTeam.getId(),
+					new LeagueTeamStats(leagueTeam.getId(), 0L, 0L));
+
+			leagueTeam.updateTotalCheerCount(stats.totalCheerCount().intValue());
+			leagueTeam.updateTotalTalkCount(stats.totalTalkCount().intValue());
 		}
 	}
 
