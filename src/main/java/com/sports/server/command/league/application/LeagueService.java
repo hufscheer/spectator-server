@@ -4,6 +4,8 @@ import com.sports.server.command.league.domain.*;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
+import com.sports.server.command.game.domain.GameTeamRepository;
+import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ public class LeagueService {
     private final LeagueRepository leagueRepository;
 	private final LeagueTeamRepository leagueTeamRepository;
 	private final TeamRepository teamRepository;
+	private final GameTeamRepository gameTeamRepository;
+	private final CheerTalkRepository cheerTalkRepository;
 
 	public void register(final Member administrator, final LeagueRequest.Register request) {
 		League league = leagueRepository.save(request.toEntity(administrator));
@@ -79,6 +83,20 @@ public class LeagueService {
 			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
 		leagueTeamsToRemove.forEach(league::removeLeagueTeam);
+	}
+
+	public void updateTotalCheerCountsAndTotalTalkCount(final Long leagueId) {
+		List<LeagueTeam> leagueTeams = leagueTeamRepository.findByLeagueId(leagueId);
+		
+		for (LeagueTeam leagueTeam : leagueTeams) {
+			Integer totalCheerCount = gameTeamRepository.sumCheerCountByTeamIdAndLeagueId(
+				leagueTeam.getTeam().getId(), leagueId);
+			Long totalTalkCount = cheerTalkRepository.countCheerTalksByTeamIdAndLeagueId(
+				leagueTeam.getTeam().getId(), leagueId);
+			
+			leagueTeam.updateTotalCheerCount(totalCheerCount != null ? totalCheerCount : 0);
+			leagueTeam.updateTotalTalkCount(totalTalkCount != null ? totalTalkCount.intValue() : 0);
+		}
 	}
 
 	private void saveLeagueTeams(League league, List<Team> teams){
