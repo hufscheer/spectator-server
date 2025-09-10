@@ -85,7 +85,8 @@ public class LeagueService {
 	}
 
 	public void updateTotalCheerCountsAndTotalTalkCount(final Long leagueId) {
-		leagueTeamRepository.updateLeagueTeamStats(leagueId);
+		leagueTeamRepository.updateTotalCheerCounts(leagueId);
+		leagueTeamRepository.updateTotalTalkCounts(leagueId);
 	}
 
 	private void saveLeagueTeams(League league, List<Team> teams){
