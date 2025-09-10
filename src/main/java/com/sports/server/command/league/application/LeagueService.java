@@ -85,22 +85,7 @@ public class LeagueService {
 	}
 
 	public void updateTotalCheerCountsAndTotalTalkCount(final Long leagueId) {
-		List<LeagueTeam> leagueTeams = leagueTeamRepository.findByLeagueId(leagueId);
-		List<LeagueTeamStats> statsResults = leagueTeamRepository.findLeagueTeamStatsWithCounts(leagueId);
-
-		Map<Long, LeagueTeamStats> statsMap = statsResults.stream()
-			.collect(Collectors.toMap(
-				LeagueTeamStats::leagueTeamId,
-				stats -> stats
-			));
-
-		for (LeagueTeam leagueTeam : leagueTeams) {
-			LeagueTeamStats stats = statsMap.getOrDefault(leagueTeam.getId(),
-					new LeagueTeamStats(leagueTeam.getId(), 0L, 0L));
-
-			leagueTeam.updateTotalCheerCount(stats.totalCheerCount().intValue());
-			leagueTeam.updateTotalTalkCount(stats.totalTalkCount().intValue());
-		}
+		leagueTeamRepository.updateLeagueTeamStats(leagueId);
 	}
 
 	private void saveLeagueTeams(League league, List<Team> teams){
