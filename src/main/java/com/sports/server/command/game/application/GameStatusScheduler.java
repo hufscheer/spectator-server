@@ -6,6 +6,7 @@ import java.util.List;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.application.LeagueStatisticsService;
 import com.sports.server.command.league.application.LeagueTopScorerService;
+import com.sports.server.command.league.application.LeagueService;
 import com.sports.server.command.league.domain.Round;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +19,7 @@ public class GameStatusScheduler {
     private final GameService gameService;
     private final LeagueStatisticsService leagueStatisticsService;
     private final LeagueTopScorerService leagueTopScorerService;
+    private final LeagueService leagueService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void scheduleUpdateGameStatusToFinish() {
@@ -32,6 +34,7 @@ public class GameStatusScheduler {
                 .forEach(game -> {
                     leagueStatisticsService.updateLeagueStatisticFromFinalGame(game.getId());
                     leagueTopScorerService.updateTopScorersForLeague(game.getLeague().getId());
+                    leagueService.updateTotalCheerCountsAndTotalTalkCount(game.getLeague().getId());
                 });
     }
 }

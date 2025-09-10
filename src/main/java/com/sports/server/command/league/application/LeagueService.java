@@ -1,6 +1,7 @@
 package com.sports.server.command.league.application;
 
 import com.sports.server.command.league.domain.*;
+import com.sports.server.command.league.dto.LeagueTeamStats;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
@@ -20,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -79,6 +82,11 @@ public class LeagueService {
 			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
 		leagueTeamsToRemove.forEach(league::removeLeagueTeam);
+	}
+
+	public void updateTotalCheerCountsAndTotalTalkCount(final Long leagueId) {
+		leagueTeamRepository.updateTotalCheerCounts(leagueId);
+		leagueTeamRepository.updateTotalTalkCounts(leagueId);
 	}
 
 	private void saveLeagueTeams(League league, List<Team> teams){
