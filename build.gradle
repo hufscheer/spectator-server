@@ -62,6 +62,8 @@ dependencies {
     testImplementation "org.testcontainers:junit-jupiter:1.19.3"
     testImplementation "org.testcontainers:mysql:1.19.3"
 
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
+
     // rest docs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
