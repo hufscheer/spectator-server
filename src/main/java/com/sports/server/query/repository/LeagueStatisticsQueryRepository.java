@@ -6,10 +6,11 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LeagueStatisticsQueryRepository extends Repository<LeagueStatistics, Long> {
 
-    LeagueStatistics findByLeagueId(Long leagueId);
+    Optional<LeagueStatistics> findByLeagueId(Long leagueId);
 
     @Query("SELECT ls FROM LeagueStatistics ls JOIN FETCH ls.league " +
             "WHERE ls.firstWinnerTeam.id = :teamId OR ls.secondWinnerTeam.id = :teamId")
