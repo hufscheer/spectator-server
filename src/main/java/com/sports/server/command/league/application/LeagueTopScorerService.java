@@ -1,7 +1,6 @@
 package com.sports.server.command.league.application;
 
 import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueRepository;
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.league.domain.LeagueTopScorerRepository;
 import com.sports.server.command.player.domain.Player;
@@ -26,7 +25,6 @@ import static java.util.function.UnaryOperator.identity;
 public class LeagueTopScorerService {
 
     private final LeagueTopScorerRepository leagueTopScorerRepository;
-    private final LeagueRepository leagueRepository;
     private final PlayerRepository playerRepository;
     private final PlayerInfoProvider playerInfoProvider;
     private final EntityUtils entityUtils;
@@ -35,7 +33,7 @@ public class LeagueTopScorerService {
 
         League league = entityUtils.getEntity(leagueId, League.class);
 
-        List<PlayerGoalCountWithRank> topScorers = playerInfoProvider.getLeagueTop20Scorers(leagueId);
+        List<PlayerGoalCountWithRank> topScorers = playerInfoProvider.getLeagueTopScorers(leagueId, 20);
         
         leagueTopScorerRepository.deleteByLeagueId(leagueId);
 
@@ -51,7 +49,7 @@ public class LeagueTopScorerService {
         for (PlayerGoalCountWithRank scorerData : topScorers) {
             com.sports.server.command.player.domain.Player player = playerMap.get(scorerData.playerId());
             if (player == null) {
-                throw new IllegalArgumentException("Player not found: " + scorerData.playerId());
+                throw new NotFoundException("존재하지 않는 선수입니다: " + scorerData.playerId());
             }
 
             LeagueTopScorer topScorer = new LeagueTopScorer(

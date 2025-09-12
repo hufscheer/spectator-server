@@ -34,13 +34,13 @@ public class PlayerInfoProvider {
                 ));
     }
 
-    public List<PlayerGoalCountWithRank> getTeamTop20Scorers(Long teamId) {
-        Pageable top20Request = PageRequest.of(0, 20);
-        return timelineQueryRepository.findTopScorersByTeamId(teamId, top20Request);
+    public List<PlayerGoalCountWithRank> getTeamTopScorers(Long teamId, int size) {
+        Pageable sizeRequest = PageRequest.of(0, size);
+        return timelineQueryRepository.findTopScorersByTeamId(teamId, sizeRequest);
     }
 
-    public List<PlayerGoalCountWithRank> getLeagueTop20Scorers(Long leagueId) {
-        Pageable top20Request = PageRequest.of(0, 20);
-        return timelineQueryRepository.findTopScorersByLeagueId(leagueId, top20Request);
+    public List<PlayerGoalCountWithRank> getLeagueTopScorers(Long leagueId, int size) {
+        Pageable sizeRequest = PageRequest.of(0, size);
+        return timelineQueryRepository.findTopScorersByLeagueId(leagueId, sizeRequest);
     }
 }

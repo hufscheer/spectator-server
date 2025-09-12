@@ -1,9 +1,13 @@
 package com.sports.server.query.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.query.application.TeamStatistics;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record TeamDetailResponse(
         String name,
         String logoImageUrl,
@@ -16,7 +20,7 @@ public record TeamDetailResponse(
 ) {
     public TeamDetailResponse(final Team team,  final List<PlayerResponse> teamPlayers,
                               final TeamDetailResponse.TeamGameResult teamGameResult,
-                              final List<TeamTopScorer> topScorers, final List<Trophy> trophies){
+                              final List<TeamTopScorer> topScorers, final List<Trophy> trophies) {
         this(
                 team.getName(),
                 team.getLogoImageUrl(),
@@ -26,6 +30,16 @@ public record TeamDetailResponse(
                 teamGameResult.winCount(),  teamGameResult.drawCount(),  teamGameResult.loseCount(),
                 topScorers,
                 trophies
+        );
+    }
+
+    public TeamDetailResponse(final Team team, final TeamStatistics teamStats, final List<PlayerResponse> teamPlayers) {
+        this(
+                team,
+                teamPlayers,
+                teamStats.gameResultsMap().get(team.getId()),
+                teamStats.topScorersMap().get(team.getId()),
+                teamStats.trophiesMap().get(team.getId())
         );
     }
 
@@ -40,7 +54,16 @@ public record TeamDetailResponse(
             int rank,
             String playerName,
             int totalGoals
-    ){
+    ) {
+        public TeamTopScorer(final PlayerGoalCountWithRank player) {
+            this(
+                    player.playerId(),
+                    player.studentNumber() != null ? player.studentNumber().substring(2, 4) : null,
+                    player.rank().intValue(),
+                    player.playerName(),
+                    player.goalCount().intValue()
+            );
+        }
     }
 
     public record Trophy(
@@ -49,5 +72,4 @@ public record TeamDetailResponse(
             String trophyType
     ) {
     }
-
 }

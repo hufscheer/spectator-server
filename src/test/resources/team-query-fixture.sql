@@ -67,8 +67,8 @@ VALUES (1, 1, 1, '외대 월드컵 4강', '2023-11-12 10:00:00', 'abc123', '2023
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
 VALUES (1, 1, 1, 0, 4, 0, 'LOSE'), -- 팀 A
        (2, 1, 2, 0, 7, 1, 'WIN'), -- 팀 B
-       (3, 2, 2, 0, 0, 0, 'LOSE'), -- 팀 B
-       (4, 2, 3, 0, 1, 0, 'WIN'); -- 팀 C
+       (3, 2, 2, 0, 0, 0, 'LOSE'), -- 팀 B, 리그 준우승팀
+       (4, 2, 3, 0, 1, 0, 'WIN'); -- 팀 C, 리그 우승팀
 
 
 -- 팀A의 라인업 선수

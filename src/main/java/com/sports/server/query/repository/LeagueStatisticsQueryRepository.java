@@ -13,8 +13,8 @@ public interface LeagueStatisticsQueryRepository extends Repository<LeagueStatis
     Optional<LeagueStatistics> findByLeagueId(Long leagueId);
 
     @Query("SELECT ls FROM LeagueStatistics ls JOIN FETCH ls.league " +
-            "WHERE ls.firstWinnerTeam.id = :teamId OR ls.secondWinnerTeam.id = :teamId")
-    List<LeagueStatistics> findTrophiesByTeamId(@Param("teamId") Long teamId);
+            "WHERE ls.firstWinnerTeam.id IN :teamIds OR ls.secondWinnerTeam.id IN :teamIds")
+    List<LeagueStatistics> findTrophiesByTeamIds(@Param("teamIds") List<Long> teamIds);
 
     @Query("SELECT new com.sports.server.query.repository.LeagueWinnerInfo(ls.league.id, ls.firstWinnerTeam.name) " +
             "FROM LeagueStatistics ls " +

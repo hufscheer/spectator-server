@@ -6,7 +6,9 @@ import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamDetailResponse;
 import com.sports.server.query.dto.response.TeamResponse;
+import com.sports.server.query.dto.response.TeamSummaryResponse;
 import com.sports.server.support.ServiceTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -239,6 +241,88 @@ public class TeamQueryServiceTest extends ServiceTest {
                     () -> assertThat(responseOfTeamC.name()).isEqualTo("팀C"),
                     () -> assertThat(responseOfTeamC.trophies().get(0).trophyType()).isEqualTo("우승")
             );
+        }
+
+        @Nested
+        @DisplayName("팀별보기 상세페이지 조회 시")
+        class GetAllTeamsSummaryTest {
+
+            private List<TeamSummaryResponse> responses;
+            private TeamSummaryResponse teamAResponse;
+            private TeamSummaryResponse teamBResponse;
+            private TeamSummaryResponse teamDResponse;
+
+            @BeforeEach
+            void setUp() {
+                List<String> units = List.of("사회과학대학", "기타");
+                Long finalGameId = 2L;
+
+                leagueStatisticsService.updateLeagueStatisticFromFinalGame(finalGameId);
+
+                this.responses = teamQueryService.getAllTeamsSummary(units);
+                this.teamAResponse = responses.get(0);
+                this.teamBResponse = responses.get(1);
+                this.teamDResponse = responses.get(2);
+            }
+
+            @Test
+            void 전체_팀이_정상적으로_반환된다() {
+                assertAll(
+                        () -> assertThat(responses).hasSize(3),
+                        () -> assertThat(teamAResponse.teamDetail().name()).isEqualTo("팀A"),
+                        () -> assertThat(teamBResponse.teamDetail().name()).isEqualTo("팀B"),
+                        () -> assertThat(teamDResponse.teamDetail().name()).isEqualTo("팀D")
+                );
+            }
+
+            @Test
+            void 팀A의_상세_정보가_정상적으로_반환된다() {
+                TeamDetailResponse teamADetail = teamAResponse.teamDetail();
+                TeamDetailResponse.TeamTopScorer teamATopScorer = teamADetail.topScorers().get(0);
+                
+                assertAll(
+                        () -> assertThat(teamADetail.name()).isEqualTo("팀A"),
+                        () -> assertThat(teamADetail.drawCount()).isZero(),
+                        () -> assertThat(teamADetail.winCount()).isZero(),
+                        () -> assertThat(teamADetail.loseCount()).isEqualTo(1),
+                        () -> assertThat(teamADetail.topScorers()).hasSize(2),
+                        
+                        () -> assertThat(teamATopScorer.playerName()).isEqualTo("선수3"),
+                        () -> assertThat(teamATopScorer.totalGoals()).isEqualTo(3),
+                        () -> assertThat(teamATopScorer.admissionYear()).isEqualTo("23"),
+                        
+                        () -> assertThat(teamAResponse.recentGames()).hasSize(1)
+                );
+            }
+
+            @Test
+            void 팀B의_상세_정보가_정상적으로_반환된다() {
+                TeamDetailResponse teamBDetail = teamBResponse.teamDetail();
+                TeamDetailResponse.TeamTopScorer teamBTopScorer1 = teamBDetail.topScorers().get(0);
+                TeamDetailResponse.TeamTopScorer teamBTopScorer2 = teamBDetail.topScorers().get(1);
+                TeamDetailResponse.TeamTopScorer teamBTopScorer3 = teamBDetail.topScorers().get(2);
+                
+                assertAll(
+                        () -> assertThat(teamBDetail.name()).isEqualTo("팀B"),
+                        () -> assertThat(teamBDetail.winCount()).isEqualTo(1),
+                        () -> assertThat(teamBDetail.drawCount()).isZero(),
+                        () -> assertThat(teamBDetail.loseCount()).isEqualTo(1),
+                        () -> assertThat(teamBDetail.topScorers()).hasSize(3),
+
+                        () -> assertThat(teamBTopScorer1.playerName()).isEqualTo("마선수10"),
+                        () -> assertThat(teamBTopScorer1.totalGoals()).isEqualTo(3),
+                        () -> assertThat(teamBTopScorer1.rank()).isEqualTo(1),
+                        () -> assertThat(teamBTopScorer2.playerName()).isEqualTo("나선수7"),
+                        () -> assertThat(teamBTopScorer2.totalGoals()).isEqualTo(2),
+                        () -> assertThat(teamBTopScorer2.rank()).isEqualTo(2),
+                        () -> assertThat(teamBTopScorer3.playerName()).isEqualTo("라선수9"),
+                        () -> assertThat(teamBTopScorer3.totalGoals()).isEqualTo(2),
+                        () -> assertThat(teamBTopScorer3.rank()).isEqualTo(2),
+
+                        () -> assertThat(teamBDetail.trophies().get(0).trophyType()).isEqualTo("준우승"),
+                        () -> assertThat(teamBResponse.recentGames()).hasSize(2)
+                );
+            }
         }
     }
 }
