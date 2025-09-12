@@ -9,7 +9,6 @@ import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.NotFoundException;
 
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
@@ -46,8 +45,8 @@ public class LeagueQueryService {
     private final PlayerInfoProvider playerInfoProvider;
     private final LeagueTopScorerRepository leagueTopScorerRepository;
 
-    public List<LeagueResponse> findLeagues(LeagueQueryRequestDto queryRequestDto, PageRequestDto pageRequest) {
-        List<League> leagues = leagueQueryRepository.findLeagues(queryRequestDto, pageRequest);
+    public List<LeagueResponse> findLeagues(LeagueQueryRequestDto queryRequestDto) {
+        List<League> leagues = leagueQueryRepository.findLeagues(queryRequestDto);
         if (leagues.isEmpty()) {
             return Collections.emptyList();
         }

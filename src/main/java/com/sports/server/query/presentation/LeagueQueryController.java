@@ -1,7 +1,6 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
@@ -20,10 +19,9 @@ public class LeagueQueryController {
 
     @GetMapping
     public ResponseEntity<List<LeagueResponse>> findLeagues(
-            @ModelAttribute LeagueQueryRequestDto queryRequestDto,
-            @ModelAttribute PageRequestDto pageRequest
+            @ModelAttribute LeagueQueryRequestDto queryRequestDto
     ) {
-        return ResponseEntity.ok(leagueQueryService.findLeagues(queryRequestDto, pageRequest));
+        return ResponseEntity.ok(leagueQueryService.findLeagues(queryRequestDto));
     }
 
     @GetMapping("/{leagueId}/teams")

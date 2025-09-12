@@ -39,15 +39,13 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new LeagueResponse(4L, "2100 화성 월드컵", 8, 8, "시작전", null)
         );
 
-        given(leagueQueryService.findLeagues(any(), any()))
+        given(leagueQueryService.findLeagues(any()))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues")
                 .queryParam("year", String.valueOf(2025))
                 .queryParam("leagueProgress", "FINISHED")
-                .queryParam("cursor", String.valueOf(5))
-                .queryParam("size", String.valueOf(5))
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -55,10 +53,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("year").description("리그의 연도"),
-                                parameterWithName("leagueProgress").description("리그의 진행 상태 (BEFORE_START, IN_PROGRESS, FINISHED)"),
-                                parameterWithName("cursor").description("페이징 커서"),
-                                parameterWithName("size").description("페이징 사이즈")
+                                parameterWithName("year").description("리그의 연도 (선택사항, 미입력시 전체 연도)").optional(),
+                                parameterWithName("leagueProgress").description("리그의 진행 상태 (선택사항, BEFORE_START, IN_PROGRESS, FINISHED)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
