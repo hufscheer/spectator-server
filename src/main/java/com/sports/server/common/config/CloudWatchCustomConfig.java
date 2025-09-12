@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Clock;
 import java.time.Duration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 
 @Configuration
@@ -37,7 +38,9 @@ public class CloudWatchCustomConfig {
 
     @Bean
     public CloudWatchAsyncClient cloudWatchAsyncClient() {
-        return CloudWatchAsyncClient.create();
+        return CloudWatchAsyncClient.builder()
+                .region(Region.AP_NORTHEAST_2)
+                .build();
     }
 
     @Bean
