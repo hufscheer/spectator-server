@@ -146,6 +146,9 @@ public class LeagueQueryService {
 
     public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
         LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId);
+        if (statistics == null) {
+            throw new NotFoundException("리그 통계 데이터가 아직 업데이트되지 않았습니다.");
+        }
 
         Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeamQueryRepository.findByLeagueId(leagueId).stream()
                 .collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));

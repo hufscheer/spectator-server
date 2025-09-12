@@ -2,6 +2,7 @@ package com.sports.server.query.application;
 
 import static com.sports.server.query.application.LeagueQueryService.leagueProgressOrderMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -9,6 +10,7 @@ import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
@@ -68,6 +70,18 @@ public class LeagueQueryServiceTest extends ServiceTest {
                 () -> assertThat(response.mostCheeredTeam().teamName()).isEqualTo("경영 야생마"),
                 () -> assertThat(response.mostCheerTalksTeam().teamName()).isEqualTo("서어 뻬데뻬")
         );
+    }
+
+    @Test
+    void 진행_중인_리그의_리그통계를_조회하면_예외가_발생한다() {
+        // given
+        Long leagueId = 9L;
+
+        // when & then
+        assertThatThrownBy(() -> leagueQueryService.findLeagueStatistic(leagueId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("리그 통계 데이터가 아직 업데이트되지 않았습니다.");
+
     }
 
     @Nested
