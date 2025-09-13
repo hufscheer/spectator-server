@@ -55,14 +55,25 @@ public record TeamDetailResponse(
             String playerName,
             int totalGoals
     ) {
+
+        private static final int ADMISSION_YEAR_START_INDEX = 2;
+        private static final int ADMISSION_YEAR_END_INDEX = 4;
+
         public TeamTopScorer(final PlayerGoalCountWithRank player) {
             this(
                     player.playerId(),
-                    player.studentNumber() != null ? player.studentNumber().substring(2, 4) : null,
+                    extractAdmissionYear(player.studentNumber()),
                     player.rank().intValue(),
                     player.playerName(),
                     player.goalCount().intValue()
             );
+        }
+
+        private static String extractAdmissionYear(String studentNumber) {
+            if (studentNumber == null || studentNumber.length() < ADMISSION_YEAR_END_INDEX) {
+                return null;
+            }
+            return studentNumber.substring(ADMISSION_YEAR_START_INDEX, ADMISSION_YEAR_END_INDEX);
         }
     }
 

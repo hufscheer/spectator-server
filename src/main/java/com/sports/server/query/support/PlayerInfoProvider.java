@@ -19,12 +19,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PlayerInfoProvider {
 
+    private static final int TEAM_ID_INDEX = 0;
+    private static final int PLAYER_GOAL_DATA_INDEX = 1;
+
     private final TimelineQueryRepository timelineQueryRepository;
 
     public Map<Long, Integer> getPlayersTotalGoalInfo(List<Long> playerIds) {
-        if (playerIds == null || playerIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
+        if (playerIds == null || playerIds.isEmpty()) return Collections.emptyMap();
 
         List<PlayerGoalCount> results = timelineQueryRepository.countTotalGoalsByPlayerId(playerIds);
         return results.stream()
@@ -34,13 +35,25 @@ public class PlayerInfoProvider {
                 ));
     }
 
-    public List<PlayerGoalCountWithRank> getTeamTopScorers(Long teamId, int size) {
-        Pageable sizeRequest = PageRequest.of(0, size);
-        return timelineQueryRepository.findTopScorersByTeamId(teamId, sizeRequest);
-    }
-
     public List<PlayerGoalCountWithRank> getLeagueTopScorers(Long leagueId, int size) {
         Pageable sizeRequest = PageRequest.of(0, size);
         return timelineQueryRepository.findTopScorersByLeagueId(leagueId, sizeRequest);
+    }
+
+    public Map<Long, List<PlayerGoalCountWithRank>> getTeamsTopScorers(List<Long> teamIds, int size) {
+        if (teamIds == null || teamIds.isEmpty()) return Collections.emptyMap();
+        List<Object[]> teamTopScorers = timelineQueryRepository.findTopScorersByTeamIds(teamIds);
+
+        return teamTopScorers.stream()
+                .collect(Collectors.groupingBy(
+                        row -> (Long) row[TEAM_ID_INDEX],
+                        Collectors.mapping(
+                                row -> (PlayerGoalCountWithRank) row[PLAYER_GOAL_DATA_INDEX],
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream().limit(size).toList()
+                                )
+                        )
+                ));
     }
 }

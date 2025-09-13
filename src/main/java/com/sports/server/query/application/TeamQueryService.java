@@ -27,17 +27,15 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class TeamQueryService {
 
+    private final EntityUtils entityUtils;
+    private final PlayerInfoProvider playerInfoProvider;
+
     private final TeamQueryRepository teamQueryRepository;
     private final TeamQueryDynamicRepository teamQueryDynamicRepository;
     private final TeamPlayerRepository teamPlayerRepository;
-    private final EntityUtils entityUtils;
-    private final PlayerInfoProvider playerInfoProvider;
     private final GameTeamRepository gameTeamRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
-
-    private static final int ADMISSION_YEAR_START_INDEX = 2;
-    private static final int ADMISSION_YEAR_END_INDEX = 4;
 
     private static final String FIRST_WIN = "우승";
     private static final String SECOND_WIN = "준우승";
@@ -82,11 +80,11 @@ public class TeamQueryService {
         if (teams.isEmpty()) return Collections.emptyList();
 
         List<Long> teamIds = teams.stream().map(Team::getId).toList();
-        TeamStatistics teamStats = getTeamStatistics(teamIds);
+        TeamStatistics statistics = getTeamStatistics(teamIds);
         return teams.stream()
                 .map(team -> {
-                    TeamDetailResponse teamDetail = new TeamDetailResponse(team, teamStats, null);
-                    List<GameDetailResponse> recentGames = teamStats.recentGamesMap()
+                    TeamDetailResponse teamDetail = new TeamDetailResponse(team, statistics, null);
+                    List<GameDetailResponse> recentGames = statistics.recentGamesMap()
                             .getOrDefault(team.getId(), Collections.emptyList());
                     return new TeamSummaryResponse(teamDetail, recentGames);
                 })
@@ -103,9 +101,7 @@ public class TeamQueryService {
     }
 
     private List<Team> getTeamsFilteredByUnit(final List<String> units){
-        if (units == null || units.isEmpty()) {
-            return teamQueryRepository.findAll();
-        }
+        if (units == null || units.isEmpty()) return teamQueryRepository.findAll();
         List<Unit> unitEnums = Unit.fromNames(units);
         return teamQueryDynamicRepository.findAllByUnits(unitEnums);
     }
@@ -115,7 +111,7 @@ public class TeamQueryService {
 
         Map<Long, Map<GameResult, Integer>> teamResult = new HashMap<>();
         for (TeamGameResult result : results) {
-            teamResult.computeIfAbsent(result.teamId(), k -> new HashMap<>())
+            teamResult.computeIfAbsent(result.teamId(), teamId -> new HashMap<>())
                     .put(result.result(), result.count() != null ? result.count().intValue() : 0);
         }
 
@@ -134,33 +130,34 @@ public class TeamQueryService {
     }
 
     private Map<Long, List<TeamDetailResponse.TeamTopScorer>> getTeamTopScorers(List<Long> teamIds, int size){
+        Map<Long, List<PlayerGoalCountWithRank>> topScorersMap = playerInfoProvider.getTeamsTopScorers(teamIds, size);
+
         return teamIds.stream()
                 .collect(Collectors.toMap(
                         teamId -> teamId,
-                        teamId -> {
-                            List<PlayerGoalCountWithRank> topScorersData = playerInfoProvider.getTeamTopScorers(teamId, size);
-                            return topScorersData.stream()
-                                    .map(TeamDetailResponse.TeamTopScorer::new)
-                                    .toList();
-                        }
+                        teamId -> topScorersMap.getOrDefault(teamId, Collections.emptyList())
+                                .stream()
+                                .map(TeamDetailResponse.TeamTopScorer::new)
+                                .toList()
                 ));
     }
 
     private Map<Long, List<TeamDetailResponse.Trophy>> getTrophies(List<Long> teamIds) {
         List<LeagueStatistics> statistics = leagueStatisticsQueryRepository.findTrophiesByTeamIds(teamIds);
         Map<Long, List<TeamDetailResponse.Trophy>> trophiesByTeamId = new HashMap<>();
+        Set<Long> targetTeamIds = new HashSet<>(teamIds);
 
         statistics.forEach(stat -> {
             League league = stat.getLeague();
             Team firstWinner = stat.getFirstWinnerTeam();
             Team secondWinner = stat.getSecondWinnerTeam();
 
-            if (firstWinner != null && teamIds.contains(firstWinner.getId())) {
-                trophiesByTeamId.computeIfAbsent(firstWinner.getId(), k -> new ArrayList<>())
+            if (firstWinner != null && targetTeamIds.contains(firstWinner.getId())) {
+                trophiesByTeamId.computeIfAbsent(firstWinner.getId(), teamId -> new ArrayList<>())
                         .add(new TeamDetailResponse.Trophy(league.getId(), league.getName(), FIRST_WIN));
             }
-            if (secondWinner != null && teamIds.contains(secondWinner.getId())) {
-                trophiesByTeamId.computeIfAbsent(secondWinner.getId(), k -> new ArrayList<>())
+            if (secondWinner != null && targetTeamIds.contains(secondWinner.getId())) {
+                trophiesByTeamId.computeIfAbsent(secondWinner.getId(), teamId -> new ArrayList<>())
                         .add(new TeamDetailResponse.Trophy(league.getId(), league.getName(), SECOND_WIN));
             }
         });
@@ -169,9 +166,7 @@ public class TeamQueryService {
 
     private Map<Long, List<GameDetailResponse>> getRecentGames(List<Long> teamIds) {
         List<Game> recentGames = gameQueryRepository.findRecentGamesByTeamIds(teamIds);
-        if (recentGames.isEmpty()) {
-            return Collections.emptyMap();
-        }
+        if (recentGames.isEmpty()) return Collections.emptyMap();
 
         List<Long> gameIds = recentGames.stream().map(Game::getId).toList();
         List<GameTeam> allGameTeams = gameTeamRepository.findAllByGameIds(gameIds);
@@ -189,7 +184,8 @@ public class TeamQueryService {
                 .collect(Collectors.toMap(
                         Game::getId,
                         game -> {
-                            List<GameTeam> teamsInGame = gameIdToTeams.getOrDefault(game.getId(), Collections.emptyList());
+                            List<GameTeam> teamsInGame = gameIdToTeams.getOrDefault(game.getId(),
+                                    Collections.emptyList());
                             return new GameDetailResponse(game, teamsInGame);
                         }
                 ));
@@ -197,9 +193,9 @@ public class TeamQueryService {
 
     private Map<Long, List<GameDetailResponse>> groupGamesByTeam(List<Long> teamIds, List<GameTeam> allGameTeams,
                                                                  Map<Long, GameDetailResponse> gameDetailsMap) {
-        Set<Long> teamIdSet = new HashSet<>(teamIds);
+        Set<Long> targetTeamIds = new HashSet<>(teamIds);
         Map<Long, List<GameTeam>> teamsByTeamId = allGameTeams.stream()
-                .filter(gt -> teamIdSet.contains(gt.getTeam().getId()))
+                .filter(gt -> targetTeamIds.contains(gt.getTeam().getId()))
                 .collect(Collectors.groupingBy(gt -> gt.getTeam().getId()));
 
         return teamsByTeamId.entrySet().stream()
