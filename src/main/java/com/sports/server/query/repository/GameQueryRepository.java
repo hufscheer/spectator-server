@@ -53,6 +53,6 @@ public interface GameQueryRepository extends Repository<Game, Long> {
             " ROW_NUMBER() OVER (PARTITION BY gt.team_id ORDER BY g_inner.start_time DESC, g_inner.id DESC) as rn" +
             " FROM games g_inner JOIN game_teams gt ON g_inner.id = gt.game_id" +
             " WHERE gt.team_id IN :teamIds) g" +
-            " WHERE g.rn <= 3", nativeQuery = true)
-    List<Game> findRecentGamesByTeamIds(@Param("teamIds") List<Long> teamIds);
+            " WHERE g.rn <= :limit", nativeQuery = true)
+    List<Game> findRecentGamesByTeamIds(@Param("teamIds") List<Long> teamIds, @Param("limit") int limit);
 }

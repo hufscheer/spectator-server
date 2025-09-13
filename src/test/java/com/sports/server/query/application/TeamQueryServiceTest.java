@@ -3,10 +3,7 @@ package com.sports.server.query.application;
 import com.sports.server.command.league.application.LeagueStatisticsService;
 import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.exception.NotFoundException;
-import com.sports.server.query.dto.response.PlayerResponse;
-import com.sports.server.query.dto.response.TeamDetailResponse;
-import com.sports.server.query.dto.response.TeamResponse;
-import com.sports.server.query.dto.response.TeamSummaryResponse;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,11 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.time.LocalDateTime;
 
 @Sql(scripts = "/team-query-fixture.sql")
 public class TeamQueryServiceTest extends ServiceTest {
@@ -40,7 +40,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null);
 
             // then
-            assertThat(responses).hasSize(4);
+            assertThat(responses).hasSize(7);
         }
 
         @Test
@@ -69,7 +69,7 @@ public class TeamQueryServiceTest extends ServiceTest {
 
             // then
             assertAll(
-                    () -> assertThat(responses).hasSize(3)
+                    () -> assertThat(responses).hasSize(6)
             );
         }
 
@@ -260,15 +260,15 @@ public class TeamQueryServiceTest extends ServiceTest {
                 leagueStatisticsService.updateLeagueStatisticFromFinalGame(finalGameId);
 
                 this.responses = teamQueryService.getAllTeamsSummary(units);
-                this.teamAResponse = responses.get(0);
-                this.teamBResponse = responses.get(1);
-                this.teamDResponse = responses.get(2);
+                this.teamAResponse = responses.get(3);
+                this.teamBResponse = responses.get(4);
+                this.teamDResponse = responses.get(5);
             }
 
             @Test
             void 전체_팀이_정상적으로_반환된다() {
                 assertAll(
-                        () -> assertThat(responses).hasSize(3),
+                        () -> assertThat(responses).hasSize(6),
                         () -> assertThat(teamAResponse.teamDetail().name()).isEqualTo("팀A"),
                         () -> assertThat(teamBResponse.teamDetail().name()).isEqualTo("팀B"),
                         () -> assertThat(teamDResponse.teamDetail().name()).isEqualTo("팀D")
@@ -323,6 +323,125 @@ public class TeamQueryServiceTest extends ServiceTest {
                         () -> assertThat(teamBResponse.recentGames()).hasSize(2)
                 );
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("팀별 최근 경기 조회 시")
+    class GetRecentGamesTest {
+
+        @Test
+        void 게임이_없는_팀은_빈_리스트를_반환한다() {
+            // given
+            List<String> units = List.of("기타");
+
+            // when
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units);
+
+            TeamSummaryResponse noGameTeamResponse = responses.stream()
+                    .filter(response -> response.teamDetail().name().equals("게임없는팀"))
+                    .findFirst()
+                    .orElseThrow();
+
+            // then
+            assertAll(
+                    () -> assertThat(noGameTeamResponse.teamDetail().name()).isEqualTo("게임없는팀"),
+                    () -> assertThat(noGameTeamResponse.recentGames()).isEmpty()
+            );
+        }
+
+        @Test
+        void 게임이_2개_이하인_팀은_해당_게임만_반환한다() {
+            // given
+            List<String> units = List.of("기타");
+
+            // when
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units);
+
+            TeamSummaryResponse fewGameTeamResponse = responses.stream()
+                    .filter(response -> response.teamDetail().name().equals("게임2개팀"))
+                    .findFirst()
+                    .orElseThrow();
+
+            // then
+            assertAll(
+                    () -> assertThat(fewGameTeamResponse.teamDetail().name()).isEqualTo("게임2개팀"),
+                    () -> assertThat(fewGameTeamResponse.recentGames()).hasSize(2),
+                    () -> assertThat(fewGameTeamResponse.recentGames().get(0).gameName()).isEqualTo("게임2개팀 게임1"),
+                    () -> assertThat(fewGameTeamResponse.recentGames().get(1).gameName()).isEqualTo("게임2개팀 게임2")
+            );
+        }
+
+        @Test
+        void 게임이_4개_이상인_팀은_최근_3개만_반환한다() {
+            // given
+            List<String> units = List.of("기타");
+
+            // when
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units);
+
+            TeamSummaryResponse manyGameTeamResponse = responses.stream()
+                    .filter(response -> response.teamDetail().name().equals("게임많은팀"))
+                    .findFirst()
+                    .orElseThrow();
+
+            // then
+            assertAll(
+                    () -> assertThat(manyGameTeamResponse.teamDetail().name()).isEqualTo("게임많은팀"),
+                    () -> assertThat(manyGameTeamResponse.recentGames()).hasSize(3),
+                    () -> assertThat(manyGameTeamResponse.recentGames().get(0).gameName()).isEqualTo("최근게임1"),
+                    () -> assertThat(manyGameTeamResponse.recentGames().get(1).gameName()).isEqualTo("최근게임2"),
+                    () -> assertThat(manyGameTeamResponse.recentGames().get(2).gameName()).isEqualTo("최근게임3")
+            );
+        }
+
+        @Test
+        void 최근_게임들은_시작_날짜_최신_순으로_정렬된다() {
+            // given
+            List<String> units = List.of("기타");
+
+            // when
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units);
+
+            TeamSummaryResponse manyGameTeamResponse = responses.stream()
+                    .filter(response -> response.teamDetail().name().equals("게임많은팀"))
+                    .findFirst()
+                    .orElseThrow();
+
+            List<LocalDateTime> startTimes = manyGameTeamResponse.recentGames().stream()
+                    .map(GameDetailResponse::startTime)
+                    .toList();
+
+            // then
+            assertThat(startTimes).isSortedAccordingTo(Comparator.reverseOrder());
+        }
+
+        @Test
+        void 여러_팀이_조회될_경우에도_각각_올바르게_처리된다() {
+            // given
+            List<String> units = List.of("기타");
+
+            // when
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units);
+
+            TeamSummaryResponse noGameTeam = responses.stream()
+                    .filter(r -> r.teamDetail().name().equals("게임없는팀"))
+                    .findFirst().orElseThrow();
+            
+            TeamSummaryResponse twoGameTeam = responses.stream()
+                    .filter(r -> r.teamDetail().name().equals("게임2개팀"))
+                    .findFirst().orElseThrow();
+            
+            TeamSummaryResponse manyGameTeam = responses.stream()
+                    .filter(r -> r.teamDetail().name().equals("게임많은팀"))
+                    .findFirst().orElseThrow();
+
+            // then
+            assertAll(
+                    () -> assertThat(noGameTeam.recentGames()).isEmpty(),
+                    () -> assertThat(twoGameTeam.recentGames()).hasSize(2),
+                    () -> assertThat(manyGameTeam.recentGames()).hasSize(3)
+            );
         }
     }
 }

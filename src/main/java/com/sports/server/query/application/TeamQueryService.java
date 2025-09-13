@@ -42,6 +42,7 @@ public class TeamQueryService {
 
     private static final int TEAM_DETAIL_TOP_SCORERS_COUNT = 20;
     private static final int TEAM_SUMMARY_TOP_SCORERS_COUNT = 3;
+    private static final int RECENT_GAMES_LIMIT = 3;
 
     public List<TeamResponse> getAllTeamsByUnits(final List<String> units){
         List<Team> teams = getTeamsFilteredByUnit(units);
@@ -165,7 +166,7 @@ public class TeamQueryService {
     }
 
     private Map<Long, List<GameDetailResponse>> getRecentGames(List<Long> teamIds) {
-        List<Game> recentGames = gameQueryRepository.findRecentGamesByTeamIds(teamIds);
+        List<Game> recentGames = gameQueryRepository.findRecentGamesByTeamIds(teamIds, RECENT_GAMES_LIMIT);
         if (recentGames.isEmpty()) return Collections.emptyMap();
 
         List<Long> gameIds = recentGames.stream().map(Game::getId).toList();
@@ -203,6 +204,12 @@ public class TeamQueryService {
                         Map.Entry::getKey,
                         e -> e.getValue().stream()
                                 .map(gt -> gameDetailsMap.get(gt.getGame().getId()))
+                                .distinct()
+                                .sorted((g1, g2) -> {
+                                    int timeCompare = g2.startTime().compareTo(g1.startTime());
+                                    return timeCompare != 0 ? timeCompare : Long.compare(g2.gameId(), g1.gameId());
+                                })
+                                .limit(RECENT_GAMES_LIMIT)
                                 .toList()
                 ));
     }

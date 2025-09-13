@@ -157,4 +157,58 @@ INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progre
 VALUES ('GAME_PROGRESS', 1, 'POST_GAME', 20, 'GAME_END', 1, 2, 2, 3, 'PENALTY_SHOOTOUT', '2023-11-12 10:15:00');
 
 
+-- === 최근 경기 조회 위한 데이터 ===
+
+INSERT INTO teams (id, unit, name, logo_image_url, team_color)
+VALUES (10, 'ETC', '게임없는팀', 'http://example.com/logo_no_game.png', '#000000'),
+       (11, 'ETC', '게임2개팀', 'http://example.com/logo_few_game.png', '#00FF00'),
+       (12, 'ETC', '게임많은팀', 'http://example.com/logo_many_game.png', '#FF00FF');
+
+INSERT INTO players (id, name, student_number)
+VALUES (20, '선수20', '202400001'),
+       (21, '선수21', '202400002'),
+       (22, '선수22', '202400003');
+
+INSERT INTO team_players (id, team_id, player_id, jersey_number)
+VALUES (20, 10, 20, 1),
+       (21, 11, 21, 1),
+       (22, 12, 22, 1);
+
+INSERT INTO leagues (id, organization_id, administrator_id, name, start_at, end_at, is_deleted, max_round, in_progress_round)
+VALUES (10, 1, 1, '최근게임테스트리그', '2024-01-01 00:00:00', '2024-12-31 23:59:59', FALSE, '결승', '결승');
+
+-- 리그 팀 등록
+INSERT INTO league_teams (id, league_id, team_id, total_cheer_count, total_talk_count, ranking)
+VALUES (10, 10, 10, 0, 0, 1),
+       (11, 10, 11, 0, 0, 2),
+       (12, 10, 12, 0, 0, 3);
+
+-- 게임많은팀의 게임
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
+VALUES 
+    (100, 1, 10, '최근게임1', '2025-12-15 14:00:00', 'video100', '2024-12-15 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
+    (101, 1, 10, '최근게임2', '2025-12-10 14:00:00', 'video101', '2024-12-10 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
+    (102, 1, 10, '최근게임3', '2025-12-05 14:00:00', 'video102', '2024-12-05 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
+    (103, 1, 10, '최근게임4', '2025-11-30 14:00:00', 'video103', '2024-11-30 16:00:00', '후반전', 'FINISHED', '4강', FALSE),
+    (104, 1, 10, '최근게임5', '2025-11-25 14:00:00', 'video104', '2024-11-25 16:00:00', '후반전', 'FINISHED', '4강', FALSE);
+
+-- 게임2개팀의 게임
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
+VALUES 
+    (200, 1, 10, '게임2개팀 게임1', '2024-12-20 14:00:00', 'video200', '2024-12-20 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
+    (201, 1, 10, '게임2개팀 게임2', '2024-12-01 14:00:00', 'video201', '2024-12-01 16:00:00', '후반전', 'FINISHED', '결승', FALSE);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES 
+    (100, 100, 12, 0, 2, 0, 'WIN'),
+    (101, 101, 12, 0, 1, 0, 'LOSE'),
+    (102, 102, 12, 0, 3, 0, 'WIN'),
+    (103, 103, 12, 0, 0, 0, 'LOSE'),
+    (104, 104, 12, 0, 1, 0, 'WIN');
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES 
+    (200, 200, 11, 0, 1, 0, 'WIN'),
+    (201, 201, 11, 0, 0, 0, 'LOSE');
+
 SET foreign_key_checks = 1;
