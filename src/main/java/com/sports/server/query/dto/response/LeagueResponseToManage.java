@@ -1,11 +1,9 @@
 package com.sports.server.query.dto.response;
 
-import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueProgress;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record LeagueResponseToManage(
         Long id,

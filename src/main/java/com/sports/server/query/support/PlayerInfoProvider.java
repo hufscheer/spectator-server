@@ -2,6 +2,7 @@ package com.sports.server.query.support;
 
 import com.sports.server.command.team.domain.PlayerGoalCount;
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
+import com.sports.server.query.dto.TeamTopScorerResult;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,9 +19,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PlayerInfoProvider {
-
-    private static final int TEAM_ID_INDEX = 0;
-    private static final int PLAYER_GOAL_DATA_INDEX = 1;
 
     private final TimelineQueryRepository timelineQueryRepository;
 
@@ -42,13 +40,13 @@ public class PlayerInfoProvider {
 
     public Map<Long, List<PlayerGoalCountWithRank>> getTeamsTopScorers(List<Long> teamIds, int size) {
         if (teamIds == null || teamIds.isEmpty()) return Collections.emptyMap();
-        List<Object[]> teamTopScorers = timelineQueryRepository.findTopScorersByTeamIds(teamIds);
+        List<TeamTopScorerResult> teamTopScorers = timelineQueryRepository.findTopScorersByTeamIds(teamIds);
 
         return teamTopScorers.stream()
                 .collect(Collectors.groupingBy(
-                        row -> (Long) row[TEAM_ID_INDEX],
+                        TeamTopScorerResult::teamId,
                         Collectors.mapping(
-                                row -> (PlayerGoalCountWithRank) row[PLAYER_GOAL_DATA_INDEX],
+                                TeamTopScorerResult::playerGoalCountWithRank,
                                 Collectors.collectingAndThen(
                                         Collectors.toList(),
                                         list -> list.stream().limit(size).toList()

@@ -6,7 +6,6 @@ import static com.sports.server.command.league.domain.QLeagueTeam.leagueTeam;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

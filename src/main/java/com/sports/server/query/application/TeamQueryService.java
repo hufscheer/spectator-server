@@ -27,6 +27,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class TeamQueryService {
 
+    private static final String FIRST_WIN = "우승";
+    private static final String SECOND_WIN = "준우승";
+
+    private static final int TEAM_DETAIL_TOP_SCORERS_COUNT = 20;
+    private static final int TEAM_SUMMARY_TOP_SCORERS_COUNT = 3;
+    private static final int RECENT_GAMES_LIMIT = 3;
+
     private final EntityUtils entityUtils;
     private final PlayerInfoProvider playerInfoProvider;
 
@@ -37,15 +44,8 @@ public class TeamQueryService {
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
-    private static final String FIRST_WIN = "우승";
-    private static final String SECOND_WIN = "준우승";
-
-    private static final int TEAM_DETAIL_TOP_SCORERS_COUNT = 20;
-    private static final int TEAM_SUMMARY_TOP_SCORERS_COUNT = 3;
-    private static final int RECENT_GAMES_LIMIT = 3;
-
     public List<TeamResponse> getAllTeamsByUnits(final List<String> units){
-        List<Team> teams = getTeamsFilteredByUnit(units);
+        List<Team> teams = findTeamsByUnits(units);
         return teams.stream()
                 .map(TeamResponse::new)
                 .toList();
@@ -77,7 +77,7 @@ public class TeamQueryService {
     }
 
     public List<TeamSummaryResponse> getAllTeamsSummary(final List<String> units){
-        List<Team> teams = getTeamsFilteredByUnit(units);
+        List<Team> teams = findTeamsByUnits(units);
         if (teams.isEmpty()) return Collections.emptyList();
 
         List<Long> teamIds = teams.stream().map(Team::getId).toList();
@@ -101,10 +101,10 @@ public class TeamQueryService {
             );
     }
 
-    private List<Team> getTeamsFilteredByUnit(final List<String> units){
+    private List<Team> findTeamsByUnits(final List<String> units){
         if (units == null || units.isEmpty()) return teamQueryRepository.findAll();
-        List<Unit> unitEnums = Unit.fromNames(units);
-        return teamQueryDynamicRepository.findAllByUnits(unitEnums);
+        List<Unit> targetUnits = Unit.fromNames(units);
+        return teamQueryDynamicRepository.findAllByUnits(targetUnits);
     }
 
     private Map<Long, TeamDetailResponse.TeamGameResult> getTeamGameResults(List<Long> teamIds){
@@ -112,8 +112,10 @@ public class TeamQueryService {
 
         Map<Long, Map<GameResult, Integer>> teamResult = new HashMap<>();
         for (TeamGameResult result : results) {
-            teamResult.computeIfAbsent(result.teamId(), teamId -> new HashMap<>())
-                    .put(result.result(), result.count() != null ? result.count().intValue() : 0);
+            Long teamId = result.teamId();
+            int count = result.count().intValue();
+            teamResult.merge(teamId, new HashMap<>(), (existingTeam, newTeam) -> existingTeam)
+                    .put(result.result(), count);
         }
 
         return teamIds.stream()
@@ -202,15 +204,24 @@ public class TeamQueryService {
         return teamsByTeamId.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        e -> e.getValue().stream()
-                                .map(gt -> gameDetailsMap.get(gt.getGame().getId()))
-                                .distinct()
-                                .sorted((g1, g2) -> {
-                                    int timeCompare = g2.startTime().compareTo(g1.startTime());
-                                    return timeCompare != 0 ? timeCompare : Long.compare(g2.gameId(), g1.gameId());
-                                })
-                                .limit(RECENT_GAMES_LIMIT)
-                                .toList()
+                        e -> getSortedRecentGames(e.getValue(), gameDetailsMap)
                 ));
     }
+
+    private List<GameDetailResponse> getSortedRecentGames(List<GameTeam> gameTeams, 
+                                                          Map<Long, GameDetailResponse> gameDetailsMap) {
+        return gameTeams.stream()
+                .map(gt -> gameDetailsMap.get(gt.getGame().getId()))
+                .distinct()
+                .sorted(this::compareGamesByTimeAndId)
+                .limit(RECENT_GAMES_LIMIT)
+                .toList();
+    }
+
+    private int compareGamesByTimeAndId(GameDetailResponse game1, GameDetailResponse game2) {
+        int timeCompare = game2.startTime().compareTo(game1.startTime());
+        if (timeCompare != 0) return timeCompare;
+        return Long.compare(game2.gameId(), game1.gameId());
+    }
+
 }

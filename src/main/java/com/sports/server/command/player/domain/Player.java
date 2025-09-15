@@ -4,10 +4,9 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.util.StudentNumber;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,13 +32,13 @@ public class Player extends BaseEntity<Player> {
 
     @Builder
     public Player(@NonNull String name, @NonNull String studentNumber) {
-        validateStudentNumber(studentNumber);
+        StudentNumber.validate(studentNumber);
         this.name = name;
         this.studentNumber = studentNumber;
     }
 
     public void update(String name, String studentNumber) {
-        validateStudentNumber(studentNumber);
+        StudentNumber.validate(studentNumber);
         this.name = name;
         this.studentNumber = studentNumber;
     }
@@ -60,11 +59,6 @@ public class Player extends BaseEntity<Player> {
         this.leagueTopScorers.remove(leagueTopScorer);
     }
 
-    private void validateStudentNumber(String studentNumber) {
-        if (studentNumber != null && !studentNumber.matches("^[0-9]{9}$")) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "학생번호는 9자리 숫자여야 합니다.");
-        }
-    }
 
     public LeagueTopScorer findLeagueTopScorer(League league) {
         return this.leagueTopScorers.stream()
