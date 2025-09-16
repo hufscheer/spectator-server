@@ -3854,7 +3854,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h4 id="_리그_전체_조회_http_request"><a class="link" href="#_리그_전체_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues?year=2025&amp;leagueProgress=FINISHED&amp;cursor=5&amp;size=5 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues?year=2025&amp;leagueProgress=FINISHED HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -3876,19 +3876,11 @@ Host: www.api.hufstreaming.site</code></pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>year</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 연도</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 연도 (선택사항, 미입력시 전체 연도)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>leagueProgress</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 진행 상태 (BEFORE_START, IN_PROGRESS, FINISHED)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cursor</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이징 커서</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이징 사이즈</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리그의 진행 상태 (선택사항, BEFORE_START, IN_PROGRESS, FINISHED)</p></td>
 </tr>
 </tbody>
 </table>
@@ -6207,6 +6199,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 23 Sep 2025 09:27:29 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+
 </div>
 </div>
 </div>

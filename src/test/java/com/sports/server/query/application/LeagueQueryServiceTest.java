@@ -16,7 +16,6 @@ import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
-import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.support.ServiceTest;
 
 import java.util.*;
@@ -275,10 +274,9 @@ public class LeagueQueryServiceTest extends ServiceTest {
         void 연도_필터링_조건으로_리그를_조회한다() {
             // given
             LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, null);
-            PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
 
             // when
-            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
 
             // then
             assertAll(
@@ -294,10 +292,9 @@ public class LeagueQueryServiceTest extends ServiceTest {
         void 리그_진행_상태_필터링_조건으로_리그를_조회한다() {
             // given
             LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, LeagueProgress.FINISHED);
-            PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
 
             // when
-            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
 
             // then
             assertAll(
@@ -313,10 +310,9 @@ public class LeagueQueryServiceTest extends ServiceTest {
         void 연도와_진행_상태_모든_필터링_조건으로_리그를_조회한다() {
             // given
             LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, LeagueProgress.FINISHED);
-            PageRequestDto pageRequestDto = new PageRequestDto(null, 10);
 
             // when
-            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
 
             // then
             assertAll(
@@ -332,10 +328,9 @@ public class LeagueQueryServiceTest extends ServiceTest {
         void 필터링_조건이_없을_경우_전체_결과를_반환한다() {
             // given
             LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null);
-            PageRequestDto pageRequestDto = new PageRequestDto(null, 20);
 
             // when
-            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto, pageRequestDto);
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
 
             // then
             assertAll(
