@@ -5,6 +5,8 @@ import com.sports.server.common.exception.NotFoundException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Getter
@@ -29,10 +31,19 @@ public enum Unit {
 
     private final String name;
 
-    public static Unit from(String koreanName) {
+    public static Unit from(String name) {
         return Stream.of(values())
-                .filter(u -> u.getName().equals(koreanName))
+                .filter(u -> u.getName().equals(name))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION));
+    }
+
+    public static List<Unit> fromNames(List<String> names) {
+        if (names == null || names.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return names.stream()
+                .map(Unit::from)
+                .toList();
     }
 }

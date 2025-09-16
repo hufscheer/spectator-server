@@ -2,6 +2,7 @@ package com.sports.server.query.support;
 
 import com.sports.server.command.team.domain.PlayerGoalCount;
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
+import com.sports.server.query.dto.TeamTopScorerResult;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,9 +23,7 @@ public class PlayerInfoProvider {
     private final TimelineQueryRepository timelineQueryRepository;
 
     public Map<Long, Integer> getPlayersTotalGoalInfo(List<Long> playerIds) {
-        if (playerIds == null || playerIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
+        if (playerIds == null || playerIds.isEmpty()) return Collections.emptyMap();
 
         List<PlayerGoalCount> results = timelineQueryRepository.countTotalGoalsByPlayerId(playerIds);
         return results.stream()
@@ -34,13 +33,25 @@ public class PlayerInfoProvider {
                 ));
     }
 
-    public List<PlayerGoalCountWithRank> getTeamTop20Scorers(Long teamId) {
-        Pageable top20Request = PageRequest.of(0, 20);
-        return timelineQueryRepository.findTopScorersByTeamId(teamId, top20Request);
+    public List<PlayerGoalCountWithRank> getLeagueTopScorers(Long leagueId, int size) {
+        Pageable sizeRequest = PageRequest.of(0, size);
+        return timelineQueryRepository.findTopScorersByLeagueId(leagueId, sizeRequest);
     }
 
-    public List<PlayerGoalCountWithRank> getLeagueTop20Scorers(Long leagueId) {
-        Pageable top20Request = PageRequest.of(0, 20);
-        return timelineQueryRepository.findTopScorersByLeagueId(leagueId, top20Request);
+    public Map<Long, List<PlayerGoalCountWithRank>> getTeamsTopScorers(List<Long> teamIds, int size) {
+        if (teamIds == null || teamIds.isEmpty()) return Collections.emptyMap();
+        List<TeamTopScorerResult> teamTopScorers = timelineQueryRepository.findTopScorersByTeamIds(teamIds);
+
+        return teamTopScorers.stream()
+                .collect(Collectors.groupingBy(
+                        TeamTopScorerResult::teamId,
+                        Collectors.mapping(
+                                TeamTopScorerResult::playerGoalCountWithRank,
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream().limit(size).toList()
+                                )
+                        )
+                ));
     }
 }

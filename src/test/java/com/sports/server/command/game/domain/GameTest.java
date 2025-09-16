@@ -27,7 +27,7 @@ class GameTest {
                 .sample();
 
         game2 = entityBuilder(Game.class)
-                .set("id", 1L)
+                .set("id", 2L)
                 .set("teams", new ArrayList<>())
                 .sample();
 

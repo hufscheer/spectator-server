@@ -2,10 +2,7 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.TeamQueryService;
-import com.sports.server.query.dto.response.GameDetailResponse;
-import com.sports.server.query.dto.response.PlayerResponse;
-import com.sports.server.query.dto.response.TeamDetailResponse;
-import com.sports.server.query.dto.response.TeamResponse;
+import com.sports.server.query.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +35,10 @@ public class TeamQueryController {
     @GetMapping("/{teamId}/games")
     public ResponseEntity<List<GameDetailResponse>> getAllGamesByTeam(@PathVariable final Long teamId) {
         return ResponseEntity.ok(gameQueryService.getAllGamesDetailByTeam(teamId));
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<TeamSummaryResponse>> getAllTeamsSummary(@RequestParam(required = false) final List<String> units){
+        return ResponseEntity.ok(teamQueryService.getAllTeamsSummary(units));
     }
 }
