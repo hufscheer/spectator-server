@@ -279,3 +279,6 @@ operation::team-query-controller-test/팀에_소속된_모든_선수를_조회�
 
 operation::team-query-controller-test/팀이_참가한_모든_경기를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 팀별보기 데이터 조회
+
+operation::team-query-controller-test/팀별보기_페이지를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
