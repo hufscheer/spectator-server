@@ -2,7 +2,6 @@ package com.sports.server.query.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.league.domain.League;
-import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,12 +18,11 @@ public class LeagueQueryDynamicRepositoryImpl implements LeagueQueryDynamicRepos
     private final LeagueQueryConditionMapper conditionMapper;
 
     @Override
-    public List<League> findLeagues(final LeagueQueryRequestDto requestDto, final PageRequestDto pageRequest) {
+    public List<League> findLeagues(final LeagueQueryRequestDto requestDto) {
         return queryFactory
                 .selectFrom(league)
-                .where(conditionMapper.mapBooleanCondition(requestDto, pageRequest))
+                .where(conditionMapper.mapBooleanCondition(requestDto))
                 .orderBy(league.startAt.desc(), league.id.desc())
-                .limit(pageRequest.size())
                 .fetch();
     }
 }

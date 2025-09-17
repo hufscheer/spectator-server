@@ -54,12 +54,11 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 종료된_2025년_대회_5개를_우승팀_정보와_함께_조회한다() {
+        void 종료된_2025년_대회를_우승팀_정보와_함께_조회한다() {
             // when
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .param("year", 2025)
                     .param("leagueProgress", "FINISHED")
-                    .param("size", 5)
                     .when()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .get("/leagues")
@@ -72,19 +71,19 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                     () -> assertThat(actual)
                             .map(LeagueResponse::leagueId)
-                            .containsExactly(7L, 6L, 5L, 4L, 3L),
+                            .containsExactly(7L, 6L, 5L, 4L, 3L, 2L),
                     () -> assertThat(actual)
                             .map(LeagueResponse::name)
-                            .containsExactly("종료된 축구대회 7", "종료된 축구대회 6", "종료된 축구대회 5", "종료된 축구대회 4", "종료된 축구대회 3"),
+                            .containsExactly("종료된 축구대회 7", "종료된 축구대회 6", "종료된 축구대회 5", "종료된 축구대회 4", "종료된 축구대회 3", "종료된 축구대회 2"),
                     () -> assertThat(actual)
                             .map(LeagueResponse::maxRound)
-                            .containsExactly(16, 8, 16, 16, 4),
+                            .containsExactly(16, 8, 16, 16, 4, 4),
                     () -> assertThat(actual)
                             .map(LeagueResponse::inProgressRound)
-                            .containsExactly(16, 8, 16, 16, 4),
+                            .containsExactly(16, 8, 16, 16, 4, 4),
                     () -> assertThat(actual)
                             .map(LeagueResponse::winnerTeamName)
-                            .containsExactly("서어 뻬데뻬", "경영 야생마", "컴공 독수리", "체교 불사조", "미컴 축구생각")
+                            .containsExactly("서어 뻬데뻬", "경영 야생마", "컴공 독수리", "체교 불사조", "미컴 축구생각", "서어 뻬데뻬")
             );
         }
     }

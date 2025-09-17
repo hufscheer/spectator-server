@@ -3,6 +3,7 @@ package com.sports.server.query.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.common.util.StudentNumber;
 import com.sports.server.query.application.TeamStatistics;
 
 import java.util.List;
@@ -56,24 +57,14 @@ public record TeamDetailResponse(
             int totalGoals
     ) {
 
-        private static final int ADMISSION_YEAR_START_INDEX = 2;
-        private static final int ADMISSION_YEAR_END_INDEX = 4;
-
         public TeamTopScorer(final PlayerGoalCountWithRank player) {
             this(
                     player.playerId(),
-                    extractAdmissionYear(player.studentNumber()),
+                    StudentNumber.extractAdmissionYear(player.studentNumber()),
                     player.rank().intValue(),
                     player.playerName(),
                     player.goalCount().intValue()
             );
-        }
-
-        private static String extractAdmissionYear(String studentNumber) {
-            if (studentNumber == null || studentNumber.length() < ADMISSION_YEAR_END_INDEX) {
-                return null;
-            }
-            return studentNumber.substring(ADMISSION_YEAR_START_INDEX, ADMISSION_YEAR_END_INDEX);
         }
     }
 
