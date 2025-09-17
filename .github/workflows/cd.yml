@@ -3,7 +3,7 @@ name: spring server cd
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "5th-release" ]
+    branches: [ "main", "5th-release", "chore/#380-dockerfile" ]
 
 jobs:
   deploy:
@@ -24,10 +24,10 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-#      - name: 타임존 설정
-#        uses: szenius/set-timezone@v1.2
-#        with:
-#          timezoneLinux: "Asia/Seoul"
+      #      - name: 타임존 설정
+      #        uses: szenius/set-timezone@v1.2
+      #        with:
+      #          timezoneLinux: "Asia/Seoul"
 
       - name: 빌드
         run: ./gradlew build
