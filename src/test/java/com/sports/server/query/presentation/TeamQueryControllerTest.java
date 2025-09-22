@@ -45,7 +45,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("units").description("필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학," +
-                                        " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD학부, LT학부," +
+                                        " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD/LT학부" +
                                         " KFL학부, 자유전공학부, 기타)").optional()
                         ),
                         responseFields(
@@ -234,7 +234,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("units").description("필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학," +
-                                        " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD학부, LT학부," +
+                                        " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD/LT학부," +
                                         " KFL학부, 자유전공학부, 기타)").optional()
                         ),
                         responseFields(
