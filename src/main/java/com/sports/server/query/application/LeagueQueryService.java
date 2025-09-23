@@ -134,7 +134,7 @@ public class LeagueQueryService {
         List<League> leagues = leagueQueryRepository.findByManagerToManage(manager);
 
         return leagues.stream()
-                .sorted(new LeagueProgressComparator())
+                .sorted(new LeagueProgressComparator(LocalDateTime.now()))
                 .map(LeagueResponseToManage::of)
                 .toList();
     }

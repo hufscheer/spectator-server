@@ -8,12 +8,16 @@ import java.util.Comparator;
 
 public class LeagueProgressComparator implements Comparator<League> {
 
+    private final LocalDateTime baseTime;
+
+    public LeagueProgressComparator(LocalDateTime baseTime) {
+        this.baseTime = baseTime;
+    }
+
     @Override
     public int compare(League o1, League o2) {
-
-        LeagueProgress leagueProgressOfO1 = LeagueProgress.fromDate(LocalDateTime.now(), o1);
-        LeagueProgress leagueProgressOfO2 = LeagueProgress.fromDate(LocalDateTime.now(), o2);
-
-        return leagueProgressOfO1.getOrder() - leagueProgressOfO2.getOrder();
+        LeagueProgress p1 = LeagueProgress.fromDate(baseTime, o1);
+        LeagueProgress p2 = LeagueProgress.fromDate(baseTime, o2);
+        return Integer.compare(p1.getOrder(), p2.getOrder());
     }
 }
