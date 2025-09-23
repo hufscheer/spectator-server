@@ -16,6 +16,12 @@ server:
     mbeanregistry:
       enabled: true
 
+management:
+  metrics:
+    export:
+      cloudwatch:
+        enabled: false
+
 ---
 spring:
   config:
