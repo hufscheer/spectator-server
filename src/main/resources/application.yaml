@@ -17,25 +17,10 @@ server:
       enabled: true
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
   metrics:
-    enable:
-      all: false
-      jvm: true           # GC/메모리/스레드
-      tomcat: true        # 톰캣 스레드/커넥터
-      hikaricp: true      # 커넥션 풀 상태
-      http.server: true   # 요청/응답(경로별 집계에 필요)
-
-      # 사용하지 않고 있는 것들
-      logback: false
-      system: false
-      process: false
-      jdbc: false
-      http.client: false
-      executor: false
+    export:
+      cloudwatch:
+        enabled: false
 
 ---
 spring:
