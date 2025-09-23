@@ -15,22 +15,22 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum LeagueProgress {
-	BEFORE_START("시작 전", (
-		(today, league) -> today.isBefore(league.getStartAt()))),
-	IN_PROGRESS("진행 중", (
-		(today, league) -> (today.isEqual(league.getStartAt()) || today.isAfter(league.getStartAt()))
-			&& (today.isBefore(league.getEndAt())))),
-	FINISHED("종료", (
-		(today, league) -> (today.isEqual(league.getEndAt()) || today.isAfter(league.getEndAt()))));
+    BEFORE_START("시작 전", (
+            (today, league) -> today.isBefore(league.getStartAt())), 2),
+    IN_PROGRESS("진행 중", (
+            (today, league) -> (today.isEqual(league.getStartAt()) || today.isAfter(league.getStartAt()))
+                    && (today.isBefore(league.getEndAt()))), 1),
+    FINISHED("종료", (
+            (today, league) -> (today.isEqual(league.getEndAt()) || today.isAfter(league.getEndAt()))), 3);
 
-	private final String description;
-	private final BiFunction<LocalDateTime, League, Boolean> InProgressFunction;
+    private final String description;
+    private final BiFunction<LocalDateTime, League, Boolean> InProgressFunction;
+    private final int order;
 
-	public static String getProgressDescription(final LocalDateTime localDateTime, final League league) {
-		return Stream.of(LeagueProgress.values())
-			.filter(lp -> lp.getInProgressFunction().apply(localDateTime, league))
-			.map(LeagueProgress::getDescription)
-			.findFirst()
-			.orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.PROGRESS_NOT_FOUND_EXCEPTION));
-	}
+    public static LeagueProgress fromDate(final LocalDateTime localDateTime, final League league) {
+        return Stream.of(LeagueProgress.values())
+                .filter(lp -> lp.getInProgressFunction().apply(localDateTime, league))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.PROGRESS_NOT_FOUND_EXCEPTION));
+    }
 }
