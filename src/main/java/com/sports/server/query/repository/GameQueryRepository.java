@@ -2,6 +2,7 @@ package com.sports.server.query.repository;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,14 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "AND g.state = 'PLAYING'"
     )
     List<Game> findPlayingGamesByLeagueWithGameTeams(@Param("league") League league);
+
+    @Query(
+            "SELECT g FROM Game g "
+                    + "JOIN FETCH g.gameTeams "
+                    + "WHERE g.league.id in :leagueIds "
+                    + "AND g.state = 'PLAYING'"
+    )
+    List<Game> findPlayingGamesByLeagueIdsWithGameTeams(@Param("leagueIds") List<Long> leagueIds);
 
     @Query(
             "SELECT g FROM Game g "
