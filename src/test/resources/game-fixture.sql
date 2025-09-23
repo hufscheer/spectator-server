@@ -20,7 +20,7 @@ VALUES (1, 'OCCIDENTAL_LANGUAGES', '팀 A', 'http://example.com/logo_a.png', '#F
        (3, 'JAPANESE_STUDIES', '팀 C', 'http://example.com/logo_c.png', '#00FF00'),
        (4, 'BUSINESS_AND_ECONOMICS', '팀 D', 'http://example.com/logo_d.png', '#FFFF00'),
        (5, 'AI_CONVERGENCE', '팀 E', 'http://example.com/logo_e.png', '#800080'),
-       (6, 'LANGUAGE_AND_TRADE', '팀 F', 'http://example.com/logo_e.png', '#FF0000'),
+       (6, 'LD_AND_LT', '팀 F', 'http://example.com/logo_e.png', '#FF0000'),
        (7, 'ETC', '팀 G', 'http://example.com/logo_e.png', '#00FF00');
 
 

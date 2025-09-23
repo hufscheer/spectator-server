@@ -23,8 +23,7 @@ public enum Unit {
     EDUCATION("사범대학"),
     AI_CONVERGENCE("AI융합대학"),
     INTERNATIONAL_STUDIES("국제학부"),
-    LANGUAGE_AND_DIPLOMACY("LD학부"),
-    LANGUAGE_AND_TRADE("LT학부"),
+    LD_AND_LT("LD/LT학부"),
     KOREAN_AS_A_FOREIGN_LANGUAGE("KFL학부"),
     LIBERAL_ARTS("자유전공학부"),
     ETC("기타");
