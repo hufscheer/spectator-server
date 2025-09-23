@@ -112,7 +112,7 @@ public class LeagueQueryService {
         return leagues.stream()
                 .map(league -> LeagueResponseWithInProgressGames.of(
                         league,
-                        LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
+                        LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(),
                         gamesForLeagues.get(league)))
                 .toList();
     }
@@ -133,12 +133,8 @@ public class LeagueQueryService {
     public List<LeagueResponseToManage> findLeaguesByManagerToManage(final Member manager) {
         List<League> leagues = leagueQueryRepository.findByManagerToManage(manager);
 
-        Comparator<League> comparator = Comparator.comparing(
-                league -> leagueProgressOrderMap.get(
-                        LeagueProgress.getProgressDescription(LocalDateTime.now(), league)));
-
         return leagues.stream()
-                .sorted(comparator)
+                .sorted(new LeagueProgressComparator())
                 .map(LeagueResponseToManage::of)
                 .toList();
     }
@@ -189,15 +185,9 @@ public class LeagueQueryService {
 
     public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {
         List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, limit));
-        
+
         return results.stream()
                 .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))
                 .toList();
     }
-
-    public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
-            Map.entry(LeagueProgress.IN_PROGRESS.getDescription(), 1),
-            Map.entry(LeagueProgress.BEFORE_START.getDescription(), 2),
-            Map.entry(LeagueProgress.FINISHED.getDescription(), 3)
-    );
 }

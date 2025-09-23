@@ -14,15 +14,15 @@ public record LeagueDetailResponse(
         String leagueProgress,
         Integer leagueTeamCount
 ) {
-	public static LeagueDetailResponse of(League league, Integer leagueTeamCount) {
-		return new LeagueDetailResponse(
-			league.getName(),
-			league.getStartAt(),
-			league.getEndAt(),
-			league.getMaxRound().getNumber(),
-			league.getInProgressRound().getNumber(),
-			LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
-			leagueTeamCount
-		);
-	}
+    public static LeagueDetailResponse of(League league, Integer leagueTeamCount) {
+        return new LeagueDetailResponse(
+                league.getName(),
+                league.getStartAt(),
+                league.getEndAt(),
+                league.getMaxRound().getNumber(),
+                league.getInProgressRound().getNumber(),
+                LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(),
+                leagueTeamCount
+        );
+    }
 }

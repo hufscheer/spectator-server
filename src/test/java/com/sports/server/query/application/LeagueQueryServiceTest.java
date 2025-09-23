@@ -1,6 +1,5 @@
 package com.sports.server.query.application;
 
-import static com.sports.server.query.application.LeagueQueryService.leagueProgressOrderMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -19,6 +18,7 @@ import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.support.ServiceTest;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -187,7 +187,12 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 리그가_진행중_시작전_종료_순으로_조회된다() {
             // given
-            Comparator<String> comparator = Comparator.comparingInt(leagueProgressOrderMap::get);
+            Map<String, Integer> ordersOfProgress = Arrays.stream(LeagueProgress.values())
+                    .collect(Collectors.toMap(
+                            LeagueProgress::getDescription,
+                            LeagueProgress::getOrder
+                    ));
+            Comparator<String> comparator = Comparator.comparingInt(ordersOfProgress::get);
 
             // then
             assertAll(

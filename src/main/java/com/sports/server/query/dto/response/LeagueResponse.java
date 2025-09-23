@@ -8,20 +8,20 @@ import com.sports.server.command.league.domain.LeagueProgress;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record LeagueResponse(
-	Long leagueId,
-	String name,
-	int maxRound,
-	int inProgressRound,
-	String leagueProgress,
-	String winnerTeamName
+        Long leagueId,
+        String name,
+        int maxRound,
+        int inProgressRound,
+        String leagueProgress,
+        String winnerTeamName
 ) {
-	public LeagueResponse(League league, String winnerTeamName) {
-		this(
-			league.getId(),
-			league.getName(),
-			league.getMaxRound().getNumber(),
-			league.getInProgressRound().getNumber(),
-			LeagueProgress.getProgressDescription(LocalDateTime.now(), league), winnerTeamName
-		);
-	}
+    public LeagueResponse(League league, String winnerTeamName) {
+        this(
+                league.getId(),
+                league.getName(),
+                league.getMaxRound().getNumber(),
+                league.getInProgressRound().getNumber(),
+                LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(), winnerTeamName
+        );
+    }
 }

@@ -10,8 +10,10 @@ import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.AcceptanceTest;
+
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
