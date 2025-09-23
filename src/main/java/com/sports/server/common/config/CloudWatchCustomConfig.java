@@ -3,13 +3,15 @@ package com.sports.server.common.config;
 import io.micrometer.cloudwatch2.CloudWatchConfig;
 import io.micrometer.cloudwatch2.CloudWatchMeterRegistry;
 import io.micrometer.core.instrument.Clock;
+
 import java.time.Duration;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 
-@Configuration
+//@Configuration
 public class CloudWatchCustomConfig {
 
     private static final String CLOUDWATCH_NAMESPACE = "HUFSCHEER/prod";
