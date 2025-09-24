@@ -44,15 +44,15 @@ public class TeamQueryService {
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
-    public List<TeamResponse> getAllTeamsByUnits(final List<String> units){
+    public List<TeamResponse> getAllTeamsByUnits(final List<String> units) {
         List<Team> teams = findTeamsByUnits(units);
         return teams.stream()
                 .map(TeamResponse::new)
                 .toList();
     }
 
-    public List<PlayerResponse> getAllTeamPlayers(Long teamId){
-        List<TeamPlayer> teamPlayers = teamQueryRepository.findAllTeamPlayer(teamId);
+    public List<PlayerResponse> getAllTeamPlayers(Long teamId) {
+        List<TeamPlayer> teamPlayers = teamQueryRepository.findTeamPlayersByTeamId(teamId);
         List<Long> playerIds = teamPlayerRepository.findPlayerIdsByTeamId(teamId);
 
         Map<Long, Integer> playerTotalGoalCountInfo = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
@@ -65,7 +65,7 @@ public class TeamQueryService {
                 .toList();
     }
 
-    public TeamDetailResponse getTeamDetail(Long teamId){
+    public TeamDetailResponse getTeamDetail(Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
 
         TeamDetailResponse.TeamGameResult teamGameResult = getTeamGameResults(List.of(teamId)).get(teamId);
@@ -76,7 +76,7 @@ public class TeamQueryService {
         return new TeamDetailResponse(team, teamPlayers, teamGameResult, scorers, trophies);
     }
 
-    public List<TeamSummaryResponse> getAllTeamsSummary(final List<String> units){
+    public List<TeamSummaryResponse> getAllTeamsSummary(final List<String> units) {
         List<Team> teams = findTeamsByUnits(units);
         if (teams.isEmpty()) return Collections.emptyList();
 
@@ -93,21 +93,21 @@ public class TeamQueryService {
     }
 
     private TeamStatistics getTeamStatistics(List<Long> teamIds) {
-            return new TeamStatistics(
-                    getTeamGameResults(teamIds),
-                    getTeamTopScorers(teamIds, TEAM_SUMMARY_TOP_SCORERS_COUNT),
-                    getTrophies(teamIds),
-                    getRecentGames(teamIds)
-            );
+        return new TeamStatistics(
+                getTeamGameResults(teamIds),
+                getTeamTopScorers(teamIds, TEAM_SUMMARY_TOP_SCORERS_COUNT),
+                getTrophies(teamIds),
+                getRecentGames(teamIds)
+        );
     }
 
-    private List<Team> findTeamsByUnits(final List<String> units){
+    private List<Team> findTeamsByUnits(final List<String> units) {
         if (units == null || units.isEmpty()) return teamQueryRepository.findAll();
         List<Unit> targetUnits = Unit.fromNames(units);
         return teamQueryDynamicRepository.findAllByUnits(targetUnits);
     }
 
-    private Map<Long, TeamDetailResponse.TeamGameResult> getTeamGameResults(List<Long> teamIds){
+    private Map<Long, TeamDetailResponse.TeamGameResult> getTeamGameResults(List<Long> teamIds) {
         List<TeamGameResult> results = gameTeamRepository.findGameResultsByTeamIds(teamIds);
 
         Map<Long, Map<GameResult, Integer>> teamResult = new HashMap<>();
@@ -132,7 +132,7 @@ public class TeamQueryService {
                 ));
     }
 
-    private Map<Long, List<TeamDetailResponse.TeamTopScorer>> getTeamTopScorers(List<Long> teamIds, int size){
+    private Map<Long, List<TeamDetailResponse.TeamTopScorer>> getTeamTopScorers(List<Long> teamIds, int size) {
         Map<Long, List<PlayerGoalCountWithRank>> topScorersMap = playerInfoProvider.getTeamsTopScorers(teamIds, size);
 
         return teamIds.stream()
@@ -208,7 +208,7 @@ public class TeamQueryService {
                 ));
     }
 
-    private List<GameDetailResponse> getSortedRecentGames(List<GameTeam> gameTeams, 
+    private List<GameDetailResponse> getSortedRecentGames(List<GameTeam> gameTeams,
                                                           Map<Long, GameDetailResponse> gameDetailsMap) {
         return gameTeams.stream()
                 .map(gt -> gameDetailsMap.get(gt.getGame().getId()))
