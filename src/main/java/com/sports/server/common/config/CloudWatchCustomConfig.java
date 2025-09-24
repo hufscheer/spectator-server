@@ -9,9 +9,11 @@ import java.time.Duration;
 import io.micrometer.core.instrument.config.MeterFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 
+@Profile("prod")
 @Configuration
 public class CloudWatchCustomConfig {
 
