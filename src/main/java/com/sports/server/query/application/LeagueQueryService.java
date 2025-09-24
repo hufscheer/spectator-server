@@ -62,11 +62,15 @@ public class LeagueQueryService {
     public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
-        return teamDynamicRepository.findByLeagueAndRound(league, round).stream().map(leagueTeam -> new LeagueTeamResponse(leagueTeam.getTeam(), leagueTeam.getId())).toList();
+        return teamDynamicRepository.findByLeagueAndRound(league, round).stream()
+                .map(leagueTeam -> new LeagueTeamResponse(leagueTeam.getTeam(), leagueTeam.getId()))
+                .toList();
     }
 
     public LeagueDetailResponse findLeagueDetail(Long leagueId) {
-        return leagueQueryRepository.findById(leagueId).map(league -> LeagueDetailResponse.of(league, teamDynamicRepository.findByLeagueAndRound(league, null).size())).orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
+        return leagueQueryRepository.findById(leagueId)
+                .map(league -> LeagueDetailResponse.of(league, teamDynamicRepository.findByLeagueAndRound(league, null).size()))
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
     }
 
     public List<PlayerResponse> findPlayersByLeagueTeam(Long leagueTeamId) {
