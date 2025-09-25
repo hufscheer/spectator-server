@@ -2,8 +2,10 @@ package com.sports.server.query.repository;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
+
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;

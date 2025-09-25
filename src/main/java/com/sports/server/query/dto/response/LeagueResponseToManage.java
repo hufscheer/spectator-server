@@ -16,13 +16,13 @@ public record LeagueResponseToManage(
 ) {
     public static LeagueResponseToManage of(League league) {
         return new LeagueResponseToManage(
-            league.getId(),
-            league.getName(),
-            LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
-            league.getLeagueTeams().size(),
-            league.getMaxRound().getNumber(),
-            league.getStartAt(),
-            league.getEndAt()
+                league.getId(),
+                league.getName(),
+                LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(),
+                league.getLeagueTeams().size(),
+                league.getMaxRound().getNumber(),
+                league.getStartAt(),
+                league.getEndAt()
         );
     }
 }

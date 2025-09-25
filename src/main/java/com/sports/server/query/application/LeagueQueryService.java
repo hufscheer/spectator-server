@@ -19,7 +19,6 @@ import com.sports.server.query.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,34 +51,29 @@ public class LeagueQueryService {
         }
 
         List<Long> leagueIds = leagues.stream().map(League::getId).toList();
-        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(leagueIds)
-                .stream()
+        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(leagueIds).stream()
                 .collect(Collectors.toMap(
                         LeagueWinnerInfo::leagueId,
                         LeagueWinnerInfo::winnerTeamName
                 ));
 
-        return leagues.stream()
-                .map(league -> {
-                    String winnerTeamName = firstWinnerTeamsInfo.get(league.getId());
-                    return new LeagueResponse(league, winnerTeamName);
-                })
-                .toList();
+        return leagues.stream().map(league -> {
+            String winnerTeamName = firstWinnerTeamsInfo.get(league.getId());
+            return new LeagueResponse(league, winnerTeamName);
+        }).toList();
     }
 
     public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
-        return teamDynamicRepository.findByLeagueAndRound(league, round)
-                .stream()
+        return teamDynamicRepository.findByLeagueAndRound(league, round).stream()
                 .map(leagueTeam -> new LeagueTeamResponse(leagueTeam.getTeam(), leagueTeam.getId()))
                 .toList();
     }
 
     public LeagueDetailResponse findLeagueDetail(Long leagueId) {
         return leagueQueryRepository.findById(leagueId)
-                .map(league -> LeagueDetailResponse.of(league,
-                        teamDynamicRepository.findByLeagueAndRound(league, null).size()))
+                .map(league -> LeagueDetailResponse.of(league, teamDynamicRepository.findByLeagueAndRound(league, null).size()))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
     }
 
@@ -92,40 +86,42 @@ public class LeagueQueryService {
             return Collections.emptyList();
         }
 
-        List<Long> playerIds = teamPlayers.stream()
-                .map(tp -> tp.getPlayer().getId())
-                .toList();
+        List<Long> playerIds = teamPlayers.stream().map(tp -> tp.getPlayer().getId()).toList();
 
         Map<Long, Integer> goalCountMap = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
-        return teamPlayers.stream()
-                .map(teamPlayer -> {
-                    int totalGoals = goalCountMap.getOrDefault(teamPlayer.getPlayer().getId(), 0);
-                    return PlayerResponse.of(teamPlayer, totalGoals);
-                })
-                .toList();
+        return teamPlayers.stream().map(teamPlayer -> {
+            int totalGoals = goalCountMap.getOrDefault(teamPlayer.getPlayer().getId(), 0);
+            return PlayerResponse.of(teamPlayer, totalGoals);
+        }).toList();
     }
 
     public List<LeagueResponseWithInProgressGames> findLeaguesByManager(final Member member) {
         List<League> leagues = leagueQueryRepository.findByManager(member);
-        Map<League, List<Game>> gamesForLeagues = getGamesForLeague(leagues);
+        Map<League, List<Game>> gamesForLeagues = getPlayingGamesOfLeagues(leagues);
 
         return leagues.stream()
-                .map(league -> LeagueResponseWithInProgressGames.of(
-                        league,
-                        LeagueProgress.getProgressDescription(LocalDateTime.now(), league),
-                        gamesForLeagues.get(league)))
+                .map(league -> LeagueResponseWithInProgressGames.of(league, LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(), gamesForLeagues.get(league)))
                 .toList();
     }
 
-    private Map<League, List<Game>> getGamesForLeague(List<League> leagues) {
+    private Map<League, List<Game>> getPlayingGamesOfLeagues(List<League> leagues) {
+        if (leagues.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> leagueIds = leagues.stream().map(League::getId).toList();
+        List<Game> games = gameQueryRepository.findPlayingGamesByLeagueIdsWithGameTeams(leagueIds);
+        Map<Long, List<Game>> gamesByLeagueId = games.stream()
+                .collect(Collectors.groupingBy(game -> game.getLeague().getId()));
+
         return leagues.stream()
-                .collect(toMap(league -> league,
-                        gameQueryRepository::findPlayingGamesByLeagueWithGameTeams));
+                .collect(Collectors.toMap(
+                        league -> league,
+                        league -> gamesByLeagueId.getOrDefault(league.getId(), Collections.emptyList())
+                ));
     }
 
     public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
-        League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
+        League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId).orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
         List<Game> games = gameQueryRepository.findByLeagueWithGameTeams(league);
         return LeagueResponseWithGames.of(league, games);
     }
@@ -133,32 +129,18 @@ public class LeagueQueryService {
     public List<LeagueResponseToManage> findLeaguesByManagerToManage(final Member manager) {
         List<League> leagues = leagueQueryRepository.findByManagerToManage(manager);
 
-        Comparator<League> comparator = Comparator.comparing(
-                league -> leagueProgressOrderMap.get(
-                        LeagueProgress.getProgressDescription(LocalDateTime.now(), league)));
-
         return leagues.stream()
-                .sorted(comparator)
-                .map(LeagueResponseToManage::of)
+                .sorted(new LeagueProgressComparator(LocalDateTime.now())).map(LeagueResponseToManage::of)
                 .toList();
     }
 
     public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
         entityUtils.getEntity(leagueId, League.class);
-        LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId)
-                .orElseThrow(() -> new NotFoundException("리그 통계 데이터가 아직 업데이트되지 않았습니다."));
+        LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId).orElseThrow(() -> new NotFoundException("리그 통계 데이터가 아직 업데이트되지 않았습니다."));
 
-        Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeamQueryRepository.findByLeagueId(leagueId).stream()
-                .collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));
+        Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeamQueryRepository.findByLeagueId(leagueId).stream().collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));
 
-        return LeagueStatisticsResponse.builder()
-                .firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeamsInfo))
-                .secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeamsInfo))
-                .mostCheeredTeam(LeagueTeamResponse.ofWithCheerCount(
-                        findLeagueTeamFor(statistics.getMostCheeredTeam(), leagueTeamsInfo)))
-                .mostCheerTalksTeam(LeagueTeamResponse.ofWithTotalTalkCount(
-                        findLeagueTeamFor(statistics.getMostCheerTalksTeam(), leagueTeamsInfo)))
-                .build();
+        return LeagueStatisticsResponse.builder().firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeamsInfo)).secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeamsInfo)).mostCheeredTeam(LeagueTeamResponse.ofWithCheerCount(findLeagueTeamFor(statistics.getMostCheeredTeam(), leagueTeamsInfo))).mostCheerTalksTeam(LeagueTeamResponse.ofWithTotalTalkCount(findLeagueTeamFor(statistics.getMostCheerTalksTeam(), leagueTeamsInfo))).build();
     }
 
     private LeagueTeamResponse createLeagueTeamResponseForWinner(Team team, Map<Long, LeagueTeam> leagueTeamsInfo) {
@@ -181,23 +163,15 @@ public class LeagueQueryService {
     }
 
     public List<TopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {
-        return leagueTopScorerRepository.findByLeagueId(leagueId)
-                .stream()
-                .map(TopScorerResponse::from)
-                .toList();
+        return leagueTopScorerRepository.findByLeagueId(leagueId).stream()
+                .map(TopScorerResponse::from).toList();
     }
 
     public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {
         List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, limit));
-        
+
         return results.stream()
                 .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))
                 .toList();
     }
-
-    public static Map<String, Integer> leagueProgressOrderMap = Map.ofEntries(
-            Map.entry(LeagueProgress.IN_PROGRESS.getDescription(), 1),
-            Map.entry(LeagueProgress.BEFORE_START.getDescription(), 2),
-            Map.entry(LeagueProgress.FINISHED.getDescription(), 3)
-    );
 }
