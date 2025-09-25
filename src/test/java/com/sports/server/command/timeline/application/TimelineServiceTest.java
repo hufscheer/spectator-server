@@ -24,6 +24,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 @Sql(scripts = "/timeline-fixture.sql")
 class TimelineServiceTest extends ServiceTest {
     @Autowired
@@ -301,15 +303,17 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 마지막_타임라인을_차례로_삭제한다() {
             // given
-            long lastId = 13L;
+            List<Timeline> game1Timelines = timelineFixtureRepository.findAllLatest(gameId);
 
             // when
-            for (long i = lastId; i > 0; i--) {
-                timelineService.deleteTimeline(manager, gameId, i);
+            while (!game1Timelines.isEmpty()) {
+                Timeline lastTimeline = game1Timelines.get(0);
+                timelineService.deleteTimeline(manager, gameId, lastTimeline.getId());
+                game1Timelines = timelineFixtureRepository.findAllLatest(gameId);
             }
 
             // then
-            assertThat(timelineFixtureRepository.findAll()).isEmpty();
+            assertThat(timelineFixtureRepository.findAllLatest(gameId)).isEmpty();
         }
 
         @ParameterizedTest
