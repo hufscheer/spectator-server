@@ -1,5 +1,7 @@
 package com.sports.server.command.cheertalk.presentation;
 
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -55,6 +57,9 @@ class CheerTalkControllerTest extends DocumentationTest {
         // then
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID"),
                                 parameterWithName("cheerTalkId").description("응원톡의 ID")
@@ -79,6 +84,9 @@ class CheerTalkControllerTest extends DocumentationTest {
         // then
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID"),
                                 parameterWithName("cheerTalkId").description("응원톡의 ID")

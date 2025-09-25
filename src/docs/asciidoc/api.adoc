@@ -18,15 +18,15 @@ operation::cheer-talk-query-controller-test/응원톡을_조회한다[snippets='
 
 === 계정별 신고된 응원톡 전체 조회
 
-operation::cheer-talk-query-controller-test/계정별_신고된_응원톡을_모두_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
+operation::cheer-talk-query-controller-test/계정별_신고된_응원톡을_모두_조회한다[snippets='http-request,request-cookies,query-parameters,http-response,response-fields']
 
 === 계정별 가려지지 않은 응원톡 전체 조회
 
-operation::cheer-talk-query-controller-test/계정별_가려지지_않은_응원톡을_모두_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+operation::cheer-talk-query-controller-test/계정별_가려지지_않은_응원톡을_모두_조회한다[snippets='http-request,request-cookies,query-parameters,path-parameters,http-response,response-fields']
 
 === 계정별 가려진 응원톡 전체 조회
 
-operation::cheer-talk-query-controller-test/계정별_가려진_응원톡을_모두_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+operation::cheer-talk-query-controller-test/계정별_가려진_응원톡을_모두_조회한다[snippets='http-request,request-cookies,query-parameters,path-parameters,http-response,response-fields']
 
 === 리그 응원톡 블락
 
