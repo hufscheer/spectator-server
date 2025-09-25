@@ -105,17 +105,19 @@ public class LeagueQueryService {
     }
 
     private Map<League, List<Game>> getPlayingGamesOfLeagues(List<League> leagues) {
+        if (leagues.isEmpty()) {
+            return Collections.emptyMap();
+        }
         List<Long> leagueIds = leagues.stream().map(League::getId).toList();
         List<Game> games = gameQueryRepository.findPlayingGamesByLeagueIdsWithGameTeams(leagueIds);
+        Map<Long, List<Game>> gamesByLeagueId = games.stream()
+                .collect(Collectors.groupingBy(game -> game.getLeague().getId()));
 
         return leagues.stream()
-                .collect(toMap(league -> league, league -> getPlayingGamesOfLeague(league, games)));
-    }
-
-    private List<Game> getPlayingGamesOfLeague(League league, List<Game> games) {
-        return games.stream()
-                .filter(game -> game.getLeague().equals(league))
-                .toList();
+                .collect(Collectors.toMap(
+                        league -> league,
+                        league -> gamesByLeagueId.getOrDefault(league.getId(), Collections.emptyList())
+                ));
     }
 
     public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
