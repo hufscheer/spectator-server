@@ -51,9 +51,9 @@ public class CheerTalkService {
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         if (report.isPresent()) {
             report.get().accept();
-        } else {
-            cheerTalk.block();
+            return;
         }
+        cheerTalk.block();
     }
 
     public void unblock(final Long leagueId, final Long cheerTalkId, final Member manager) {

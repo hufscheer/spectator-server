@@ -1,5 +1,7 @@
 package com.sports.server.command.cheertalk.presentation;
 
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -39,7 +41,7 @@ class CheerTalkControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 응원톡을_가린다() throws Exception {
+    void 리그_응원톡을_가린다() throws Exception {
         // given
         Long leagueId = 1L;
         Long cheerTalkId = 1L;
@@ -55,6 +57,9 @@ class CheerTalkControllerTest extends DocumentationTest {
         // then
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID"),
                                 parameterWithName("cheerTalkId").description("응원톡의 ID")
@@ -63,13 +68,12 @@ class CheerTalkControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 응원톡을_가리기_취소한다() throws Exception {
+    void 리그_응원톡을_가리기_취소한다() throws Exception {
         // given
         Long leagueId = 1L;
         Long cheerTalkId = 1L;
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
-
 
         // when
         ResultActions result = mockMvc.perform(patch("/cheer-talks/{leagueId}/{cheerTalkId}/unblock", leagueId, cheerTalkId)
@@ -80,10 +84,14 @@ class CheerTalkControllerTest extends DocumentationTest {
         // then
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID"),
                                 parameterWithName("cheerTalkId").description("응원톡의 ID")
                         )
                 ));
     }
+
 }

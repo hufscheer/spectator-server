@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -126,7 +125,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
+                .get("/cheer-talks/reported")
                 .then().log().all()
                 .extract();
 

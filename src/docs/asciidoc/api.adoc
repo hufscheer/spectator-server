@@ -12,29 +12,29 @@
 
 operation::cheer-talk-controller-test/응원톡을_저장한다[snippets='http-request,request-fields,http-response']
 
-=== 응원톡 조회
+=== 관객 응원톡 조회
 
 operation::cheer-talk-query-controller-test/응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
 
-=== 신고된 리그의 응원톡 전체 조회
+=== 계정별 신고된 응원톡 전체 조회
 
-operation::cheer-talk-query-controller-test/리그의_신고된_응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+operation::cheer-talk-query-controller-test/계정별_신고된_응원톡을_모두_조회한다[snippets='http-request,request-cookies,query-parameters,http-response,response-fields']
 
-=== 가려진 리그의 응원톡 전체 조회
+=== 계정별 가려지지 않은 응원톡 전체 조회
 
-operation::cheer-talk-query-controller-test/리그의_가려진_응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+operation::cheer-talk-query-controller-test/계정별_가려지지_않은_응원톡을_모두_조회한다[snippets='http-request,request-cookies,query-parameters,path-parameters,http-response,response-fields']
 
-=== 응원톡 가리기
+=== 계정별 가려진 응원톡 전체 조회
 
-operation::cheer-talk-controller-test/응원톡을_가린다[snippets='http-request,path-parameters,http-response']
+operation::cheer-talk-query-controller-test/계정별_가려진_응원톡을_모두_조회한다[snippets='http-request,request-cookies,query-parameters,path-parameters,http-response,response-fields']
 
-=== 응원톡을 가리기 취소하기
+=== 리그 응원톡 블락
 
-operation::cheer-talk-controller-test/응원톡을_가리기_취소한다[snippets='http-request,path-parameters,http-response']
+operation::cheer-talk-controller-test/리그_응원톡을_가린다[snippets='http-request,request-cookies,path-parameters,http-response']
 
-=== 응원톡 관리 화면에서의 응원톡 전체 조회
+=== 리그 응원톡 블락 해제
 
-operation::cheer-talk-query-controller-test/리그의_차단되지_않은_응원톡을_조회한다[snippets='http-request,query-parameters,path-parameters,http-response,response-fields']
+operation::cheer-talk-controller-test/리그_응원톡을_가리기_취소한다[snippets='http-request,request-cookies,path-parameters,http-response']
 
 == 게임 API
 

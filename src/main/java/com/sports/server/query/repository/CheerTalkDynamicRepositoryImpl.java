@@ -1,7 +1,10 @@
 package com.sports.server.query.repository;
 
 import static com.sports.server.command.cheertalk.domain.QCheerTalk.cheerTalk;
+import static com.sports.server.command.game.domain.QGame.game;
 import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
+import static com.sports.server.command.league.domain.QLeague.league;
+import static com.sports.server.command.member.domain.QMember.member;
 import static com.sports.server.command.report.domain.QReport.report;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -32,37 +35,46 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
     }
 
     @Override
-    public List<CheerTalk> findReportedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+    public List<CheerTalk> findReportedCheerTalksByAdminId(Long adminId, Long cursor, Integer size) {
         return applyPagination(
                 queryFactory.selectFrom(cheerTalk)
                         .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                        .join(game).on(gameTeam.game.id.eq(game.id))
+                        .join(league).on(game.league.id.eq(league.id))
+                        .join(member).on(league.administrator.id.eq(member.id))
                         .join(report).on(report.cheerTalk.eq(cheerTalk))
                         .where(report.state.eq(ReportState.PENDING))
-                        .where(gameTeam.game.league.id.eq(leagueId)),
+                        .where(member.id.eq(adminId)),
                 cursor,
                 size
         );
     }
 
     @Override
-    public List<CheerTalk> findBlockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+    public List<CheerTalk> findUnblockedCheerTalksByAdminId(Long adminId, Long cursor, Integer size) {
         return applyPagination(
-            queryFactory.selectFrom(cheerTalk)
-                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                .where(cheerTalk.isBlocked.eq(true))
-                .where(gameTeam.game.league.id.eq(leagueId)),
-            cursor,
-            size
+                queryFactory.selectFrom(cheerTalk)
+                        .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                        .join(game).on(gameTeam.game.id.eq(game.id))
+                        .join(league).on(game.league.id.eq(league.id))
+                        .join(member).on(league.administrator.id.eq(member.id))
+                        .where(member.id.eq(adminId))
+                        .where(cheerTalk.isBlocked.eq(false)),
+                cursor,
+                size
         );
     }
 
     @Override
-    public List<CheerTalk> findUnblockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+    public List<CheerTalk> findBlockedCheerTalksByAdminId(Long adminId, Long cursor, Integer size) {
         return applyPagination(
                 queryFactory.selectFrom(cheerTalk)
                         .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                        .where(gameTeam.game.league.id.eq(leagueId))
-                        .where(cheerTalk.isBlocked.eq(false)),
+                        .join(game).on(gameTeam.game.id.eq(game.id))
+                        .join(league).on(game.league.id.eq(league.id))
+                        .join(member).on(league.administrator.id.eq(member.id))
+                        .where(member.id.eq(adminId))
+                        .where(cheerTalk.isBlocked.eq(true)),
                 cursor,
                 size
         );

@@ -7,9 +7,9 @@ public interface CheerTalkDynamicRepository {
 
     List<CheerTalk> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size);
 
-    List<CheerTalk> findReportedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size);
+    List<CheerTalk> findReportedCheerTalksByAdminId(Long adminId, Long cursor, Integer size);
 
-    List<CheerTalk> findUnblockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size);
+    List<CheerTalk> findUnblockedCheerTalksByAdminId(Long adminId, Long cursor, Integer size);
 
-    List<CheerTalk> findBlockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size);
+    List<CheerTalk> findBlockedCheerTalksByAdminId(Long adminId, Long cursor, Integer size);
 }

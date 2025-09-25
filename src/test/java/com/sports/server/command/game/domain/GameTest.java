@@ -17,7 +17,6 @@ class GameTest {
     private Game game2;
     private GameTeam team1;
     private GameTeam team2;
-    private GameTeam team3;
 
     @BeforeEach
     public void setUp() {
@@ -45,16 +44,8 @@ class GameTest {
                 .set("pkScore", 0)
                 .sample();
 
-        team3 = entityBuilder(GameTeam.class)
-                .set("id", 3L)
-                .set("game", game)
-                .set("score", 0)
-                .set("pkScore", 0)
-                .sample();
-
         game.addGameTeam(team1);
         game.addGameTeam(team2);
-        game2.addGameTeam(team3);
     }
 
     @Nested
@@ -272,6 +263,11 @@ class GameTest {
     @Test
     void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
         // given
+        GameTeam team3 = entityBuilder(GameTeam.class)
+                .set("id", 999L)
+                .set("game", null)
+                .sample();
+
         LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
                 .set("gameTeam", team3)
                 .sample();
@@ -281,6 +277,4 @@ class GameTest {
                 .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
                 .isInstanceOf(CustomException.class);
     }
-
-
 }
