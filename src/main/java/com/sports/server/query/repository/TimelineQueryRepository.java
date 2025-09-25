@@ -56,10 +56,8 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
             "FROM ScoreTimeline st " +
             "JOIN st.scorer sc " +
             "JOIN sc.player p " +
-            "JOIN p.teamPlayers tp " +
-            "JOIN tp.team t " +
-            "JOIN t.leagueTeams lt " +
-            "WHERE lt.league.id = :leagueId " +
+            "JOIN st.game g " +
+            "WHERE g.league.id = :leagueId " +
             "GROUP BY p.id, p.studentNumber, p.name " +
             "HAVING COUNT(st.id) > 0 " +
             "ORDER BY COUNT(st.id) DESC, p.name ASC")
