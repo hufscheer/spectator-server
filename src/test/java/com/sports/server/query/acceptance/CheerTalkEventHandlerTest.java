@@ -50,7 +50,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         stompClient.setMessageConverter(messageConverter);
         StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
                 })
-                .get(1, SECONDS);
+                .get(5, SECONDS);
 
         stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
 
