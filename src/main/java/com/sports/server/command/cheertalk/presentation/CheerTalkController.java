@@ -24,17 +24,29 @@ public class CheerTalkController {
 
     @PatchMapping("/{leagueId}/{cheerTalkId}/block")
     @ResponseStatus(HttpStatus.OK)
-    public void block(@PathVariable Long leagueId,
+    public void blockCheerTalkOfLeague(@PathVariable Long leagueId,
                       @PathVariable Long cheerTalkId,
                       final Member manager) {
-        cheerTalkService.block(leagueId, cheerTalkId, manager);
+        cheerTalkService.blockCheerTalkOfLeague(leagueId, cheerTalkId, manager);
     }
 
-    @PatchMapping("{leagueId}/{cheerTalkId}/unblock")
+    @PatchMapping("/{leagueId}/{cheerTalkId}/unblock")
     @ResponseStatus(HttpStatus.OK)
-    public void unblock(@PathVariable Long leagueId,
+    public void unblockCheerTalkOfLeague(@PathVariable Long leagueId,
                         @PathVariable Long cheerTalkId,
                         final Member manager) {
-        cheerTalkService.unblock(leagueId, cheerTalkId, manager);
+        cheerTalkService.unblockCheerTalkOfLeague(leagueId, cheerTalkId, manager);
+    }
+
+    @PatchMapping("/{cheerTalkId}/block")
+    @ResponseStatus(HttpStatus.OK)
+    public void blockCheerTalk(@PathVariable Long cheerTalkId) {
+        cheerTalkService.blockCheerTalk(cheerTalkId);
+    }
+
+    @PatchMapping("/{cheerTalkId}/unblock")
+    @ResponseStatus(HttpStatus.OK)
+    public void unblockCheerTalk(@PathVariable Long cheerTalkId) {
+        cheerTalkService.unblockCheerTalk(cheerTalkId);
     }
 }

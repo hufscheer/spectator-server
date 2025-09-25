@@ -1,5 +1,6 @@
 package com.sports.server.query.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.game.domain.Game;
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class CheerTalkResponse {
 		}
 	}
 
+	@JsonInclude(JsonInclude.Include.NON_NULL)
     public record ForManager(
             Long cheerTalkId,
             Long gameId,
@@ -54,6 +56,20 @@ public class CheerTalkResponse {
                     game.getLeague().getName()
             );
         }
+
+		public ForManager(CheerTalk cheerTalk) {
+			this(
+					cheerTalk.getId(),
+					null,
+					null,
+					cheerTalk.getContent(),
+					cheerTalk.getGameTeamId(),
+					cheerTalk.getCreatedAt(),
+					cheerTalk.isBlocked(),
+					null,
+					null
+			);
+		}
     }
 }
 
