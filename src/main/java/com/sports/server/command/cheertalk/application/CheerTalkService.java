@@ -42,7 +42,7 @@ public class CheerTalkService {
         }
     }
 
-    public void blockCheerTalkOfLeague(final Long leagueId, final Long cheerTalkId, final Member manager) {
+    public void block(final Long leagueId, final Long cheerTalkId, final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
@@ -56,7 +56,7 @@ public class CheerTalkService {
         cheerTalk.block();
     }
 
-    public void unblockCheerTalkOfLeague(final Long leagueId, final Long cheerTalkId, final Member manager) {
+    public void unblock(final Long leagueId, final Long cheerTalkId, final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
