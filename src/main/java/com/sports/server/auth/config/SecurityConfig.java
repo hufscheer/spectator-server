@@ -50,10 +50,9 @@ public class SecurityConfig {
                                 mvc.pattern(HttpMethod.PUT, "/leagues/{leagueId}/teams/{teamId}"),
                                 mvc.pattern(HttpMethod.DELETE, "/leagues/{leagueId}/teams/{teamId}"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams/{teamId}/delete-logo"),
-                                mvc.pattern(HttpMethod.GET, "/leagues/{leagueId}/cheer-talks/**"),
                                 mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/games"),
                                 mvc.pattern(HttpMethod.DELETE, "/leagues/{leagueId}/{gameId}"),
-                                mvc.pattern(HttpMethod.GET, "/leagues/{leagueId}/cheer-talks/blocked"),
+                                mvc.pattern(HttpMethod.GET, "/cheer-talks/**"),
                                 mvc.pattern(HttpMethod.POST, "/games/*/timelines/**"),
                                 mvc.pattern(HttpMethod.POST, "/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/**"),
                                 mvc.pattern(HttpMethod.PATCH, "/cheer-talks/{leagueId}/{cheerTalkId}/**"),
@@ -63,9 +62,7 @@ public class SecurityConfig {
                                 mvc.pattern(HttpMethod.POST, "/players"),
                                 mvc.pattern(HttpMethod.PATCH, "/players/{playerId}"),
                                 mvc.pattern(HttpMethod.DELETE, "/players/{playerId}"),
-                                mvc.pattern(HttpMethod.PATCH, "/cheer-talks/**"),
-                                mvc.pattern(HttpMethod.GET, "/cheer-talks/blocked"),
-                                mvc.pattern(HttpMethod.GET, "/cheer-talks")
+                                mvc.pattern(HttpMethod.PATCH, "/cheer-talks/**")
                         )
                         .authenticated()
                         .anyRequest().permitAll()
