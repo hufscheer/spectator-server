@@ -51,7 +51,11 @@ public class LeagueQueryService {
         }
 
         List<Long> leagueIds = leagues.stream().map(League::getId).toList();
-        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(leagueIds).stream().collect(Collectors.toMap(LeagueWinnerInfo::leagueId, LeagueWinnerInfo::winnerTeamName));
+        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(leagueIds).stream()
+                .collect(Collectors.toMap(
+                        LeagueWinnerInfo::leagueId,
+                        LeagueWinnerInfo::winnerTeamName
+                ));
 
         return leagues.stream().map(league -> {
             String winnerTeamName = firstWinnerTeamsInfo.get(league.getId());
@@ -95,18 +99,23 @@ public class LeagueQueryService {
         List<League> leagues = leagueQueryRepository.findByManager(member);
         Map<League, List<Game>> gamesForLeagues = getPlayingGamesOfLeagues(leagues);
 
-        return leagues.stream().map(league -> LeagueResponseWithInProgressGames.of(league, LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(), gamesForLeagues.get(league))).toList();
+        return leagues.stream()
+                .map(league -> LeagueResponseWithInProgressGames.of(league, LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(), gamesForLeagues.get(league)))
+                .toList();
     }
 
     private Map<League, List<Game>> getPlayingGamesOfLeagues(List<League> leagues) {
         List<Long> leagueIds = leagues.stream().map(League::getId).toList();
         List<Game> games = gameQueryRepository.findPlayingGamesByLeagueIdsWithGameTeams(leagueIds);
 
-        return leagues.stream().collect(toMap(league -> league, league -> getPlayingGamesOfLeague(league, games)));
+        return leagues.stream()
+                .collect(toMap(league -> league, league -> getPlayingGamesOfLeague(league, games)));
     }
 
     private List<Game> getPlayingGamesOfLeague(League league, List<Game> games) {
-        return games.stream().filter(game -> game.getLeague().equals(league)).toList();
+        return games.stream()
+                .filter(game -> game.getLeague().equals(league))
+                .toList();
     }
 
     public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
@@ -118,7 +127,9 @@ public class LeagueQueryService {
     public List<LeagueResponseToManage> findLeaguesByManagerToManage(final Member manager) {
         List<League> leagues = leagueQueryRepository.findByManagerToManage(manager);
 
-        return leagues.stream().sorted(new LeagueProgressComparator(LocalDateTime.now())).map(LeagueResponseToManage::of).toList();
+        return leagues.stream()
+                .sorted(new LeagueProgressComparator(LocalDateTime.now())).map(LeagueResponseToManage::of)
+                .toList();
     }
 
     public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
@@ -150,12 +161,15 @@ public class LeagueQueryService {
     }
 
     public List<TopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {
-        return leagueTopScorerRepository.findByLeagueId(leagueId).stream().map(TopScorerResponse::from).toList();
+        return leagueTopScorerRepository.findByLeagueId(leagueId).stream()
+                .map(TopScorerResponse::from).toList();
     }
 
     public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {
         List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, limit));
 
-        return results.stream().map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue())).toList();
+        return results.stream()
+                .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))
+                .toList();
     }
 }
