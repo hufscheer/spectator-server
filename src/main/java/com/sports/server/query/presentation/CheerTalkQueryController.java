@@ -18,7 +18,7 @@ public class CheerTalkQueryController {
 
     private final CheerTalkQueryService cheerTalkQueryService;
 
-    @GetMapping("games/{gameId}/cheer-talks")
+    @GetMapping("/games/{gameId}/cheer-talks")
     public ResponseEntity<List<CheerTalkResponse.ForSpectator>> getAllCheerTalks(@PathVariable final Long gameId,
                                                                                  @ModelAttribute final PageRequestDto pageRequest) {
 
@@ -42,10 +42,22 @@ public class CheerTalkQueryController {
     }
 
     @GetMapping("/leagues/{leagueId}/cheer-talks/blocked")
-    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllBlockedCheerTalks(
+    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllBlockedCheerTalksOfLeague(
         @PathVariable final Long leagueId,
         @ModelAttribute final PageRequestDto pageable,
         Member member) {
         return ResponseEntity.ok(cheerTalkQueryService.getBlockedCheerTalksByLeagueId(leagueId, pageable, member));
+    }
+
+    @GetMapping("/cheer-talks")
+    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllCheerTalks(
+            @ModelAttribute final PageRequestDto pageable){
+        return ResponseEntity.ok(cheerTalkQueryService.getAllUnblockedCheerTalks(pageable));
+    }
+
+    @GetMapping("/cheer-talks/blocked")
+    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllBlockedCheerTalks(
+            @ModelAttribute final PageRequestDto pageable) {
+        return ResponseEntity.ok(cheerTalkQueryService.getAllBlockedCheerTalks(pageable));
     }
 }

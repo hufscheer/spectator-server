@@ -30,6 +30,23 @@ public class CheerTalkQueryService {
 
 	private final EntityUtils entityUtils;
 
+	public List<CheerTalkResponse.ForManager> getAllUnblockedCheerTalks(final PageRequestDto pageRequest){
+		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findAllUnblocked(
+				pageRequest.cursor(), pageRequest.size());
+
+		return cheerTalks.stream()
+				.map(CheerTalkResponse.ForManager::new)
+				.collect(Collectors.toList());
+	}
+
+	public List<CheerTalkResponse.ForManager> getAllBlockedCheerTalks(final PageRequestDto pageRequest){
+		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findAllBlocked(
+				pageRequest.cursor(), pageRequest.size());
+
+		return cheerTalks.stream()
+				.map(CheerTalkResponse.ForManager::new).toList();
+	}
+
 	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId,
 		final PageRequestDto pageRequest) {
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(

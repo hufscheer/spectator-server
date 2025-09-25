@@ -5,6 +5,10 @@ import java.util.List;
 
 public interface CheerTalkDynamicRepository {
 
+    List<CheerTalk> findAllUnblocked(Long cursor, Integer size);
+
+    List<CheerTalk> findAllBlocked(Long cursor, Integer size);
+
     List<CheerTalk> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size);
 
     List<CheerTalk> findReportedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size);

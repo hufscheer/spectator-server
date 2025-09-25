@@ -21,6 +21,26 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public List<CheerTalk> findAllUnblocked(Long cursor, Integer size){
+        return applyPagination(
+                queryFactory.selectFrom(cheerTalk)
+                        .where(cheerTalk.isBlocked.eq(false)),
+                cursor,
+                size
+        );
+    }
+
+    @Override
+    public List<CheerTalk> findAllBlocked(Long cursor, Integer size){
+        return applyPagination(
+                queryFactory.selectFrom(cheerTalk)
+                        .where(cheerTalk.isBlocked.eq(true)),
+                cursor,
+                size
+        );
+    }
+
+    @Override
     public List<CheerTalk> findByGameIdOrderByStartTime(Long gameId, Long cursor, Integer size) {
         return applyPagination(
                 queryFactory.selectFrom(cheerTalk)
