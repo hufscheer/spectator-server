@@ -25,30 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class CheerTalkQueryService {
 
 	private final CheerTalkDynamicRepository cheerTalkDynamicRepository;
-
 	private final GameQueryRepository gameQueryRepository;
 
 	private final EntityUtils entityUtils;
 
-	public List<CheerTalkResponse.ForManager> getAllUnblockedCheerTalks(final PageRequestDto pageRequest){
-		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findAllUnblocked(
-				pageRequest.cursor(), pageRequest.size());
-
-		return cheerTalks.stream()
-				.map(CheerTalkResponse.ForManager::new)
-				.collect(Collectors.toList());
-	}
-
-	public List<CheerTalkResponse.ForManager> getAllBlockedCheerTalks(final PageRequestDto pageRequest){
-		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findAllBlocked(
-				pageRequest.cursor(), pageRequest.size());
-
-		return cheerTalks.stream()
-				.map(CheerTalkResponse.ForManager::new).toList();
-	}
-
-	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId,
-		final PageRequestDto pageRequest) {
+	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
 			gameId, pageRequest.cursor(), pageRequest.size()
 		);
@@ -61,14 +42,9 @@ public class CheerTalkQueryService {
 		return responses;
 	}
 
-	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId,
-		final PageRequestDto pageRequest,
-		final Member manager) {
-		League league = entityUtils.getEntity(leagueId, League.class);
-		PermissionValidator.checkPermission(league, manager);
-
-		List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
-			leagueId, pageRequest.cursor(), pageRequest.size()
+	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member administrator) {
+		List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByAdminId(
+			administrator.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
 		return reportedCheerTalks.stream()
@@ -76,14 +52,9 @@ public class CheerTalkQueryService {
 				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
 
-	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(Long leagueId,
-		PageRequestDto pageRequest,
-		Member manager) {
-		League league = entityUtils.getEntity(leagueId, League.class);
-		PermissionValidator.checkPermission(league, manager);
-
-		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
-			leagueId, pageRequest.cursor(), pageRequest.size()
+	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByAdmin(PageRequestDto pageRequest, Member administrator) {
+		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByAdminId(
+			administrator.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
 		return cheerTalks.stream()
@@ -91,15 +62,10 @@ public class CheerTalkQueryService {
 				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
 
-	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByLeagueId(final Long leagueId,
-		final PageRequestDto pageable,
-		final Member member) {
-		League league = entityUtils.getEntity(leagueId, League.class);
-
-		PermissionValidator.checkPermission(league, member);
-
-		List<CheerTalk> blockedCheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByLeagueId(
-			leagueId, pageable.cursor(), pageable.size());
+	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member administrator) {
+		List<CheerTalk> blockedCheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByAdminId(
+			administrator.getId(), pageRequest.cursor(), pageRequest.size()
+		);
 
 		return blockedCheerTalks.stream()
 			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,

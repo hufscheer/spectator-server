@@ -42,25 +42,6 @@ public class CheerTalkService {
         }
     }
 
-    public void blockCheerTalk(final Long cheerTalkId) {
-        CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
-
-        Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
-        if (report.isPresent()) {
-            report.get().accept();
-        } else {
-            cheerTalk.block();
-        }
-    }
-
-    public void unblockCheerTalk(final Long cheerTalkId) {
-        CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
-
-        Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
-        report.ifPresent(Report::cancel);
-        cheerTalk.unblock();
-    }
-
     public void blockCheerTalkOfLeague(final Long leagueId, final Long cheerTalkId, final Member manager) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
@@ -70,9 +51,9 @@ public class CheerTalkService {
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         if (report.isPresent()) {
             report.get().accept();
-        } else {
-            cheerTalk.block();
+            return;
         }
+        cheerTalk.block();
     }
 
     public void unblockCheerTalkOfLeague(final Long leagueId, final Long cheerTalkId, final Member manager) {

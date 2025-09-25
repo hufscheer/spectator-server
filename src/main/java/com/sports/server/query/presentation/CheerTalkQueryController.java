@@ -19,45 +19,27 @@ public class CheerTalkQueryController {
     private final CheerTalkQueryService cheerTalkQueryService;
 
     @GetMapping("/games/{gameId}/cheer-talks")
-    public ResponseEntity<List<CheerTalkResponse.ForSpectator>> getAllCheerTalks(@PathVariable final Long gameId,
-                                                                                 @ModelAttribute final PageRequestDto pageRequest) {
-
+    public ResponseEntity<List<CheerTalkResponse.ForSpectator>> getAllCheerTalks(
+            @PathVariable final Long gameId,
+            @ModelAttribute final PageRequestDto pageRequest) {
         return ResponseEntity.ok(cheerTalkQueryService.getCheerTalksByGameId(gameId, pageRequest));
     }
 
-    @GetMapping("/leagues/{leagueId}/cheer-talks/reported")
+    @GetMapping("/cheer-talks/reported")
     public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllReportedCheerTalks(
-            @PathVariable final Long leagueId,
-            @ModelAttribute final PageRequestDto pageRequest,
-            Member member) {
-        return ResponseEntity.ok(cheerTalkQueryService.getReportedCheerTalksByLeagueId(leagueId, pageRequest, member));
-    }
-
-    @GetMapping("/leagues/{leagueId}/cheer-talks")
-    public ResponseEntity<List<CheerTalkResponse.ForManager>> getUnblockedCheerTalksOfLeague(
-            @PathVariable final Long leagueId,
-            @ModelAttribute final PageRequestDto pageRequest, Member
-                    member) {
-        return ResponseEntity.ok(cheerTalkQueryService.getUnblockedCheerTalksByLeagueId(leagueId, pageRequest, member));
-    }
-
-    @GetMapping("/leagues/{leagueId}/cheer-talks/blocked")
-    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllBlockedCheerTalksOfLeague(
-        @PathVariable final Long leagueId,
-        @ModelAttribute final PageRequestDto pageable,
-        Member member) {
-        return ResponseEntity.ok(cheerTalkQueryService.getBlockedCheerTalksByLeagueId(leagueId, pageable, member));
+            @ModelAttribute final PageRequestDto pageRequest, Member member) {
+        return ResponseEntity.ok(cheerTalkQueryService.getReportedCheerTalksByAdmin(pageRequest, member));
     }
 
     @GetMapping("/cheer-talks")
-    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllCheerTalks(
-            @ModelAttribute final PageRequestDto pageable){
-        return ResponseEntity.ok(cheerTalkQueryService.getAllUnblockedCheerTalks(pageable));
+    public ResponseEntity<List<CheerTalkResponse.ForManager>> getUnblockedCheerTalksByAdmin(
+            @ModelAttribute final PageRequestDto pageRequest, Member member) {
+        return ResponseEntity.ok(cheerTalkQueryService.getUnblockedCheerTalksByAdmin(pageRequest, member));
     }
 
     @GetMapping("/cheer-talks/blocked")
-    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllBlockedCheerTalks(
-            @ModelAttribute final PageRequestDto pageable) {
-        return ResponseEntity.ok(cheerTalkQueryService.getAllBlockedCheerTalks(pageable));
+    public ResponseEntity<List<CheerTalkResponse.ForManager>> getAllBlockedCheerTalksByAdmin(
+        @ModelAttribute final PageRequestDto pageable, Member member) {
+        return ResponseEntity.ok(cheerTalkQueryService.getBlockedCheerTalksByAdmin(pageable, member));
     }
 }
