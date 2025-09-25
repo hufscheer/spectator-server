@@ -145,6 +145,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 				.isInstanceOf(UnauthorizedException.class);
 		}
 	}
+
     @Nested
     @DisplayName("블락되지 않은 리그의 응원톡을 전체 조회 할 때")
     class TestFindUnblockedCheerTalksByLeagueId {
@@ -201,6 +202,60 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
                     responses.stream()
                             .map(CheerTalkResponse.ForManager::leagueId).toList()
             ).containsOnly(leagueId);
+        }
+    }
+
+    @Nested
+    @DisplayName("전체 차단되지 않은 응원톡을 조회할 때")
+    class TestGetAllUnblockedCheerTalks {
+
+        @Test
+        void 차단되지_않은_응원톡만_조회된다() {
+            // when
+            List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getAllUnblockedCheerTalks(pageRequestDto);
+
+            // then
+            assertThat(
+                    results.stream().map(CheerTalkResponse.ForManager::isBlocked)
+            ).containsOnly(false);
+        }
+
+        @Test
+        void 최신순으로_조회된다() {
+            // when
+            List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getAllUnblockedCheerTalks(pageRequestDto);
+
+            // then
+            assertThat(results)
+                    .map(CheerTalkResponse.ForManager::createdAt)
+                    .isSortedAccordingTo(Comparator.reverseOrder());
+        }
+    }
+
+    @Nested
+    @DisplayName("전체 차단된 응원톡을 조회할 때")
+    class TestGetAllBlockedCheerTalks {
+
+        @Test
+        void 차단된_응원톡만_조회된다() {
+            // when
+            List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getAllBlockedCheerTalks(pageRequestDto);
+
+            // then
+            assertThat(
+                    results.stream().map(CheerTalkResponse.ForManager::isBlocked)
+            ).containsOnly(true);
+        }
+
+        @Test
+        void 최신순으로_조회된다() {
+            // when
+            List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getAllBlockedCheerTalks(pageRequestDto);
+
+            // then
+            assertThat(results)
+                    .map(CheerTalkResponse.ForManager::createdAt)
+                    .isSortedAccordingTo(Comparator.reverseOrder());
         }
     }
 }

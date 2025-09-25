@@ -232,4 +232,94 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부")
 				)));
 	}
+
+	@Test
+	void 모든_차단되지_않은_응원톡을_조회한다() throws Exception {
+		// given
+		PageRequestDto pageRequestDto = new PageRequestDto(1L, 2);
+		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
+		List<CheerTalkResponse.ForManager> response = List.of(
+			new CheerTalkResponse.ForManager(
+				2L, null, null, "응원해요", 1L, createdAt, false, null, null
+			),
+			new CheerTalkResponse.ForManager(
+				3L, null, null, "파이팅", 2L, createdAt, false, null, null
+			)
+		);
+
+		given(cheerTalkQueryService.getAllUnblockedCheerTalks(pageRequestDto))
+			.willReturn(response);
+
+		// when
+		ResultActions result = mockMvc.perform(get("/cheer-talks")
+				.queryParam("cursor", String.valueOf(1))
+				.queryParam("size", String.valueOf(2))
+				.contentType(MediaType.APPLICATION_JSON)
+				.cookie(cookie)
+		);
+
+		// then
+		result.andExpect((status().isOk()))
+			.andDo(restDocsHandler.document(
+				queryParameters(
+					parameterWithName("cursor").description("마지막 응원톡의 ID"),
+					parameterWithName("size").description("조회하고자 하는 응원톡의 개수")
+				),
+				responseFields(
+					fieldWithPath("[].cheerTalkId").type(JsonFieldType.NUMBER).description("응원톡의 ID"),
+					fieldWithPath("[].content").type(JsonFieldType.STRING).description("응원톡의 내용"),
+					fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
+					fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER)
+						.description("응원톡에 해당하는 게임팀의 ID"),
+					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부")
+				)
+			));
+	}
+
+	@Test
+	void 모든_차단된_응원톡을_조회한다() throws Exception {
+		// given
+		PageRequestDto pageRequestDto = new PageRequestDto(1L, 2);
+		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+
+		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
+		List<CheerTalkResponse.ForManager> response = List.of(
+			new CheerTalkResponse.ForManager(
+				2L, null, null, "미안하다이거보여주려고어그로끌었다", 1L, createdAt, true, null, null
+			),
+			new CheerTalkResponse.ForManager(
+				3L, null, null, "이학을국회로", 2L, createdAt, true, null, null
+			)
+		);
+
+		given(cheerTalkQueryService.getAllBlockedCheerTalks(pageRequestDto))
+			.willReturn(response);
+
+		// when
+		ResultActions result = mockMvc.perform(get("/cheer-talks/blocked")
+				.queryParam("cursor", String.valueOf(1))
+				.queryParam("size", String.valueOf(2))
+				.contentType(MediaType.APPLICATION_JSON)
+				.cookie(cookie)
+		);
+
+		// then
+		result.andExpect((status().isOk()))
+			.andDo(restDocsHandler.document(
+				queryParameters(
+					parameterWithName("cursor").description("마지막 응원톡의 ID"),
+					parameterWithName("size").description("조회하고자 하는 응원톡의 개수")
+				),
+				responseFields(
+					fieldWithPath("[].cheerTalkId").type(JsonFieldType.NUMBER).description("응원톡의 ID"),
+					fieldWithPath("[].content").type(JsonFieldType.STRING).description("응원톡의 내용"),
+					fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER)
+						.description("응원톡에 해당하는 게임팀의 ID"),
+					fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
+					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부")
+				)
+			));
+	}
 }

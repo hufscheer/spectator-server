@@ -247,4 +247,52 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
             () -> assertThat(actual).map(CheerTalkResponse.ForManager::content).containsExactly("응원톡23", "블락된 응원톡")
         );
     }
+
+    @Test
+    void 모든_차단되지_않은_응원톡을_조회한다() {
+        // given
+        configureMockJwtForEmail("john.doe@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/cheer-talks")
+                .then().log().all()
+                .extract();
+
+        // then
+        List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse.ForManager::isBlocked)
+                        .containsOnly(false)
+        );
+    }
+
+    @Test
+    void 모든_차단된_응원톡을_조회한다() {
+        // given
+        configureMockJwtForEmail("john.doe@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/cheer-talks/blocked")
+                .then().log().all()
+                .extract();
+
+        // then
+        List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual)
+                        .map(CheerTalkResponse.ForManager::isBlocked)
+                        .containsOnly(true)
+        );
+    }
 }
