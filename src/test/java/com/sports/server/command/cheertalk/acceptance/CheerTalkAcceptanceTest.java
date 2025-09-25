@@ -62,7 +62,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/cheer-talks/blocked", leagueId)
+                .get("/cheer-talks/blocked")
                 .then().log().all()
                 .extract();
 
@@ -101,84 +101,6 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/cheer-talks", leagueId)
-                .then().log().all()
-                .extract();
-
-        List<CheerTalkResponse.ForManager> unblockedCheerTalks = toResponses(getResponse, CheerTalkResponse.ForManager.class);
-
-        assertAll(
-                () -> assertThat(patchResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(unblockedCheerTalks)
-                        .map(CheerTalkResponse.ForManager::cheerTalkId)
-                        .contains(cheerTalkId),
-                () -> assertThat(unblockedCheerTalks)
-                        .map(CheerTalkResponse.ForManager::isBlocked)
-                        .containsOnly(false)
-        );
-    }
-
-    @Test
-    void 응원톡을_차단한다() {
-        // given
-        Long cheerTalkId = 1L;
-        configureMockJwtForEmail(MOCK_EMAIL);
-
-        // when
-        ExtractableResponse<Response> patchResponse = RestAssured.given().log().all()
-                .cookie(COOKIE_NAME, mockToken)
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .patch("/cheer-talks/{cheerTalkId}/block", cheerTalkId)
-                .then().log().all()
-                .extract();
-
-        // then
-        // 차단 후 해당 응원톡이 전체 차단된 응원톡 목록에 포함되는지 확인
-        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-                .when()
-                .cookie(COOKIE_NAME, mockToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/cheer-talks/blocked")
-                .then().log().all()
-                .extract();
-
-        List<CheerTalkResponse.ForManager> blockedCheerTalks = toResponses(getResponse, CheerTalkResponse.ForManager.class);
-
-        assertAll(
-                () -> assertThat(patchResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(blockedCheerTalks)
-                        .map(CheerTalkResponse.ForManager::cheerTalkId)
-                        .contains(cheerTalkId),
-                () -> assertThat(blockedCheerTalks)
-                        .map(CheerTalkResponse.ForManager::isBlocked)
-                        .containsOnly(true)
-        );
-    }
-
-    @Test
-    void 응원톡_차단을_해제한다() {
-        // given
-        Long cheerTalkId = 14L;
-        configureMockJwtForEmail(MOCK_EMAIL);
-
-        // when
-        ExtractableResponse<Response> patchResponse = RestAssured.given().log().all()
-                .when()
-                .cookie(COOKIE_NAME, mockToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .patch("/cheer-talks/{cheerTalkId}/unblock", cheerTalkId)
-                .then().log().all()
-                .extract();
-
-        // then
-        // 차단 해제 후 해당 응원톡이 전체 차단되지 않은 응원톡 목록에 포함되는지 확인
-        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-                .when()
-                .cookie(COOKIE_NAME, mockToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .get("/cheer-talks")
                 .then().log().all()
                 .extract();
@@ -196,4 +118,5 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
                         .containsOnly(false)
         );
     }
+
 }

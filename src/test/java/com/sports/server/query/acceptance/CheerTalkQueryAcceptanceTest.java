@@ -78,7 +78,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
 
                     () -> assertThat(actual)
                             .map(CheerTalkResponse.ForSpectator::cheerTalkId)
-                            .containsExactly(6L, 8L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L)
+                            .containsExactly(10L, 11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L)
             );
         }
 
@@ -132,7 +132,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
 
                     () -> assertThat(actual)
                             .map(CheerTalkResponse.ForSpectator::cheerTalkId)
-                            .containsExactly(1L, 4L, 5L, 6L)
+                            .containsExactly(4L, 5L, 6L, 7L)
             );
         }
 
@@ -159,11 +159,8 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 리그의_신고된_응원톡을_조회한다() {
-
+    void 계정별_신고된_응원톡을_조회한다() {
         // given
-        Long leagueId = 1L;
-
         configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
@@ -171,7 +168,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
+                .get("/cheer-talks/reported")
                 .then().log().all()
                 .extract();
 
@@ -189,11 +186,8 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 리그의_차단되지_않은_응원톡을_모두_조회한다() {
-
+    void 계정별_차단되지_않은_응원톡을_모두_조회한다() {
         // given
-        Long leagueId = 1L;
-
         configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
@@ -201,7 +195,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/cheer-talks", leagueId)
+                .get("/cheer-talks")
                 .then().log().all()
                 .extract();
 
@@ -223,10 +217,8 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 리그의_가려진_응원톡을_조회한다() {
+    void 계정별_가려진_응원톡을_조회한다() {
     	// given
-    	Long leagueId = 1L;
-
         configureMockJwtForEmail(MOCK_EMAIL);
 
     	// when
@@ -234,7 +226,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
             .when()
             .cookie(COOKIE_NAME, mockToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .get("/leagues/{leagueId}/cheer-talks/blocked", leagueId)
+            .get("/cheer-talks/blocked")
             .then().log().all()
             .extract();
 
@@ -249,7 +241,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 모든_차단되지_않은_응원톡을_조회한다() {
+    void 계정별_모든_차단되지_않은_응원톡을_조회한다() {
         // given
         configureMockJwtForEmail("john.doe@example.com");
 
@@ -273,7 +265,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 모든_차단된_응원톡을_조회한다() {
+    void 계정별_모든_차단된_응원톡을_조회한다() {
         // given
         configureMockJwtForEmail("john.doe@example.com");
 

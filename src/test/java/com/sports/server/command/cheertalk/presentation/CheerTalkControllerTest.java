@@ -70,7 +70,6 @@ class CheerTalkControllerTest extends DocumentationTest {
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
-
         // when
         ResultActions result = mockMvc.perform(patch("/cheer-talks/{leagueId}/{cheerTalkId}/unblock", leagueId, cheerTalkId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -87,45 +86,4 @@ class CheerTalkControllerTest extends DocumentationTest {
                 ));
     }
 
-    @Test
-    void 응원톡을_차단한다() throws Exception {
-        // given
-        Long cheerTalkId = 1L;
-        Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
-
-        // when
-        ResultActions result = mockMvc.perform(patch("/cheer-talks/{cheerTalkId}/block", cheerTalkId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .cookie(cookie)
-        );
-
-        // then
-        result.andExpect((status().isOk()))
-                .andDo(restDocsHandler.document(
-                        pathParameters(
-                                parameterWithName("cheerTalkId").description("응원톡의 ID")
-                        )
-                ));
-    }
-
-    @Test
-    void 응원톡_차단을_해제한다() throws Exception {
-        // given
-        Long cheerTalkId = 1L;
-        Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
-
-        // when
-        ResultActions result = mockMvc.perform(patch("/cheer-talks/{cheerTalkId}/unblock", cheerTalkId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .cookie(cookie)
-        );
-
-        // then
-        result.andExpect((status().isOk()))
-                .andDo(restDocsHandler.document(
-                        pathParameters(
-                                parameterWithName("cheerTalkId").description("응원톡의 ID")
-                        )
-                ));
-    }
 }
