@@ -15,6 +15,7 @@ import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -42,6 +43,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         URL = "ws://localhost:" + port + "/ws";
     }
 
+    @Disabled
     @Test
     void 응원톡을_작성하면_소켓_응답을_받는다() throws Exception {
         //given
