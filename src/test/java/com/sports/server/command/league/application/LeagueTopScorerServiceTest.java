@@ -73,10 +73,10 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
             for (int i = 0; i < topScorers.size() - 1; i++) {
                 LeagueTopScorer current = topScorers.get(i);
                 LeagueTopScorer next = topScorers.get(i + 1);
-                
+
                 // 골 수가 내림차순으로 정렬되었는지 확인
                 assertThat(current.getGoalCount()).isGreaterThanOrEqualTo(next.getGoalCount());
-                
+
                 // 동점이 아닌 경우 순위가 증가하는지 확인
                 if (!current.getGoalCount().equals(next.getGoalCount())) {
                     assertThat(next.getRanking()).isGreaterThan(current.getRanking());
@@ -86,6 +86,30 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
                     assertThat(next.getRanking()).isEqualTo(current.getRanking());
                 }
             }
+        }
+
+        @Test
+        void 다른_리그의_득점은_집계에_포함되지_않는다() {
+            // given
+            Long league1Id = 1L;
+
+            // when
+            leagueTopScorerService.updateTopScorersForLeague(league1Id);
+
+            // then
+            List<LeagueTopScorer> topScorers = leagueTopScorerRepository.findByLeagueId(league1Id);
+
+            LeagueTopScorer player1TopScorer = topScorers.stream()
+                    .filter(scorer -> scorer.getPlayer().getId().equals(1L))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("선수1이 득점왕 목록에 없습니다."));
+            assertThat(player1TopScorer.getGoalCount()).isEqualTo(2); // 리그1에서만 2골
+
+            LeagueTopScorer player2TopScorer = topScorers.stream()
+                    .filter(scorer -> scorer.getPlayer().getId().equals(2L))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("선수2가 득점왕 목록에 없습니다."));
+            assertThat(player2TopScorer.getGoalCount()).isEqualTo(2); // 리그1에서만 2골
         }
     }
 }
