@@ -19,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql(scripts = "/timeline-fixture.sql")
 public class TimelineAcceptanceTest extends AcceptanceTest {
     private final Long gameId = 1L;
-    private final Long quarterId = 3L;
     private final Long team1Id = 1L;
     private final Long team1PlayerId = 1L;
 

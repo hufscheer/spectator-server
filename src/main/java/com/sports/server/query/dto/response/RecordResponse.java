@@ -59,6 +59,8 @@ public record RecordResponse(
             return Optional.of(replacementTimeline.getOriginLineupPlayer());
         } else if (timeline instanceof PKTimeline pkTimeline) {
             return Optional.of(pkTimeline.getScorer());
+        } else if (timeline instanceof WarningCardTimeline warningCardTimeline) {
+            return Optional.of(warningCardTimeline.getScorer());
         }
         return Optional.empty();
     }
