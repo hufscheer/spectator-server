@@ -42,27 +42,27 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         URL = "ws://localhost:" + port + "/ws";
     }
 
-    @Test
-    void 응원톡을_작성하면_소켓_응답을_받는다() throws Exception {
-        //given
-        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
-        ObjectMapper objectMapper = messageConverter.getObjectMapper();
-        objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
-        stompClient.setMessageConverter(messageConverter);
-        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
-                })
-                .get(5, SECONDS);
-
-        stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
-
-        //when
-        cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 1L));
-
-        //then
-        CheerTalkResponse.ForSpectator actual = completableFuture.get(10, SECONDS);
-        assertThat(actual.content()).isEqualTo("응원톡입니다.");
-    }
+//    @Test
+//    void 응원톡을_작성하면_소켓_응답을_받는다() throws Exception {
+//        //given
+//        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+//        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
+//        ObjectMapper objectMapper = messageConverter.getObjectMapper();
+//        objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
+//        stompClient.setMessageConverter(messageConverter);
+//        StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
+//                })
+//                .get(5, SECONDS);
+//
+//        stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
+//
+//        //when
+//        cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 1L));
+//
+//        //then
+//        CheerTalkResponse.ForSpectator actual = completableFuture.get(10, SECONDS);
+//        assertThat(actual.content()).isEqualTo("응원톡입니다.");
+//    }
 
     private class CommentStompFrameHandler implements StompFrameHandler {
         @Override

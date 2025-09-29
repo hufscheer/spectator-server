@@ -154,12 +154,12 @@ public class TeamQueryControllerTest extends DocumentationTest {
         Long teamId = 1L;
 
         List<GameDetailResponse.TeamResponse> gameTeams1 = List.of(
-                new GameDetailResponse.TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", 3, 0),
-                new GameDetailResponse.TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl2", 1, 0)
+                new GameDetailResponse.TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", 3, 0,"#00000"),
+                new GameDetailResponse.TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl2", 1, 0,"#00000")
         );
         List<GameDetailResponse.TeamResponse> gameTeams2 = List.of(
-                new GameDetailResponse.TeamResponse(3L, "정치외교학과 PSD", "s3:logoImageUrl1", 1, 2),
-                new GameDetailResponse.TeamResponse(4L, "LD학부", "s3:logoImageUrl3", 1, 1)
+                new GameDetailResponse.TeamResponse(3L, "정치외교학과 PSD", "s3:logoImageUrl1", 1, 2, "#00000"),
+                new GameDetailResponse.TeamResponse(4L, "LD학부", "s3:logoImageUrl3", 1, 1, "#00000")
         );
 
         List<GameDetailResponse> response = List.of(
@@ -206,12 +206,12 @@ public class TeamQueryControllerTest extends DocumentationTest {
 
 
         List<GameDetailResponse.TeamResponse> gameTeams1 = List.of(
-                new GameDetailResponse.TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", 3, 0),
-                new GameDetailResponse.TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl2", 1, 0)
+                new GameDetailResponse.TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", 3, 0, "#00000"),
+                new GameDetailResponse.TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl2", 1, 0, "#00000")
         );
         List<GameDetailResponse.TeamResponse> gameTeams2 = List.of(
-                new GameDetailResponse.TeamResponse(3L, "정치외교학과 PSD", "s3:logoImageUrl1", 1, 2),
-                new GameDetailResponse.TeamResponse(4L, "LD학부", "s3:logoImageUrl3", 1, 1)
+                new GameDetailResponse.TeamResponse(3L, "정치외교학과 PSD", "s3:logoImageUrl1", 1, 2, "#00000"),
+                new GameDetailResponse.TeamResponse(4L, "LD학부", "s3:logoImageUrl3", 1, 1, "#00000")
         );
         List<GameDetailResponse> recentGames = List.of(
                 new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", "후반전", "혁명 대전 결승",
@@ -300,8 +300,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 fieldWithPath(prefix + "gameTeams[].gameTeamName").type(JsonFieldType.STRING).description("경기 팀의 이름"),
                 fieldWithPath(prefix + "gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("경기 팀의 로고 이미지 URL"),
                 fieldWithPath(prefix + "gameTeams[].score").type(JsonFieldType.NUMBER).description("경기 팀의 점수"),
-                fieldWithPath(prefix + "gameTeams[].pkScore").type(JsonFieldType.NUMBER).description("경기 팀의 승부차기 점수")
-        );
+                fieldWithPath(prefix + "gameTeams[].pkScore").type(JsonFieldType.NUMBER).description("경기 팀의 승부차기 점수"),
+                fieldWithPath(prefix + "gameTeams[].teamColor").type(JsonFieldType.STRING).description("경기 팀의 팀컬러")
+                );
     }
 
     private FieldDescriptor[] combineFields(Object... descriptors) {

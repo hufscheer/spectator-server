@@ -1822,7 +1822,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 532
+Content-Length: 588
 
 {
   "gameId" : 1,
@@ -1835,13 +1835,15 @@ Content-Length: 532
     "gameTeamName" : "A팀",
     "logoImageUrl" : "logo.com",
     "score" : 2,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo.com",
     "score" : 1,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   } ],
   "state" : "PLAYING",
   "round" : 4,
@@ -1917,6 +1919,11 @@ Content-Length: 532
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].pkScore</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 승부차기 점수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].teamColor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 컬러</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gameTeams[].score</code></p></td>
@@ -2590,7 +2597,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1051
+Content-Length: 1163
 
 [ {
   "gameId" : 1,
@@ -2603,13 +2610,15 @@ Content-Length: 1051
     "gameTeamName" : "A팀",
     "logoImageUrl" : "logo1.com",
     "score" : 2,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "B팀",
     "logoImageUrl" : "logo2.com",
     "score" : 1,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   } ],
   "state" : "FINISHED",
   "round" : 4,
@@ -2627,13 +2636,15 @@ Content-Length: 1051
     "gameTeamName" : "C팀",
     "logoImageUrl" : "logo3.com",
     "score" : 0,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   }, {
     "gameTeamId" : 4,
     "gameTeamName" : "D팀",
     "logoImageUrl" : "logo4.com",
     "score" : 1,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   } ],
   "state" : "PLAYING",
   "round" : 2,
@@ -2709,6 +2720,11 @@ Content-Length: 1051
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].pkScore</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 승부차기 점수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].teamColor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀의 팀컬러</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].score</code></p></td>
@@ -6249,7 +6265,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Thu, 2 Oct 2025 15:04:08 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 6 Oct 2025 10:28:08 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -7721,7 +7737,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1179
+Content-Length: 1291
 
 [ {
   "gameId" : 1,
@@ -7734,13 +7750,15 @@ Content-Length: 1179
     "gameTeamName" : "정치외교학과 PSD",
     "logoImageUrl" : "s3:logoImageUrl1",
     "score" : 3,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   }, {
     "gameTeamId" : 2,
     "gameTeamName" : "국제통상학과 무역풍",
     "logoImageUrl" : "s3:logoImageUrl2",
     "score" : 1,
-    "pkScore" : 0
+    "pkScore" : 0,
+    "teamColor" : "#00000"
   } ],
   "state" : "PLAYING",
   "round" : 2,
@@ -7758,13 +7776,15 @@ Content-Length: 1179
     "gameTeamName" : "정치외교학과 PSD",
     "logoImageUrl" : "s3:logoImageUrl1",
     "score" : 1,
-    "pkScore" : 2
+    "pkScore" : 2,
+    "teamColor" : "#00000"
   }, {
     "gameTeamId" : 4,
     "gameTeamName" : "LD학부",
     "logoImageUrl" : "s3:logoImageUrl3",
     "score" : 1,
-    "pkScore" : 1
+    "pkScore" : 1,
+    "teamColor" : "#00000"
   } ],
   "state" : "FINISHED",
   "round" : 4,
@@ -7871,6 +7891,11 @@ Content-Length: 1179
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 승부차기 점수</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeams[].teamColor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 팀컬러</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -7917,7 +7942,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 2190
+Content-Length: 2310
 
 [ {
   "teamDetail" : {
@@ -7968,13 +7993,15 @@ Content-Length: 2190
       "gameTeamName" : "정치외교학과 PSD",
       "logoImageUrl" : "s3:logoImageUrl1",
       "score" : 3,
-      "pkScore" : 0
+      "pkScore" : 0,
+      "teamColor" : "#00000"
     }, {
       "gameTeamId" : 2,
       "gameTeamName" : "국제통상학과 무역풍",
       "logoImageUrl" : "s3:logoImageUrl2",
       "score" : 1,
-      "pkScore" : 0
+      "pkScore" : 0,
+      "teamColor" : "#00000"
     } ],
     "state" : "PLAYING",
     "round" : 2,
@@ -7992,13 +8019,15 @@ Content-Length: 2190
       "gameTeamName" : "정치외교학과 PSD",
       "logoImageUrl" : "s3:logoImageUrl1",
       "score" : 1,
-      "pkScore" : 2
+      "pkScore" : 2,
+      "teamColor" : "#00000"
     }, {
       "gameTeamId" : 4,
       "gameTeamName" : "LD학부",
       "logoImageUrl" : "s3:logoImageUrl3",
       "score" : 1,
-      "pkScore" : 1
+      "pkScore" : 1,
+      "teamColor" : "#00000"
     } ],
     "state" : "FINISHED",
     "round" : 4,
@@ -8201,6 +8230,11 @@ Content-Length: 2190
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 승부차기 점수</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].recentGames[].gameTeams[].teamColor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경기 팀의 팀컬러</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -8211,7 +8245,7 @@ Content-Length: 2190
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-09-26 00:03:08 +0900
+Last updated 2025-09-29 19:10:25 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

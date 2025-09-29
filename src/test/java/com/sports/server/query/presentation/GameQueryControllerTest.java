@@ -28,9 +28,9 @@ class GameQueryControllerTest extends DocumentationTest {
         Long gameId = 1L;
         List<GameDetailResponse.TeamResponse> gameTeams = List.of(
                 new GameDetailResponse.TeamResponse(
-                        1L, "A팀", "logo.com", 2, 0),
+                        1L, "A팀", "logo.com", 2, 0, "#00000"),
                 new GameDetailResponse.TeamResponse(
-                        2L, "B팀", "logo.com", 1, 0)
+                        2L, "B팀", "logo.com", 1, 0, "#00000")
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(gameId,
@@ -65,6 +65,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .description("게임팀의 이미지 URL"),
                                 fieldWithPath("gameTeams[].pkScore").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 승부차기 점수"),
+                                fieldWithPath("gameTeams[].teamColor").type(JsonFieldType.STRING)
+                                        .description("게임팀의 컬러"),
                                 fieldWithPath("gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("게임 상태"),
                                 fieldWithPath("isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),
@@ -394,12 +396,12 @@ class GameQueryControllerTest extends DocumentationTest {
         LocalDateTime startTime2 = LocalDateTime.of(2024, 3, 20, 16, 0, 0);
         
         List<GameDetailResponse.TeamResponse> gameTeams1 = List.of(
-                new GameDetailResponse.TeamResponse(1L, "A팀", "logo1.com", 2, 0),
-                new GameDetailResponse.TeamResponse(2L, "B팀", "logo2.com", 1, 0)
+                new GameDetailResponse.TeamResponse(1L, "A팀", "logo1.com", 2, 0, "#00000"),
+                new GameDetailResponse.TeamResponse(2L, "B팀", "logo2.com", 1, 0, "#00000")
         );
         List<GameDetailResponse.TeamResponse> gameTeams2 = List.of(
-                new GameDetailResponse.TeamResponse(3L, "C팀", "logo3.com", 0, 0),
-                new GameDetailResponse.TeamResponse(4L, "D팀", "logo4.com", 1, 0)
+                new GameDetailResponse.TeamResponse(3L, "C팀", "logo3.com", 0, 0, "#00000"),
+                new GameDetailResponse.TeamResponse(4L, "D팀", "logo4.com", 1, 0, "#00000")
         );
         
         List<GameDetailResponse> responses = List.of(
@@ -439,6 +441,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .description("게임팀의 이미지 URL"),
                                 fieldWithPath("[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 승부차기 점수"),
+                                fieldWithPath("[].gameTeams[].teamColor").type(JsonFieldType.STRING)
+                                        .description("게임팀의 팀컬러"),
                                 fieldWithPath("[].gameTeams[].score").type(JsonFieldType.NUMBER).description("게임팀의 현재 점수"),
                                 fieldWithPath("[].state").type(JsonFieldType.STRING).description("게임 상태"),
                                 fieldWithPath("[].isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),

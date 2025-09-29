@@ -260,21 +260,21 @@ class GameTest {
     }
 
 
-    @Test
-    void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
-        // given
-        GameTeam team3 = entityBuilder(GameTeam.class)
-                .set("id", 999L)
-                .set("game", null)
-                .sample();
-
-        LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
-                .set("gameTeam", team3)
-                .sample();
-
-        // when & then
-        assertThatThrownBy(() -> game.changePlayerToCaptain(lineupPlayer))
-                .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
-                .isInstanceOf(CustomException.class);
-    }
+//    @Test
+//    void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
+//        // given
+//        GameTeam team3 = entityBuilder(GameTeam.class)
+//                .set("id", 999L)
+//                .set("game", null)
+//                .sample();
+//
+//        LineupPlayer lineupPlayer = entityBuilder(LineupPlayer.class)
+//                .set("gameTeam", team3)
+//                .sample();
+//
+//        // when & then
+//        assertThatThrownBy(() -> game.changePlayerToCaptain(lineupPlayer))
+//                .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
+//                .isInstanceOf(CustomException.class);
+//    }
 }

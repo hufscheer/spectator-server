@@ -44,7 +44,8 @@ public record GameDetailResponse(
             String gameTeamName,
             String logoImageUrl,
             Integer score,
-            Integer pkScore
+            Integer pkScore,
+            String teamColor
     ) {
         public TeamResponse(GameTeam gameTeam) {
             this(
@@ -52,7 +53,8 @@ public record GameDetailResponse(
                     gameTeam.getTeam().getName(),
                     gameTeam.getTeam().getLogoImageUrl(),
                     gameTeam.getScore(),
-                    gameTeam.getPkScore()
+                    gameTeam.getPkScore(),
+                    gameTeam.getTeam().getTeamColor()
             );
         }
     }
