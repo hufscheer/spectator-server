@@ -18,6 +18,5 @@ public interface GameRepository extends Repository<Game, Long> {
     )
     List<Game> findGamesOlderThanFiveHours(@Param("cutoffTime") LocalDateTime cutoffTime);
 
-    @Query("SELECT g FROM Game g WHERE g.id IN :gameIds")
-    List<Game> findAllByIdIn(@Param("gameIds") List<Long> gameIds);
+    List<Game> findAllByIdIn(List<Long> gameIds);
 }

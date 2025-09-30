@@ -102,7 +102,7 @@ public class GameController {
         lineupPlayerService.removePlayerFromLineup(gameTeamId, lineupPlayerId);
     }
 
-            @PostMapping("/admin/games/statistics/update")
+    @PostMapping("/admin/games/statistics/update")
     @ResponseStatus(HttpStatus.OK)
     public void updateLeagueStatisticsForGames(@RequestBody List<Long> gameIds) {
         gameStatusScheduler.manualUpdateLeagueStatisticsForFinalGames(gameIds);
