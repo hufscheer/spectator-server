@@ -8,6 +8,7 @@ import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameService;
+import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.presentation.GameController;
@@ -152,6 +153,9 @@ public class DocumentationTest {
 
     @MockBean
     protected GameService gameService;
+
+    @MockBean
+    protected GameStatusScheduler gameStatusScheduler;
 
     @BeforeEach
     void setUp() {
