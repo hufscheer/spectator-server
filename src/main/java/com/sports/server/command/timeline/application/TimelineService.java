@@ -1,6 +1,7 @@
 package com.sports.server.command.timeline.application;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameRepository;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
@@ -9,22 +10,25 @@ import com.sports.server.command.timeline.mapper.TimelineMapper;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.CustomException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class TimelineService {
+    private final GameRepository gameRepository;
     private final TimelineRepository timelineRepository;
     private final TimelineMapper timelineMapper;
     private final EntityUtils entityUtils;
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void register(Member manager, Long gameId, TimelineRequest request) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = getGame(gameId);
         game.checkStateForTimeline();
         PermissionValidator.checkPermission(game, manager);
 
@@ -40,6 +44,11 @@ public class TimelineService {
         Timeline timeline = getLastTimeline(timelineId, game);
         timeline.rollback();
         timelineRepository.delete(timeline);
+    }
+
+    private Game getGame(Long id) {
+        return gameRepository.findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."));
     }
 
     private Timeline getLastTimeline(Long timelineId, Game game) {
