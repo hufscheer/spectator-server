@@ -37,4 +37,9 @@ public class GameStatusScheduler {
                     leagueService.updateTotalCheerCountsAndTotalTalkCount(game.getLeague().getId());
                 });
     }
+
+    public void manualUpdateLeagueStatisticsForFinalGames(List<Long> gameIds) {
+        List<Game> games = gameService.findGamesByIds(gameIds);
+        updateLeagueStatisticsForFinalGames(games);
+    }
 }

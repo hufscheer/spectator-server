@@ -63,6 +63,11 @@ public class GameService {
         return games;
     }
 
+    @Transactional(readOnly = true)
+    public List<Game> findGamesByIds(List<Long> gameIds) {
+        return gameRepository.findAllByIdIn(gameIds);
+    }
+
     @Transactional
     public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
