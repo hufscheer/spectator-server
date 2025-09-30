@@ -1,6 +1,7 @@
 package com.sports.server.command.game.presentation;
 
 import com.sports.server.command.game.application.GameService;
+import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
@@ -8,6 +9,7 @@ import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.member.domain.Member;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ public class GameController {
     private final GameTeamService gameTeamService;
     private final LineupPlayerService lineupPlayerService;
     private final GameService gameService;
+    private final GameStatusScheduler gameStatusScheduler;
 
     @PostMapping("/games/{gameId}/cheer")
     @ResponseStatus(HttpStatus.OK)
@@ -97,5 +100,11 @@ public class GameController {
     public void removePlayerFromLineup(@PathVariable final Long gameTeamId,
                                        @PathVariable final Long lineupPlayerId) {
         lineupPlayerService.removePlayerFromLineup(gameTeamId, lineupPlayerId);
+    }
+
+            @PostMapping("/admin/games/statistics/update")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateLeagueStatisticsForGames(@RequestBody List<Long> gameIds) {
+        gameStatusScheduler.manualUpdateLeagueStatisticsForFinalGames(gameIds);
     }
 }
