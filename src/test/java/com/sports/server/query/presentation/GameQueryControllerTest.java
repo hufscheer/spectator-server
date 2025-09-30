@@ -332,8 +332,8 @@ class GameQueryControllerTest extends DocumentationTest {
 
         given(lineupPlayerQueryService.getPlayingLineup(gameId))
                 .willReturn(List.of(
-                        new LineupPlayerResponse.Playing(1L, "팀A", playersA),
-                        new LineupPlayerResponse.Playing(2L, "팀B", playersB)
+                        new LineupPlayerResponse.Playing(1L, "팀A", "#000000" , playersA),
+                        new LineupPlayerResponse.Playing(2L, "팀B", "#000000",  playersB)
                 ));
 
         // when
@@ -350,6 +350,7 @@ class GameQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
+                                fieldWithPath("[].teamColor").type(JsonFieldType.STRING).description("게임팀 팀색깔"),
                                 fieldWithPath("[].gameTeamPlayers[].id").type(JsonFieldType.NUMBER)
                                         .description("선수 ID"),
                                 fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING)
