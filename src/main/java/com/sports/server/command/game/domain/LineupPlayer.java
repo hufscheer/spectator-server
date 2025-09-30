@@ -52,6 +52,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         this.state = state;
         this.jerseyNumber = jerseyNumber;
         this.isCaptain = isCaptain;
+        this.isPlaying = (state == LineupPlayerState.STARTER);
     }
 
     public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber, boolean isCaptain) {
