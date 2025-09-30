@@ -2372,11 +2372,12 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1936
+Content-Length: 1990
 
 [ {
   "gameTeamId" : 1,
   "teamName" : "팀A",
+  "teamColor" : "#000000",
   "gameTeamPlayers" : [ {
     "id" : 1,
     "playerName" : "선수A",
@@ -2421,6 +2422,7 @@ Content-Length: 1936
 }, {
   "gameTeamId" : 2,
   "teamName" : "팀B",
+  "teamColor" : "#000000",
   "gameTeamPlayers" : [ {
     "id" : 1,
     "playerName" : "선수F",
@@ -2491,6 +2493,11 @@ Content-Length: 1936
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].teamName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">게임팀 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].teamColor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게임팀 팀색깔</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].gameTeamPlayers[].id</code></p></td>
@@ -6265,7 +6272,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Mon, 6 Oct 2025 10:28:08 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 7 Oct 2025 14:03:24 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
