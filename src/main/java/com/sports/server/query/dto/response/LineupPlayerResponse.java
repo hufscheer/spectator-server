@@ -12,12 +12,14 @@ public class LineupPlayerResponse {
 	public record Playing(
 			Long gameTeamId,
 			String teamName,
+			String teamColor,
 			List<PlayerResponse> gameTeamPlayers
 	) {
 		public Playing(GameTeam gameTeam, List<LineupPlayer> lineupPlayers) {
 			this(
 					gameTeam.getId(),
 					gameTeam.getTeam().getName(),
+					gameTeam.getTeam().getTeamColor(),
 					lineupPlayers.stream()
 							.map(PlayerResponse::new)
 							.toList()
