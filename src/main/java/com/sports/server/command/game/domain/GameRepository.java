@@ -12,7 +12,11 @@ import org.springframework.data.repository.query.Param;
 public interface GameRepository extends Repository<Game, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Game> findById(long id);
+    @Query(
+            "SELECT g FROM Game g " +
+                    "WHERE g.id = :id"
+    )
+    Optional<Game> findByIdForUpdate(long id);
 
     Game save(Game game);
 

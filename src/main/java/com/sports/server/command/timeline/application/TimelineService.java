@@ -2,14 +2,19 @@ package com.sports.server.command.timeline.application;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
+import com.sports.server.command.game.domain.GameTeam;
+import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.mapper.TimelineMapper;
-import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
+import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,9 +27,9 @@ import org.springframework.transaction.annotation.Isolation;
 @RequiredArgsConstructor
 public class TimelineService {
     private final GameRepository gameRepository;
+    private final GameTeamRepository gameTeamRepository;
     private final TimelineRepository timelineRepository;
     private final TimelineMapper timelineMapper;
-    private final EntityUtils entityUtils;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void register(Member manager, Long gameId, TimelineRequest request) {
@@ -32,13 +37,16 @@ public class TimelineService {
         game.checkStateForTimeline();
         PermissionValidator.checkPermission(game, manager);
 
-        Timeline timeline = timelineMapper.toEntity(game, request);
+        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdForUpdateOrderByAsc(gameId);
+
+        Timeline timeline = timelineMapper.toEntity(game, gameTeams, request);
         timeline.apply();
         timelineRepository.save(timeline);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deleteTimeline(Member manager, Long gameId, Long timelineId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = getGame(gameId);
         PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = getLastTimeline(timelineId, game);
@@ -47,13 +55,12 @@ public class TimelineService {
     }
 
     private Game getGame(Long id) {
-        return gameRepository.findById(id)
+        return gameRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."));
     }
 
     private Timeline getLastTimeline(Long timelineId, Game game) {
-        return timelineRepository.findFirstByGameOrderByIdDesc(game)
-                .filter(t -> t.getId().equals(timelineId))
+        return timelineRepository.findFirstByGameOrderByIdDesc(game).filter(t -> t.getId().equals(timelineId))
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "마지막 타임라인만 삭제할 수 있습니다."));
     }
 }

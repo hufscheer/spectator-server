@@ -14,6 +14,11 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -269,9 +274,9 @@ class TimelineServiceTest extends ServiceTest {
 
     @DisplayName("경고 타임라인을")
     @Nested
-    class WarningCardTest{
+    class WarningCardTest {
         @Test
-        void 생성한다(){
+        void 생성한다() {
             //given
             Long teamId = 1L;
             Long playerId = 1L;
@@ -292,7 +297,8 @@ class TimelineServiceTest extends ServiceTest {
             Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
             assertAll(
                     () -> Assertions.assertThat(actual).isInstanceOf(WarningCardTimeline.class),
-                    () -> Assertions.assertThat(((WarningCardTimeline) actual).getWarningCardType()).isEqualTo(WarningCardType.YELLOW)
+                    () -> Assertions.assertThat(((WarningCardTimeline) actual).getWarningCardType())
+                            .isEqualTo(WarningCardType.YELLOW)
             );
         }
     }
@@ -343,5 +349,74 @@ class TimelineServiceTest extends ServiceTest {
         assertThatThrownBy(() -> timelineService.register(manager, finishedGameId, request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(TimelineErrorMessage.GAME_ALREADY_FINISHED);
+    }
+
+    @DisplayName("동시성 테스트: Game 상태 확인 및 점수 갱신 직렬화")
+    @Nested
+    class ConcurrencyTest {
+
+        @Test
+        void 여러_스레드에서_동시에_타임라인을_등록하면_모두_성공하고_점수가_누락되지_않아야_한다() throws Exception {
+            // given
+            int numberOfAttempts = 10;
+            ExecutorService executorService = Executors.newFixedThreadPool(numberOfAttempts);
+            // 실패 카운트를 추적하여 락으로 인한 예외 롤백이 없는지 확인
+            AtomicInteger successCount = new AtomicInteger(0);
+
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+                    1L, // team1Id
+                    Quarter.SECOND_HALF,
+                    1L, // team1PlayerId
+                    1 // score point (1점씩 추가)
+            );
+
+            int initialScore1 = 15;
+            int initialScore2 = 10;
+            int expectedFinalScore1 = initialScore1 + numberOfAttempts;
+
+            // when
+            // 10개의 스레드가 동시에 타임라인 등록을 시도합니다.
+            List<CompletableFuture<Void>> futures = IntStream.range(0, numberOfAttempts)
+                    .mapToObj(i -> CompletableFuture.runAsync(() -> {
+                                        try {
+                                            // PESSIMISTIC_WRITE 락으로 인해 트랜잭션이 직렬화되길 기대
+                                            timelineService.register(manager, gameId, request);
+                                            successCount.incrementAndGet();
+                                        } catch (Exception e) {
+                                            // Deadlock, Lock Timeout, 상태 확인 실패 등의 예외 발생 시 테스트 실패
+                                            throw new RuntimeException("타임라인 등록 중 예외 발생: " + e.getMessage(), e);
+                                        }
+                                    },
+                                    executorService)
+                    )
+                    .toList();
+
+            // 모든 비동기 작업이 완료되기를 기다립니다.
+            // join() 호출 시 내부에서 발생한 RuntimeException(우리가 던진 예외)을 래핑하여 던집니다.
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+            // then
+            // 1. 모든 요청이 성공적으로 처리되었는지 확인
+            assertThat(successCount.get())
+                    .as("모든 요청은 PESSIMISTIC_WRITE 락에 의해 직렬화되어 성공해야 함")
+                    .isEqualTo(numberOfAttempts);
+
+            // 2. 최종 생성된 타임라인 수 확인 (DB에 롤백된 트랜잭션 없이 모두 커밋되었는지 확인)
+            List<Timeline> actualTimelines = timelineFixtureRepository.findAllLatest(gameId);
+            assertThat(actualTimelines).hasSize(numberOfAttempts);
+
+            // 3. 최종 점수 스냅샷 확인 (Race Condition 없이 점수 누락이 없었는지 확인)
+            ScoreTimeline lastTimeline = (ScoreTimeline) actualTimelines.get(0);
+
+            assertAll(
+                    // Game 상태 확인/점수 갱신이 안전하게 보호되어, 최종 점수가 예상 값과 일치해야 함
+                    () -> assertThat(lastTimeline.getSnapshotScore1())
+                            .as("팀1 최종 스냅샷 점수: %d", expectedFinalScore1)
+                            .isEqualTo(expectedFinalScore1),
+                    () -> assertThat(lastTimeline.getSnapshotScore2())
+                            .as("팀2 최종 스냅샷 점수")
+                            .isEqualTo(initialScore2)
+            );
+        }
     }
 }
