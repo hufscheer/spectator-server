@@ -9,6 +9,7 @@ import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.mapper.TimelineMapper;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
@@ -30,6 +31,7 @@ public class TimelineService {
     private final GameTeamRepository gameTeamRepository;
     private final TimelineRepository timelineRepository;
     private final TimelineMapper timelineMapper;
+    private final EntityUtils entityUtils;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void register(Member manager, Long gameId, TimelineRequest request) {
@@ -46,7 +48,7 @@ public class TimelineService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deleteTimeline(Member manager, Long gameId, Long timelineId) {
-        Game game = getGame(gameId);
+        Game game = entityUtils.getEntity(gameId, Game.class);
         PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = getLastTimeline(timelineId, game);
