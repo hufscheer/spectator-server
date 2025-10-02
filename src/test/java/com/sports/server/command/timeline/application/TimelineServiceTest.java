@@ -355,7 +355,7 @@ class TimelineServiceTest extends ServiceTest {
     @Nested
     class ConcurrencyTest {
 
-        public static final int SIZE_OF_SAVED_TIMELINE_DATA = 24;
+        public static final int SIZE_OF_SAVED_TIMELINE_DATA = 14;
 
         @Test
         void 여러_스레드에서_동시에_타임라인을_등록하면_모두_성공하고_점수가_누락되지_않아야_한다() throws Exception {
