@@ -355,6 +355,8 @@ class TimelineServiceTest extends ServiceTest {
     @Nested
     class ConcurrencyTest {
 
+        public static final int SIZE_OF_SAVED_TIMELINE_DATA = 24;
+
         @Test
         void 여러_스레드에서_동시에_타임라인을_등록하면_모두_성공하고_점수가_누락되지_않아야_한다() throws Exception {
             // given
@@ -403,7 +405,7 @@ class TimelineServiceTest extends ServiceTest {
 
             // 2. 최종 생성된 타임라인 수 확인 (DB에 롤백된 트랜잭션 없이 모두 커밋되었는지 확인)
             List<Timeline> actualTimelines = timelineFixtureRepository.findAllLatest(gameId);
-            assertThat(actualTimelines).hasSize(numberOfAttempts);
+            assertThat(actualTimelines).hasSize(numberOfAttempts + SIZE_OF_SAVED_TIMELINE_DATA);
 
             // 3. 최종 점수 스냅샷 확인 (Race Condition 없이 점수 누락이 없었는지 확인)
             ScoreTimeline lastTimeline = (ScoreTimeline) actualTimelines.get(0);
