@@ -8,5 +8,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface TimelineSupplier {
-    Timeline get(Game game, List<GameTeam> gameTeams, TimelineRequest request);
+    Timeline get(Game game, TimelineRequest request);
 }

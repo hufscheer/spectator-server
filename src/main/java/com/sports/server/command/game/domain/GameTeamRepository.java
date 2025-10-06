@@ -13,7 +13,6 @@ import java.util.List;
 public interface GameTeamRepository extends Repository<GameTeam, Long> {
     void save(GameTeam gameTeam);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT gt FROM GameTeam gt WHERE gt.game.id = :gameId ORDER BY gt.id ASC")
     List<GameTeam> findAllByGameIdForUpdateOrderByAsc(Long gameId);
 

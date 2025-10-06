@@ -39,9 +39,7 @@ public class TimelineService {
         game.checkStateForTimeline();
         PermissionValidator.checkPermission(game, manager);
 
-        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdForUpdateOrderByAsc(gameId);
-
-        Timeline timeline = timelineMapper.toEntity(game, gameTeams, request);
+        Timeline timeline = timelineMapper.toEntity(game, request);
         timeline.apply();
         timelineRepository.save(timeline);
     }

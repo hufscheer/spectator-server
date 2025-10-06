@@ -19,19 +19,19 @@ public class TimelineMapper {
 
     private final Map<TimelineType, TimelineSupplier> suppliers = Map.of(
             TimelineType.SCORE,
-            (game, gameTeams, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
+            (game, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
             TimelineType.REPLACEMENT,
-            (game, gameTeams, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
+            (game, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
             TimelineType.GAME_PROGRESS,
-            (game, gameTeams, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
-            TimelineType.PK, (game, gameTeams, request) -> toPkTimeline(game, (TimelineRequest.RegisterPk) request),
+            (game, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
+            TimelineType.PK, (game, request) -> toPkTimeline(game, (TimelineRequest.RegisterPk) request),
             TimelineType.WARNING_CARD,
-            (game, gameTeams, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
+            (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
     );
 
-    public Timeline toEntity(Game game, List<GameTeam> gameTeams, TimelineRequest request) {
+    public Timeline toEntity(Game game, TimelineRequest request) {
         return Optional.ofNullable(suppliers.get(request.getType()))
-                .map(supplier -> supplier.get(game, gameTeams, request))
+                .map(supplier -> supplier.get(game, request))
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 타입입니다."));
     }
 
