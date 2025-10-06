@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Isolation;
 @RequiredArgsConstructor
 public class TimelineService {
     private final GameRepository gameRepository;
-    private final GameTeamRepository gameTeamRepository;
     private final TimelineRepository timelineRepository;
     private final TimelineMapper timelineMapper;
     private final EntityUtils entityUtils;
