@@ -305,7 +305,7 @@ class TimelineServiceTest extends ServiceTest {
         // 2025-10-06 h2 환경에서는 데드락 발생하기에 무효화
         // ci 를 profile 로 두고 실행 시 통과
 
-        //        @Disabled
+        @Disabled
         @Test
         void 여러_스레드에서_동시에_득점_타임라인을_등록하면_모두_성공하고_점수가_누락되지_않아야_한다() throws Exception {
             // given
@@ -347,7 +347,7 @@ class TimelineServiceTest extends ServiceTest {
                     () -> assertThat(lastTimeline.getSnapshotScore2()).as("팀2 최종 스냅샷 점수").isEqualTo(initialScore2));
         }
 
-        //        @Disabled
+        @Disabled
         @Test
         void 여러_스레드에서_동시에_교체_타임라인을_등록하면_모두_성공하고_선수_상태가_일관되어야_한다() throws Exception {
             // given
@@ -394,7 +394,7 @@ class TimelineServiceTest extends ServiceTest {
                             "Replaced Player는 최종적으로 Active 상태여야 함").isEqualTo(true));
         }
 
-        //        @Disabled
+        @Disabled
         @Test
         void 여러_스레드에서_동시에_게임_진행_타임라인을_등록하면_모두_성공해야_한다() throws Exception {
             // given
@@ -427,7 +427,7 @@ class TimelineServiceTest extends ServiceTest {
             assertThat(actualTimelines.get(0)).isInstanceOf(GameProgressTimeline.class);
         }
 
-        //        @Disabled
+        @Disabled
         @Test
         void 여러_스레드에서_동시에_승부차기_타임라인을_등록하면_모두_성공해야_한다() throws Exception {
             // given
@@ -462,7 +462,7 @@ class TimelineServiceTest extends ServiceTest {
             assertThat(actualTimelines.get(0)).isInstanceOf(PKTimeline.class);
         }
 
-        //        @Disabled
+        @Disabled
         @Test
         void 여러_스레드에서_동시에_경고_타임라인을_등록하면_모두_성공해야_한다() throws Exception {
             // given
