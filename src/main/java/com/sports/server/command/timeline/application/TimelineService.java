@@ -28,7 +28,7 @@ public class TimelineService {
     private final TimelineMapper timelineMapper;
     private final EntityUtils entityUtils;
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public void register(Member manager, Long gameId, TimelineRequest request) {
         Game game = getGameForUpdate(gameId);
         game.checkStateForTimeline();
@@ -39,7 +39,7 @@ public class TimelineService {
         timelineRepository.save(timeline);
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public void deleteTimeline(Member manager, Long gameId, Long timelineId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
         PermissionValidator.checkPermission(game, manager);
