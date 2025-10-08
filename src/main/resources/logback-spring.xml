@@ -36,7 +36,7 @@
         <appender name="ASYNC-FILE" class="ch.qos.logback.classic.AsyncAppender">
             <appender-ref ref="FILE-LOG"/>
             <queueSize>8192</queueSize>
-            <discardingThreshold>0</discardingThreshold>
+            <discardingThreshold>1638</discardingThreshold>
             <neverBlock>true</neverBlock>
         </appender>
 
