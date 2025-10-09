@@ -43,11 +43,15 @@ public class PKTimeline extends Timeline {
 
     @Override
     public void apply() {
-        game.scoreInPk(scorer);
+        if (isSuccess) {
+            game.scoreInPk(scorer);
+        }
     }
 
     @Override
     public void rollback() {
-        game.cancelPkScore(scorer);
+        if (isSuccess) {
+            game.cancelPkScore(scorer);
+        }
     }
 }

@@ -1,10 +1,12 @@
 package com.sports.server.command.timeline.mapper;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +18,15 @@ public class TimelineMapper {
     private final EntityUtils entityUtils;
 
     private final Map<TimelineType, TimelineSupplier> suppliers = Map.of(
-            TimelineType.SCORE, (game, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
-            TimelineType.REPLACEMENT, (game, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
-            TimelineType.GAME_PROGRESS, (game, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
+            TimelineType.SCORE,
+            (game, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
+            TimelineType.REPLACEMENT,
+            (game, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
+            TimelineType.GAME_PROGRESS,
+            (game, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
             TimelineType.PK, (game, request) -> toPkTimeline(game, (TimelineRequest.RegisterPk) request),
-            TimelineType.WARNING_CARD, (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
+            TimelineType.WARNING_CARD,
+            (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
     );
 
     public Timeline toEntity(Game game, TimelineRequest request) {
