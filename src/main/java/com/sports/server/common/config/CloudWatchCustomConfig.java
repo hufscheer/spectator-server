@@ -28,7 +28,7 @@ public class CloudWatchCustomConfig {
             @Override
             public String get(String key) {
                 if ("cloudwatch.batchSize".equals(key)) return BATCH_SIZE;
-                if ("cloudwatch.enabled".equals(key)) return "true";
+                if ("cloudwatch.enabled".equals(key)) return "false";
                 return null;
             }
 
