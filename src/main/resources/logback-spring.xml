@@ -19,22 +19,29 @@
         </root>
     </springProfile>
 
+    <appender name="FILE-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./log/today-${BY_DATE}.log</file>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./log/history-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>5</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
     <springProfile name="prod">
-        <appender name="FILE-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>./log/today-${BY_DATE}.log</file>
-            <encoder>
-                <pattern>${FILE_LOG_PATTERN}</pattern>
-            </encoder>
-            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern> ./log/history-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-                <maxFileSize>100MB</maxFileSize>
-                <maxHistory>5</maxHistory>
-                <totalSizeCap>500MB</totalSizeCap>
-            </rollingPolicy>
+        <appender name="ASYNC-FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="FILE-LOG"/>
+            <queueSize>8192</queueSize>
+            <discardingThreshold>1638</discardingThreshold>
+            <neverBlock>true</neverBlock>
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="FILE-LOG"/>
+            <appender-ref ref="ASYNC-FILE"/>
         </root>
     </springProfile>
 </configuration>
