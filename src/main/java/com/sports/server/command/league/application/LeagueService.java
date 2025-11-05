@@ -72,10 +72,10 @@ public class LeagueService {
 		League league = findValidatedLeague(leagueId, administrator);
 
 		List<Long> teamIdsToRemove = request.teamIds();
-		findValidatedTeams(teamIdsToRemove);
 		if (teamIdsToRemove == null || teamIdsToRemove.isEmpty()) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
+		findValidatedTeams(teamIdsToRemove);
 
 		List<LeagueTeam> leagueTeamsToRemove = leagueTeamRepository.findAllByLeagueAndTeamIdsIn(leagueId, teamIdsToRemove);
 		if (leagueTeamsToRemove.size() != new HashSet<>(teamIdsToRemove).size()) {

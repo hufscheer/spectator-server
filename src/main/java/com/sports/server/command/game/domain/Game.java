@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.ToIntFunction;
 
 import lombok.AccessLevel;
@@ -200,7 +201,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     private void validateGameTeam(final GameTeam gameTeam) {
-        if (this.gameTeams.stream().noneMatch(team -> team.getId().equals(gameTeam.getId()))) {
+        if (this.gameTeams.stream().noneMatch(team -> Objects.equals(team.getId(), gameTeam.getId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
         }
     }

@@ -11,11 +11,9 @@ import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueTeam;
-import com.sports.server.command.league.domain.LeagueTeamRepository;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
@@ -36,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 @Sql("/game-fixture.sql")
 public class GameServiceTest extends ServiceTest {
@@ -48,9 +47,6 @@ public class GameServiceTest extends ServiceTest {
 
     @Autowired
     private GameFixtureRepository gameFixtureRepository;
-
-    @Autowired
-    private LeagueTeamRepository leagueTeamRepository;
 
     @MockBean
     private Clock clock;
@@ -71,8 +67,8 @@ public class GameServiceTest extends ServiceTest {
         team1 = new GameRequest.TeamLineupRequest(1L, team1LineupPlayers);
 
         List<GameRequest.LineupPlayerRequest> team2Players = List.of(
-                new GameRequest.LineupPlayerRequest(3L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(4L, LineupPlayerState.CANDIDATE, false)
+                new GameRequest.LineupPlayerRequest(6L, LineupPlayerState.STARTER, true),
+                new GameRequest.LineupPlayerRequest(7L, LineupPlayerState.CANDIDATE, false)
         );
         team2 = new GameRequest.TeamLineupRequest(2L, team2Players);
 
@@ -86,41 +82,38 @@ public class GameServiceTest extends ServiceTest {
 
     @Nested
     @DisplayName("게임을 저장할 때")
+    @Transactional
     class registerGameTest {
-//        @Test
-//        void 정상적으로_게임팀이_저장된다() {
-//            // given
-//            Member manager = entityUtils.getEntity(1L, Member.class);
-//
-//            // when
-//            gameService.register(1L, requestDto, manager);
-//
-//            // then
-//            Optional<Game> gameOptional = gameFixtureRepository.findByName(nameOfGame);
-//            assertThat(gameOptional).isPresent().withFailMessage("게임이 등록되지 않았습니다.");
-//
-//            Game game = gameOptional.get();
-//            assertInFormationOfGame(game);
-//
-//            List<GameTeam> gameTeams = game.getGameTeams();
-//            assertGameTeams(gameTeams);
-//        }
+        @Test
+        void 정상적으로_게임팀이_저장된다() {
+            // given
+            Member manager = entityUtils.getEntity(1L, Member.class);
 
-//        @Test
-//        void 정상적으로_라인업이_복사된다() {
-//            // given
-//            Member manager = entityUtils.getEntity(1L, Member.class);
-//
-//            // when
-//            gameService.register(1L, requestDto, manager);
-//
-//            // then
-//            Optional<Game> gameOptional = gameFixtureRepository.findByName(nameOfGame);
-//            assertThat(gameOptional).isPresent().withFailMessage("게임이 등록되지 않았습니다.");
-//
-//            List<GameTeam> gameTeams = gameOptional.get().getGameTeams();
-//            assertLineupPlayers(gameTeams);
-//        }
+            // when
+            Long gameId = gameService.register(1L, requestDto, manager);
+
+            // then
+            Game game = entityUtils.getEntity(gameId, Game.class);
+            assertInFormationOfGame(game);
+
+            List<GameTeam> gameTeams = game.getGameTeams();
+            assertGameTeams(gameTeams);
+        }
+
+        @Test
+        void 정상적으로_라인업이_등록된다() {
+            // given
+            Member manager = entityUtils.getEntity(1L, Member.class);
+
+            // when
+            Long gameId = gameService.register(1L, requestDto, manager);
+
+            // then
+            Game game = entityUtils.getEntity(gameId, Game.class);
+
+            List<GameTeam> gameTeams = game.getGameTeams();
+            assertLineupPlayers(gameTeams);
+        }
 
         private void assertInFormationOfGame(Game game) {
             assertAll(() -> assertThat(game).isNotNull(), () -> assertThat(game.getName()).isEqualTo(nameOfGame),
@@ -136,13 +129,15 @@ public class GameServiceTest extends ServiceTest {
 
         private void assertLineupPlayers(List<GameTeam> gameTeams) {
             for (GameTeam gameTeam : gameTeams) {
-                League league = gameTeam.getGame().getLeague();
-                Team team = gameTeam.getTeam();
-                LeagueTeam leagueTeam = leagueTeamRepository.findByLeagueAndTeam(league, team)
-                        .orElseThrow(() -> new IllegalStateException("LeagueTeam 이 존재하지 않습니다."));
+                GameRequest.TeamLineupRequest teamLineupRequest = gameTeam.getTeam().getId().equals(team1.teamId()) 
+                        ? team1 : team2;
 
-                Set<Long> expectedPlayerIds = leagueTeam.getTeam().getTeamPlayers().stream()
-                        .map(teamPlayer -> teamPlayer.getPlayer().getId())
+                Set<Long> expectedPlayerIds = teamLineupRequest.lineupPlayers().stream()
+                        .map(lineupPlayerRequest -> {
+                            TeamPlayer teamPlayer = entityUtils.getEntity(lineupPlayerRequest.teamPlayerId(), 
+                                    TeamPlayer.class);
+                            return teamPlayer.getPlayer().getId();
+                        })
                         .collect(Collectors.toSet());
 
                 Set<Long> actualPlayerIds = gameTeam.getLineupPlayers().stream()
