@@ -74,4 +74,4 @@ jobs:
             docker-compose -f docker-compose.yml down
             docker image prune -f
             docker pull ${{ secrets.DOCKER_IMG }}
-            docker-compose -f docker-compose.yml up -d
+            docker compose -f docker-compose.yml up -d
