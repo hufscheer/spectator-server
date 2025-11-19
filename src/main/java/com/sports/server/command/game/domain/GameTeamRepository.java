@@ -1,14 +1,12 @@
 package com.sports.server.command.game.domain;
 
 import com.sports.server.query.application.TeamGameResult;
-import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.Lock;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface GameTeamRepository extends Repository<GameTeam, Long> {
     void save(GameTeam gameTeam);
@@ -36,4 +34,9 @@ public interface GameTeamRepository extends Repository<GameTeam, Long> {
             "WHERE gt.team.id IN :teamIds AND gt.result IS NOT NULL " +
             "GROUP BY gt.team.id, gt.result")
     List<TeamGameResult> findGameResultsByTeamIds(@Param("teamIds") List<Long> teamIds);
+
+    @Query("SELECT gt FROM GameTeam gt " +
+            "JOIN FETCH gt.game " +
+            "WHERE gt.id = :id")
+    Optional<GameTeam> findByIdWithGame(Long id);
 }
