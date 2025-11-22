@@ -2,7 +2,6 @@ package com.sports.server.query.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.query.dto.response.*;
@@ -12,6 +11,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,80 +21,71 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql(scripts = "/league-fixture.sql")
 public class LeagueQueryAcceptanceTest extends AcceptanceTest {
 
-    @Test
-    void 삭제되지_않은_모든_리그를_조회한다() {
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues")
-                .then().log().all()
-                .extract();
+    @Nested
+    class findLeagues{
+        @Test
+        void 삭제된_리그를_제외한_진행중인_대회들을_조회한다() {
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .param("leagueProgress", "IN_PROGRESS")
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues")
+                    .then().log().all()
+                    .extract();
 
-        // then
-        List<LeagueResponse> actual = toResponses(response, LeagueResponse.class);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual)
-                        .map(LeagueResponse::leagueId)
-                        .containsExactly(10L, 8L, 9L, 3L, 2L, 1L, 7L, 6L, 5L),
-                () -> assertThat(actual)
-                        .map(LeagueResponse::name)
-                        .containsExactly("축구 대회", "탁구 대회", "야구 대회", "롤 대회", "농구대잔치", "삼건물 대회", "롤 대회", "농구대잔치", "삼건물 대회"),
-                () -> assertThat(actual)
-                        .map(LeagueResponse::maxRound)
-                        .containsExactly(16, 16, 16, 8, 8, 16, 8, 8, 16),
-                () -> assertThat(actual)
-                        .map(LeagueResponse::inProgressRound)
-                        .containsExactly(16, 16, 16, 8, 2, 8, 8, 2, 8)
-        );
-    }
+            // then
+            List<LeagueResponse> actual = toResponses(response, LeagueResponse.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::leagueId)
+                            .containsExactly(9L),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::name)
+                            .containsExactly( "진행중인 축구대회"),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::maxRound)
+                            .containsExactly(16),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::inProgressRound)
+                            .containsExactly(16)
+            );
+        }
 
-    @Test
-    void 특정_연도의_리그를_조회한다() {
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .param("year", 2022)
-                .get("/leagues")
-                .then().log().all()
-                .extract();
+        @Test
+        void 종료된_2025년_대회를_우승팀_정보와_함께_조회한다() {
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .param("year", 2025)
+                    .param("leagueProgress", "FINISHED")
+                    .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues")
+                    .then().log().all()
+                    .extract();
 
-        // then
-        List<LeagueResponse> actual = toResponses(response, LeagueResponse.class);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual)
-                        .map(LeagueResponse::leagueId)
-                        .containsExactly(7L, 6L, 5L)
-        );
-    }
-
-    @Test
-    void 리그의_모든_스포츠를_조회한다() {
-        // given
-        Long threeBuildingCup = 1L;
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/sports", threeBuildingCup)
-                .then().log().all()
-                .extract();
-
-        // then
-        List<LeagueSportResponse> actual = toResponses(response, LeagueSportResponse.class);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual)
-                        .map(LeagueSportResponse::name)
-                        .containsExactly("축구"),
-                () -> assertThat(actual)
-                        .map(LeagueSportResponse::sportId)
-                        .containsExactly(threeBuildingCup)
-        );
+            // then
+            List<LeagueResponse> actual = toResponses(response, LeagueResponse.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::leagueId)
+                            .containsExactly(7L, 6L, 5L, 4L, 3L, 2L),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::name)
+                            .containsExactly("종료된 축구대회 7", "종료된 축구대회 6", "종료된 축구대회 5", "종료된 축구대회 4", "종료된 축구대회 3", "종료된 축구대회 2"),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::maxRound)
+                            .containsExactly(16, 8, 16, 16, 4, 4),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::inProgressRound)
+                            .containsExactly(16, 8, 16, 16, 4, 4),
+                    () -> assertThat(actual)
+                            .map(LeagueResponse::winnerTeamName)
+                            .containsExactly("서어 뻬데뻬", "경영 야생마", "컴공 독수리", "체교 불사조", "미컴 축구생각", "서어 뻬데뻬")
+            );
+        }
     }
 
     @Test
@@ -112,11 +104,11 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
         // then
         LeagueDetailResponse actual = toResponse(response, LeagueDetailResponse.class);
         assertAll(
-                () -> assertThat(actual.name()).isEqualTo("삼건물 대회"),
-                () -> assertThat(actual.startAt()).isEqualTo(LocalDateTime.of(2023, 11, 9, 0, 0, 0)),
-                () -> assertThat(actual.endAt()).isEqualTo(LocalDateTime.of(2023, 11, 20, 0, 0, 0)),
+                () -> assertThat(actual.name()).isEqualTo("종료된 축구대회 1"),
+                () -> assertThat(actual.startAt()).isEqualTo(LocalDateTime.of(2024, 3, 1, 10, 0, 0)),
+                () -> assertThat(actual.endAt()).isEqualTo(LocalDateTime.of(2024, 3, 15, 22, 0, 0)),
                 () -> assertThat(actual.inProgressRound()).isEqualTo(8),
-                () -> assertThat(actual.maxRound()).isEqualTo(16),
+                () -> assertThat(actual.maxRound()).isEqualTo(8),
                 () -> assertThat(actual.leagueProgress()).isEqualTo(LeagueProgress.FINISHED.getDescription())
         );
     }
@@ -124,24 +116,25 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
     @Test
     void 리그팀의_모든_선수를_조회한다() {
         // given
-        Long soccerishThought = 3L;
+        Long leagueTeamId = 3L;
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/teams/{leagueTeamId}/players", soccerishThought)
+                .get("/leagues/teams/{leagueTeamId}/players", leagueTeamId)
                 .then().log().all()
                 .extract();
 
         // then
-        List<LeagueTeamPlayerResponse> actual = toResponses(response, LeagueTeamPlayerResponse.class);
+        List<PlayerResponse> actual = toResponses(response, PlayerResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual).map(LeagueTeamPlayerResponse::name)
-                        .containsExactly("가을전어이동규", "겨울붕어빵이현제", "봄동나물진승희", "여름수박고병룡"),
-                () -> assertThat(actual).map(LeagueTeamPlayerResponse::id)
-                        .containsExactly(2L, 3L, 1L, 4L)
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual).map(PlayerResponse::name)
+                        .containsExactlyInAnyOrder("진승희", "이동규"),
+                () -> assertThat(actual).map(PlayerResponse::playerId)
+                        .containsExactlyInAnyOrder(1L, 2L)
         );
     }
 
@@ -181,38 +174,9 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
         List<LeagueResponseToManage> actual = toResponses(response, LeagueResponseToManage.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual.size()).isEqualTo(8),
-                () -> assertThat(actual.get(0).name()).isEqualTo("야구 대회"),
-                () -> assertThat(actual.get(0).leagueProgress()).isEqualTo(LeagueProgress.IN_PROGRESS.getDescription()),
-                () -> assertThat(actual.get(1).leagueProgress()).isEqualTo(LeagueProgress.BEFORE_START.getDescription()),
-                () -> assertThat(actual.get(0).sizeOfLeagueTeams()).isEqualTo(2)
+                () -> assertThat(actual.size()).isEqualTo(8)
         );
 
-    }
-
-    @Test
-    void 리그팀의_상세정보를_조회한다() {
-        // given
-        Long leagueTeamId = 3L;
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("leagueTeamId", leagueTeamId)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/teams/{leagueTeamId}")
-                .then().log().all()
-                .extract();
-
-        // then
-        LeagueTeamDetailResponse actual = toResponse(response, LeagueTeamDetailResponse.class);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual.leagueTeamPlayers()).map(
-                                LeagueTeamDetailResponse.LeagueTeamPlayerResponse::name)
-                        .containsExactly("가을전어이동규", "겨울붕어빵이현제", "봄동나물진승희", "여름수박고병룡"),
-                () -> assertThat(actual.teamName()).isEqualTo("미컴 축구생각"),
-                () -> assertThat(actual.logoImageUrl()).isEqualTo("이미지이미지")
-        );
     }
 
     @Test

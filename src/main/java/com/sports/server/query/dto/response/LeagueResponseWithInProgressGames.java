@@ -40,8 +40,8 @@ public record LeagueResponseWithInProgressGames(
             public static GameTeamResponse of(GameTeam gameTeam) {
                 return new GameTeamResponse(
                         gameTeam.getId(),
-                        gameTeam.getLeagueTeam().getName(),
-                        gameTeam.getLeagueTeam().getLogoImageUrl(),
+                        gameTeam.getTeam().getName(),
+                        gameTeam.getTeam().getLogoImageUrl(),
                         gameTeam.getScore(),
                         gameTeam.getPkScore()
                 );
@@ -52,7 +52,7 @@ public record LeagueResponseWithInProgressGames(
             return new GameDetailResponse(
                     game.getId(), game.getState().name(), game.getStartTime(),
                     game.getIsPkTaken(),
-                    game.getTeams().stream()
+                    game.getGameTeams().stream()
                             .map(GameTeamResponse::of)
                             .toList()
             );

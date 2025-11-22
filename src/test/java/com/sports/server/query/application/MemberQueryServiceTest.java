@@ -9,6 +9,7 @@ import com.sports.server.query.dto.response.MemberResponse;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql(scripts = "/member-fixture.sql")

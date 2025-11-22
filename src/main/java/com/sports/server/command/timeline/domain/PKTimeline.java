@@ -2,7 +2,6 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.sport.domain.Quarter;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -44,11 +43,15 @@ public class PKTimeline extends Timeline {
 
     @Override
     public void apply() {
-        game.scoreInPk(scorer);
+        if (isSuccess) {
+            game.scoreInPk(scorer);
+        }
     }
 
     @Override
     public void rollback() {
-        game.cancelPkScore(scorer);
+        if (isSuccess) {
+            game.cancelPkScore(scorer);
+        }
     }
 }

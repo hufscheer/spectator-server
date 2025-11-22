@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
-import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.query.repository.CheerTalkDynamicRepository;
@@ -25,13 +22,9 @@ import lombok.RequiredArgsConstructor;
 public class CheerTalkQueryService {
 
 	private final CheerTalkDynamicRepository cheerTalkDynamicRepository;
-
 	private final GameQueryRepository gameQueryRepository;
 
-	private final EntityUtils entityUtils;
-
-	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId,
-		final PageRequestDto pageRequest) {
+	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
 			gameId, pageRequest.cursor(), pageRequest.size()
 		);
@@ -44,14 +37,9 @@ public class CheerTalkQueryService {
 		return responses;
 	}
 
-	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId,
-		final PageRequestDto pageRequest,
-		final Member manager) {
-		League league = entityUtils.getEntity(leagueId, League.class);
-		PermissionValidator.checkPermission(league, manager);
-
-		List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
-			leagueId, pageRequest.cursor(), pageRequest.size()
+	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
+		List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByAdminId(
+				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
 		return reportedCheerTalks.stream()
@@ -59,14 +47,9 @@ public class CheerTalkQueryService {
 				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
 
-	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(Long leagueId,
-		PageRequestDto pageRequest,
-		Member manager) {
-		League league = entityUtils.getEntity(leagueId, League.class);
-		PermissionValidator.checkPermission(league, manager);
-
-		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
-			leagueId, pageRequest.cursor(), pageRequest.size()
+	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
+		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByAdminId(
+				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
 		return cheerTalks.stream()
@@ -74,15 +57,10 @@ public class CheerTalkQueryService {
 				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
 
-	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByLeagueId(final Long leagueId,
-		final PageRequestDto pageable,
-		final Member member) {
-		League league = entityUtils.getEntity(leagueId, League.class);
-
-		PermissionValidator.checkPermission(league, member);
-
-		List<CheerTalk> blockedCheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByLeagueId(
-			leagueId, pageable.cursor(), pageable.size());
+	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
+		List<CheerTalk> blockedCheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByAdminId(
+				admin.getId(), pageRequest.cursor(), pageRequest.size()
+		);
 
 		return blockedCheerTalks.stream()
 			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,

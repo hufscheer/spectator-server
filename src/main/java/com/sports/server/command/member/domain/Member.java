@@ -31,8 +31,8 @@ public class Member extends BaseEntity<Member> {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_manager", nullable = false)
-    private boolean isManager;
+    @Column(name = "is_administrator", nullable = false)
+    private boolean isAdministrator;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
@@ -41,10 +41,10 @@ public class Member extends BaseEntity<Member> {
         return new Member(email, password, true);
     }
 
-    private Member(String email, String password, boolean isManager) {
+    private Member(String email, String password, boolean isAdministrator) {
         this.email = email;
         this.password = password;
-        this.isManager = isManager;
+        this.isAdministrator = isAdministrator;
     }
 
 }

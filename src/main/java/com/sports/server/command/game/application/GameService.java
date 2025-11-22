@@ -1,23 +1,30 @@
 package com.sports.server.command.game.application;
 
-import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.game.domain.GameRepository;
-import com.sports.server.command.game.domain.GameState;
-import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.dto.GameRequestDto;
-import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.Round;
-import com.sports.server.command.leagueteam.domain.LeagueTeam;
+import com.sports.server.auth.exception.AuthorizationErrorMessages;
+import com.sports.server.command.game.domain.*;
+import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.game.exception.GameErrorMessages;
+import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.sport.domain.Sport;
-import com.sports.server.command.sport.domain.SportRepository;
+import com.sports.server.command.player.exception.PlayerErrorMessages;
+import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
-import com.sports.server.common.exception.NotFoundException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,58 +34,44 @@ public class GameService {
 
     private final EntityUtils entityUtils;
     private final GameRepository gameRepository;
-    private final SportRepository sportRepository;
     private final TimelineRepository timelineRepository;
-    private static final String NAME_OF_SPORT = "축구";
+    private final TeamPlayerRepository teamPlayerRepository;
+    private final LineupPlayerRepository lineupPlayerRepository;
+    private final GameTeamRepository gameTeamRepository;
+    private final LeagueTeamRepository leagueTeamRepository;
 
     @Transactional
-    public Long register(final Long leagueId, final GameRequestDto.Register requestDto, final Member manager) {
+    public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        PermissionValidator.checkPermission(league, manager);
-        league.validateRoundWithinLimit(requestDto.round());
+        PermissionValidator.checkPermission(league, administrator);
+        league.validateRoundWithinLimit(request.round());
 
-        Game game = saveGame(leagueId, manager, requestDto);
-        saveGameTeams(game, requestDto);
+        validateGameTeamsInLeague(league, request.team1(), request.team2());
+
+        Game game = saveGame(league, administrator, request);
+        registerGameTeamAndLineup(game, request.team1());
+        registerGameTeamAndLineup(game, request.team2());
+
         return game.getId();
     }
 
     @Transactional
-    public void updateGameStatusToFinish(LocalDateTime now) {
+    public List<Game> updateGameStatusToFinish(LocalDateTime now) {
         LocalDateTime cutoffTime = now.minusHours(5);
         List<Game> games = gameRepository.findGamesOlderThanFiveHours(cutoffTime);
         games.forEach(game -> game.updateState(GameState.FINISHED));
+        return games;
     }
 
-    private void saveGameTeams(Game game, GameRequestDto.Register requestDto) {
-
-        LeagueTeam leagueTeam1 = entityUtils.getEntity(requestDto.idOfTeam1(), LeagueTeam.class);
-        LeagueTeam leagueTeam2 = entityUtils.getEntity(requestDto.idOfTeam2(), LeagueTeam.class);
-
-        GameTeam gameTeam1 = new GameTeam(game, leagueTeam1);
-        GameTeam gameTeam2 = new GameTeam(game, leagueTeam2);
-
-        game.addTeam(gameTeam1);
-        game.addTeam(gameTeam2);
-
-        leagueTeam1.getLeagueTeamPlayers().forEach(gameTeam1::registerLineup);
-        leagueTeam2.getLeagueTeamPlayers().forEach(gameTeam2::registerLineup);
-    }
-
-    private Game saveGame(Long leagueId, Member manager, GameRequestDto.Register requestDto) {
-        Sport sport = sportRepository.findByName(NAME_OF_SPORT)
-                .orElseThrow(() -> new NotFoundException("해당 이름을 가진 스포츠가 존재하지 않습니다."));
-        League league = entityUtils.getEntity(leagueId, League.class);
-        PermissionValidator.checkPermission(league, manager);
-
-        Game game = requestDto.toEntity(sport, manager, league);
-        gameRepository.save(game);
-        return game;
+    @Transactional(readOnly = true)
+    public List<Game> findGamesByIds(List<Long> gameIds) {
+        return gameRepository.findAllByIdIn(gameIds);
     }
 
     @Transactional
-    public void updateGame(Long leagueId, Long gameId, GameRequestDto.Update request, Member manager) {
+    public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        PermissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, administrator);
         league.validateRoundWithinLimit(request.round());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
@@ -91,12 +84,102 @@ public class GameService {
     }
 
     @Transactional
-    public void deleteGame(Long leagueId, Long gameId, final Member manager) {
+    public void deleteGame(Long leagueId, Long gameId, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
-        PermissionValidator.checkPermission(league, manager);
+        PermissionValidator.checkPermission(league, administrator);
 
         Game game = entityUtils.getEntity(gameId, Game.class);
         timelineRepository.deleteByGame(game);
         gameRepository.delete(game);
     }
+
+    @Transactional
+    public void deleteGameTeam(final Long gameTeamId, final Member administrator) {
+        GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
+        Game game = gameTeam.getGame();
+
+        if (!game.isManagedBy(administrator)) {
+            throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
+        }
+        game.removeGameTeam(gameTeam);
+    }
+
+    private Game saveGame(League league, Member administrator, GameRequest.Register request) {
+        Game game = request.toEntity(administrator, league);
+        return gameRepository.save(game);
+    }
+
+    private void registerGameTeamAndLineup(Game game, GameRequest.TeamLineupRequest teamLineupInfo) {
+        Team team = entityUtils.getEntity(teamLineupInfo.teamId(), Team.class);
+        GameTeam gameTeam = GameTeam.of(game, team);
+        gameTeamRepository.save(gameTeam);
+        game.addGameTeam(gameTeam);
+        team.addGameTeam(gameTeam);
+
+        List<Long> teamPlayerIdsRequest = teamLineupInfo.lineupPlayers().stream()
+                    .map(GameRequest.LineupPlayerRequest::teamPlayerId)
+                    .toList();
+
+        List<TeamPlayer> teamPlayers = teamPlayerRepository.findAllByTeamPlayerIds(teamPlayerIdsRequest);
+        validateTeamPlayers(teamPlayerIdsRequest, teamPlayers, team);
+        registerLineup(gameTeam, teamPlayers, teamLineupInfo);
+    }
+
+    private void registerLineup(GameTeam gameTeam, List<TeamPlayer> teamPlayers, GameRequest.TeamLineupRequest teamLineupRequest){
+        Map<Long, GameRequest.LineupPlayerRequest> request = teamLineupRequest.lineupPlayers().stream()
+                .collect(Collectors.toMap(
+                        GameRequest.LineupPlayerRequest::teamPlayerId,
+                        lineupPlayerRequest -> lineupPlayerRequest
+                ));
+
+        for (TeamPlayer teamPlayer : teamPlayers) {
+            GameRequest.LineupPlayerRequest lineupPlayerRequest = request.get(teamPlayer.getId());
+
+            if (lineupPlayerRequest == null) {
+                throw new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION);
+            }
+
+            LineupPlayer lineupPlayer = LineupPlayer.of(
+                    gameTeam,
+                    teamPlayer.getPlayer(),
+                    lineupPlayerRequest.state(),
+                    teamPlayer.getJerseyNumber(),
+                    lineupPlayerRequest.isCaptain()
+            );
+            lineupPlayerRepository.save(lineupPlayer);
+            gameTeam.addLineupPlayer(lineupPlayer);
+        }
+    }
+
+    private void validateTeamPlayers(List<Long> teamPlayerIdsRequest, List<TeamPlayer> teamPlayers, Team team) {
+        if (new HashSet<>(teamPlayerIdsRequest).size() != teamPlayerIdsRequest.size()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "요청에 중복된 선수 ID가 포함되어 있습니다.");
+        }
+
+        Set<Long> teamPlayerIds = teamPlayers.stream()
+                .map(TeamPlayer::getId)
+                .collect(Collectors.toSet());
+
+        teamPlayerIdsRequest.stream()
+                .filter(requestedId -> !teamPlayerIds.contains(requestedId))
+                .findFirst()
+                .ifPresent(invalidId -> {
+                    throw new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION + invalidId);
+                });
+
+        teamPlayers.forEach(tp -> {
+            if (!tp.getTeam().getId().equals(team.getId())) {
+                throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
+            }
+        });
+    }
+
+    private void validateGameTeamsInLeague(League league, GameRequest.TeamLineupRequest team1, GameRequest.TeamLineupRequest team2) {
+        Set<Long> leagueTeamIds = new HashSet<>(leagueTeamRepository.findTeamIdsByLeagueId(league.getId()));
+
+        if (!leagueTeamIds.contains(team1.teamId()) || !leagueTeamIds.contains(team2.teamId())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.TEAM_NOT_IN_LEAGUE_TEAM);
+        }
+    }
+
 }

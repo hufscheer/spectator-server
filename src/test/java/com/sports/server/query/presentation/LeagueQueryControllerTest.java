@@ -1,19 +1,11 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.query.dto.response.LeagueDetailResponse;
-import com.sports.server.query.dto.response.LeagueResponse;
-import com.sports.server.query.dto.response.LeagueResponseToManage;
-import com.sports.server.query.dto.response.LeagueResponseWithGames;
+import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.GameTeam;
-import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
-import com.sports.server.query.dto.response.LeagueSportResponse;
-import com.sports.server.query.dto.response.LeagueTeamDetailResponse;
-import com.sports.server.query.dto.response.LeagueTeamPlayerResponse;
-import com.sports.server.query.dto.response.LeagueTeamResponse;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
@@ -41,17 +33,19 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // given
         List<LeagueResponse> responses = List.of(
-                new LeagueResponse(1L, "리그 첫번째", 16, 4, "종료"),
-                new LeagueResponse(2L, "리그 두번째", 32, 32, "진행 중")
+                new LeagueResponse(1L, "2025 외대 월드컵", 16, 2, "종료", "정치외교학과 DPS"),
+                new LeagueResponse(2L, "2025 트로이카", 32, 32, "진행 중", null),
+                new LeagueResponse(3L, "2025 삼건물대회", 16, 2, "종료", "경영대학 야생마"),
+                new LeagueResponse(4L, "2100 화성 월드컵", 8, 8, "시작전", null)
         );
 
-        int year = 2024;
-        given(leagueQueryService.findLeagues(year))
+        given(leagueQueryService.findLeagues(any()))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues")
-                .queryParam("year", String.valueOf(year))
+                .queryParam("year", String.valueOf(2025))
+                .queryParam("leagueProgress", "FINISHED")
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -59,47 +53,16 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("year").description("리그의 연도")
+                                parameterWithName("year").description("리그의 연도 (선택사항, 미입력시 전체 연도)").optional(),
+                                parameterWithName("leagueProgress").description("리그의 진행 상태 (선택사항, BEFORE_START, IN_PROGRESS, FINISHED)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
-                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER)
-                                        .description("현재 진행 중인 라운드"),
-                                fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태")
-                        )
-                ));
-    }
-
-    @Test
-    void 리그의_해당하는_스포츠_전체를_조회한다() throws Exception {
-
-        // given
-        Long leagueId = 1L;
-
-        List<LeagueSportResponse> responses = List.of(
-                new LeagueSportResponse(1L, "축구"),
-                new LeagueSportResponse(2L, "농구")
-        );
-
-        given(leagueQueryService.findSportsByLeague(leagueId))
-                .willReturn(responses);
-
-        // when
-        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/sports", leagueId)
-                .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        // then
-        result.andExpect((status().isOk()))
-                .andDo(restDocsHandler.document(
-                        pathParameters(
-                                parameterWithName("leagueId").description("리그의 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("[].sportId").type(JsonFieldType.NUMBER).description("스포츠의 ID"),
-                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("스포츠의 이름")
+                                fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER).description("현재 진행 중인 라운드"),
+                                fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
+                                fieldWithPath("[].winnerTeamName").type(JsonFieldType.STRING).description("대회의 우승팀 이름").optional()
                         )
                 ));
     }
@@ -111,8 +74,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
 
         List<LeagueTeamResponse> responses = List.of(
-                new LeagueTeamResponse(1L, "경영 야생마", "s3:logoImageUrl1", 3),
-                new LeagueTeamResponse(2L, "서어 뻬데뻬", "s3:logoImageUrl2", 6)
+                new LeagueTeamResponse(1L, 10L, "경영 야생마", "s3:logoImageUrl1", 3, 0, 0),
+                new LeagueTeamResponse(2L, 11L, "서어 뻬데뻬", "s3:logoImageUrl2", 6, 0, 0)
         );
 
         given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2))
@@ -134,12 +97,111 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
                         ),
                         responseFields(
-                                fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 팀 ID"),
+                                fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 리그팀 ID"),
+                                fieldWithPath("[].teamId").type(JsonFieldType.NUMBER).description("해당 리그팀의 팀 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("리그에 참여하는 팀의 이름"),
                                 fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING)
-                                        .description("리그의 팀 로고 이미지 URL®"),
-                                fieldWithPath("[].sizeOfLeagueTeamPlayers").type(JsonFieldType.NUMBER)
-                                        .description("리그팀 선수의 인원수")
+                                        .description("리그의 팀 로고 이미지 URL"),
+                                fieldWithPath("[].sizeOfTeamPlayers").type(JsonFieldType.NUMBER)
+                                        .description("리그팀 선수의 인원수"),
+                                fieldWithPath("[].cheerCount").type(JsonFieldType.NUMBER).description("응원 수"),
+                                fieldWithPath("[].cheerTalksCount").description("응원톡 수")
+                        )
+                ));
+    }
+
+    @Test
+    void 리그_통계를_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+        
+        LeagueTeamResponse firstWinnerTeam = new LeagueTeamResponse(1L, 1L, "경영 야생마", "s3:logoImageUrl1", 3, null, null);
+        LeagueTeamResponse secondWinnerTeam = new LeagueTeamResponse(2L, 2L, "서어 뻬데뻬", "s3:logoImageUrl2", 4, null, null);
+        
+        LeagueTeamResponse mostCheeredTeam = new LeagueTeamResponse(1L, 1L, "경영 야생마", "s3:logoImageUrl1", 3, 100, null);
+        LeagueTeamResponse mostCheerTalksTeam = new LeagueTeamResponse(2L, 2L, "서어 뻬데뻬", "s3:logoImageUrl2", 4, null, 120);
+        
+        LeagueStatisticsResponse response = LeagueStatisticsResponse.builder()
+                .firstWinnerTeam(firstWinnerTeam)
+                .secondWinnerTeam(secondWinnerTeam)
+                .mostCheeredTeam(mostCheeredTeam)
+                .mostCheerTalksTeam(mostCheerTalksTeam)
+                .build();
+        
+        given(leagueQueryService.findLeagueStatistic(leagueId))
+                .willReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/statistics", leagueId)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("firstWinnerTeam").type(JsonFieldType.OBJECT).description("우승팀 정보"),
+                                fieldWithPath("firstWinnerTeam.teamId").type(JsonFieldType.NUMBER).description("우승팀"),
+                                fieldWithPath("firstWinnerTeam.leagueTeamId").type(JsonFieldType.NUMBER).description("우승팀의 리그팀 ID"),
+                                fieldWithPath("firstWinnerTeam.teamName").type(JsonFieldType.STRING).description("우승팀 이름"),
+                                fieldWithPath("firstWinnerTeam.logoImageUrl").type(JsonFieldType.STRING).description("우승팀 로고 이미지 URL"),
+                                fieldWithPath("firstWinnerTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("우승팀 선수 수"),
+                                fieldWithPath("secondWinnerTeam").type(JsonFieldType.OBJECT).description("준우승팀 정보"),
+                                fieldWithPath("secondWinnerTeam.teamId").type(JsonFieldType.NUMBER).description("준우승팀 ID"),
+                                fieldWithPath("secondWinnerTeam.leagueTeamId").type(JsonFieldType.NUMBER).description("준우승팀의 리그팀 ID"),
+                                fieldWithPath("secondWinnerTeam.teamName").type(JsonFieldType.STRING).description("준우승팀 이름"),
+                                fieldWithPath("secondWinnerTeam.logoImageUrl").type(JsonFieldType.STRING).description("준우승팀 로고 이미지 URL"),
+                                fieldWithPath("secondWinnerTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("준우승팀 선수 수"),
+                                fieldWithPath("mostCheeredTeam").type(JsonFieldType.OBJECT).description("최다 응원 팀 정보"),
+                                fieldWithPath("mostCheeredTeam.leagueTeamId").type(JsonFieldType.NUMBER).description("최다 응원 팀의 리그팀 ID"),
+                                fieldWithPath("mostCheeredTeam.teamId").type(JsonFieldType.NUMBER).description("최다 응원 팀 ID"),
+                                fieldWithPath("mostCheeredTeam.teamName").type(JsonFieldType.STRING).description("최다 응원 팀 이름"),
+                                fieldWithPath("mostCheeredTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 응원 팀 로고 이미지 URL"),
+                                fieldWithPath("mostCheeredTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("최다 응원 팀 선수 수"),
+                                fieldWithPath("mostCheeredTeam.cheerCount").type(JsonFieldType.NUMBER).description("최다 응원 팀 응원 수"),
+                                fieldWithPath("mostCheerTalksTeam").type(JsonFieldType.OBJECT).description("최다 응원톡 팀 정보"),
+                                fieldWithPath("mostCheerTalksTeam.leagueTeamId").type(JsonFieldType.NUMBER).description("최다 응원톡 팀의 리그팀 ID"),
+                                fieldWithPath("mostCheerTalksTeam.teamId").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 ID"),
+                                fieldWithPath("mostCheerTalksTeam.teamName").type(JsonFieldType.STRING).description("최다 응원톡 팀 이름"),
+                                fieldWithPath("mostCheerTalksTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 응원톡 팀 로고 이미지 URL"),
+                                fieldWithPath("mostCheerTalksTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 선수 수"),
+                                fieldWithPath("mostCheerTalksTeam.cheerTalksCount").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 응원톡 수")
+                        )
+                ));
+    }
+
+    @Test
+    void 리그_득점왕을_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+        
+        List<TopScorerResponse> responses = List.of(
+                new TopScorerResponse(1L, "진승희", "20", 1, 5),
+                new TopScorerResponse(2L, "이동규", "20", 2, 3),
+                new TopScorerResponse(3L, "이현제", "20", 3, 2)
+        );
+        
+        given(leagueQueryService.findTop20ScorersByLeagueId(leagueId))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/top-scorers", leagueId)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
+                                fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 입학 년도"),
+                                fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위"),
+                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("득점 수")
                         )
                 ));
     }
@@ -187,9 +249,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // given
         Long leagueTeamId = 1L;
 
-        List<LeagueTeamPlayerResponse> responses = List.of(
-                new LeagueTeamPlayerResponse(1L, "봄동나물진승희", "설명설명설명", 0, "202022222"),
-                new LeagueTeamPlayerResponse(2L, "가을전어이동규", "설명설명설명", 2, "202022221")
+        List<PlayerResponse> responses = List.of(
+                new PlayerResponse(1L, null, "봄동나물진승희", "202022222", 10, null, null),
+                new PlayerResponse(2L, null, "가을전어이동규", "202022221", 7, null, null)
         );
 
         given(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId))
@@ -206,11 +268,11 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 parameterWithName("leagueTeamId").description("리그 팀의 ID")
                         ),
                         responseFields(
-                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("대회 팀 선수 ID"),
+                                fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("대회 팀 선수 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("대회 팀 선수 이름"),
-                                fieldWithPath("[].description").type(JsonFieldType.STRING).description("대회 팀 선수 설명"),
-                                fieldWithPath("[].number").type(JsonFieldType.NUMBER).description("대회 팀 선수 점수"),
-                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("대회 팀 선수 학번")
+                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("대회 팀 선수 학번"),
+                                fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("대회 팀 선수 등번호(nullable)")
+                                //TODO: 선수의 리그 내 총 골 개수 추가
                         )
                 ));
     }
@@ -316,50 +378,6 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
                                 fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
                                 fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜")
-                        )
-                ));
-    }
-
-
-    @Test
-    void 리그팀을_상세_조회한다() throws Exception {
-        // given
-        Long leagueTeamId = 3L;
-
-        List<LeagueTeamDetailResponse.LeagueTeamPlayerResponse> leagueTeamPlayerResponses = List.of(
-                new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(1L, "봄동나물진승희", 0, "202100000"),
-                new LeagueTeamDetailResponse.LeagueTeamPlayerResponse(2L, "가을전어이동규", 2, "202100001")
-        );
-        LeagueTeamDetailResponse leagueTeamDetailResponse = new LeagueTeamDetailResponse(
-                "이미지이미지", "미컴 축구생각", "color code", leagueTeamPlayerResponses
-        );
-
-        given(leagueQueryService.findLeagueTeam(leagueTeamId))
-                .willReturn(leagueTeamDetailResponse);
-
-        // when
-        ResultActions result = mockMvc.perform(get("/leagues/teams/{leagueTeamId}", leagueTeamId)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        result.andExpect((status().isOk()))
-                .andDo(restDocsHandler.document(
-                        pathParameters(
-                                parameterWithName("leagueTeamId").description("리그 팀의 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("teamName").type(JsonFieldType.STRING).description("대회 팀의 이름"),
-                                fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("로고 이미지의 URL"),
-                                fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 컬러 코드"),
-                                fieldWithPath("leagueTeamPlayers").type(JsonFieldType.ARRAY).description("대회 팀 선수들"),
-                                fieldWithPath("leagueTeamPlayers[].id").type(JsonFieldType.NUMBER)
-                                        .description("대회 팀 선수 ID"),
-                                fieldWithPath("leagueTeamPlayers[].name").type(JsonFieldType.STRING)
-                                        .description("대회 팀 선수 이름"),
-                                fieldWithPath("leagueTeamPlayers[].number").type(JsonFieldType.NUMBER)
-                                        .description("대회 팀 선수 번호"),
-                                fieldWithPath("leagueTeamPlayers[].studentNumber").type(JsonFieldType.STRING)
-                                        .description("대회 팀 선수 학번")
                         )
                 ));
     }
@@ -481,5 +499,43 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 ));
     }
 
+    @Test
+    void 연도별_득점왕을_조회한다() throws Exception {
+        // given
+        Integer year = 2024;
+        
+        List<TopScorerResponse> responses = List.of(
+                new TopScorerResponse(1L, "김득점", "22", 1, 15),
+                new TopScorerResponse(2L, "이골잡이", "21", 2, 12),
+                new TopScorerResponse(3L, "박슈터", "23", 3, 10),
+                new TopScorerResponse(4L, "최킬러", "22", 4, 8),
+                new TopScorerResponse(5L, "정스트라이커", "21", 5, 7)
+        );
+        
+        given(leagueQueryService.findTopScorersByYear(year, 5))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/top-scorers")
+                .queryParam("year", String.valueOf(year))
+                .queryParam("limit", "5")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("year").description("조회할 연도 (default 값 2025)"),
+                                parameterWithName("limit").description("조회할 선수 수 (default 값 5)")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
+                                fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위").optional(),
+                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수 (해당 연도 모든 리그 합산)")
+                        )
+                ));
+    }
 }
 

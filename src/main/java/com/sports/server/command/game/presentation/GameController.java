@@ -1,13 +1,16 @@
 package com.sports.server.command.game.presentation;
 
 import com.sports.server.command.game.application.GameService;
+import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
-import com.sports.server.command.game.dto.GameRequestDto;
+import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.member.domain.Member;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ public class GameController {
     private final GameTeamService gameTeamService;
     private final LineupPlayerService lineupPlayerService;
     private final GameService gameService;
+    private final GameStatusScheduler gameStatusScheduler;
 
     @PostMapping("/games/{gameId}/cheer")
     @ResponseStatus(HttpStatus.OK)
@@ -44,26 +48,30 @@ public class GameController {
 
     @PostMapping("/leagues/{leagueId}/games")
     public ResponseEntity<Long> registerGame(@PathVariable final Long leagueId,
-                                             @RequestBody final GameRequestDto.Register requestDto,
+                                             @RequestBody final GameRequest.Register request,
                                              final Member member) {
-        Long gameId = gameService.register(leagueId, requestDto, member);
+        Long gameId = gameService.register(leagueId, request, member);
         return ResponseEntity.created(URI.create("/games/" + gameId)).body(gameId);
     }
 
     @PutMapping("/leagues/{leagueId}/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateGame(@PathVariable final Long leagueId,
-                           @PathVariable final Long gameId,
-                           @RequestBody final GameRequestDto.Update requestDto,
-                           final Member member) {
-        gameService.updateGame(leagueId, gameId, requestDto, member);
+    public void updateGame(@PathVariable final Long leagueId, @PathVariable final Long gameId,
+                           @RequestBody final GameRequest.Update request, final Member member) {
+        gameService.updateGame(leagueId, gameId, request, member);
     }
 
     @DeleteMapping("/leagues/{leagueId}/{gameId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGame(@PathVariable final Long leagueId,
-                           @PathVariable final Long gameId, final Member manager) {
-        gameService.deleteGame(leagueId, gameId, manager);
+                           @PathVariable final Long gameId, final Member member) {
+        gameService.deleteGame(leagueId, gameId, member);
+    }
+
+    @DeleteMapping("/game-teams/{gameTeamId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGameTeam(@PathVariable final Long gameTeamId, final Member member) {
+        gameService.deleteGameTeam(gameTeamId, member);
     }
 
     @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register")
@@ -78,5 +86,25 @@ public class GameController {
     public void revokeCaptainFromPlayer(@PathVariable final Long gameId,
                                         @PathVariable final Long lineupPlayerId) {
         lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId);
+    }
+
+    @PostMapping("/game-teams/{gameTeamId}/lineup-players")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long addPlayerToLineup(@PathVariable final Long gameTeamId,
+                                  @RequestBody final GameRequest.LineupPlayerRequest request) {
+        return lineupPlayerService.addPlayerToLineup(gameTeamId, request);
+    }
+
+    @DeleteMapping("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removePlayerFromLineup(@PathVariable final Long gameTeamId,
+                                       @PathVariable final Long lineupPlayerId) {
+        lineupPlayerService.removePlayerFromLineup(gameTeamId, lineupPlayerId);
+    }
+
+    @PostMapping("/admin/games/statistics/update")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateLeagueStatisticsForGames(@RequestBody List<Long> gameIds) {
+        gameStatusScheduler.manualUpdateLeagueStatisticsForFinalGames(gameIds);
     }
 }

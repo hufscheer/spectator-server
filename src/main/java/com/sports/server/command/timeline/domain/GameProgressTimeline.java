@@ -2,16 +2,12 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
-import com.sports.server.command.sport.domain.Quarter;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,10 +26,11 @@ public class GameProgressTimeline extends Timeline {
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "previous_quarter_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "previous_quarter")
     private Quarter previousQuarter;
 
+    @Column(name = "previous_quarter_changed_at")
     private LocalDateTime previousQuarterChangedAt;
 
     public GameProgressTimeline(
@@ -77,8 +74,9 @@ public class GameProgressTimeline extends Timeline {
     public void rollback() {
         game.updateQuarter(previousQuarter, previousQuarterChangedAt);
 
-        if (gameProgressType == GameProgressType.QUARTER_START && previousQuarter.getName()
-                .equals(NAME_OF_BEFORE_GAME_QUARTER)) {
+        if (gameProgressType == GameProgressType.QUARTER_START &&
+                previousQuarter != null &&
+                previousQuarter.getName().equals(NAME_OF_BEFORE_GAME_QUARTER)) {
             game.updateState(GameState.SCHEDULED);
         }
 

@@ -44,6 +44,5 @@ public class CheerTalk extends BaseEntity<CheerTalk> {
         this.content = content;
         this.isBlocked = false;
         this.gameTeamId = gameTeamId;
-        registerEvent(new CheerTalkCreateEvent(this));
     }
 }

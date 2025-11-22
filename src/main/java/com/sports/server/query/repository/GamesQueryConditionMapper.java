@@ -10,6 +10,8 @@ import com.sports.server.command.league.domain.Round;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.request.GamesQueryRequestDto;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -39,13 +41,16 @@ public class GamesQueryConditionMapper {
 
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
                 .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
-                .and(() -> game.state.eq(state))
-                .and(() -> game.sport.id.in(gamesQueryRequestDto.getSportIds()))
-                .and(() -> game.id.in(
-                        gameTeamDynamicRepository.findAllByLeagueTeamIds(gamesQueryRequestDto.getLeagueTeamIds())));
+                .and(() -> game.state.eq(state));
+
+        List<Long> leagueTeamIds = gamesQueryRequestDto.getLeagueTeamIds();
+        if (leagueTeamIds != null && !leagueTeamIds.isEmpty()) {
+            booleanBuilder.and(() -> game.id.in(
+                    gameTeamDynamicRepository.findAllByLeagueTeamIds(leagueTeamIds)
+            ));
+        }
 
         int roundNumber = gamesQueryRequestDto.getRound();
-
         if (Round.isValidNumber(roundNumber)) {
             Round round = Round.from(roundNumber);
             booleanBuilder.and(() -> game.round.eq(round));

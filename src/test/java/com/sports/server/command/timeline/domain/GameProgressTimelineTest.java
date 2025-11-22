@@ -7,67 +7,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
-import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.sport.domain.Sport;
 import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class GameProgressTimelineTest {
-    private Quarter 경기전;
-    private Quarter 전반전;
-    private Quarter 후반전;
-    private Quarter 연장전;
-    private Quarter 승부차기;
-    private Quarter 경기후;
     private Game game;
-    private Sport sport;
 
     @BeforeEach
     void setUp() {
-        경기전 = entityBuilder(Quarter.class)
-                .set("name", "경기전")
-                .set("order", 1)
-                .sample();
-
-        전반전 = entityBuilder(Quarter.class)
-                .set("name", "전반전")
-                .set("order", 2)
-                .sample();
-
-        후반전 = entityBuilder(Quarter.class)
-                .set("name", "후반전")
-                .set("order", 3)
-                .sample();
-
-        연장전 = entityBuilder(Quarter.class)
-                .set("name", "연장전")
-                .set("order", 4)
-                .sample();
-
-        승부차기 = entityBuilder(Quarter.class)
-                .set("name", "승부차기")
-                .set("order", 5)
-                .sample();
-
-        경기후 = entityBuilder(Quarter.class)
-                .set("name", "경기후")
-                .set("order", 6)
-                .sample();
-
-        sport = entityBuilder(Sport.class)
-                .set("name", "축구")
-                .set("quarters", List.of(경기전, 전반전, 후반전, 승부차기, 경기후))
-                .sample();
-
         game = entityBuilder(Game.class)
                 .set("teams", new ArrayList<>())
-                .set("gameQuarter", 경기전.getName())
+                .set("gameQuarter", Quarter.PRE_GAME.getName())
                 .set("state", GameState.SCHEDULED)
-                .set("sport", sport)
                 .set("is_pk_taken", false)
                 .sample();
     }
@@ -84,7 +38,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -101,7 +55,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -119,7 +73,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(후반전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -138,7 +92,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(후반전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -157,7 +111,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(경기후.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.POST_GAME.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.FINISHED)
             );
         }
@@ -170,7 +124,7 @@ class GameProgressTimelineTest {
             // when then
             assertThatThrownBy(() -> new GameProgressTimeline(
                     game,
-                    전반전,
+                    Quarter.FIRST_HALF,
                     10,
                     GameProgressType.QUARTER_START)
             ).isInstanceOf(CustomException.class)
@@ -204,7 +158,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(경기전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.PRE_GAME.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.SCHEDULED)
             );
         }
@@ -223,7 +177,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -242,7 +196,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(전반전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -277,7 +231,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(후반전.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.getName()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -286,7 +240,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 전반전_시작_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                전반전,
+                Quarter.FIRST_HALF,
                 0,
                 GameProgressType.QUARTER_START
         );
@@ -295,7 +249,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 전반전_종료_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                전반전,
+                Quarter.FIRST_HALF,
                 45,
                 GameProgressType.QUARTER_END
         );
@@ -304,7 +258,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 후반전_시작_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                후반전,
+                Quarter.SECOND_HALF,
                 50,
                 GameProgressType.QUARTER_START
         );
@@ -313,7 +267,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 후반전_종료_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                후반전,
+                Quarter.SECOND_HALF,
                 50,
                 GameProgressType.QUARTER_END
         );
@@ -321,14 +275,17 @@ class GameProgressTimelineTest {
 
     private GameProgressTimeline 승부차기_시작_타임라인_생성(Game game) {
         return new GameProgressTimeline(
-                game, 승부차기, 50, GameProgressType.QUARTER_START
+                game,
+                Quarter.PENALTY_SHOOTOUT,
+                50,
+                GameProgressType.QUARTER_START
         );
     }
 
     private GameProgressTimeline 경기_종료_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                경기후,
+                Quarter.POST_GAME,
                 50,
                 GameProgressType.GAME_END
         );

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,7 +37,7 @@ public class GameQueryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GameResponseDto>> getAllGames(
+    public ResponseEntity<List<LeagueWithGamesResponse>> getAllGames(
             @ModelAttribute GamesQueryRequestDto queryRequestDto,
             @ModelAttribute PageRequestDto pageRequest) {
         return ResponseEntity.ok(gameQueryService.getAllGames(queryRequestDto, pageRequest));
@@ -57,5 +58,12 @@ public class GameQueryController {
     @GetMapping("/{gameId}/lineup/playing")
     public ResponseEntity<List<LineupPlayerResponse.Playing>> getGamePlayingLineup(@PathVariable final Long gameId) {
         return ResponseEntity.ok(lineupPlayerQueryService.getPlayingLineup(gameId));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<GameDetailResponse>> getGamesByYearAndMonth(
+            @RequestParam Integer year,
+            @RequestParam Integer month) {
+        return ResponseEntity.ok(gameQueryService.getGamesByYearAndMonth(year, month));
     }
 }

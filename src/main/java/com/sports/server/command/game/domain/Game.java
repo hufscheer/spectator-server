@@ -6,8 +6,7 @@ import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.sport.domain.Quarter;
-import com.sports.server.command.sport.domain.Sport;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
@@ -25,7 +24,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.ToIntFunction;
+
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,23 +40,17 @@ import org.springframework.util.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game extends BaseEntity<Game> implements ManagedEntity {
 
+    public static final int MINIMUM_TEAMS = 2;
     private static final String NAME_OF_PK_QUARTER = "승부차기";
     private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sport_id")
-    private Sport sport;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
+    @JoinColumn(name = "administrator_id")
+    private Member administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "league_id")
     private League league;
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GameTeam> teams = new ArrayList<>();
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -80,6 +77,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     @Column(name = "is_pk_taken", nullable = false)
     private Boolean isPkTaken;
 
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GameTeam> gameTeams = new ArrayList<>();
+
     public void registerStarter(final LineupPlayer lineupPlayer) {
         GameTeam gameTeam = lineupPlayer.getGameTeam();
         validateGameTeam(gameTeam);
@@ -93,19 +93,28 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public GameTeam getTeam1() {
-        return teams.stream()
+        return gameTeams.stream()
                 .min(Comparator.comparing(GameTeam::getId))
                 .orElseThrow();
     }
 
     public GameTeam getTeam2() {
-        return teams.stream()
+        return gameTeams.stream()
                 .max(Comparator.comparing(GameTeam::getId))
                 .orElseThrow();
     }
 
-    public void addTeam(GameTeam team) {
-        teams.add(team);
+    public void addGameTeam(GameTeam gameTeam) {
+        if (!this.gameTeams.contains(gameTeam)) {
+            this.gameTeams.add(gameTeam);
+        }
+    }
+
+    public void removeGameTeam(GameTeam gameTeam) {
+        this.gameTeams.remove(gameTeam);
+        if (gameTeam.getTeam() != null) {
+            gameTeam.getTeam().removeGameTeam(gameTeam);
+        }
     }
 
     public void score(LineupPlayer scorer) {
@@ -133,7 +142,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {
-        return teams.stream()
+        return gameTeams.stream()
                 .filter(scorer::isInTeam)
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(errorMessage));
@@ -165,11 +174,10 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         this.round = round;
     }
 
-
-    public Game(Sport sport, Member manager, League league, String name, LocalDateTime startTime,
+    @Builder
+    public Game(Member administrator, League league, String name, LocalDateTime startTime,
                 String videoId, String gameQuarter, GameState state, Round round, boolean isPkTaken) {
-        this.sport = sport;
-        this.manager = manager;
+        this.administrator = administrator;
         this.league = league;
         this.name = name;
         this.startTime = startTime;
@@ -193,7 +201,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     private void validateGameTeam(final GameTeam gameTeam) {
-        if (this.teams.stream().noneMatch(team -> team.getId().equals(gameTeam.getId()))) {
+        if (this.gameTeams.stream().noneMatch(team -> Objects.equals(team.getId(), gameTeam.getId()))) {
             throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
         }
     }
@@ -204,13 +212,51 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void play() {
         this.state = GameState.PLAYING;
-        updateQuarter(sport.getAfterStartQuarter());
+        updateQuarter(Quarter.FIRST_HALF);
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        updateQuarter(sport.getEndQuarter());
+        updateQuarter(Quarter.POST_GAME);
     }
+
+    public void determineResult() {
+        if (gameTeams.size() != MINIMUM_TEAMS) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
+        }
+
+        GameTeam team1 = getTeam1();
+        GameTeam team2 = getTeam2();
+
+        int comparison = compareScores(team1, team2, GameTeam::getScore);
+
+        if (comparison > 0) {
+            markWinnerAndLoser(team1, team2);
+            return;
+        }
+        if (comparison < 0) {
+            markWinnerAndLoser(team2, team1);
+            return;
+        }
+        markAsDraw(team1, team2);
+    }
+
+    private static void markAsDraw(GameTeam team1, GameTeam team2) {
+        team1.markAsDraw();
+        team2.markAsDraw();
+    }
+
+    private int compareScores(GameTeam team1, GameTeam team2, ToIntFunction<GameTeam> scoreExtractor) {
+        int score1 = scoreExtractor.applyAsInt(team1);
+        int score2 = scoreExtractor.applyAsInt(team2);
+        return Integer.compare(score1, score2);
+    }
+
+    private void markWinnerAndLoser(GameTeam winner, GameTeam loser) {
+        winner.markAsWinner();
+        loser.markAsLoser();
+    }
+
 
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.getName();
@@ -231,7 +277,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
             cancelPk();
         }
 
-        this.gameQuarter = quarter.getName();
+        if (quarter == null) {
+            this.gameQuarter = null;
+        } else {
+            this.gameQuarter = quarter.getName();
+        }
         this.quarterChangedAt = changedAt;
     }
 
@@ -244,11 +294,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return sport.getQuarters()
-                .stream()
-                .filter(quarter -> quarter.getName().equals(gameQuarter))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(GameErrorMessages.QUARTER_NOT_EXIST_EXCEPTION));
+        return Quarter.fromName(gameQuarter);
     }
 
     public void checkStateForTimeline() {
@@ -258,7 +304,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     @Override
-    public boolean isManagedBy(Member manager) {
-        return manager.getId() == 1 || this.manager.equals(manager);
+    public boolean isManagedBy(Member administrator) {
+        return administrator.getId() == 1 || this.administrator.equals(administrator);
     }
 }

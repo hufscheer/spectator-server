@@ -1,8 +1,7 @@
 package com.sports.server.query.application;
 
-import static com.sports.server.query.application.LeagueQueryService.leagueProgressOrderMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -10,14 +9,16 @@ import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.domain.LeagueProgress;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
-import com.sports.server.query.dto.response.LeagueTeamDetailResponse.LeagueTeamPlayerResponse;
+import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.support.ServiceTest;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,8 +49,37 @@ public class LeagueQueryServiceTest extends ServiceTest {
         // then
         assertAll(
                 () -> assertThat(leagueTeam.teamName()).isEqualTo("미컴 축구생각"),
-                () -> assertThat(leagueTeam.sizeOfLeagueTeamPlayers()).isEqualTo(4)
+                () -> assertThat(leagueTeam.sizeOfTeamPlayers()).isEqualTo(2)
         );
+
+    }
+
+    @Test
+    void 리그_통계를_정상적으로_조회한다() {
+        // given
+        Long leagueId = 1L;
+
+        // when
+        LeagueStatisticsResponse response = leagueQueryService.findLeagueStatistic(leagueId);
+
+        // then
+        assertAll(
+                () -> assertThat(response.firstWinnerTeam().teamName()).isEqualTo("경영 야생마"),
+                () -> assertThat(response.secondWinnerTeam().teamName()).isEqualTo("서어 뻬데뻬"),
+                () -> assertThat(response.mostCheeredTeam().teamName()).isEqualTo("경영 야생마"),
+                () -> assertThat(response.mostCheerTalksTeam().teamName()).isEqualTo("서어 뻬데뻬")
+        );
+    }
+
+    @Test
+    void 진행_중인_리그의_리그통계를_조회하면_예외가_발생한다() {
+        // given
+        Long leagueId = 9L;
+
+        // when & then
+        assertThatThrownBy(() -> leagueQueryService.findLeagueStatistic(leagueId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("리그 통계 데이터가 아직 업데이트되지 않았습니다.");
 
     }
 
@@ -70,15 +100,6 @@ public class LeagueQueryServiceTest extends ServiceTest {
             return response.stream()
                     .filter(league -> league.id().equals(leagueId))
                     .findFirst();
-        }
-
-        @Test
-        void 다른_매니저가_생성한_리그는_조회되지_않는다() {
-            // then
-            List<Long> ids = response.stream()
-                    .map(LeagueResponseWithInProgressGames::id)
-                    .toList();
-            assertFalse(ids.contains(8L), "다른 매니저가 생성한 리그는 조회 되어서는 안됩니다.");
         }
 
         @Test
@@ -160,13 +181,18 @@ public class LeagueQueryServiceTest extends ServiceTest {
             List<Long> ids = response.stream()
                     .map(LeagueResponseToManage::id)
                     .toList();
-            assertFalse(ids.contains(8L), "다른 매니저가 생성한 리그는 조회 되어서는 안됩니다.");
+            assertFalse(ids.contains(3L), "다른 매니저가 생성한 리그는 조회 되어서는 안됩니다.");
         }
 
         @Test
         void 리그가_진행중_시작전_종료_순으로_조회된다() {
             // given
-            Comparator<String> comparator = Comparator.comparingInt(leagueProgressOrderMap::get);
+            Map<String, Integer> ordersOfProgress = Arrays.stream(LeagueProgress.values())
+                    .collect(Collectors.toMap(
+                            LeagueProgress::getDescription,
+                            LeagueProgress::getOrder
+                    ));
+            Comparator<String> comparator = Comparator.comparingInt(ordersOfProgress::get);
 
             // then
             assertAll(
@@ -176,57 +202,6 @@ public class LeagueQueryServiceTest extends ServiceTest {
                                 .map(LeagueResponseToManage::leagueProgress)
                                 .toList();
                         assertThat(gameProgresses).isSortedAccordingTo(comparator);
-                    }
-            );
-        }
-    }
-
-
-    @Nested
-    @DisplayName("리그팀의 상세 정보를 조회할 때")
-    class LeagueTeamDetailedQueryTest {
-        @Test
-        void 정상적으로_조회된다() {
-            // given
-            Long leagueTeamId = 3L;
-
-            // when
-            LeagueTeamDetailResponse leagueTeam = leagueQueryService.findLeagueTeam(leagueTeamId);
-
-            // then
-            assertAll(
-                    () -> assertThat(leagueTeam.teamName()).isEqualTo("미컴 축구생각"),
-                    () -> assertThat(leagueTeam.logoImageUrl()).isEqualTo("이미지이미지"),
-                    () -> assertThat(leagueTeam.leagueTeamPlayers()).hasSize(4),
-                    () -> {
-                        assertThat(leagueTeam.leagueTeamPlayers())
-                                .extracting("id", "name", "number")
-                                .containsExactlyInAnyOrder(
-                                        tuple(1L, "봄동나물진승희", 0),
-                                        tuple(2L, "가을전어이동규", 2),
-                                        tuple(3L, "겨울붕어빵이현제", 3),
-                                        tuple(4L, "여름수박고병룡", 3)
-                                );
-                    }
-            );
-        }
-
-        @Test
-        void 리그팀_선수가_ㄱㄴㄷ순으로_반환된다() {
-            // given
-            Long leagueTeamId = 1L;
-
-            // when
-            LeagueTeamDetailResponse leagueTeam = leagueQueryService.findLeagueTeam(leagueTeamId);
-
-            // then
-            assertAll(
-                    () -> {
-                        List<String> playerNames = leagueTeam.leagueTeamPlayers()
-                                .stream()
-                                .map(LeagueTeamPlayerResponse::name)
-                                .toList();
-                        assertThat(playerNames).isSortedAccordingTo(String.CASE_INSENSITIVE_ORDER);
                     }
             );
         }
@@ -294,5 +269,158 @@ public class LeagueQueryServiceTest extends ServiceTest {
             leagueWithGames.finishedGames().stream()
                     .forEach(g -> assertThat(g.state()).isEqualTo(GameState.FINISHED.name()));
         }
+    }
+
+    @Nested
+    @DisplayName("리그 필터링 조건으로 리그를 조회할 때")
+    class FindLeaguesByConditionTest {
+
+        @Test
+        void 연도_필터링_조건으로_리그를_조회한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, null);
+
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.name()).contains("축구대회");
+                    })
+            );
+        }
+
+        @Test
+        void 리그_진행_상태_필터링_조건으로_리그를_조회한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, LeagueProgress.FINISHED);
+
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.leagueProgress()).isEqualTo("종료");
+                    })
+            );
+        }
+
+        @Test
+        void 연도와_진행_상태_모든_필터링_조건으로_리그를_조회한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, LeagueProgress.FINISHED);
+
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.leagueProgress()).isEqualTo("종료");
+                    })
+            );
+        }
+
+        @Test
+        void 필터링_조건이_없을_경우_전체_결과를_반환한다() {
+            // given
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null);
+
+            // when
+            List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(leagues).isNotEmpty(),
+                    () -> assertThat(leagues.size()).isGreaterThan(5),
+                    () -> leagues.forEach(league -> {
+                        assertThat(league.name()).isNotNull();
+                        assertThat(league.leagueProgress()).isNotNull();
+                    })
+            );
+        }
+    }
+
+    @Test
+    void 리그_상세정보를_조회한다() {
+        // given
+        Long leagueId = 1L;
+
+        // when
+        LeagueDetailResponse response = leagueQueryService.findLeagueDetail(leagueId);
+
+        // then
+        assertAll(
+                () -> assertThat(response.name()).isEqualTo("종료된 축구대회 1"),
+                () -> assertThat(response.leagueTeamCount()).isEqualTo(3),
+                () -> assertThat(response.maxRound()).isEqualTo(8),
+                () -> assertThat(response.inProgressRound()).isEqualTo(8)
+
+        );
+    }
+
+    @Test
+    void 리그팀의_선수들을_조회한다() {
+        // given
+        Long leagueTeamId = 3L;
+
+        // when
+        List<PlayerResponse> players = leagueQueryService.findPlayersByLeagueTeam(leagueTeamId);
+
+        // then
+        assertAll(
+                () -> assertThat(players).hasSize(2),
+                () -> {
+                    List<String> playerNames = players.stream()
+                            .map(PlayerResponse::name)
+                            .toList();
+                    assertThat(playerNames).containsExactlyInAnyOrder("진승희", "이동규");
+                }
+        );
+    }
+
+    @Test
+    void 리그의_상위_득점자를_조회한다() {
+        // given
+        Long leagueId = 1L;
+
+        // when
+        List<TopScorerResponse> scorers = leagueQueryService.findTop20ScorersByLeagueId(leagueId);
+
+        // then
+        assertAll(
+                () -> assertThat(scorers).hasSize(3),
+                () -> assertThat(scorers.get(0).playerName()).isEqualTo("진승희"),
+                () -> assertThat(scorers.get(0).goalCount()).isEqualTo(5),
+                () -> assertThat(scorers.get(1).playerName()).isEqualTo("이동규"),
+                () -> assertThat(scorers.get(1).goalCount()).isEqualTo(3)
+        );
+    }
+
+    @Test
+    void 연도별_상위_득점자를_조회한다() {
+        // given
+        Integer year = 2025;
+        Integer size = 10;
+
+        // when
+        List<TopScorerResponse> scorers = leagueQueryService.findTopScorersByYear(year, size);
+
+        // then
+        assertAll(
+                () -> assertThat(scorers).hasSize(2),
+                () -> assertThat(scorers.get(0).playerName()).isEqualTo("고병룡"),
+                () -> assertThat(scorers.get(0).goalCount()).isEqualTo(4),
+                () -> assertThat(scorers.get(1).playerName()).isEqualTo("박주장"),
+                () -> assertThat(scorers.get(1).goalCount()).isEqualTo(2)
+        );
     }
 }

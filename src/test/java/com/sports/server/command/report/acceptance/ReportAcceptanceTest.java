@@ -125,7 +125,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
+                .get("/cheer-talks/reported")
                 .then().log().all()
                 .extract();
 

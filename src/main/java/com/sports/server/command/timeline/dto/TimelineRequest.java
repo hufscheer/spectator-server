@@ -2,6 +2,7 @@ package com.sports.server.command.timeline.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.command.timeline.domain.TimelineType;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public abstract class TimelineRequest {
-    private final Long recordedQuarterId;
+    private final Quarter recordedQuarter;
     private final Integer recordedAt;
 
     @JsonIgnore
@@ -23,11 +24,11 @@ public abstract class TimelineRequest {
 
         public RegisterScore(
                 Long gameTeamId,
-                Long recordedQuarterId,
+                Quarter recordedQuarter,
                 Long scoreLineupPlayerId,
                 Integer recordedAt
         ) {
-            super(recordedQuarterId, recordedAt);
+            super(recordedQuarter, recordedAt);
             this.gameTeamId = gameTeamId;
             this.scoreLineupPlayerId = scoreLineupPlayerId;
         }
@@ -46,12 +47,12 @@ public abstract class TimelineRequest {
 
         public RegisterReplacement(
                 Long gameTeamId,
-                Long recordedQuarterId,
+                Quarter recordedQuarter,
                 Long originLineupPlayerId,
                 Long replacementLineupPlayerId,
                 Integer recordedAt
         ) {
-            super(recordedQuarterId, recordedAt);
+            super(recordedQuarter, recordedAt);
             this.gameTeamId = gameTeamId;
             this.originLineupPlayerId = originLineupPlayerId;
             this.replacementLineupPlayerId = replacementLineupPlayerId;
@@ -69,10 +70,10 @@ public abstract class TimelineRequest {
 
         public RegisterProgress(
                 Integer recordedAt,
-                Long recordedQuarterId,
+                Quarter recordedQuarter,
                 GameProgressType gameProgressType
         ) {
-            super(recordedQuarterId, recordedAt);
+            super(recordedQuarter, recordedAt);
             this.gameProgressType = gameProgressType;
         }
 
@@ -90,12 +91,12 @@ public abstract class TimelineRequest {
 
         public RegisterPk(
                 Integer recordedAt,
-                Long recordedQuarterId,
+                Quarter recordedQuarter,
                 Long gameTeamId,
                 Long scorerId,
                 boolean isSuccess
         ) {
-            super(recordedQuarterId, recordedAt);
+            super(recordedQuarter, recordedAt);
             this.gameTeamId = gameTeamId;
             this.scorerId = scorerId;
             this.isSuccess = isSuccess;
@@ -115,12 +116,12 @@ public abstract class TimelineRequest {
 
         public RegisterWarningCard(
                 Integer recordedAt,
-                Long recordedQuarterId,
+                Quarter recordedQuarter,
                 Long gameTeamId,
                 Long warnedLineupPlayerId,
                 WarningCardType cardType
         ){
-            super(recordedQuarterId, recordedAt);
+            super(recordedQuarter, recordedAt);
             this.gameTeamId = gameTeamId;
             this.warnedLineupPlayerId = warnedLineupPlayerId;
             this.cardType = cardType;
@@ -131,5 +132,4 @@ public abstract class TimelineRequest {
             return TimelineType.WARNING_CARD;
         }
     }
-
 }

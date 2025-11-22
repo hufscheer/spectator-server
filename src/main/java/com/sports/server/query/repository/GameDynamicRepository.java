@@ -7,6 +7,8 @@ import com.sports.server.common.dto.PageRequestDto;
 import java.util.List;
 
 public interface GameDynamicRepository {
-    List<Game> findAllByLeagueAndStateAndSports(final GamesQueryRequestDto gamesQueryRequestDto,
-                                                final PageRequestDto pageRequestDto);
+    List<Game> findAllByLeagueAndState(final GamesQueryRequestDto gamesQueryRequestDto,
+                                       final PageRequestDto pageRequestDto);
+
+    List<Game> findByYearAndMonth(Integer year, Integer month);
 }

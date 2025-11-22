@@ -27,7 +27,7 @@ public class AuthService {
                 .filter(m -> passwordEncoder.matches(loginRequest.password(), m.getPassword()))
                 .orElseThrow(() -> new NotFoundException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION));
 
-        if (!member.isManager()) {
+        if (!member.isAdministrator()) {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
 

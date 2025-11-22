@@ -2,7 +2,6 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.sport.domain.Quarter;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -70,5 +69,12 @@ public class ReplacementTimeline extends Timeline {
         this.originLineupPlayer.deleteReplacedPlayer();
         this.replacedLineupPlayer.deactivatePlayerInGame();
         this.replacedLineupPlayer.deleteReplacedPlayer();
+    }
+
+    public String getReplacedPlayerName() {
+        if (replacedLineupPlayer == null) {
+            return null;
+        }
+        return replacedLineupPlayer.getPlayer().getName();
     }
 }

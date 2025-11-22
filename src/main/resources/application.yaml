@@ -9,14 +9,18 @@ spring:
     enabled: true
     baseline-on-migrate: true
     version: 1
+
 server:
   port: 8080
+  tomcat:
+    mbeanregistry:
+      enabled: true
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: prometheus
+  metrics:
+    export:
+      cloudwatch:
+        enabled: false
 
 ---
 spring:

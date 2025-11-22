@@ -2,16 +2,13 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.application.LeagueQueryService;
+import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/leagues")
@@ -21,13 +18,10 @@ public class LeagueQueryController {
     private final LeagueQueryService leagueQueryService;
 
     @GetMapping
-    public ResponseEntity<List<LeagueResponse>> findLeagues(@RequestParam(required = false) Integer year) {
-        return ResponseEntity.ok(leagueQueryService.findLeagues(year));
-    }
-
-    @GetMapping("/{leagueId}/sports")
-    public ResponseEntity<List<LeagueSportResponse>> findSportsByLeague(@PathVariable Long leagueId) {
-        return ResponseEntity.ok(leagueQueryService.findSportsByLeague(leagueId));
+    public ResponseEntity<List<LeagueResponse>> findLeagues(
+            @ModelAttribute LeagueQueryRequestDto queryRequestDto
+    ) {
+        return ResponseEntity.ok(leagueQueryService.findLeagues(queryRequestDto));
     }
 
     @GetMapping("/{leagueId}/teams")
@@ -42,19 +36,24 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagueDetail(leagueId));
     }
 
+    @GetMapping("/{leagueId}/statistics")
+    public ResponseEntity<LeagueStatisticsResponse> findLeagueStatistics(@PathVariable Long leagueId) {
+        return ResponseEntity.ok(leagueQueryService.findLeagueStatistic(leagueId));
+    }
+
+    @GetMapping("/{leagueId}/top-scorers")
+    public ResponseEntity<List<TopScorerResponse>> findTopScorersByLeague(@PathVariable Long leagueId) {
+        return ResponseEntity.ok(leagueQueryService.findTop20ScorersByLeagueId(leagueId));
+    }
+
     @GetMapping("/teams/{leagueTeamId}/players")
-    public ResponseEntity<List<LeagueTeamPlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
+    public ResponseEntity<List<PlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
         return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));
     }
 
     @GetMapping("/manager")
     public ResponseEntity<List<LeagueResponseWithInProgressGames>> findLeaguesByManager(final Member member) {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManager(member));
-    }
-
-    @GetMapping("/teams/{leagueTeamId}")
-    public ResponseEntity<LeagueTeamDetailResponse> findLeagueTeam(@PathVariable final Long leagueTeamId) {
-        return ResponseEntity.ok(leagueQueryService.findLeagueTeam(leagueTeamId));
     }
 
     @GetMapping("/{leagueId}/games")
@@ -65,5 +64,13 @@ public class LeagueQueryController {
     @GetMapping("/manager/manage")
     public ResponseEntity<List<LeagueResponseToManage>> findLeaguesByManagerToManage(final Member manager) {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManagerToManage(manager));
+    }
+
+    @GetMapping("/top-scorers")
+    public ResponseEntity<List<TopScorerResponse>> findTopScorersByYear(
+            @RequestParam(defaultValue = "2025") Integer year,
+            @RequestParam(defaultValue = "5") Integer limit
+    ) {
+        return ResponseEntity.ok(leagueQueryService.findTopScorersByYear(year,limit));
     }
 }

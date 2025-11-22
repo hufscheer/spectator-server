@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.query.dto.response.GameDetailResponse;
 import com.sports.server.query.dto.response.GameResponseDto;
+import com.sports.server.query.dto.response.LeagueWithGamesResponse;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -25,13 +26,13 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
     @Test
     void 게임을_상세_조회한다() {
         // given
-        Long basketBallGameId = 1L;
+        Long soccerGameId = 1L;
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games/{gameId}", basketBallGameId)
+                .get("/games/{gameId}", soccerGameId)
                 .then().log().all()
                 .extract();
 
@@ -39,10 +40,9 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
         GameDetailResponse game = toResponse(response, GameDetailResponse.class);
         List<GameDetailResponse.TeamResponse> teams = game.gameTeams();
         assertAll(
-                () -> assertThat(game.gameName()).isEqualTo("농구 대전"),
+                () -> assertThat(game.gameName()).isEqualTo("축구 대전"),
                 () -> assertThat(game.gameQuarter()).isEqualTo("1st Quarter"),
                 () -> assertThat(game.videoId()).isEqualTo("abc123"),
-                () -> assertThat(game.sportName()).isEqualTo("농구"),
                 () -> assertThat(game.startTime()).isEqualTo(
                         LocalDateTime.of(2023, 11, 12, 10, 0, 0)
                 ),
@@ -52,13 +52,13 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .filteredOn(team -> team.gameTeamId().equals(1L))
                         .containsExactly(new GameDetailResponse.TeamResponse(
                                 1L, "팀 A",
-                                "http://example.com/logo_a.png", 1, 0)
+                                "http://example.com/logo_a.png", 1, 0, "#FF0000")
                         ),
                 () -> assertThat(teams)
                         .filteredOn(team -> team.gameTeamId().equals(2L))
                         .containsExactly(new GameDetailResponse.TeamResponse(
                                 2L, "팀 B",
-                                "http://example.com/logo_b.png", 2, 0)
+                                "http://example.com/logo_b.png", 2, 0, "#0000FF")
                         ),
                 () -> assertThat(game.state()).isEqualTo("SCHEDULED")
         );
@@ -72,8 +72,8 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 .queryParam("state", "SCHEDULED")
                 .queryParam("league_id", 1L)
                 .queryParam("round", 4)
-                .queryParam("league_team_id", 1L)
-                .queryParam("league_team_id", 2L)
+                .queryParam("leagueTeamIds", 1L)
+                .queryParam("leagueTeamIds", 2L)
                 .log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -82,25 +82,33 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
-        List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
+        List<LeagueWithGamesResponse> gamesWithLeague = toResponses(response, LeagueWithGamesResponse.class);
+        LeagueWithGamesResponse gameWithLeague = gamesWithLeague.get(0);
+        List<GameResponseDto> games = gameWithLeague.games();
+
         assertAll(
                 () -> assertThat(games).hasSize(9),
                 () -> assertThat(games)
+                        .map(GameResponseDto::id)
+                        .containsExactly(1L, 2L, 3L, 4L, 6L, 7L, 5L, 8L, 9L),
+
+                () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(1L))
+                        .usingRecursiveFieldByFieldElementComparator() // 중첩 객체 비교를 위해 추가
                         .containsExactly(
                                 new GameResponseDto(
                                         1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
-                                        "1st Quarter", "농구 대전", 4, "abc123",
+                                        "1st Quarter", "축구 대전", 4, "abc123",
                                         List.of(new GameResponseDto.TeamResponse(
                                                         1L, "팀 A", "http://example.com/logo_a.png", 1, 0
                                                 ),
                                                 new GameResponseDto.TeamResponse(
-                                                        2L, "팀 B", "http://example.com/logo_b.png", 2, 0)),
-                                        "농구", false
+                                                        2L, "팀 B", "http://example.com/logo_b.png", 2, 0)), false
                                 )
                         ),
                 () -> assertThat(games)
                         .filteredOn(game -> game.id().equals(2L))
+                        .usingRecursiveFieldByFieldElementComparator() // 중첩 객체 비교를 위해 추가
                         .containsExactly(
                                 new GameResponseDto(
                                         2L, LocalDateTime.of(2023, 11, 12, 10, 10, 0),
@@ -109,37 +117,10 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                                                         3L, "팀 B", "http://example.com/logo_b.png", 0, 0),
                                                 new GameResponseDto.TeamResponse(
                                                         4L, "팀 C", "http://example.com/logo_c.png", 0, 0)
-                                        ),
-                                        "농구", false
+                                        ), false
                                 )
-
                         )
         );
-
-    }
-
-    @Test
-    void 스포츠_아이디가_여러개일_경우_해당하는_모든_경기를_반환한다() {
-
-        // when
-        int lastPkOfFixtureFromFirstLeague = 13;
-        ExtractableResponse<Response> response = RestAssured.given()
-                .queryParam("state", "SCHEDULED")
-                .queryParam("league_id", 1L)
-                .queryParam("size", lastPkOfFixtureFromFirstLeague)
-                .queryParam("sport_id", 1L)
-                .queryParam("sport_id", 2L)
-                .log().all()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games")
-                .then().log().all()
-                .extract();
-
-        // then
-        List<GameResponseDto> games = toResponses(response, GameResponseDto.class);
-        assertThat(games).hasSize(lastPkOfFixtureFromFirstLeague);
-
     }
 
     @Test
@@ -185,12 +166,9 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teamA.teamName()).isEqualTo("팀 A"),
                 () -> assertThat(teamAPlayers)
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
-                        .containsExactly("선수1", "선수2", "선수3", "선수4", "선수5"),
+                        .containsExactly("선수11", "선수12", "선수13", "선수14", "선수15"),
                 () -> assertThat(teamAPlayers)
-                        .map(LineupPlayerResponse.PlayerResponse::description)
-                        .containsExactly("센터", "파워 포워드", "슈팅 가드", "포인트 가드", "스몰 포워드"),
-                () -> assertThat(teamAPlayers)
-                        .map(LineupPlayerResponse.PlayerResponse::number)
+                        .map(LineupPlayerResponse.PlayerResponse::jerseyNumber)
                         .containsExactly(1, 2, 3, 4, 5),
                 () -> assertThat(teamAPlayers)
                         .map(LineupPlayerResponse.PlayerResponse::isCaptain)
@@ -198,12 +176,9 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teamB.teamName()).isEqualTo("팀 B"),
                 () -> assertThat(teamBPlayers)
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
-                        .containsExactly("선수6", "선수7", "선수8", "선수9", "선수10"),
+                        .containsExactly("선수16", "선수17", "선수18", "선수19", "선수20"),
                 () -> assertThat(teamBPlayers)
-                        .map(LineupPlayerResponse.PlayerResponse::description)
-                        .containsExactly("센터", "파워 포워드", "슈팅 가드", "포인트 가드", "스몰 포워드"),
-                () -> assertThat(teamBPlayers)
-                        .map(LineupPlayerResponse.PlayerResponse::number)
+                        .map(LineupPlayerResponse.PlayerResponse::jerseyNumber)
                         .containsExactly(1, 2, 3, 4, 5),
                 () -> assertThat(teamBPlayers)
                         .map(LineupPlayerResponse.PlayerResponse::isCaptain)
@@ -214,7 +189,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
     @Test
     void 출전_선수를_조회한다() {
         // given
-        Long basketBallGameId = 1L;
+        Long soccerGameId = 1L;
         Long gameTeamAId = 1L;
         Long gameTeamBId = 2L;
 
@@ -222,7 +197,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/games/{gameId}/lineup/playing", basketBallGameId)
+                .get("/games/{gameId}/lineup/playing", soccerGameId)
                 .then().log().all()
                 .extract();
 
@@ -246,22 +221,16 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teamA.teamName()).isEqualTo("팀 A"),
                 () -> assertThat(teamA.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
-                        .containsExactly("선수5"),
+                        .containsExactly("선수15"),
                 () -> assertThat(teamA.gameTeamPlayers())
-                        .map(LineupPlayerResponse.PlayerResponse::description)
-                        .containsExactly("스몰 포워드"),
-                () -> assertThat(teamA.gameTeamPlayers())
-                        .map(LineupPlayerResponse.PlayerResponse::number)
+                        .map(LineupPlayerResponse.PlayerResponse::jerseyNumber)
                         .containsExactly(5),
                 () -> assertThat(teamB.teamName()).isEqualTo("팀 B"),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
-                        .containsExactly("선수10"),
+                        .containsExactly("선수20"),
                 () -> assertThat(teamB.gameTeamPlayers())
-                        .map(LineupPlayerResponse.PlayerResponse::description)
-                        .containsExactly("스몰 포워드"),
-                () -> assertThat(teamB.gameTeamPlayers())
-                        .map(LineupPlayerResponse.PlayerResponse::number)
+                        .map(LineupPlayerResponse.PlayerResponse::jerseyNumber)
                         .containsExactly(5)
         );
     }

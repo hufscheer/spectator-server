@@ -11,6 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.DocumentationTest;
@@ -26,7 +27,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                 1L,
-                2L,
+                Quarter.FIRST_HALF,
                 1L,
                 10
         );
@@ -46,7 +47,7 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간")
                         ),
@@ -61,7 +62,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                 1L,
-                1L,
+                Quarter.FIRST_HALF,
                 2L,
                 3L,
                 5
@@ -82,7 +83,7 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER)
                                         .description("기존 선수 Id"),
                                 fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER)
@@ -99,7 +100,9 @@ public class TimelineControllerTest extends DocumentationTest {
     void 게임_진행_변경_타임라인을_생성한다() throws Exception {
         // given
         TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
-                10, 1L, GameProgressType.QUARTER_START
+                10,
+                Quarter.SECOND_HALF,
+                GameProgressType.QUARTER_START
         );
 
         // when
@@ -116,9 +119,9 @@ public class TimelineControllerTest extends DocumentationTest {
                                 parameterWithName("gameId").description("경기의 ID")
                         ),
                         requestFields(
-                                fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
-                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("교체 시간"),
-                                fieldWithPath("gameProgressType").type(JsonFieldType.STRING).description("변경할 게임 진행 상황")
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("기록 시간"),
+                                fieldWithPath("gameProgressType").type(JsonFieldType.STRING).description("변경할 게임 진행 상황 (QUARTER_START, GAME_END)")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -131,7 +134,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
                 10,
-                2L,
+                Quarter.PENALTY_SHOOTOUT,
                 1L,
                 1L,
                 true
@@ -152,7 +155,7 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("scorerId").type(JsonFieldType.NUMBER).description("승부차기 득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
                                 fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("승부차기 득점 성공 여부")
@@ -168,9 +171,9 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(
                 10,
+                Quarter.SECOND_HALF,
                 1L,
                 2L,
-                3L,
                 WarningCardType.YELLOW
         );
 
@@ -189,10 +192,10 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarterId").type(JsonFieldType.NUMBER).description("쿼터 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("warnedLineupPlayerId").type(JsonFieldType.NUMBER).description("경고 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("경고 시간"),
-                                fieldWithPath("cardType").type(JsonFieldType.STRING).description("경고 카드 종류")
+                                fieldWithPath("cardType").type(JsonFieldType.STRING).description("경고 카드 종류(YELLOW, RED)")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

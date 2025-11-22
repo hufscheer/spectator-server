@@ -2,29 +2,26 @@ package com.sports.server.command.cheertalk.application;
 
 import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages.CHEER_TALK_CONTAINS_BAD_WORD;
 
-import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
 import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.command.cheertalk.domain.LanguageFilter;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
-import com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages;
+import com.sports.server.command.game.domain.GameTeam;
+import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportRepository;
-import com.sports.server.command.report.domain.ReportState;
-import com.sports.server.command.report.exception.ReportErrorMessage;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.CustomException;
-import com.sports.server.common.exception.UnauthorizedException;
-import com.sports.server.query.repository.CheerTalkDynamicRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -33,13 +30,19 @@ public class CheerTalkService {
 
     private final CheerTalkRepository cheerTalkRepository;
     private final ReportRepository reportRepository;
+    private final GameTeamRepository gameTeamRepository;
     private final LanguageFilter languageFilter;
     private final EntityUtils entityUtils;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void register(final CheerTalkRequest cheerTalkRequest) {
         validateContent(cheerTalkRequest.content());
-        CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), cheerTalkRequest.gameTeamId());
+        GameTeam gameTeam = getGameTeam(cheerTalkRequest.gameTeamId());
+
+        CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), gameTeam.getId());
         cheerTalkRepository.save(cheerTalk);
+
+        eventPublisher.publishEvent(new CheerTalkCreateEvent(cheerTalk, gameTeam.getGame().getId()));
     }
 
     private void validateContent(final String content) {
@@ -57,9 +60,9 @@ public class CheerTalkService {
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         if (report.isPresent()) {
             report.get().accept();
-        } else {
-            cheerTalk.block();
+            return;
         }
+        cheerTalk.block();
     }
 
     public void unblock(final Long leagueId, final Long cheerTalkId, final Member manager) {
@@ -71,5 +74,10 @@ public class CheerTalkService {
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         report.ifPresent(Report::cancel);
         cheerTalk.unblock();
+    }
+
+    private GameTeam getGameTeam(Long gameTeamId) {
+        return gameTeamRepository.findByIdWithGame(gameTeamId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "존재하지 않는 팀에 대한 응원톡 등록 요청입니다"));
     }
 }

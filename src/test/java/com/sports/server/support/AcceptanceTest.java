@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.willDoNothing;
 import com.sports.server.auth.utils.JwtUtil;
 import com.sports.server.command.report.application.ReportProcessor;
 import com.sports.server.command.report.infrastructure.ReportCheckClient;
+import com.sports.server.common.application.S3Service;
 import com.sports.server.support.config.AsyncTestConfig;
 import com.sports.server.support.isolation.DatabaseIsolation;
 import io.restassured.RestAssured;
@@ -45,15 +46,20 @@ public class AcceptanceTest {
     @MockBean
     protected JwtUtil jwtUtil;
 
+    @MockBean
+    protected S3Service s3Service;
+
     protected String mockToken = "mockToken";
 
     @BeforeEach
-    void setUp(
+    protected void setUp(
     ) {
         RestAssured.port = port;
 
         given(reportCheckClient.check(any()))
                 .willReturn(ResponseEntity.ok().build());
+
+        willDoNothing().given(s3Service).doesFileExist(any());
     }
 
     protected <T> List<T> toResponses(ExtractableResponse<Response> response,
