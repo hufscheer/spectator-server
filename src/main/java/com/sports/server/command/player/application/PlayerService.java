@@ -4,10 +4,10 @@ import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.dto.PlayerRequest;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,7 +44,7 @@ public class PlayerService {
 
     private void validateUniqueStudentNumber(String studentNumber) {
         if (studentNumber != null && playerRepository.existsByStudentNumber(studentNumber)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 학번입니다.");
+            throw new BadRequestException(ExceptionMessages.PLAYER_STUDENT_NUMBER_DUPLICATE);
         }
     }
 }

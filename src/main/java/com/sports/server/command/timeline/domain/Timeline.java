@@ -2,6 +2,8 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -56,7 +58,7 @@ public abstract class Timeline extends BaseEntity<Timeline> {
 
     private void validateRecordedAt(Integer recordedAt) {
         if (recordedAt < 0) {
-            throw new IllegalArgumentException("시간은 0 이상이어야 합니다.");
+            throw new BadRequestException(ExceptionMessages.INVALID_RECORDED_AT);
         }
     }
 

@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,7 +153,7 @@ public class GameService {
 
     private void validateTeamPlayers(List<Long> teamPlayerIdsRequest, List<TeamPlayer> teamPlayers, Team team) {
         if (new HashSet<>(teamPlayerIdsRequest).size() != teamPlayerIdsRequest.size()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "요청에 중복된 선수 ID가 포함되어 있습니다.");
+            throw new BadRequestException(ExceptionMessages.GAME_SERVICE_DUPLICATE_PLAYER_IDS);
         }
 
         Set<Long> teamPlayerIds = teamPlayers.stream()
@@ -169,7 +169,7 @@ public class GameService {
 
         teamPlayers.forEach(tp -> {
             if (!tp.getTeam().getId().equals(team.getId())) {
-                throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
+                throw new BadRequestException(GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
             }
         });
     }
@@ -178,7 +178,7 @@ public class GameService {
         Set<Long> leagueTeamIds = new HashSet<>(leagueTeamRepository.findTeamIdsByLeagueId(league.getId()));
 
         if (!leagueTeamIds.contains(team1.teamId()) || !leagueTeamIds.contains(team2.teamId())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.TEAM_NOT_IN_LEAGUE_TEAM);
+            throw new BadRequestException(GameErrorMessages.TEAM_NOT_IN_LEAGUE_TEAM);
         }
     }
 

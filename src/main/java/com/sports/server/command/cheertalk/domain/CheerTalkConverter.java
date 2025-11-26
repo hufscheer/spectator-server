@@ -2,6 +2,8 @@ package com.sports.server.command.cheertalk.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sports.server.common.exception.ExceptionMessages;
+import com.sports.server.common.exception.InternalServerException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ public class CheerTalkConverter implements AttributeConverter<CheerTalk, String>
             return objectMapper.writeValueAsString(attribute);
         } catch (JsonProcessingException e) {
             log.error("[CheerTalkConverter] 객체 -> JSON 변환 실패: {}", e.getMessage(), e);
-            throw new IllegalArgumentException("CheerTalk to JSON convert error", e);
+            throw new InternalServerException(ExceptionMessages.CHEERTALK_SERIALIZATION_FAILED, e);
         }
     }
 
@@ -36,7 +38,7 @@ public class CheerTalkConverter implements AttributeConverter<CheerTalk, String>
             return objectMapper.readValue(dbData, CheerTalk.class);
         } catch (Exception e) {
             log.error("[CheerTalkConverter] JSON -> 객체 변환 실패: {}", e.getMessage(), e);
-            throw new IllegalArgumentException("JSON to CheerTalk convert error", e);
+            throw new InternalServerException(ExceptionMessages.CHEERTALK_DESERIALIZATION_FAILED, e);
         }
     }
 }

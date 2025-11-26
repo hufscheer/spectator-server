@@ -15,11 +15,12 @@ import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
+import com.sports.server.common.exception.NotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,7 @@ public class CheerTalkService {
 
     private void validateContent(final String content) {
         if (languageFilter.containsBadWord(content)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, CHEER_TALK_CONTAINS_BAD_WORD);
+            throw new BadRequestException(CHEER_TALK_CONTAINS_BAD_WORD);
         }
     }
 
@@ -78,6 +79,6 @@ public class CheerTalkService {
 
     private GameTeam getGameTeam(Long gameTeamId) {
         return gameTeamRepository.findByIdWithGame(gameTeamId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "존재하지 않는 팀에 대한 응원톡 등록 요청입니다"));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessages.CHEER_TALK_GAME_TEAM_NOT_FOUND));
     }
 }

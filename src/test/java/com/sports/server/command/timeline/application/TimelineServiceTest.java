@@ -181,7 +181,7 @@ class TimelineServiceTest extends ServiceTest {
 
             // when then
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request)).isInstanceOf(
-                    IllegalArgumentException.class);
+                    CustomException.class);
         }
     }
 
