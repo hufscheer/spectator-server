@@ -10,10 +10,9 @@ import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,18 +73,18 @@ public class LineupPlayerService {
         GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
 
         if (!lineupPlayer.getGameTeam().getId().equals(gameTeamId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);
+            throw new BadRequestException(GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);
         }
         gameTeam.removeLineupPlayer(lineupPlayer);
     }
 
     private void validatePlayerForLineup(final GameTeam gameTeam, final TeamPlayer teamPlayer) {
         if (!teamPlayer.getTeam().getId().equals(gameTeam.getTeam().getId())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
+            throw new BadRequestException(GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
         }
 
         if (lineupPlayerRepository.existsByGameTeamAndPlayer(gameTeam, teamPlayer.getPlayer())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.ALREADY_REGISTERED_IN_LINEUP);
+            throw new BadRequestException(GameErrorMessages.ALREADY_REGISTERED_IN_LINEUP);
         }
     }
 }

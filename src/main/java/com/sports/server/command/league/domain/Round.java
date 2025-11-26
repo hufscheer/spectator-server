@@ -1,9 +1,11 @@
 package com.sports.server.command.league.domain;
 
 import com.sports.server.command.league.exception.LeagueErrorMessages;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.sports.server.common.exception.CustomException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,7 @@ public enum Round {
         return Stream.of(Round.values())
                 .collect(Collectors.toMap(Round::getDescription, round -> round))
                 .computeIfAbsent(value, v -> {
-                    throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.ROUND_NOT_FOUND_EXCEPTION);
+                    throw new BadRequestException(LeagueErrorMessages.ROUND_NOT_FOUND_EXCEPTION);
                 });
     }
 
