@@ -2,6 +2,8 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,7 +53,7 @@ public class ReplacementTimeline extends Timeline {
 
     private void validatePlayers(LineupPlayer originLineupPlayer, LineupPlayer replacedLineupPlayer) {
         if (!originLineupPlayer.isSameTeam(replacedLineupPlayer)) {
-            throw new IllegalArgumentException("다른 팀의 선수끼리 교체할 수 없습니다.");
+            throw new BadRequestException(ExceptionMessages.INVALID_PLAYER_SUBSTITUTION);
         }
     }
 

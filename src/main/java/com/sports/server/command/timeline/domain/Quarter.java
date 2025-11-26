@@ -1,5 +1,7 @@
 package com.sports.server.command.timeline.domain;
 
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import lombok.Getter;
 
 @Getter
@@ -25,16 +27,16 @@ public enum Quarter {
                 return quarter;
             }
         }
-        throw new IllegalArgumentException("해당 쿼터 이름이 존재하지 않습니다: " + name);
+        throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, name));
     }
 
     public static Quarter fromId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("쿼터 아이디는 null이 될 수 없습니다.");
+            throw new BadRequestException(ExceptionMessages.QUARTER_ID_NULL);
         }
         Quarter[] values = Quarter.values();
         if (id < 1 || id > values.length) {
-            throw new IllegalArgumentException("해당 아이디의 쿼터가 존재하지 않습니다: " + id);
+            throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_ID, id));
         }
         return values[(int) (id - 1)];
     }
