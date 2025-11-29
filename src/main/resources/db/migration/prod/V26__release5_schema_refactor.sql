@@ -1,9 +1,24 @@
 -- V26: 5차 릴리즈 스키마 리팩토링
 
--- 사용하지 않는 도메인 테이블 삭제
+-- 사용하지 않는 도메인 테이블 삭제, 관련 제약조건 삭제
+ALTER TABLE quarters DROP FOREIGN KEY FK_QUARTERS_ON_SPORTS;
+ALTER TABLE games DROP FOREIGN KEY FK_GAMES_ON_SPORT;
+ALTER TABLE quarters DROP FOREIGN KEY IF EXISTS FK_QUARTERS_ON_SPORTS;
+ALTER TABLE games DROP FOREIGN KEY IF EXISTS FK_GAMES_ON_SPORT;
+ALTER TABLE game_teams DROP FOREIGN KEY FK_GAME_TEAMS_ON_TEAM;
+ALTER TABLE timelines DROP FOREIGN KEY IF EXISTS FK_TIMELINES_ON_RECORDED_QUARTER;
+ALTER TABLE timelines DROP FOREIGN KEY IF EXISTS FK_TIMELINES_ON_PREV_QUARTER;
+
 DROP TABLE IF EXISTS league_sports;
 DROP TABLE IF EXISTS sports;
 DROP TABLE IF EXISTS quarters;
+DROP TABLE IF EXISTS league_team_players;
+
+ALTER TABLE league_teams DROP PRIMARY KEY;
+ALTER TABLE league_teams ADD CONSTRAINT pk_league_teams PRIMARY KEY (id);
+
+-- games 테이블의 game_quarter 컬럼을 NULL 허용으로 변경
+ALTER TABLE games MODIFY COLUMN game_quarter VARCHAR(255) NULL;
 
 -- manager → administrator로 컬럼명 변경
 ALTER TABLE members CHANGE is_manager is_administrator BOOLEAN NOT NULL;
@@ -48,7 +63,6 @@ CREATE TABLE team_players
 );
 
 -- game_teams 테이블 변경: league_team_id → team_id (새로운 teams 테이블 참조)
-ALTER TABLE game_teams DROP FOREIGN KEY FK_GAME_TEAMS_ON_TEAM;
 ALTER TABLE game_teams CHANGE league_team_id team_id BIGINT NOT NULL;
 ALTER TABLE game_teams
     ADD CONSTRAINT FK_GAME_TEAMS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES teams (id);
@@ -79,9 +93,6 @@ ALTER TABLE league_teams ADD COLUMN ranking INT NULL;
 ALTER TABLE league_teams
     ADD CONSTRAINT uc_league_team UNIQUE (league_id, team_id);
 
--- league_team_players 테이블 삭제
-DROP TABLE IF EXISTS league_team_players;
-
 -- lineup_players 테이블 변경: players 테이블 참조하도록
 ALTER TABLE lineup_players DROP COLUMN name;
 ALTER TABLE lineup_players DROP COLUMN description;
@@ -96,11 +107,9 @@ ALTER TABLE lineup_players
     ADD CONSTRAINT uc_lineup_player UNIQUE (game_team_id, player_id);
 
 -- timelines 테이블 변경: quarters 테이블 삭제에 따라 quarter_id → quarter (VARCHAR)로 변경
-ALTER TABLE timelines DROP FOREIGN KEY FK_TIMELINES_ON_RECORDED_QUARTER;
 ALTER TABLE timelines DROP COLUMN recorded_quarter_id;
 ALTER TABLE timelines ADD COLUMN recorded_quarter VARCHAR(255) NOT NULL;
 
-ALTER TABLE timelines DROP FOREIGN KEY FK_TIMELINES_ON_PREV_QUARTER;
 ALTER TABLE timelines DROP COLUMN previous_quarter_id;
 ALTER TABLE timelines ADD COLUMN previous_quarter VARCHAR(255) NULL;
 
