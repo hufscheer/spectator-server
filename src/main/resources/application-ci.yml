@@ -5,9 +5,7 @@ spring:
     username: root
     password: password
   flyway:
-    locations: classpath:db/migration/dev
-    table: flyway_test_schema_history
-    sql-migration-prefix: T
+    locations: classpath:db/migration/prod
   jpa:
     show-sql: false
     properties:

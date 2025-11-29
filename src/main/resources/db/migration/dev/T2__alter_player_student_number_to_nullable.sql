@@ -1,1 +1,0 @@
-ALTER TABLE players MODIFY COLUMN student_number VARCHAR(255) NULL;

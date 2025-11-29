@@ -11,8 +11,7 @@ spring:
         format_sql: true
         show_sql: true
   flyway:
-    locations: classpath:db/migration/dev
-    sql-migration-prefix: T
+    locations: classpath:db/migration/prod
 
 report-check-origin: fake-origin.com
 cors-allow-origins: http://localhost:3000
