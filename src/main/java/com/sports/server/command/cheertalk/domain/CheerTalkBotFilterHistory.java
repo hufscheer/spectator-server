@@ -20,7 +20,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Table(name = "cheer_talk_bot_filter_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CheerTalkBotFilterHistory extends BaseEntity<CheerTalk> {
+public class CheerTalkBotFilterHistory extends BaseEntity<CheerTalkBotFilterHistory> {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "cheer_talk_id", nullable = true)
