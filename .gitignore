@@ -39,6 +39,10 @@ out/
 
 ### log
 /log/**
+**/log/**
+*.log
+**/grafana-data/
+**/loki-data/
 
 ## fixture monkey
 .jqwik-database
