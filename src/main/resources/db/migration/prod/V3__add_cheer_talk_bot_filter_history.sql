@@ -17,6 +17,6 @@ CREATE TABLE cheer_talk_bot_filter_history (
 
     CONSTRAINT fk_cheer_talk_bot_filter_history_cheer_talk
         FOREIGN KEY (cheer_talk_id)
-        REFERENCES cheer_talk (id)
+        REFERENCES cheer_talks (id)
         ON DELETE SET NULL
 );
