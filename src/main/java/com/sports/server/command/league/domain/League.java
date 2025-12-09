@@ -4,7 +4,8 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,6 @@ import lombok.NoArgsConstructor;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.http.HttpStatus;
 
 @Entity
 @Table(name = "leagues")
@@ -100,7 +100,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     public void validateRoundWithinLimit(Integer round) {
         if (maxRound.numberIsLessThan(round)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
+            throw new BadRequestException(ExceptionMessages.LEAGUE_ROUND_EXCEEDS_MAX);
         }
     }
 

@@ -2,7 +2,8 @@ package com.sports.server.command.game.domain;
 
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
@@ -50,10 +50,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     public void validateCheerCountOfGameTeam(final int cheerCount) {
         if (cheerCount >= MAXIMUM_OF_CHEER_COUNT || cheerCount <= MINIMUM_OF_CHEER_COUNT) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 범위의 응원 요청 횟수입니다.");
+            throw new BadRequestException(ExceptionMessages.GAME_TEAM_INVALID_CHEER_COUNT_RANGE);
         }
         if (this.cheerCount + cheerCount > MAXIMUM_OF_TOTAL_CHEER_COUNT) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "총 응원 횟수가 한계에 도달했습니다.");
+            throw new BadRequestException(ExceptionMessages.GAME_TEAM_CHEER_COUNT_LIMIT_EXCEEDED);
         }
     }
 
@@ -126,7 +126,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
                 .anyMatch(lp -> lp.equals(lineupPlayer));
 
         if (!exists) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 게임팀에 속하지 않는 선수입니다.");
+            throw new BadRequestException(ExceptionMessages.GAME_TEAM_PLAYER_NOT_IN_TEAM);
         }
     }
 
@@ -135,7 +135,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
                 .anyMatch(lp -> lp.isCaptain() && !lp.equals(lineupPlayer));
 
         if (captainExists) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 등록된 주장이 존재합니다.");
+            throw new BadRequestException(ExceptionMessages.GAME_TEAM_CAPTAIN_ALREADY_EXISTS);
         }
     }
 

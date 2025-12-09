@@ -5,13 +5,13 @@ import static com.sports.server.command.game.domain.LineupPlayerState.STARTER;
 
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 import lombok.*;
-import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
@@ -73,7 +73,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public void changeStateToStarter() {
         if (this.state == STARTER) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 선발로 등록된 선수입니다.");
+            throw new BadRequestException(ExceptionMessages.LINEUP_PLAYER_ALREADY_STARTER);
         }
         this.state = STARTER;
         activatePlayerInGame();
@@ -81,7 +81,7 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public void changeStateToCandidate() {
         if (this.state == CANDIDATE) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 후보로 등록된 선수입니다.");
+            throw new BadRequestException(ExceptionMessages.LINEUP_PLAYER_ALREADY_CANDIDATE);
         }
         this.state = CANDIDATE;
         if (this.isCaptain) {
@@ -108,14 +108,14 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public void changePlayerToCaptain() {
         if (this.isCaptain) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 주장으로 등록된 선수입니다.");
+            throw new BadRequestException(ExceptionMessages.LINEUP_PLAYER_ALREADY_CAPTAIN);
         }
         this.isCaptain = true;
     }
 
     public void revokeCaptainFromPlayer() {
         if (!this.isCaptain) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 선수는 주장이 아닙니다.");
+            throw new BadRequestException(ExceptionMessages.LINEUP_PLAYER_NOT_CAPTAIN);
         }
         this.isCaptain = false;
     }

@@ -1,5 +1,7 @@
 package com.sports.server.common.log;
 
+import com.sports.server.common.exception.ExceptionMessages;
+import com.sports.server.common.exception.InternalServerException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -37,7 +39,7 @@ public class LogFilter implements Filter {
                     requestUri
             );
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new InternalServerException(ExceptionMessages.LOG_FILTER_ERROR, e);
         }
     }
 

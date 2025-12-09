@@ -22,7 +22,7 @@ class MySqlTableNameExtractor implements TableNameExtractor{
         return entityManager.createNativeQuery("SHOW TABLES")
                 .getResultList()
                 .stream()
-                .filter(name -> !name.equals("flyway_test_schema_history"))
+                .filter(name -> !name.equals("flyway_schema_history"))
                 .toList();
     }
 }
