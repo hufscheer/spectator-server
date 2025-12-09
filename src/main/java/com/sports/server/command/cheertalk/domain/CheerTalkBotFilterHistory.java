@@ -31,6 +31,7 @@ public class CheerTalkBotFilterHistory extends BaseEntity<CheerTalkBotFilterHist
     @Enumerated(EnumType.STRING)
     private CheerTalkFilterResult cheerTalkFilterResult;
 
+    @Enumerated(EnumType.STRING)
     private BotType botType;
 
     @JdbcTypeCode(SqlTypes.JSON)
