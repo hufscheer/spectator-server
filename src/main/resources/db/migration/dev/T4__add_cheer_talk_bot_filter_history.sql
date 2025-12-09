@@ -13,8 +13,6 @@ CREATE TABLE cheer_talk_bot_filter_history (
 
     latency_ms INT NULL,
 
-    created_at DATETIME(6) NOT NULL,
-
     PRIMARY KEY (id),
 
     CONSTRAINT fk_cheer_talk_bot_filter_history_cheer_talk
