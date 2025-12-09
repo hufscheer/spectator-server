@@ -9,9 +9,8 @@ import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,7 @@ public class GameTeamService {
 
     private void validateGameTeam(final GameTeam gameTeam, final Game game) {
         if (!gameTeam.matchGame(game)) {
-            throw new CustomException(HttpStatus.NOT_FOUND, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
+            throw new NotFoundException(GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
         }
     }
 }

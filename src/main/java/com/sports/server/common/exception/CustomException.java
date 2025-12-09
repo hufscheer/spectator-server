@@ -11,16 +11,19 @@ public class CustomException extends RuntimeException {
     private final String message;
 
     public CustomException() {
+        super(DEFAULT_EXCEPTION_MESSAGE);
         this.status = HttpStatus.INTERNAL_SERVER_ERROR;
         this.message = DEFAULT_EXCEPTION_MESSAGE;
     }
 
     public CustomException(HttpStatus status) {
+        super(DEFAULT_EXCEPTION_MESSAGE);
         this.status = status;
         this.message = DEFAULT_EXCEPTION_MESSAGE;
     }
 
     public CustomException(HttpStatus status, String message1) {
+        super(message1);
         this.status = status;
         this.message = message1;
     }

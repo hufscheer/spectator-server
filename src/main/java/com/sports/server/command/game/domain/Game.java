@@ -9,7 +9,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
-import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.BadRequestException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +31,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 @Entity
@@ -202,7 +201,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     private void validateGameTeam(final GameTeam gameTeam) {
         if (this.gameTeams.stream().noneMatch(team -> Objects.equals(team.getId(), gameTeam.getId()))) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
+            throw new BadRequestException(GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION);
         }
     }
 
@@ -222,7 +221,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void determineResult() {
         if (gameTeams.size() != MINIMUM_TEAMS) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
+            throw new BadRequestException(GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
         }
 
         GameTeam team1 = getTeam1();
@@ -299,7 +298,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void checkStateForTimeline() {
         if (this.getState().equals(GameState.FINISHED)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, GAME_ALREADY_FINISHED);
+            throw new BadRequestException(GAME_ALREADY_FINISHED);
         }
     }
 
