@@ -1,4 +1,4 @@
-package com.sports.server.command.cheertalk.dto;
+package com.sports.server.command.cheertalk.application.mapper;
 
 import com.sports.server.command.cheertalk.domain.BotType;
 import java.util.List;
