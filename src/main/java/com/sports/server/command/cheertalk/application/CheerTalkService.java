@@ -2,10 +2,7 @@ package com.sports.server.command.cheertalk.application;
 
 import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages.CHEER_TALK_CONTAINS_BAD_WORD;
 
-import com.sports.server.command.cheertalk.domain.CheerTalk;
-import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
-import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
-import com.sports.server.command.cheertalk.domain.LanguageFilter;
+import com.sports.server.command.cheertalk.domain.*;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
@@ -75,6 +72,15 @@ public class CheerTalkService {
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         report.ifPresent(Report::cancel);
         cheerTalk.unblock();
+    }
+
+    /**
+     * ai 모델 이용한 구체 필터링 로직 구현
+     * @return CheerTalkFilterResult(CLEAN or ABUSIVE)
+     * 이 CheerTalkService가 아닌 모델 필터링 전용 서비스를 만드는 방식도 고려해보기
+     */
+    public CheerTalkFilterResult filter(String content){
+        return CheerTalkFilterResult.CLEAN;
     }
 
     private GameTeam getGameTeam(Long gameTeamId) {
