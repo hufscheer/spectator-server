@@ -53,6 +53,10 @@ public class CheerTalkService {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
+        blockById(cheerTalkId);
+    }
+
+    public void blockById(final Long cheerTalkId) {
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
 
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
@@ -76,11 +80,11 @@ public class CheerTalkService {
 
     /**
      * ai 모델 이용한 구체 필터링 로직 구현
-     * @return CheerTalkFilterResult(CLEAN or ABUSIVE)
-     * 이 CheerTalkService가 아닌 모델 필터링 전용 서비스를 만드는 방식도 고려해보기
+     * @return CheerTalkBotFilterResult(CLEAN or ABUSIVE)
+     * 필터링 관련 서비스 별도 생성 권장
      */
-    public CheerTalkFilterResult filter(String content){
-        return CheerTalkFilterResult.CLEAN;
+    public CheerTalkBotFilterResult filter(String content){
+        return CheerTalkBotFilterResult.CLEAN;
     }
 
     private GameTeam getGameTeam(Long gameTeamId) {
