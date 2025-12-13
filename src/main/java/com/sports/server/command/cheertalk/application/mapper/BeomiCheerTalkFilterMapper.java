@@ -2,7 +2,7 @@ package com.sports.server.command.cheertalk.application.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sports.server.command.cheertalk.domain.BotType;
-import com.sports.server.command.cheertalk.domain.CheerTalkFilterResult;
+import com.sports.server.command.cheertalk.domain.CheerTalkBotFilterResult;
 import com.sports.server.command.cheertalk.dto.CheerTalkFilterResponse;
 import java.util.Comparator;
 import java.util.stream.StreamSupport;
@@ -31,10 +31,10 @@ public class BeomiCheerTalkFilterMapper implements CheerTalkFilterResponseMapper
         String name = top.get("name").asText();
         double value = top.get("value").asDouble();
 
-        CheerTalkFilterResult result =
+        CheerTalkBotFilterResult result =
                 name.equals("offensive") || name.equals("hate")
-                        ? CheerTalkFilterResult.ABUSIVE
-                        : CheerTalkFilterResult.CLEAN;
+                        ? CheerTalkBotFilterResult.ABUSIVE
+                        : CheerTalkBotFilterResult.CLEAN;
 
         return new CheerTalkFilterResponse(
                 result,
