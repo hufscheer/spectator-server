@@ -2,7 +2,7 @@ package com.sports.server.command.cheertalk.application.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sports.server.command.cheertalk.domain.BotType;
-import com.sports.server.command.cheertalk.domain.CheerTalkFilterResult;
+import com.sports.server.command.cheertalk.domain.CheerTalkBotFilterResult;
 import com.sports.server.command.cheertalk.dto.CheerTalkFilterResponse;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +21,10 @@ public class KorUnsmileCheerTalkFilterMapper implements CheerTalkFilterResponseM
         String label = top.get("label").asText();
         double score = top.get("score").asDouble();
 
-        CheerTalkFilterResult result =
+        CheerTalkBotFilterResult result =
                 label.equals("clean")
-                        ? CheerTalkFilterResult.CLEAN
-                        : CheerTalkFilterResult.ABUSIVE;
+                        ? CheerTalkBotFilterResult.CLEAN
+                        : CheerTalkBotFilterResult.ABUSIVE;
 
         return new CheerTalkFilterResponse(
                 result,

@@ -29,7 +29,7 @@ public class CheerTalkBotFilterHistory extends BaseEntity<CheerTalkBotFilterHist
     private LocalDateTime filteredAt;
 
     @Enumerated(EnumType.STRING)
-    private CheerTalkFilterResult cheerTalkFilterResult;
+    private CheerTalkBotFilterResult cheerTalkBotFilterResult;
 
     @Enumerated(EnumType.STRING)
     private BotType botType;
