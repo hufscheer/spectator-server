@@ -16,11 +16,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CheerTalkBlockedByBotEventHandler {
+public class BotBlockedCheerTalkSpectatorPublishHandler {
 
     private static final String DESTINATION = "/topic/games/";
     private final SimpMessagingTemplate messagingTemplate;
-    private final PendingCheerTalkRepository pendingCheerTalkRepository;
     private final EntityUtils entityUtils;
 
     @TransactionalEventListener
@@ -43,9 +42,9 @@ public class CheerTalkBlockedByBotEventHandler {
                     event.gameId()
             );
         } catch (Exception e) {
-            pendingCheerTalkRepository.save(
-                    new PendingCheerTalk(destination, cheerTalk)
-            );
+            /**
+             * 추후 '전송 실패 응원톡 저장 로직 논의' 필요
+             */
 
             log.error(
                     "AI 차단 응원톡 소켓 메시지 발행 실패: cheerTalkId={}, gameId={}, error={}",

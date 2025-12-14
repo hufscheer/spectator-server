@@ -25,7 +25,7 @@ public class CheerTalkBotFilterEventHandler {
         CheerTalk cheerTalk = event.cheerTalk();
 
         try {
-            CheerTalkBotFilterResult result = cheerTalkService.filter(
+            CheerTalkBotFilterResult result = cheerTalkService.filterByBot(
                     cheerTalk.getContent()
             );
 

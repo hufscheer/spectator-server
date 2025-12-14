@@ -83,7 +83,7 @@ public class CheerTalkService {
      * @return CheerTalkBotFilterResult(CLEAN or ABUSIVE)
      * 필터링 관련 서비스 별도 생성 권장
      */
-    public CheerTalkBotFilterResult filter(String content){
+    public CheerTalkBotFilterResult filterByBot(String content){
         return CheerTalkBotFilterResult.CLEAN;
     }
 
