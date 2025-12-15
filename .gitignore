@@ -46,3 +46,4 @@ out/
 
 ## fixture monkey
 .jqwik-database
+.mcp.json
