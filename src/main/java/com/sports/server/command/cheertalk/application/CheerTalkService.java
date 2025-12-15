@@ -4,7 +4,6 @@ import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessag
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sports.server.command.cheertalk.application.mapper.CheerTalkFilterResponseMapper;
-import com.sports.server.command.cheertalk.application.mapper.KorUnsmileCheerTalkFilterMapper;
 import com.sports.server.command.cheertalk.domain.*;
 import com.sports.server.command.cheertalk.dto.CheerTalkFilterResponse;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
@@ -20,9 +19,9 @@ import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.exception.NotFoundException;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +38,7 @@ public class CheerTalkService {
     private final EntityUtils entityUtils;
     private final ApplicationEventPublisher eventPublisher;
     private final CheerTalkBotClient huggingfaceClient;
-    private final KorUnsmileCheerTalkFilterMapper korUnsmileMapper;
+    private final List<CheerTalkFilterResponseMapper> mappers;
     private final CheerTalkBotFilterHistoryRepository historyRepository;
 
     public void register(final CheerTalkRequest cheerTalkRequest) {
@@ -95,14 +94,21 @@ public class CheerTalkService {
     public CheerTalkBotFilterResult filterByBot(String content){
         long startTime = System.currentTimeMillis();
 
-        // 1. Huggingface API 호출
+        // 1. API 호출
         JsonNode rawResponse = huggingfaceClient.detectAbusiveContent(content);
         int latencyMs = (int) (System.currentTimeMillis() - startTime);
 
-        // 2. Mapper로 응답 파싱
-        CheerTalkFilterResponse response = korUnsmileMapper.map(rawResponse, latencyMs);
+        // 2. BotType에 맞는 Mapper 찾기
+        BotType botType = huggingfaceClient.supports();
+        CheerTalkFilterResponseMapper mapper = mappers.stream()
+                .filter(m -> m.supports() == botType)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No mapper found for BotType: " + botType));
 
-        // 3. History 저장
+        // 3. Mapper로 응답 파싱
+        CheerTalkFilterResponse response = mapper.map(rawResponse, latencyMs);
+
+        // 4. History 저장
         CheerTalkBotFilterHistory history = new CheerTalkBotFilterHistory(
                 null,
                 response.result(),
@@ -112,7 +118,7 @@ public class CheerTalkService {
         );
         historyRepository.save(history);
 
-        // 4. 결과 반환
+        // 5. 결과 반환
         return response.result();
     }
 
