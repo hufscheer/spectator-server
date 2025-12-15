@@ -34,3 +34,9 @@ amazon:
 image:
   origin-prefix: origin/
   replaced-prefix: replace/
+
+huggingface:
+  token: ${HF_TOKEN:dummy-token}
+
+clarifai:
+  api-key: ${CLARIFAI_KEY:dummy-key}

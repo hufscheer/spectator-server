@@ -2,8 +2,13 @@ package com.sports.server.command.cheertalk.application;
 
 import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessages.CHEER_TALK_CONTAINS_BAD_WORD;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.sports.server.command.cheertalk.application.mapper.CheerTalkFilterResponseMapper;
+import com.sports.server.command.cheertalk.application.mapper.KorUnsmileCheerTalkFilterMapper;
 import com.sports.server.command.cheertalk.domain.*;
+import com.sports.server.command.cheertalk.dto.CheerTalkFilterResponse;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
+import com.sports.server.command.cheertalk.infra.CheerTalkBotClient;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.League;
@@ -17,6 +22,7 @@ import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.exception.NotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +38,9 @@ public class CheerTalkService {
     private final LanguageFilter languageFilter;
     private final EntityUtils entityUtils;
     private final ApplicationEventPublisher eventPublisher;
+    private final CheerTalkBotClient huggingfaceClient;
+    private final KorUnsmileCheerTalkFilterMapper korUnsmileMapper;
+    private final CheerTalkBotFilterHistoryRepository historyRepository;
 
     public void register(final CheerTalkRequest cheerTalkRequest) {
         validateContent(cheerTalkRequest.content());
@@ -84,7 +93,27 @@ public class CheerTalkService {
      * 필터링 관련 서비스 별도 생성 권장
      */
     public CheerTalkBotFilterResult filterByBot(String content){
-        return CheerTalkBotFilterResult.CLEAN;
+        long startTime = System.currentTimeMillis();
+
+        // 1. Huggingface API 호출
+        JsonNode rawResponse = huggingfaceClient.detectAbusiveContent(content);
+        int latencyMs = (int) (System.currentTimeMillis() - startTime);
+
+        // 2. Mapper로 응답 파싱
+        CheerTalkFilterResponse response = korUnsmileMapper.map(rawResponse, latencyMs);
+
+        // 3. History 저장
+        CheerTalkBotFilterHistory history = new CheerTalkBotFilterHistory(
+                null,
+                response.result(),
+                response.botType(),
+                response.rawResponse(),
+                response.latencyMs()
+        );
+        historyRepository.save(history);
+
+        // 4. 결과 반환
+        return response.result();
     }
 
     private GameTeam getGameTeam(Long gameTeamId) {
