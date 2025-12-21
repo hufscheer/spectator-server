@@ -6,16 +6,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class HuggingfaceConfig {
+public class KorUnsmileConfig {
 
-    @Value("${huggingface.token}")
-    private String huggingfaceToken;
+    @Value("${korunsmile.token}")
+    private String korUnsmileToken;
 
     @Bean
-    public WebClient huggingfaceWebClient() {
+    public WebClient korUnsmileWebClient() {
         return WebClient.builder()
                 .baseUrl("https://router.huggingface.co/hf-inference/models")
-                .defaultHeader("Authorization", "Bearer " + huggingfaceToken)
+                .defaultHeader("Authorization", "Bearer " + korUnsmileToken)
                 .defaultHeader("Content-Type", "application/json")
                 .build();
     }

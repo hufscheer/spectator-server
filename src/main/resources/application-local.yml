@@ -35,8 +35,8 @@ image:
   origin-prefix: origin/
   replaced-prefix: replace/
 
-huggingface:
+korunsmile:
   token: ${HF_TOKEN:dummy-token}
 
-clarifai:
+beomi:
   api-key: ${CLARIFAI_KEY:dummy-key}

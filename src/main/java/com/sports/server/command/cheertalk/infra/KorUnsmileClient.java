@@ -9,9 +9,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
 @RequiredArgsConstructor
-public class HuggingfaceClient implements CheerTalkBotClient {
+public class KorUnsmileClient implements CheerTalkBotClient {
 
-    private final WebClient huggingfaceWebClient;
+    private final WebClient korUnsmileWebClient;
 
     @Override
     public BotType supports() {
@@ -20,7 +20,7 @@ public class HuggingfaceClient implements CheerTalkBotClient {
 
     @Override
     public JsonNode detectAbusiveContent(String content) {
-        return huggingfaceWebClient.post()
+        return korUnsmileWebClient.post()
                 .uri("/smilegate-ai/kor_unsmile")
                 .bodyValue(Map.of("inputs", content))
                 .retrieve()

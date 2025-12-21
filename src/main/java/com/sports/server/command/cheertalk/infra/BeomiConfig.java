@@ -6,16 +6,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class ClarifaiConfig {
+public class BeomiConfig {
 
-    @Value("${clarifai.api-key}")
-    private String clarifaiApiKey;
+    @Value("${beomi.api-key}")
+    private String beomiApiKey;
 
     @Bean
-    public WebClient clarifaiWebClient() {
+    public WebClient beomiWebClient() {
         return WebClient.builder()
                 .baseUrl("https://api.clarifai.com/v2")
-                .defaultHeader("Authorization", "Key " + clarifaiApiKey)
+                .defaultHeader("Authorization", "Key " + beomiApiKey)
                 .defaultHeader("Content-Type", "application/json")
                 .build();
     }

@@ -10,9 +10,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
 @RequiredArgsConstructor
-public class ClarifaiClient implements CheerTalkBotClient {
+public class BeomiClient implements CheerTalkBotClient {
 
-    private final WebClient clarifaiWebClient;
+    private final WebClient beomiWebClient;
 
     @Override
     public BotType supports() {
@@ -33,7 +33,7 @@ public class ClarifaiClient implements CheerTalkBotClient {
                 )
         );
 
-        return clarifaiWebClient.post()
+        return beomiWebClient.post()
                 .uri("/users/beomi/apps/text-moderation/models/moderation-abuse-korean/versions/f6fb536be02f4c34a92be44c1093ce55/outputs")
                 .bodyValue(requestBody)
                 .retrieve()
