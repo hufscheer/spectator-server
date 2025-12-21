@@ -35,3 +35,9 @@ amazon:
 image:
   origin-prefix: origin
   replaced-prefix: replace
+
+korunsmile:
+  token: ${HF_TOKEN:dummy-token}
+
+beomi:
+  api-key: ${CLARIFAI_KEY:dummy-key}
