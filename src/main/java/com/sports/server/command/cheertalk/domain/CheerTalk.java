@@ -3,6 +3,8 @@ package com.sports.server.command.cheertalk.domain;
 import com.sports.server.common.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -21,28 +23,33 @@ public class CheerTalk extends BaseEntity<CheerTalk> {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "is_blocked", nullable = false)
-    private boolean isBlocked;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "block_status", nullable = false)
+    private CheerTalkBlockStatus blockStatus;
 
     @Column(name = "game_team_id", nullable = false)
     private Long gameTeamId;
 
     public boolean isBlocked() {
-        return isBlocked;
+        return blockStatus != CheerTalkBlockStatus.ACTIVE;
     }
 
-    public void block() {
-        this.isBlocked = true;
+    public void blockByAdmin() {
+        this.blockStatus = CheerTalkBlockStatus.BLOCKED_BY_ADMIN;
+    }
+
+    public void blockByBot() {
+        this.blockStatus = CheerTalkBlockStatus.BLOCKED_BY_BOT;
     }
 
     public void unblock() {
-        this.isBlocked = false;
+        this.blockStatus = CheerTalkBlockStatus.ACTIVE;
     }
 
     public CheerTalk(final String content, final Long gameTeamId) {
         this.createdAt = LocalDateTime.now();
         this.content = content;
-        this.isBlocked = false;
+        this.blockStatus = CheerTalkBlockStatus.ACTIVE;
         this.gameTeamId = gameTeamId;
     }
 }

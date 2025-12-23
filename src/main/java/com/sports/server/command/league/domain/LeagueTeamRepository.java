@@ -39,7 +39,7 @@ public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
            "COALESCE((SELECT CAST(COUNT(ct.id) AS int) " +
            "FROM CheerTalk ct, GameTeam gt2 " +
            "WHERE ct.gameTeamId = gt2.id AND gt2.team.id = lt.team.id " +
-           "AND gt2.game.league.id = :leagueId AND ct.isBlocked = false), 0) " +
+           "AND gt2.game.league.id = :leagueId AND ct.blockStatus = com.sports.server.command.cheertalk.domain.CheerTalkBlockStatus.ACTIVE), 0) " +
            "WHERE lt.league.id = :leagueId")
     void updateTotalTalkCounts(@Param("leagueId") Long leagueId);
 

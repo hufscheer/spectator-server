@@ -11,6 +11,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalkBlockStatus;
 import com.sports.server.command.report.domain.ReportState;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,7 +60,7 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
                         .join(league).on(game.league.id.eq(league.id))
                         .join(member).on(league.administrator.id.eq(member.id))
                         .where(member.id.eq(adminId))
-                        .where(cheerTalk.isBlocked.eq(false)),
+                        .where(cheerTalk.blockStatus.eq(CheerTalkBlockStatus.ACTIVE)),
                 cursor,
                 size
         );
@@ -74,7 +75,7 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
                         .join(league).on(game.league.id.eq(league.id))
                         .join(member).on(league.administrator.id.eq(member.id))
                         .where(member.id.eq(adminId))
-                        .where(cheerTalk.isBlocked.eq(true)),
+                        .where(cheerTalk.blockStatus.ne(CheerTalkBlockStatus.ACTIVE)),
                 cursor,
                 size
         );

@@ -190,10 +190,10 @@ VALUES ('SCORE', 3, 'SECOND_HALF', 5, 14, 1, 5, 6, 6, 0),
        ('SCORE', 3, 'SECOND_HALF', 15, 14, 1, 5, 8, 6, 0);
 
 -- 응원톡 생성
-INSERT INTO cheer_talks (id, game_team_id, content, created_at, is_blocked)
-VALUES (1, 1, '화이팅!', '2023-11-12 10:05:00', FALSE),
-       (2, 2, '우리팀 최고!', '2023-11-12 10:10:00', FALSE),
-       (3, 1, '좋은 경기!', '2023-11-12 10:15:00', FALSE);
+INSERT INTO cheer_talks (id, game_team_id, content, created_at, block_status)
+VALUES (1, 1, '화이팅!', '2023-11-12 10:05:00', 'ACTIVE'),
+       (2, 2, '우리팀 최고!', '2023-11-12 10:10:00', 'ACTIVE'),
+       (3, 1, '좋은 경기!', '2023-11-12 10:15:00', 'ACTIVE');
 
 -- 리그 통계
 INSERT INTO league_statistics (id, league_id, first_winner_team_id, second_winner_team_id, most_cheered_team_id, most_cheer_talks_team_id)

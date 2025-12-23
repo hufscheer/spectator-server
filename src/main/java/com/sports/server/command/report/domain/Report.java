@@ -57,7 +57,7 @@ public class Report extends BaseEntity<Report> {
 
     public void accept() {
         this.state = ReportState.VALID;
-        cheerTalk.block();
+        cheerTalk.blockByAdmin();
     }
 
     public void updateToPending() {

@@ -1,5 +1,6 @@
 package com.sports.server.command.cheertalk.presentation;
 
+import com.sports.server.command.cheertalk.application.CheerTalkBotFilterService;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.domain.*;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 public class CheerTalkBotFilterEventHandler {
 
+    private final CheerTalkBotFilterService cheerTalkBotFilterService;
     private final CheerTalkService cheerTalkService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -25,14 +27,15 @@ public class CheerTalkBotFilterEventHandler {
         CheerTalk cheerTalk = event.cheerTalk();
 
         try {
-            CheerTalkBotFilterResult result = cheerTalkService.filterByBot(
-                    cheerTalk.getContent()
+            CheerTalkBotFilterResult result = cheerTalkBotFilterService.filterByBot(
+                    cheerTalk.getContent(),
+                    cheerTalk.getId()
             );
 
             if (result == CheerTalkBotFilterResult.ABUSIVE) {
                 Long cheerTalkId = cheerTalk.getId();
-                
-                cheerTalkService.blockById(cheerTalkId);
+
+                cheerTalkService.blockByBot(cheerTalkId);
                 eventPublisher.publishEvent(
                         new CheerTalkBlockedByBotEvent(cheerTalkId, event.gameId())
                 );
