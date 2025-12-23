@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CheerTalkBotFilterService {
 
-    private final CheerTalkBotClient huggingfaceClient;
+    private final CheerTalkBotClient korUnsmileClient;
     private final CheerTalkFilterResponseMapperFinder mapperFinder;
     private final CheerTalkBotFilterHistoryRepository historyRepository;
     private final EntityUtils entityUtils;
@@ -34,10 +34,10 @@ public class CheerTalkBotFilterService {
 
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
 
-        JsonNode rawResponse = huggingfaceClient.detectAbusiveContent(content);
+        JsonNode rawResponse = korUnsmileClient.detectAbusiveContent(content);
         int latencyMs = (int) (System.currentTimeMillis() - startTime);
 
-        BotType botType = huggingfaceClient.supports();
+        BotType botType = korUnsmileClient.supports();
         CheerTalkFilterResponseMapper mapper = mapperFinder.find(botType);
 
         CheerTalkFilterResponse response = mapper.map(rawResponse, latencyMs);
