@@ -8,13 +8,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class KorUnsmileConfig {
 
+    @Value("${korunsmile.url}")
+    private String korUnsmileUrl;
+
     @Value("${korunsmile.token}")
     private String korUnsmileToken;
 
     @Bean
     public WebClient korUnsmileWebClient() {
         return WebClient.builder()
-                .baseUrl("https://router.huggingface.co/hf-inference/models")
+                .baseUrl(korUnsmileUrl)
                 .defaultHeader("Authorization", "Bearer " + korUnsmileToken)
                 .defaultHeader("Content-Type", "application/json")
                 .build();

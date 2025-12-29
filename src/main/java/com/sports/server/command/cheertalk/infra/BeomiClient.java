@@ -5,6 +5,7 @@ import com.sports.server.command.cheertalk.domain.BotType;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -13,6 +14,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class BeomiClient implements CheerTalkBotClient {
 
     private final WebClient beomiWebClient;
+
+    @Value("${beomi.uri}")
+    private String beomiUri;
 
     @Override
     public BotType supports() {
@@ -34,7 +38,7 @@ public class BeomiClient implements CheerTalkBotClient {
         );
 
         return beomiWebClient.post()
-                .uri("/users/beomi/apps/text-moderation/models/moderation-abuse-korean/versions/f6fb536be02f4c34a92be44c1093ce55/outputs")
+                .uri(beomiUri)
                 .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(JsonNode.class)

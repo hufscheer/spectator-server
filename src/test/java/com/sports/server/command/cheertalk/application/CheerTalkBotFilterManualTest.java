@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-@Disabled("수동 테스트 - 실행하려면 @Disabled 주석 처리")
+//@Disabled("수동 테스트 - 실행하려면 @Disabled 주석 처리")
 class CheerTalkBotFilterManualTest {
 
     @Autowired

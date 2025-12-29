@@ -8,13 +8,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class BeomiConfig {
 
+    @Value("${beomi.url}")
+    private String beomiUrl;
+
     @Value("${beomi.api-key}")
     private String beomiApiKey;
 
     @Bean
     public WebClient beomiWebClient() {
         return WebClient.builder()
-                .baseUrl("https://api.clarifai.com/v2")
+                .baseUrl(beomiUrl)
                 .defaultHeader("Authorization", "Key " + beomiApiKey)
                 .defaultHeader("Content-Type", "application/json")
                 .build();
