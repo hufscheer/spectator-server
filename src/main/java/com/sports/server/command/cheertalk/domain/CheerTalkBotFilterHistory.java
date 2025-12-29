@@ -39,4 +39,19 @@ public class CheerTalkBotFilterHistory extends BaseEntity<CheerTalkBotFilterHist
     private JsonNode rawBotResponse;
 
     private Integer latencyMs;
+
+    public CheerTalkBotFilterHistory(
+            final CheerTalk cheerTalk,
+            final CheerTalkBotFilterResult cheerTalkBotFilterResult,
+            final BotType botType,
+            final JsonNode rawBotResponse,
+            final Integer latencyMs
+    ) {
+        this.cheerTalk = cheerTalk;
+        this.filteredAt = LocalDateTime.now();
+        this.cheerTalkBotFilterResult = cheerTalkBotFilterResult;
+        this.botType = botType;
+        this.rawBotResponse = rawBotResponse;
+        this.latencyMs = latencyMs;
+    }
 }

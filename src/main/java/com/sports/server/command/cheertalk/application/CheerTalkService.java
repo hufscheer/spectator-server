@@ -64,7 +64,18 @@ public class CheerTalkService {
             report.get().accept();
             return;
         }
-        cheerTalk.block();
+        cheerTalk.blockByAdmin();
+    }
+
+    public void blockByBot(final Long cheerTalkId) {
+        CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
+
+        Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
+        if (report.isPresent()) {
+            report.get().accept();
+            return;
+        }
+        cheerTalk.blockByBot();
     }
 
     public void unblock(final Long leagueId, final Long cheerTalkId, final Member manager) {
@@ -76,15 +87,6 @@ public class CheerTalkService {
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         report.ifPresent(Report::cancel);
         cheerTalk.unblock();
-    }
-
-    /**
-     * ai 모델 이용한 구체 필터링 로직 구현
-     * @return CheerTalkBotFilterResult(CLEAN or ABUSIVE)
-     * 필터링 관련 서비스 별도 생성 권장
-     */
-    public CheerTalkBotFilterResult filterByBot(String content){
-        return CheerTalkBotFilterResult.CLEAN;
     }
 
     private GameTeam getGameTeam(Long gameTeamId) {
