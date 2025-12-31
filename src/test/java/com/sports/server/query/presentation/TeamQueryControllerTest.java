@@ -79,7 +79,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
         );
 
         TeamDetailResponse response = new TeamDetailResponse(
-                "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", teamPlayers,
+                1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", teamPlayers,
                 5, 2, 3, topScorers, trophies);
 
         given(teamQueryService.getTeamDetail(teamId)).willReturn(response);
@@ -96,7 +96,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                         ),
                         responseFields(
                                 combineFields(
-                                        getTeamResponseFields(""),
+                                        getTeamDetailResponseFields(""),
                                         fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("팀에 소속된 전체 선수"),
                                         fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
                                         fieldWithPath("teamPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("팀선수 ID"),
@@ -201,7 +201,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new TeamDetailResponse.Trophy(1L, "2026 외대월드컵", "우승"),
                 new TeamDetailResponse.Trophy(2L, "2025 삼건물대회", "준우승")
         );
-        TeamDetailResponse teamDetail = new TeamDetailResponse("정치외교학과 PSD", "image url", "사회과학대학",
+        TeamDetailResponse teamDetail = new TeamDetailResponse(1L, "정치외교학과 PSD", "image url", "사회과학대학",
                 "#000000", null, 5, 1, 3, topScorers, trophies);
 
 
@@ -241,7 +241,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                                 combineFields(
                                         fieldWithPath("[].teamDetail").type(JsonFieldType.OBJECT).description("팀 세부 정보"),
                                         fieldWithPath("[].recentGames").type(JsonFieldType.ARRAY).description("최근 경기"),
-                                        getTeamResponseFields("[].teamDetail."),
+                                        getTeamDetailResponseFields("[].teamDetail."),
                                         fieldWithPath("[].teamDetail.winCount").type(JsonFieldType.NUMBER).description("전체 승리 횟수"),
                                         fieldWithPath("[].teamDetail.drawCount").type(JsonFieldType.NUMBER).description("전체 무승부 횟수"),
                                         fieldWithPath("[].teamDetail.loseCount").type(JsonFieldType.NUMBER).description("전체 패배 횟수"),
@@ -257,6 +257,16 @@ public class TeamQueryControllerTest extends DocumentationTest {
 
     private FieldDescriptor[] getTeamResponseFields(String prefix) {
         return new FieldDescriptor[]{
+                fieldWithPath(prefix + "name").type(JsonFieldType.STRING).description("팀의 이름"),
+                fieldWithPath(prefix + "logoImageUrl").type(JsonFieldType.STRING).description("팀의 로고 이미지 URL"),
+                fieldWithPath(prefix + "unit").type(JsonFieldType.STRING).description("팀의 소속 단위"),
+                fieldWithPath(prefix + "teamColor").type(JsonFieldType.STRING).description("팀의 대표 색상")
+        };
+    }
+
+    private FieldDescriptor[] getTeamDetailResponseFields(String prefix) {
+        return new FieldDescriptor[]{
+                fieldWithPath(prefix + "teamId").type(JsonFieldType.NUMBER).description("팀의 ID"),
                 fieldWithPath(prefix + "name").type(JsonFieldType.STRING).description("팀의 이름"),
                 fieldWithPath(prefix + "logoImageUrl").type(JsonFieldType.STRING).description("팀의 로고 이미지 URL"),
                 fieldWithPath(prefix + "unit").type(JsonFieldType.STRING).description("팀의 소속 단위"),

@@ -10,6 +10,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record TeamDetailResponse(
+        Long teamId,
         String name,
         String logoImageUrl,
         String unit,
@@ -23,6 +24,7 @@ public record TeamDetailResponse(
                               final TeamDetailResponse.TeamGameResult teamGameResult,
                               final List<TeamTopScorer> topScorers, final List<Trophy> trophies) {
         this(
+                team.getId(),
                 team.getName(),
                 team.getLogoImageUrl(),
                 team.getUnit().getName(),
