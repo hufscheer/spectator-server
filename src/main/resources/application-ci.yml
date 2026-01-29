@@ -45,3 +45,9 @@ beomi:
   url: https://api.clarifai.com/v2
   uri: /users/beomi/apps/text-moderation/models/moderation-abuse-korean/versions/f6fb536be02f4c34a92be44c1093ce55/outputs
   api-key: ${CLARIFAI_KEY:dummy-key}
+
+gemini:
+  api:
+    key: gemini-key
+    url: gemini-url
+    prompt: prompt
