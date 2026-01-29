@@ -24,7 +24,7 @@ public class CheerTalkMaskingService {
     public void maskingCheerTalk(String content, Long cheerTalkId) {
         String input = String.join("\n", prompt, content);
 
-        String maskedResponse = geminiClient.getGeminiResponse(input);
+        String maskedResponse = geminiClient.getGeminiResponse(input).getFirstText();
 
         if (maskedResponse.contains("*")) {
             CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);

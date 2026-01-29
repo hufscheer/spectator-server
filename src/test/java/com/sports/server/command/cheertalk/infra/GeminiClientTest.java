@@ -20,7 +20,7 @@ class GeminiClientTest {
         String prompt = "욕설이 포함된 문장인지 판별해줘";
 
         // when
-        String response = geminiClient.getGeminiResponse(prompt);
+        String response = geminiClient.getGeminiResponse(prompt).getFirstText();
 
         // then
         assertThat(response).isNotNull();
