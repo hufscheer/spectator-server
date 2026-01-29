@@ -1,7 +1,9 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.command.cheertalk.application.CheerTalkMaskingService;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
+import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.command.cheertalk.domain.PendingCheerTalk;
 import com.sports.server.command.cheertalk.domain.PendingCheerTalkRepository;
 import com.sports.server.query.dto.response.CheerTalkResponse;
@@ -20,6 +22,7 @@ public class CheerTalkEventHandler {
     private static final String DESTINATION = "/topic/games/";
     private final SimpMessagingTemplate messagingTemplate;
     private final PendingCheerTalkRepository pendingCheerTalkRepository;
+    private final CheerTalkMaskingService cheerTalkMaskingService;
 
     @TransactionalEventListener
     @Async("asyncThreadPool")
@@ -32,6 +35,8 @@ public class CheerTalkEventHandler {
                     destination,
                     new CheerTalkResponse.ForSpectator(cheerTalk)
             );
+
+            cheerTalkMaskingService.maskingCheerTalk(cheerTalk.getContent(), cheerTalk.getId());
 
         } catch (Exception e) {
             pendingCheerTalkRepository.save(
