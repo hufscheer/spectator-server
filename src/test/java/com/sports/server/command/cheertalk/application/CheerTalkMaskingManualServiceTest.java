@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("local")
 @Sql("/cheer-talk-fixture.sql")
-// @Disabled("수동 테스트 - 실행하려면 @Disabled 주석 처리")
+ @Disabled("수동 테스트 - 실행하려면 @Disabled 주석 처리")
 class CheerTalkMaskingManualTest extends ServiceTest {
 
     @Autowired
