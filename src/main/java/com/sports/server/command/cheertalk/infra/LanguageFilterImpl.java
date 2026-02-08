@@ -4,6 +4,7 @@ import com.sports.server.command.cheertalk.domain.LanguageFilter;
 import com.vane.badwordfiltering.BadWordFiltering;
 import org.springframework.stereotype.Component;
 
+@Deprecated
 @Component
 public class LanguageFilterImpl implements LanguageFilter {
 
