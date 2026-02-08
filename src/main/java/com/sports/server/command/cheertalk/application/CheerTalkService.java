@@ -29,24 +29,16 @@ public class CheerTalkService {
     private final CheerTalkRepository cheerTalkRepository;
     private final ReportRepository reportRepository;
     private final GameTeamRepository gameTeamRepository;
-    private final LanguageFilter languageFilter;
     private final EntityUtils entityUtils;
     private final ApplicationEventPublisher eventPublisher;
 
     public void register(final CheerTalkRequest cheerTalkRequest) {
-        validateContent(cheerTalkRequest.content());
         GameTeam gameTeam = getGameTeam(cheerTalkRequest.gameTeamId());
 
         CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), gameTeam.getId());
         cheerTalkRepository.save(cheerTalk);
 
         eventPublisher.publishEvent(new CheerTalkCreateEvent(cheerTalk, gameTeam.getGame().getId()));
-    }
-
-    private void validateContent(final String content) {
-        if (languageFilter.containsBadWord(content)) {
-            throw new BadRequestException(CHEER_TALK_CONTAINS_BAD_WORD);
-        }
     }
 
     public void block(final Long leagueId, final Long cheerTalkId, final Member manager) {
