@@ -30,7 +30,7 @@ public class CheerTalkMaskingEventHandler {
         String destination = DESTINATION + event.gameId();
 
         CheerTalkMaskedResponse cheerTalkMaskedResponse = cheerTalkMaskingService.maskingCheerTalk(
-                cheerTalk.getContent(), event.gameId());
+                cheerTalk.getContent(), cheerTalk.getId());
 
         if (!cheerTalkMaskedResponse.containsBadWord()) {
             return;
@@ -39,7 +39,7 @@ public class CheerTalkMaskingEventHandler {
         try {
             messagingTemplate.convertAndSend(
                     destination,
-                    new CheerTalkResponse.ForSpectator(cheerTalk)
+                    new CheerTalkResponse.ForSpectator(cheerTalk, cheerTalkMaskedResponse.maskedContent())
             );
 
         } catch (Exception e) {
