@@ -4,11 +4,11 @@ import java.util.List;
 
 public record LeagueRecentSummaryResponse(
         List<LeagueRecord> records,
-        List<TopScorerResponse> topScorers
+        List<TeamDetailResponse.TeamTopScorer> topScorers
 ) {
     public record LeagueRecord(
             Long leagueId,
-            String leagueName,
+            String name,
             String winnerTeamName
     ) {
         public static LeagueRecord from(LeagueResponse leagueResponse) {

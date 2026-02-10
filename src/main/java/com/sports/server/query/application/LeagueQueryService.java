@@ -73,7 +73,15 @@ public class LeagueQueryService {
                 .map(LeagueRecentSummaryResponse.LeagueRecord::from)
                 .toList();
 
-        List<TopScorerResponse> topScorers = findTopScorersByYear(year, safeTopScorerLimit);
+        List<TeamDetailResponse.TeamTopScorer> topScorers = findTopScorersByYear(year, safeTopScorerLimit).stream()
+                .map(topScorer -> new TeamDetailResponse.TeamTopScorer(
+                        topScorer.playerId(),
+                        topScorer.admissionYear(),
+                        topScorer.ranking(),
+                        topScorer.playerName(),
+                        topScorer.goalCount()
+                ))
+                .toList();
 
         return new LeagueRecentSummaryResponse(records, topScorers);
     }

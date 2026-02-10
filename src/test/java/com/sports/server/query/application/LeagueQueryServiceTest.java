@@ -438,16 +438,16 @@ public class LeagueQueryServiceTest extends ServiceTest {
         assertAll(
                 () -> assertThat(response.records()).hasSize(5),
                 () -> assertThat(response.records())
-                        .extracting(LeagueRecentSummaryResponse.LeagueRecord::leagueName)
+                        .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
                         .containsExactly("종료된 축구대회 7", "종료된 축구대회 6", "종료된 축구대회 5", "종료된 축구대회 4", "종료된 축구대회 3"),
                 () -> assertThat(response.records())
                         .extracting(LeagueRecentSummaryResponse.LeagueRecord::winnerTeamName)
                         .containsExactly("서어 뻬데뻬", "경영 야생마", "컴공 독수리", "체교 불사조", "미컴 축구생각"),
                 () -> assertThat(response.topScorers()).hasSize(2),
                 () -> assertThat(response.topScorers().get(0).playerName()).isEqualTo("고병룡"),
-                () -> assertThat(response.topScorers().get(0).goalCount()).isEqualTo(4),
+                () -> assertThat(response.topScorers().get(0).totalGoals()).isEqualTo(4),
                 () -> assertThat(response.topScorers().get(1).playerName()).isEqualTo("박주장"),
-                () -> assertThat(response.topScorers().get(1).goalCount()).isEqualTo(2)
+                () -> assertThat(response.topScorers().get(1).totalGoals()).isEqualTo(2)
         );
     }
 }

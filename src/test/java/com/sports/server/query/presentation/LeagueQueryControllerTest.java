@@ -549,8 +549,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         new LeagueRecentSummaryResponse.LeagueRecord(6L, "종료된 축구대회 6", "경영 야생마")
                 ),
                 List.of(
-                        new TopScorerResponse(4L, "고병룡", "22", 1, 4),
-                        new TopScorerResponse(5L, "박주장", "20", 2, 2)
+                        new TeamDetailResponse.TeamTopScorer(4L, "22", 1, "고병룡", 4),
+                        new TeamDetailResponse.TeamTopScorer(5L, "20", 2, "박주장", 2)
                 )
         );
 
@@ -575,14 +575,14 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("records").type(JsonFieldType.ARRAY).description("대회 기록 목록"),
                                 fieldWithPath("records[].leagueId").type(JsonFieldType.NUMBER).description("대회 ID"),
-                                fieldWithPath("records[].leagueName").type(JsonFieldType.STRING).description("대회 이름"),
+                                fieldWithPath("records[].name").type(JsonFieldType.STRING).description("대회 이름"),
                                 fieldWithPath("records[].winnerTeamName").type(JsonFieldType.STRING).description("우승 팀 이름"),
                                 fieldWithPath("topScorers").type(JsonFieldType.ARRAY).description("연도별 득점왕 목록"),
                                 fieldWithPath("topScorers[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
-                                fieldWithPath("topScorers[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("topScorers[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
-                                fieldWithPath("topScorers[].ranking").type(JsonFieldType.NUMBER).description("득점 순위").optional(),
-                                fieldWithPath("topScorers[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수")
+                                fieldWithPath("topScorers[].rank").type(JsonFieldType.NUMBER).description("득점 순위"),
+                                fieldWithPath("topScorers[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("topScorers[].totalGoals").type(JsonFieldType.NUMBER).description("총 득점 수")
                         )
                 ));
     }
