@@ -68,14 +68,19 @@ public class LeagueQueryService {
         int safeRecordLimit = Math.max(recordLimit, 0);
         int safeTopScorerLimit = Math.max(topScorerLimit, 0);
 
-        List<LeagueRecentSummaryResponse.LeagueRecord> records = findLeagues(new LeagueQueryRequestDto(year, LeagueProgress.FINISHED)).stream()
-                .filter(league -> league.winnerTeamName() != null)
-                .limit(safeRecordLimit)
-                .map(LeagueRecentSummaryResponse.LeagueRecord::from)
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime yearEnd = yearStart.plusYears(1);
+
+        List<LeagueRecentSummaryResponse.LeagueRecord> records = safeRecordLimit == 0
+                ? Collections.emptyList()
+                : leagueQueryRepository.findRecentFinishedLeagues(yearStart, yearEnd, now, PageRequest.of(0, safeRecordLimit)).stream()
+                .map(LeagueRecentRecordResult::toResponse)
                 .toList();
 
-        List<LeagueRecentSummaryResponse.TopScorer> topScorers = leagueTopScorerRepository
-                .findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, safeTopScorerLimit)).stream()
+        List<LeagueRecentSummaryResponse.TopScorer> topScorers = safeTopScorerLimit == 0
+                ? Collections.emptyList()
+                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, safeTopScorerLimit)).stream()
                 .map(topScorer -> new LeagueRecentSummaryResponse.TopScorer(
                         topScorer.playerId(),
                         StudentNumber.extractAdmissionYear(topScorer.studentNumber()),
