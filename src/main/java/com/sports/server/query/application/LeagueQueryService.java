@@ -63,6 +63,21 @@ public class LeagueQueryService {
         }).toList();
     }
 
+    public LeagueRecentSummaryResponse findRecentSummary(Integer year, Integer recordLimit, Integer topScorerLimit) {
+        int safeRecordLimit = Math.max(recordLimit, 0);
+        int safeTopScorerLimit = Math.max(topScorerLimit, 0);
+
+        List<LeagueRecentSummaryResponse.LeagueRecord> records = findLeagues(new LeagueQueryRequestDto(year, LeagueProgress.FINISHED)).stream()
+                .filter(league -> league.winnerTeamName() != null)
+                .limit(safeRecordLimit)
+                .map(LeagueRecentSummaryResponse.LeagueRecord::from)
+                .toList();
+
+        List<TopScorerResponse> topScorers = findTopScorersByYear(year, safeTopScorerLimit);
+
+        return new LeagueRecentSummaryResponse(records, topScorers);
+    }
+
     public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
         League league = entityUtils.getEntity(leagueId, League.class);
 

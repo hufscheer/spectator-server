@@ -73,4 +73,13 @@ public class LeagueQueryController {
     ) {
         return ResponseEntity.ok(leagueQueryService.findTopScorersByYear(year,limit));
     }
+
+    @GetMapping("/recent-summary")
+    public ResponseEntity<LeagueRecentSummaryResponse> findRecentSummary(
+            @RequestParam(defaultValue = "2025") Integer year,
+            @RequestParam(defaultValue = "5") Integer recordLimit,
+            @RequestParam(defaultValue = "5") Integer topScorerLimit
+    ) {
+        return ResponseEntity.ok(leagueQueryService.findRecentSummary(year, recordLimit, topScorerLimit));
+    }
 }

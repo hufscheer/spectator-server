@@ -182,6 +182,10 @@ operation::league-query-controller-test/리그_득점왕을_조회한다[snippet
 
 operation::league-query-controller-test/연도별_득점왕을_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
 
+=== 최근 대회 요약 정보 조회
+
+operation::league-query-controller-test/최근_대회_요약_정보를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
+
 
 == 타임라인 API
 
