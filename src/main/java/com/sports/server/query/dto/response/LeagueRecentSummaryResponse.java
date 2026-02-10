@@ -25,6 +25,7 @@ public record LeagueRecentSummaryResponse(
             String admissionYear,
             int rank,
             String playerName,
+            String unit,
             int totalGoals
     ) {
     }

@@ -5468,7 +5468,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 509
+Content-Length: 573
 
 {
   "records" : [ {
@@ -5485,12 +5485,14 @@ Content-Length: 509
     "admissionYear" : "22",
     "rank" : 1,
     "playerName" : "고병룡",
+    "unit" : "경영대학",
     "totalGoals" : 4
   }, {
     "playerId" : 5,
     "admissionYear" : "20",
     "rank" : 2,
     "playerName" : "박주장",
+    "unit" : "사회과학대학",
     "totalGoals" : 2
   } ]
 }</code></pre>
@@ -5557,6 +5559,11 @@ Content-Length: 509
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>topScorers[].playerName</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">선수 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>topScorers[].unit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">선수 소속 단위</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>topScorers[].totalGoals</code></p></td>
@@ -6422,7 +6429,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 17 Feb 2026 12:38:22 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Tue, 17 Feb 2026 15:11:52 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>

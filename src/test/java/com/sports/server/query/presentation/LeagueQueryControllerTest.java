@@ -549,8 +549,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         new LeagueRecentSummaryResponse.LeagueRecord(6L, "종료된 축구대회 6", "경영 야생마")
                 ),
                 List.of(
-                        new LeagueRecentSummaryResponse.TopScorer(4L, "22", 1, "고병룡", 4),
-                        new LeagueRecentSummaryResponse.TopScorer(5L, "20", 2, "박주장", 2)
+                        new LeagueRecentSummaryResponse.TopScorer(4L, "22", 1, "고병룡", "경영대학", 4),
+                        new LeagueRecentSummaryResponse.TopScorer(5L, "20", 2, "박주장", "사회과학대학", 2)
                 )
         );
 
@@ -582,6 +582,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("topScorers[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
                                 fieldWithPath("topScorers[].rank").type(JsonFieldType.NUMBER).description("득점 순위"),
                                 fieldWithPath("topScorers[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("topScorers[].unit").type(JsonFieldType.STRING).description("선수 소속 단위"),
                                 fieldWithPath("topScorers[].totalGoals").type(JsonFieldType.NUMBER).description("총 득점 수")
                         )
                 ));

@@ -221,6 +221,9 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
                         .containsExactly("고병룡", "박주장"),
                 () -> assertThat(actual.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::unit)
+                        .containsExactly("경영대학", "경영대학"),
+                () -> assertThat(actual.topScorers())
                         .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
                         .containsExactly(4, 2)
         );
