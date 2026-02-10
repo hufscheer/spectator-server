@@ -10,6 +10,7 @@ import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.util.StudentNumber;
 
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
@@ -73,13 +74,14 @@ public class LeagueQueryService {
                 .map(LeagueRecentSummaryResponse.LeagueRecord::from)
                 .toList();
 
-        List<TeamDetailResponse.TeamTopScorer> topScorers = findTopScorersByYear(year, safeTopScorerLimit).stream()
-                .map(topScorer -> new TeamDetailResponse.TeamTopScorer(
+        List<LeagueRecentSummaryResponse.TopScorer> topScorers = leagueTopScorerRepository
+                .findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, safeTopScorerLimit)).stream()
+                .map(topScorer -> new LeagueRecentSummaryResponse.TopScorer(
                         topScorer.playerId(),
-                        topScorer.admissionYear(),
-                        topScorer.ranking(),
+                        StudentNumber.extractAdmissionYear(topScorer.studentNumber()),
+                        topScorer.rank().intValue(),
                         topScorer.playerName(),
-                        topScorer.goalCount()
+                        topScorer.goalCount().intValue()
                 ))
                 .toList();
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 public record LeagueRecentSummaryResponse(
         List<LeagueRecord> records,
-        List<TeamDetailResponse.TeamTopScorer> topScorers
+        List<TopScorer> topScorers
 ) {
     public record LeagueRecord(
             Long leagueId,
@@ -18,5 +18,14 @@ public record LeagueRecentSummaryResponse(
                     leagueResponse.winnerTeamName()
             );
         }
+    }
+
+    public record TopScorer(
+            Long playerId,
+            String admissionYear,
+            int rank,
+            String playerName,
+            int totalGoals
+    ) {
     }
 }

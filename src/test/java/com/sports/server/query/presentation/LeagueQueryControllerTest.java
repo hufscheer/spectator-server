@@ -549,8 +549,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         new LeagueRecentSummaryResponse.LeagueRecord(6L, "종료된 축구대회 6", "경영 야생마")
                 ),
                 List.of(
-                        new TeamDetailResponse.TeamTopScorer(4L, "22", 1, "고병룡", 4),
-                        new TeamDetailResponse.TeamTopScorer(5L, "20", 2, "박주장", 2)
+                        new LeagueRecentSummaryResponse.TopScorer(4L, "22", 1, "고병룡", 4),
+                        new LeagueRecentSummaryResponse.TopScorer(5L, "20", 2, "박주장", 2)
                 )
         );
 

@@ -217,8 +217,12 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
                         .containsExactly("종료된 축구대회 7", "종료된 축구대회 6", "종료된 축구대회 5", "종료된 축구대회 4", "종료된 축구대회 3"),
                 () -> assertThat(actual.topScorers()).hasSize(2),
-                () -> assertThat(actual.topScorers().get(0).playerName()).isEqualTo("고병룡"),
-                () -> assertThat(actual.topScorers().get(0).totalGoals()).isEqualTo(4)
+                () -> assertThat(actual.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                        .containsExactly("고병룡", "박주장"),
+                () -> assertThat(actual.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
+                        .containsExactly(4, 2)
         );
     }
 

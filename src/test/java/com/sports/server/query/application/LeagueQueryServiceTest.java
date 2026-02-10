@@ -444,10 +444,12 @@ public class LeagueQueryServiceTest extends ServiceTest {
                         .extracting(LeagueRecentSummaryResponse.LeagueRecord::winnerTeamName)
                         .containsExactly("서어 뻬데뻬", "경영 야생마", "컴공 독수리", "체교 불사조", "미컴 축구생각"),
                 () -> assertThat(response.topScorers()).hasSize(2),
-                () -> assertThat(response.topScorers().get(0).playerName()).isEqualTo("고병룡"),
-                () -> assertThat(response.topScorers().get(0).totalGoals()).isEqualTo(4),
-                () -> assertThat(response.topScorers().get(1).playerName()).isEqualTo("박주장"),
-                () -> assertThat(response.topScorers().get(1).totalGoals()).isEqualTo(2)
+                () -> assertThat(response.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                        .containsExactly("고병룡", "박주장"),
+                () -> assertThat(response.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
+                        .containsExactly(4, 2)
         );
     }
 }
