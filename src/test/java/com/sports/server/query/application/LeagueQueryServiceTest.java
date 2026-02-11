@@ -423,4 +423,36 @@ public class LeagueQueryServiceTest extends ServiceTest {
                 () -> assertThat(scorers.get(1).goalCount()).isEqualTo(2)
         );
     }
+
+    @Test
+    void 최근_대회_요약_정보를_조회한다() {
+        // given
+        Integer year = 2025;
+        Integer recordLimit = 5;
+        Integer topScorerLimit = 5;
+
+        // when
+        LeagueRecentSummaryResponse response = leagueQueryService.findRecentSummary(year, recordLimit, topScorerLimit);
+
+        // then
+        assertAll(
+                () -> assertThat(response.records()).hasSize(5),
+                () -> assertThat(response.records())
+                        .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
+                        .containsExactly("종료된 축구대회 7", "종료된 축구대회 6", "종료된 축구대회 5", "종료된 축구대회 4", "종료된 축구대회 3"),
+                () -> assertThat(response.records())
+                        .extracting(LeagueRecentSummaryResponse.LeagueRecord::winnerTeamName)
+                        .containsExactly("서어 뻬데뻬", "경영 야생마", "컴공 독수리", "체교 불사조", "미컴 축구생각"),
+                () -> assertThat(response.topScorers()).hasSize(2),
+                () -> assertThat(response.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                        .containsExactly("고병룡", "박주장"),
+                () -> assertThat(response.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::unit)
+                        .containsExactly("경영대학", "경영대학"),
+                () -> assertThat(response.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
+                        .containsExactly(4, 2)
+        );
+    }
 }

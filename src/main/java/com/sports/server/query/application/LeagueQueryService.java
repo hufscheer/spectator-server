@@ -10,6 +10,7 @@ import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.util.StudentNumber;
 
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.sports.server.query.support.PlayerInfoProvider;
@@ -61,6 +63,61 @@ public class LeagueQueryService {
             String winnerTeamName = firstWinnerTeamsInfo.get(league.getId());
             return new LeagueResponse(league, winnerTeamName);
         }).toList();
+    }
+
+    public LeagueRecentSummaryResponse findRecentSummary(Integer year, Integer recordLimit, Integer topScorerLimit) {
+        int safeRecordLimit = Math.max(recordLimit, 0);
+        int safeTopScorerLimit = Math.max(topScorerLimit, 0);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime yearEnd = yearStart.plusYears(1);
+
+        List<LeagueRecentSummaryResponse.LeagueRecord> records = safeRecordLimit == 0
+                ? Collections.emptyList()
+                : leagueQueryRepository.findRecentFinishedLeagues(yearStart, yearEnd, now, PageRequest.of(0, safeRecordLimit)).stream()
+                .map(LeagueRecentRecordResult::toResponse)
+                .toList();
+
+        List<PlayerGoalCountWithRank> topScorerResults = safeTopScorerLimit == 0
+                ? Collections.emptyList()
+                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, safeTopScorerLimit));
+
+        Map<Long, String> unitByPlayerId = getUnitByPlayerId(topScorerResults.stream()
+                .map(PlayerGoalCountWithRank::playerId)
+                .toList());
+
+        List<LeagueRecentSummaryResponse.TopScorer> topScorers = topScorerResults.stream()
+                .map(topScorer -> new LeagueRecentSummaryResponse.TopScorer(
+                        topScorer.playerId(),
+                        StudentNumber.extractAdmissionYear(topScorer.studentNumber()),
+                        topScorer.rank().intValue(),
+                        topScorer.playerName(),
+                        unitByPlayerId.getOrDefault(topScorer.playerId(), ""),
+                        topScorer.goalCount().intValue()
+                ))
+                .toList();
+
+        return new LeagueRecentSummaryResponse(records, topScorers);
+    }
+
+    private Map<Long, String> getUnitByPlayerId(List<Long> playerIds) {
+        if (playerIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<Long, TeamPlayer> latestTeamPlayerByPlayerId = teamPlayerRepository.findAllByPlayerIds(playerIds).stream()
+                .collect(toMap(
+                        teamPlayer -> teamPlayer.getPlayer().getId(),
+                        Function.identity(),
+                        (first, second) -> first.getId() > second.getId() ? first : second
+                ));
+
+        return latestTeamPlayerByPlayerId.entrySet().stream()
+                .collect(toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().getTeam().getUnit().getName()
+                ));
     }
 
     public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {

@@ -537,5 +537,54 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         )
                 ));
     }
-}
 
+    @Test
+    void 최근_대회_요약_정보를_조회한다() throws Exception {
+        // given
+        Integer year = 2025;
+
+        LeagueRecentSummaryResponse response = new LeagueRecentSummaryResponse(
+                List.of(
+                        new LeagueRecentSummaryResponse.LeagueRecord(7L, "종료된 축구대회 7", "서어 뻬데뻬"),
+                        new LeagueRecentSummaryResponse.LeagueRecord(6L, "종료된 축구대회 6", "경영 야생마")
+                ),
+                List.of(
+                        new LeagueRecentSummaryResponse.TopScorer(4L, "22", 1, "고병룡", "경영대학", 4),
+                        new LeagueRecentSummaryResponse.TopScorer(5L, "20", 2, "박주장", "사회과학대학", 2)
+                )
+        );
+
+        given(leagueQueryService.findRecentSummary(year, 2, 2))
+                .willReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/recent-summary")
+                .queryParam("year", String.valueOf(year))
+                .queryParam("recordLimit", "2")
+                .queryParam("topScorerLimit", "2")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("year").description("조회할 연도 (default 값 2025)"),
+                                parameterWithName("recordLimit").description("대회 기록 최대 개수 (default 값 5)"),
+                                parameterWithName("topScorerLimit").description("득점왕 최대 개수 (default 값 5)")
+                        ),
+                        responseFields(
+                                fieldWithPath("records").type(JsonFieldType.ARRAY).description("대회 기록 목록"),
+                                fieldWithPath("records[].leagueId").type(JsonFieldType.NUMBER).description("대회 ID"),
+                                fieldWithPath("records[].name").type(JsonFieldType.STRING).description("대회 이름"),
+                                fieldWithPath("records[].winnerTeamName").type(JsonFieldType.STRING).description("우승 팀 이름"),
+                                fieldWithPath("topScorers").type(JsonFieldType.ARRAY).description("연도별 득점왕 목록"),
+                                fieldWithPath("topScorers[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
+                                fieldWithPath("topScorers[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("topScorers[].rank").type(JsonFieldType.NUMBER).description("득점 순위"),
+                                fieldWithPath("topScorers[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("topScorers[].unit").type(JsonFieldType.STRING).description("선수 소속 단위"),
+                                fieldWithPath("topScorers[].totalGoals").type(JsonFieldType.NUMBER).description("총 득점 수")
+                        )
+                ));
+    }
+}

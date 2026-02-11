@@ -196,4 +196,37 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Test
+    void 최근_대회_요약_정보를_조회한다() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("year", 2025)
+                .param("recordLimit", 5)
+                .param("topScorerLimit", 5)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/recent-summary")
+                .then().log().all()
+                .extract();
+
+        // then
+        LeagueRecentSummaryResponse actual = toResponse(response, LeagueRecentSummaryResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual.records()).hasSize(5),
+                () -> assertThat(actual.records())
+                        .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
+                        .containsExactly("종료된 축구대회 7", "종료된 축구대회 6", "종료된 축구대회 5", "종료된 축구대회 4", "종료된 축구대회 3"),
+                () -> assertThat(actual.topScorers()).hasSize(2),
+                () -> assertThat(actual.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                        .containsExactly("고병룡", "박주장"),
+                () -> assertThat(actual.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::unit)
+                        .containsExactly("경영대학", "경영대학"),
+                () -> assertThat(actual.topScorers())
+                        .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
+                        .containsExactly(4, 2)
+        );
+    }
+
 }
