@@ -18,6 +18,7 @@ import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.TopScorerResponse;
 import com.sports.server.query.repository.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +71,8 @@ public class LeagueQueryService {
         int safeTopScorerLimit = Math.max(topScorerLimit, 0);
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
+        int targetYear = getTargetYear(year, now);
+        LocalDateTime yearStart = LocalDateTime.of(targetYear, 1, 1, 0, 0);
         LocalDateTime yearEnd = yearStart.plusYears(1);
 
         List<LeagueRecentSummaryResponse.LeagueRecord> records = safeRecordLimit == 0
@@ -81,7 +83,7 @@ public class LeagueQueryService {
 
         List<PlayerGoalCountWithRank> topScorerResults = safeTopScorerLimit == 0
                 ? Collections.emptyList()
-                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, safeTopScorerLimit));
+                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(targetYear, PageRequest.of(0, safeTopScorerLimit));
 
         Map<Long, String> unitByPlayerId = getUnitByPlayerId(topScorerResults.stream()
                 .map(PlayerGoalCountWithRank::playerId)
@@ -99,6 +101,15 @@ public class LeagueQueryService {
                 .toList();
 
         return new LeagueRecentSummaryResponse(records, topScorers);
+    }
+
+    private int getTargetYear(Integer year, LocalDateTime now) {
+        if (year != null) {
+            return year;
+        }
+        return leagueQueryRepository.findRecentFinishedLeagueYears(now, PageRequest.of(0, 1)).stream()
+                .findFirst()
+                .orElse(LocalDate.now().getYear());
     }
 
     private Map<Long, String> getUnitByPlayerId(List<Long> playerIds) {

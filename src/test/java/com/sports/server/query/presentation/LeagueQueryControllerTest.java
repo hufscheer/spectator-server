@@ -541,8 +541,6 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     @Test
     void 최근_대회_요약_정보를_조회한다() throws Exception {
         // given
-        Integer year = 2025;
-
         LeagueRecentSummaryResponse response = new LeagueRecentSummaryResponse(
                 List.of(
                         new LeagueRecentSummaryResponse.LeagueRecord(7L, "종료된 축구대회 7", "서어 뻬데뻬"),
@@ -554,12 +552,11 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 )
         );
 
-        given(leagueQueryService.findRecentSummary(year, 2, 2))
+        given(leagueQueryService.findRecentSummary(null, 2, 2))
                 .willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/recent-summary")
-                .queryParam("year", String.valueOf(year))
                 .queryParam("recordLimit", "2")
                 .queryParam("topScorerLimit", "2")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -568,7 +565,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("year").description("조회할 연도 (default 값 2025)"),
+                                parameterWithName("year").description("조회할 연도 (선택사항, 미입력 시 최근 종료 대회의 연도)").optional(),
                                 parameterWithName("recordLimit").description("대회 기록 최대 개수 (default 값 5)"),
                                 parameterWithName("topScorerLimit").description("득점왕 최대 개수 (default 값 5)")
                         ),
