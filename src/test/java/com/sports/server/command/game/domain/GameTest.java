@@ -22,12 +22,12 @@ class GameTest {
     public void setUp() {
         game = entityBuilder(Game.class)
                 .set("id", 1L)
-                .set("teams", new ArrayList<>())
+                .set("gameTeams", new ArrayList<>())
                 .sample();
 
         game2 = entityBuilder(Game.class)
                 .set("id", 2L)
-                .set("teams", new ArrayList<>())
+                .set("gameTeams", new ArrayList<>())
                 .sample();
 
         team1 = entityBuilder(GameTeam.class)
