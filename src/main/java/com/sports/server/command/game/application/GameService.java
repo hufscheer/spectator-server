@@ -75,12 +75,25 @@ public class GameService {
         league.validateRoundWithinLimit(request.round());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
+        GameState state = GameState.from(request.state());
+
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
         game.updateGameQuarter(request.quarter());
-        game.updateState(GameState.from(request.state()));
+        game.updateState(state);
         game.updateRound(Round.from(request.round()));
+        updateResultIfFinished(game, state);
+    }
+
+    private void updateResultIfFinished(Game game, GameState state) {
+        if (!GameState.FINISHED.equals(state)) {
+            return;
+        }
+        if (game.getGameTeams().size() != Game.MINIMUM_TEAMS) {
+            return;
+        }
+        game.determineResult();
     }
 
     @Transactional
