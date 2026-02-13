@@ -89,6 +89,7 @@ ext {
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
+    jvmArgs '-Dnet.bytebuddy.experimental=true'
     testLogging {
         events "failed" // 실패한 테스트만 로그 출력
         exceptionFormat "full" // Expected vs Actual 포함
