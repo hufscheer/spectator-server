@@ -11,6 +11,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -37,5 +38,11 @@ public class ControllerExceptionAdvice {
     protected ResponseEntity<ErrorResponse> handleMethodArgumentsNotValidException(MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(e.getBindingResult()));
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleNotFoundEndpointException(NoHandlerFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of("요청한 엔드포인트를 찾을 수 없습니다."));
     }
 }

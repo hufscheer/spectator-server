@@ -425,9 +425,9 @@ public class LeagueQueryServiceTest extends ServiceTest {
     }
 
     @Test
-    void 최근_대회_요약_정보를_조회한다() {
+    void 연도_미입력시_최근_종료_대회_연도로_요약_정보를_조회한다() {
         // given
-        Integer year = 2025;
+        Integer year = null;
         Integer recordLimit = 5;
         Integer topScorerLimit = 5;
 

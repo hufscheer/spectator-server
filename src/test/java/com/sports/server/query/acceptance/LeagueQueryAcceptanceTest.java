@@ -200,7 +200,6 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
     void 최근_대회_요약_정보를_조회한다() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .param("year", 2025)
                 .param("recordLimit", 5)
                 .param("topScorerLimit", 5)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -227,6 +226,19 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
                         .containsExactly(4, 2)
         );
+    }
+
+    @Test
+    void 존재하지_않는_엔드포인트_요청시_404를_반환한다() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/not-exists")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
 }
