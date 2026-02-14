@@ -18,7 +18,6 @@ import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.TopScorerResponse;
 import com.sports.server.query.repository.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -109,7 +108,7 @@ public class LeagueQueryService {
         }
         return leagueQueryRepository.findRecentFinishedLeagueYears(now, PageRequest.of(0, 1)).stream()
                 .findFirst()
-                .orElse(LocalDate.now().getYear());
+                .orElse(now.getYear());
     }
 
     private Map<Long, String> getUnitByPlayerId(List<Long> playerIds) {
