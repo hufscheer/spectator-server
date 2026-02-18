@@ -28,11 +28,11 @@ jobs:
       - name: 빌드 (실패 시 1회 재시도)
         run: |
           set +e
-          SPRING_PROFILES_ACTIVE=ci ./gradlew test --stacktrace --quiet
+          SPRING_PROFILES_ACTIVE=ci ./gradlew --no-daemon test --stacktrace --quiet
           first_result=$?
           if [ "$first_result" -ne 0 ]; then
             echo "첫 번째 테스트 실행 실패. 1회 재시도합니다."
-            SPRING_PROFILES_ACTIVE=ci ./gradlew test --stacktrace --quiet
+            SPRING_PROFILES_ACTIVE=ci ./gradlew --no-daemon test --stacktrace --quiet
             second_result=$?
             if [ "$second_result" -ne 0 ]; then
               exit "$second_result"
