@@ -7,6 +7,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+      TESTCONTAINERS_HOST_OVERRIDE: localhost
     steps:
       - name: 저장소 Checkout
         uses: actions/checkout@v3
@@ -19,8 +23,12 @@ jobs:
 
       - name: Docker 환경 확인
         run: |
+          echo "DOCKER_HOST=$DOCKER_HOST"
+          ls -l /var/run/docker.sock
+          docker context ls
           docker version
           docker info
+          docker ps
 
       - name: Testcontainers 이미지 사전 다운로드
         run: docker pull mysql:8.0
