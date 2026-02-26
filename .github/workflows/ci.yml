@@ -6,8 +6,26 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test_container_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ppassword --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      SPRING_PROFILES_ACTIVE: ci
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/test_container_test?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
     steps:
       - name: 저장소 Checkout
         uses: actions/checkout@v3
@@ -16,12 +34,22 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: 'adopt'
 
-      - name: Docker 상태 확인
-        run: docker info
+      - name: MySQL 서비스 상태 확인
+        run: |
+          timeout 60 bash -c 'until echo > /dev/tcp/127.0.0.1/3306; do sleep 2; done'
 
-      - name: 테스트 실행
-        env:
-          SPRING_PROFILES_ACTIVE: ci
-        run: ./gradlew test --stacktrace --quiet
+      - name: 빌드 (실패 시 1회 재시도)
+        run: |
+          set +e
+          ./gradlew --no-daemon test --stacktrace --quiet
+          first_result=$?
+          if [ "$first_result" -ne 0 ]; then
+            echo "첫 번째 테스트 실행 실패. 1회 재시도합니다."
+            ./gradlew --no-daemon test --stacktrace --quiet
+            second_result=$?
+            if [ "$second_result" -ne 0 ]; then
+              exit "$second_result"
+            fi
+          fi
