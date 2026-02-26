@@ -22,12 +22,12 @@ class GameTest {
     public void setUp() {
         game = entityBuilder(Game.class)
                 .set("id", 1L)
-                .set("teams", new ArrayList<>())
+                .set("gameTeams", new ArrayList<>())
                 .sample();
 
         game2 = entityBuilder(Game.class)
                 .set("id", 2L)
-                .set("teams", new ArrayList<>())
+                .set("gameTeams", new ArrayList<>())
                 .sample();
 
         team1 = entityBuilder(GameTeam.class)
@@ -256,6 +256,59 @@ class GameTest {
             // when then
             assertThatThrownBy(() -> game.cancelPkScore(scorer))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("결과를 갱신할 때")
+    class UpdateResultTest {
+
+        @Test
+        void 종료된_경기에서만_결과를_계산한다() {
+            // given
+            team1.score();
+            game.updateState(GameState.PLAYING);
+            GameResult initialTeam1Result = team1.getResult();
+            GameResult initialTeam2Result = team2.getResult();
+
+            // when
+            game.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getResult()).isEqualTo(initialTeam1Result),
+                    () -> assertThat(team2.getResult()).isEqualTo(initialTeam2Result)
+            );
+
+            // when
+            game.updateState(GameState.FINISHED);
+            game.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getResult()).isEqualTo(GameResult.WIN),
+                    () -> assertThat(team2.getResult()).isEqualTo(GameResult.LOSE)
+            );
+        }
+
+        @Test
+        void 참가팀이_2팀이_아니면_결과를_계산하지_않는다() {
+            // given
+            GameTeam singleTeam = entityBuilder(GameTeam.class)
+                    .set("id", 999L)
+                    .set("game", game2)
+                    .set("score", 1)
+                    .set("pkScore", 0)
+                    .sample();
+            game2.addGameTeam(singleTeam);
+            game2.updateState(GameState.FINISHED);
+            GameResult initialResult = singleTeam.getResult();
+
+            // when
+            game2.updateResult();
+
+            // then
+            assertThat(singleTeam.getResult()).isEqualTo(initialResult);
         }
     }
 
