@@ -39,6 +39,19 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
     Optional<League> findByIdWithLeagueTeam(@Param("id") Long id);
 
     @Query(
+            "SELECT YEAR(l.startAt) "
+                    + "FROM League l "
+                    + "JOIN LeagueStatistics ls ON ls.league = l "
+                    + "WHERE l.endAt < :now "
+                    + "AND ls.firstWinnerTeam IS NOT NULL "
+                    + "ORDER BY l.startAt DESC, l.id DESC"
+    )
+    List<Integer> findRecentFinishedLeagueYears(
+            @Param("now") LocalDateTime now,
+            Pageable pageable
+    );
+
+    @Query(
             "SELECT new com.sports.server.query.repository.LeagueRecentRecordResult(l.id, l.name, ls.firstWinnerTeam.name) "
                     + "FROM League l "
                     + "JOIN LeagueStatistics ls ON ls.league = l "
