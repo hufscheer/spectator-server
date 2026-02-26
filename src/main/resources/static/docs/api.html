@@ -5424,7 +5424,7 @@ Content-Length: 587
 <h4 id="_최근_대회_요약_정보_조회_http_request"><a class="link" href="#_최근_대회_요약_정보_조회_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/recent-summary?year=2025&amp;recordLimit=2&amp;topScorerLimit=2 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /leagues/recent-summary?recordLimit=2&amp;topScorerLimit=2 HTTP/1.1
 Content-Type: application/json
 Host: www.api.hufstreaming.site</code></pre>
 </div>
@@ -5446,7 +5446,7 @@ Host: www.api.hufstreaming.site</code></pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>year</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">조회할 연도 (default 값 2025)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">조회할 연도 (선택사항, 미입력 시 최근 종료 대회의 연도)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>recordLimit</code></p></td>
@@ -8421,7 +8421,7 @@ Content-Length: 2328
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2026-02-10 15:21:15 +0900
+Last updated 2026-02-12 11:49:57 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

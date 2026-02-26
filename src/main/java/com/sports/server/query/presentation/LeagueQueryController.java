@@ -76,7 +76,7 @@ public class LeagueQueryController {
 
     @GetMapping("/recent-summary")
     public ResponseEntity<LeagueRecentSummaryResponse> findRecentSummary(
-            @RequestParam(defaultValue = "2025") Integer year,
+            @RequestParam(required = false) Integer year,
             @RequestParam(defaultValue = "5") Integer recordLimit,
             @RequestParam(defaultValue = "5") Integer topScorerLimit
     ) {
