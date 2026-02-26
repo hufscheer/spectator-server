@@ -83,17 +83,7 @@ public class GameService {
         game.updateGameQuarter(request.quarter());
         game.updateState(state);
         game.updateRound(Round.from(request.round()));
-        updateResultIfFinished(game, state);
-    }
-
-    private void updateResultIfFinished(Game game, GameState state) {
-        if (!GameState.FINISHED.equals(state)) {
-            return;
-        }
-        if (game.getGameTeams().size() != Game.MINIMUM_TEAMS) {
-            return;
-        }
-        game.determineResult();
+        game.updateResult();
     }
 
     @Transactional

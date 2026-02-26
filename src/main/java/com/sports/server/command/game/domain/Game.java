@@ -240,6 +240,16 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         markAsDraw(team1, team2);
     }
 
+    public void updateResult() {
+        if (!GameState.FINISHED.equals(this.state)) {
+            return;
+        }
+        if (gameTeams.size() != MINIMUM_TEAMS) {
+            return;
+        }
+        determineResult();
+    }
+
     private static void markAsDraw(GameTeam team1, GameTeam team2) {
         team1.markAsDraw();
         team2.markAsDraw();

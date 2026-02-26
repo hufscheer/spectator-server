@@ -259,6 +259,59 @@ class GameTest {
         }
     }
 
+    @Nested
+    @DisplayName("결과를 갱신할 때")
+    class UpdateResultTest {
+
+        @Test
+        void 종료된_경기에서만_결과를_계산한다() {
+            // given
+            team1.score();
+            game.updateState(GameState.PLAYING);
+            GameResult initialTeam1Result = team1.getResult();
+            GameResult initialTeam2Result = team2.getResult();
+
+            // when
+            game.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getResult()).isEqualTo(initialTeam1Result),
+                    () -> assertThat(team2.getResult()).isEqualTo(initialTeam2Result)
+            );
+
+            // when
+            game.updateState(GameState.FINISHED);
+            game.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getResult()).isEqualTo(GameResult.WIN),
+                    () -> assertThat(team2.getResult()).isEqualTo(GameResult.LOSE)
+            );
+        }
+
+        @Test
+        void 참가팀이_2팀이_아니면_결과를_계산하지_않는다() {
+            // given
+            GameTeam singleTeam = entityBuilder(GameTeam.class)
+                    .set("id", 999L)
+                    .set("game", game2)
+                    .set("score", 1)
+                    .set("pkScore", 0)
+                    .sample();
+            game2.addGameTeam(singleTeam);
+            game2.updateState(GameState.FINISHED);
+            GameResult initialResult = singleTeam.getResult();
+
+            // when
+            game2.updateResult();
+
+            // then
+            assertThat(singleTeam.getResult()).isEqualTo(initialResult);
+        }
+    }
+
     @Test
     void 주장_상태를_변경할_때_게임에_속하지_않는_게임팀에_대한_요청인_경우_예외를_던진다() {
         // given
