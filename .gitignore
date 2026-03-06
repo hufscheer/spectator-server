@@ -47,3 +47,7 @@ out/
 ## fixture monkey
 .jqwik-database
 .mcp.json
+
+## local artifacts
+/.gradle-user-home/
+.DS_Store

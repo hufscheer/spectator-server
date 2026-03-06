@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayerState;
@@ -204,6 +205,28 @@ public class GameServiceTest extends ServiceTest {
                     () -> assertThat(game.getStartTime()).isEqualTo(updateDto.startTime()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.from(updateDto.state())),
                     () -> assertThat(game.getVideoId()).isEqualTo(updateDto.videoId()));
+        }
+
+        @Test
+        void 게임을_직접_종료하면_결과가_저장된다() {
+            // given
+            GameRequest.Update finishRequest = new GameRequest.Update(
+                    nameOfGame, 4, "경기후", "FINISHED", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
+            );
+
+            // when
+            gameService.updateGame(leagueId, gameId, finishRequest, manager);
+
+            // then
+            Game game = entityUtils.getEntity(gameId, Game.class);
+            GameTeam firstGameTeam = entityUtils.getEntity(1L, GameTeam.class);
+            GameTeam secondGameTeam = entityUtils.getEntity(2L, GameTeam.class);
+
+            assertAll(
+                    () -> assertThat(game.getState()).isEqualTo(GameState.FINISHED),
+                    () -> assertThat(firstGameTeam.getResult()).isEqualTo(GameResult.LOSE),
+                    () -> assertThat(secondGameTeam.getResult()).isEqualTo(GameResult.WIN)
+            );
         }
 
         @Test

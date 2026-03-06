@@ -19,10 +19,10 @@ class GameProgressTimelineTest {
     @BeforeEach
     void setUp() {
         game = entityBuilder(Game.class)
-                .set("teams", new ArrayList<>())
+                .set("gameTeams", new ArrayList<>())
                 .set("gameQuarter", Quarter.PRE_GAME.getName())
                 .set("state", GameState.SCHEDULED)
-                .set("is_pk_taken", false)
+                .set("isPkTaken", false)
                 .sample();
     }
 
