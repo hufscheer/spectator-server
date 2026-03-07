@@ -1,12 +1,16 @@
 package com.sports.server.command.nl.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 import java.util.Map;
 
 public record NlProcessRequest(
-        Long leagueId,
-        Long teamId,
+        @NotNull Long leagueId,
+        @NotNull Long teamId,
         List<Map<String, String>> history,
-        String message
+        @NotBlank @Size(max = 5000) String message
 ) {
 }

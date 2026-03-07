@@ -37,7 +37,7 @@ public record NlProcessResponse(
 
     public record FailedLine(
             int index,
-            String text,
+            String studentNumber,
             String reason
     ) {
     }
