@@ -8,6 +8,7 @@ import com.sports.server.command.nl.dto.NlExecuteRequest;
 import com.sports.server.command.nl.dto.NlExecuteResponse;
 import com.sports.server.command.nl.dto.NlProcessRequest;
 import com.sports.server.command.nl.dto.NlProcessResponse;
+import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.infra.GeminiFunctionCallResponse;
 import com.sports.server.command.nl.infra.GeminiFunctionCallResponse.*;
 import com.sports.server.command.nl.infra.NlGeminiClient;
@@ -109,8 +110,8 @@ class NlServiceTest {
             // then
             assertThat(response.preview()).isNotNull();
             assertThat(response.preview().players()).hasSize(2);
-            assertThat(response.preview().players().get(0).status()).isEqualTo("NEW");
-            assertThat(response.preview().players().get(1).status()).isEqualTo("NEW");
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.NEW);
+            assertThat(response.preview().players().get(1).status()).isEqualTo(PlayerStatus.NEW);
             assertThat(response.preview().summary().newPlayers()).isEqualTo(2);
         }
 
@@ -139,7 +140,7 @@ class NlServiceTest {
             NlProcessResponse response = nlService.process(request, mockMember);
 
             // then
-            assertThat(response.preview().players().get(0).status()).isEqualTo("EXISTS");
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.EXISTS);
             assertThat(response.preview().players().get(0).existingPlayerId()).isEqualTo(42L);
         }
 
@@ -168,7 +169,7 @@ class NlServiceTest {
             NlProcessResponse response = nlService.process(request, mockMember);
 
             // then
-            assertThat(response.preview().players().get(0).status()).isEqualTo("ALREADY_IN_TEAM");
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.ALREADY_IN_TEAM);
         }
 
         @Test
@@ -193,8 +194,8 @@ class NlServiceTest {
             NlProcessResponse response = nlService.process(request, mockMember);
 
             // then
-            assertThat(response.preview().players().get(0).status()).isEqualTo("NEW");
-            assertThat(response.preview().players().get(1).status()).isEqualTo("DUPLICATE_IN_INPUT");
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.NEW);
+            assertThat(response.preview().players().get(1).status()).isEqualTo(PlayerStatus.DUPLICATE_IN_INPUT);
         }
 
         @Test

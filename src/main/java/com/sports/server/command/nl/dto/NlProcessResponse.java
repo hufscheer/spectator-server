@@ -1,5 +1,7 @@
 package com.sports.server.command.nl.dto;
 
+import com.sports.server.command.nl.domain.PlayerStatus;
+
 import java.util.List;
 
 public record NlProcessResponse(
@@ -20,7 +22,7 @@ public record NlProcessResponse(
             String name,
             String studentNumber,
             Integer jerseyNumber,
-            String status,
+            PlayerStatus status,
             Long existingPlayerId
     ) {
     }

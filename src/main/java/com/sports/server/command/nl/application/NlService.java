@@ -8,6 +8,7 @@ import com.sports.server.command.nl.dto.NlExecuteResponse;
 import com.sports.server.command.nl.dto.NlProcessRequest;
 import com.sports.server.command.nl.dto.NlProcessResponse;
 import com.sports.server.command.nl.dto.NlProcessResponse.*;
+import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.infra.GeminiFunctionCallResponse;
 import com.sports.server.command.nl.infra.NlGeminiClient;
 import com.sports.server.command.player.domain.Player;
@@ -118,7 +119,7 @@ public class NlService {
 
             // 입력 내 중복 체크
             if (seenStudentNumbers.contains(studentNumber)) {
-                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, "DUPLICATE_IN_INPUT", null));
+                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, PlayerStatus.DUPLICATE_IN_INPUT, null));
                 continue;
             }
             seenStudentNumbers.add(studentNumber);
@@ -126,18 +127,18 @@ public class NlService {
             // DB 검증
             Player existingPlayer = existingPlayerMap.get(studentNumber);
             if (existingPlayer == null) {
-                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, "NEW", null));
+                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, PlayerStatus.NEW, null));
             } else if (teamPlayerIdSet.contains(existingPlayer.getId())) {
-                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, "ALREADY_IN_TEAM", existingPlayer.getId()));
+                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, PlayerStatus.ALREADY_IN_TEAM, existingPlayer.getId()));
             } else {
-                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, "EXISTS", existingPlayer.getId()));
+                playerPreviews.add(new PlayerPreview(name, studentNumber, jerseyNumber, PlayerStatus.EXISTS, existingPlayer.getId()));
             }
         }
 
         // 5. Summary 생성
-        int newCount = (int) playerPreviews.stream().filter(p -> "NEW".equals(p.status())).count();
-        int existsCount = (int) playerPreviews.stream().filter(p -> "EXISTS".equals(p.status())).count();
-        int alreadyInTeamCount = (int) playerPreviews.stream().filter(p -> "ALREADY_IN_TEAM".equals(p.status())).count();
+        int newCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.NEW).count();
+        int existsCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.EXISTS).count();
+        int alreadyInTeamCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.ALREADY_IN_TEAM).count();
 
         Summary summary = new Summary(playerPreviews.size(), newCount, existsCount, alreadyInTeamCount);
 

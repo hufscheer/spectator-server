@@ -32,7 +32,10 @@ public record GeminiFunctionCallResponse(List<Candidate> candidates) {
     }
 
     public FunctionCall getFunctionCall() {
-        return candidates.get(0).content().parts().get(0).functionCall();
+        if (candidates == null || candidates.isEmpty()) return null;
+        List<Part> parts = candidates.get(0).content().parts();
+        if (parts == null || parts.isEmpty()) return null;
+        return parts.get(0).functionCall();
     }
 
     public String getText() {
