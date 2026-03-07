@@ -61,7 +61,8 @@ public class SecurityConfig {
                                 mvc.pattern(HttpMethod.POST, "/players"),
                                 mvc.pattern(HttpMethod.PATCH, "/players/{playerId}"),
                                 mvc.pattern(HttpMethod.DELETE, "/players/{playerId}"),
-                                mvc.pattern(HttpMethod.PATCH, "/cheer-talks/**")
+                                mvc.pattern(HttpMethod.PATCH, "/cheer-talks/**"),
+                                mvc.pattern(HttpMethod.POST, "/nl/**")
                         )
                         .authenticated()
                         .anyRequest().permitAll()
