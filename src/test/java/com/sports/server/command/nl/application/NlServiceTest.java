@@ -4,21 +4,16 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.LeagueTeamRepository;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.nl.dto.NlExecuteRequest;
-import com.sports.server.command.nl.dto.NlExecuteResponse;
-import com.sports.server.command.nl.dto.NlProcessRequest;
-import com.sports.server.command.nl.dto.NlProcessResponse;
 import com.sports.server.command.nl.domain.PlayerStatus;
-import com.sports.server.command.nl.infra.GeminiFunctionCallResponse;
-import com.sports.server.command.nl.infra.GeminiFunctionCallResponse.*;
-import com.sports.server.command.nl.infra.NlGeminiClient;
+import com.sports.server.command.nl.dto.*;
+import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
+import com.sports.server.command.nl.exception.NlErrorMessages;
+import com.sports.server.command.player.application.PlayerService;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
-import com.sports.server.command.player.application.PlayerService;
 import com.sports.server.command.team.application.TeamService;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
-import com.sports.server.command.nl.exception.NlErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,14 +25,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class NlServiceTest {
@@ -46,7 +41,7 @@ class NlServiceTest {
     private NlService nlService;
 
     @Mock
-    private NlGeminiClient nlGeminiClient;
+    private NlClient nlClient;
 
     @Mock
     private PlayerRepository playerRepository;
@@ -96,10 +91,10 @@ class NlServiceTest {
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                    .willReturn(buildFunctionCallResponse(List.of(
-                            Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10),
-                            Map.of("name", "김철수", "studentNumber", "202600002", "jerseyNumber", 7)
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10),
+                            new ParsedPlayer("김철수", "202600002", 7)
                     )));
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
@@ -129,9 +124,9 @@ class NlServiceTest {
             given(existingPlayer.getId()).willReturn(42L);
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                    .willReturn(buildFunctionCallResponse(List.of(
-                            Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10)
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10)
                     )));
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
@@ -158,9 +153,9 @@ class NlServiceTest {
             given(existingPlayer.getId()).willReturn(42L);
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                    .willReturn(buildFunctionCallResponse(List.of(
-                            Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10)
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10)
                     )));
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of(42L));
@@ -182,10 +177,10 @@ class NlServiceTest {
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                    .willReturn(buildFunctionCallResponse(List.of(
-                            Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10),
-                            Map.of("name", "김철수", "studentNumber", "202600001", "jerseyNumber", 7)
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10),
+                            new ParsedPlayer("김철수", "202600001", 7)
                     )));
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
@@ -208,9 +203,9 @@ class NlServiceTest {
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                    .willReturn(buildFunctionCallResponse(List.of(
-                            Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10)  // LLM이 9자리로 보정
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10)  // LLM이 9자리로 보정
                     )));
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
@@ -226,16 +221,16 @@ class NlServiceTest {
         }
 
         @Test
-        @DisplayName("Gemini가 Function Call 대신 텍스트를 반환하면 메시지를 반환한다")
-        void Gemini_텍스트_반환시_메시지() {
+        @DisplayName("파싱에 실패하면 텍스트 메시지를 반환한다")
+        void 파싱_실패시_텍스트_메시지() {
             // given
             NlProcessRequest request = new NlProcessRequest(
                     186L, 1L, List.of(), "안녕하세요"
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                    .willReturn(buildTextResponse("선수 정보를 입력해주세요."));
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofText("선수 정보를 입력해주세요."));
 
             // when
             NlProcessResponse response = nlService.process(request, mockMember);
@@ -372,24 +367,5 @@ class NlServiceTest {
             assertThat(response.result().skipped()).isEqualTo(1);
             verify(playerService, times(1)).register(any());
         }
-    }
-
-    // Helper: Function Call 응답 빌드
-    private GeminiFunctionCallResponse buildFunctionCallResponse(List<Map<String, Object>> players) {
-        Map<String, Object> args = new HashMap<>();
-        args.put("players", players);
-        FunctionCall fc = new FunctionCall("parse_players", args);
-        Part part = new Part(null, fc);
-        Content content = new Content(List.of(part));
-        Candidate candidate = new Candidate(content);
-        return new GeminiFunctionCallResponse(List.of(candidate));
-    }
-
-    // Helper: 텍스트 응답 빌드
-    private GeminiFunctionCallResponse buildTextResponse(String text) {
-        Part part = new Part(text, null);
-        Content content = new Content(List.of(part));
-        Candidate candidate = new Candidate(content);
-        return new GeminiFunctionCallResponse(List.of(candidate));
     }
 }

@@ -2,9 +2,9 @@ package com.sports.server.command.nl.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sports.server.command.nl.infra.NlGeminiClient;
-import com.sports.server.command.nl.infra.GeminiFunctionCallResponse;
-import com.sports.server.command.nl.infra.GeminiFunctionCallResponse.*;
+import com.sports.server.command.nl.application.NlClient;
+import com.sports.server.command.nl.dto.NlParseResult;
+import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 public class NlAcceptanceTest extends AcceptanceTest {
 
     @MockBean
-    private NlGeminiClient nlGeminiClient;
+    private NlClient nlClient;
 
     @BeforeEach
     void configureAuth() {
@@ -38,10 +37,10 @@ public class NlAcceptanceTest extends AcceptanceTest {
     @Test
     void 선수_정보를_파싱하여_프리뷰를_반환한다() {
         // given
-        given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                .willReturn(buildFunctionCallResponse(List.of(
-                        Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10),
-                        Map.of("name", "김철수", "studentNumber", "202600002", "jerseyNumber", 7)
+        given(nlClient.parsePlayers(anyString(), anyList()))
+                .willReturn(NlParseResult.ofPlayers(List.of(
+                        new ParsedPlayer("홍길동", "202600001", 10),
+                        new ParsedPlayer("김철수", "202600002", 7)
                 )));
 
         Map<String, Object> request = Map.of(
@@ -148,9 +147,9 @@ public class NlAcceptanceTest extends AcceptanceTest {
     @Test
     void 기존_선수를_다른_팀에_배정한다() {
         // given: player 1(진승희, 202101001)은 team 3에 소속, team 1에는 미소속
-        given(nlGeminiClient.parsePlayers(anyString(), anyList()))
-                .willReturn(buildFunctionCallResponse(List.of(
-                        Map.of("name", "진승희", "studentNumber", "202101001", "jerseyNumber", 5)
+        given(nlClient.parsePlayers(anyString(), anyList()))
+                .willReturn(NlParseResult.ofPlayers(List.of(
+                        new ParsedPlayer("진승희", "202101001", 5)
                 )));
 
         Map<String, Object> processRequest = Map.of(
@@ -198,13 +197,4 @@ public class NlAcceptanceTest extends AcceptanceTest {
         assertThat(executeResponse.jsonPath().getInt("result.assigned")).isEqualTo(1);
     }
 
-    private GeminiFunctionCallResponse buildFunctionCallResponse(List<Map<String, Object>> players) {
-        Map<String, Object> args = new HashMap<>();
-        args.put("players", players);
-        FunctionCall fc = new FunctionCall("parse_players", args);
-        Part part = new Part(null, fc);
-        Content content = new Content(List.of(part));
-        Candidate candidate = new Candidate(content);
-        return new GeminiFunctionCallResponse(List.of(candidate));
-    }
 }

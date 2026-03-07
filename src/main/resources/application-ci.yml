@@ -51,3 +51,4 @@ gemini:
     key: gemini-key
     url: gemini-url
     prompt: prompt
+    nl-prompt: nl-prompt

@@ -6,4 +6,5 @@ public class NlErrorMessages {
     public static final String NO_PLAYER_INFO = "선수 정보를 찾을 수 없습니다. 다시 입력해주세요.";
     public static final String STUDENT_NUMBER_INVALID = "학번이 9자리가 아닙니다";
     public static final String STUDENT_NUMBER_NOT_IN_ORIGINAL = "원본 텍스트에서 해당 학번을 찾을 수 없습니다";
+    public static final String INVALID_PLAYER_NAME = "선수 이름이 유효하지 않습니다";
 }
