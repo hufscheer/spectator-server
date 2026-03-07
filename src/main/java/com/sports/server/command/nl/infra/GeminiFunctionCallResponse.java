@@ -1,6 +1,7 @@
 package com.sports.server.command.nl.infra;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -43,5 +44,11 @@ public record GeminiFunctionCallResponse(List<Candidate> candidates) {
         List<Part> parts = candidates.get(0).content().parts();
         if (parts == null || parts.isEmpty()) return "";
         return parts.get(0).text() != null ? parts.get(0).text() : "";
+    }
+
+    public <T> T getArgsAs(ObjectMapper objectMapper, Class<T> type) {
+        FunctionCall fc = getFunctionCall();
+        if (fc == null) return null;
+        return objectMapper.convertValue(fc.args(), type);
     }
 }

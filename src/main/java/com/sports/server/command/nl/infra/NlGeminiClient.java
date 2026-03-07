@@ -1,8 +1,8 @@
 package com.sports.server.command.nl.infra;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.server.command.nl.application.NlClient;
 import com.sports.server.command.nl.dto.NlParseResult;
-import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,6 +18,7 @@ import java.util.Map;
 public class NlGeminiClient implements NlClient {
 
     private final WebClient geminiWebClient;
+    private final ObjectMapper objectMapper;
 
     @Value("${gemini.api.key}")
     private String apiKey;
@@ -84,26 +85,12 @@ public class NlGeminiClient implements NlClient {
             return NlParseResult.ofText(text.isEmpty() ? null : text);
         }
 
-        Map<String, Object> args = response.getFunctionCall().args();
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> rawPlayers = (List<Map<String, Object>>) args.get("players");
-
-        if (rawPlayers == null || rawPlayers.isEmpty()) {
+        GeminiFunctionCallArgs args = response.getArgsAs(objectMapper, GeminiFunctionCallArgs.class);
+        if (args == null || args.players() == null || args.players().isEmpty()) {
             return NlParseResult.ofPlayers(List.of());
         }
 
-        List<ParsedPlayer> players = rawPlayers.stream()
-                .map(this::toPlayer)
-                .toList();
-
-        return NlParseResult.ofPlayers(players);
-    }
-
-    private ParsedPlayer toPlayer(Map<String, Object> raw) {
-        String name = (String) raw.get("name");
-        String studentNumber = (String) raw.get("studentNumber");
-        Integer jerseyNumber = raw.get("jerseyNumber") instanceof Number n ? n.intValue() : null;
-        return new ParsedPlayer(name, studentNumber, jerseyNumber);
+        return NlParseResult.ofPlayers(args.players());
     }
 
     private static final Map<String, String> ALLOWED_ROLES = Map.of(
