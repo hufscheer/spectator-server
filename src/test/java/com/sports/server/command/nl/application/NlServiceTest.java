@@ -168,8 +168,8 @@ class NlServiceTest {
         }
 
         @Test
-        @DisplayName("입력 내 학번이 중복되면 DUPLICATE_IN_INPUT으로 분류한다")
-        void 입력_내_학번_중복() {
+        @DisplayName("입력 내 학번이 중복되면 첫 번째만 남기고 제거한다")
+        void 입력_내_학번_중복_제거() {
             // given
             NlProcessRequest request = new NlProcessRequest(
                     186L, 1L, List.of(),
@@ -189,8 +189,9 @@ class NlServiceTest {
             NlProcessResponse response = nlService.process(request, mockMember);
 
             // then
+            assertThat(response.preview().players()).hasSize(1);
+            assertThat(response.preview().players().get(0).name()).isEqualTo("홍길동");
             assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.NEW);
-            assertThat(response.preview().players().get(1).status()).isEqualTo(PlayerStatus.DUPLICATE_IN_INPUT);
         }
 
         @Test
