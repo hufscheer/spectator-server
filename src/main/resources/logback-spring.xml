@@ -2,27 +2,17 @@
 
 <configuration>
     <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
+
+    <!-- 콘솔 로그: 기존 컬러 포맷 유지 (개발용) -->
     <property name="CONSOLE_LOG_PATTERN"
               value="%magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss, ${logback.timezone:-Asia/Seoul}}]) %green(%thread) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n : %msg%n"/>
-    <property name="FILE_LOG_PATTERN"
-              value=": %msg %n %magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss}]) %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n"/>
 
-    <springProfile name="!prod">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            </encoder>
-        </appender>
-
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
-
+    <!-- 파일 로그: JSON 구조화 (Loki 파싱용) -->
     <appender name="FILE-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>./log/today-${BY_DATE}.log</file>
-        <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>CORRELATION_ID</includeMdcKeyName>
+            <timeZone>Asia/Seoul</timeZone>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>./log/history-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -32,14 +22,39 @@
         </rollingPolicy>
     </appender>
 
+    <!-- local/ci: 콘솔만 -->
+    <springProfile name="local | ci">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- dev: 콘솔 + 파일 로그 (Alloy 수집 대상) -->
+    <springProfile name="dev">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-LOG"/>
+        </root>
+    </springProfile>
+
+    <!-- prod: 비동기 파일 로그만 -->
     <springProfile name="prod">
         <appender name="ASYNC-FILE" class="ch.qos.logback.classic.AsyncAppender">
             <appender-ref ref="FILE-LOG"/>
             <queueSize>8192</queueSize>
-            <discardingThreshold>1638</discardingThreshold>
-            <neverBlock>true</neverBlock>
+            <discardingThreshold>0</discardingThreshold>
+            <neverBlock>false</neverBlock>
         </appender>
-
         <root level="INFO">
             <appender-ref ref="ASYNC-FILE"/>
         </root>
