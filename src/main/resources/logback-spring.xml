@@ -22,13 +22,15 @@
         </rollingPolicy>
     </appender>
 
+    <!-- 콘솔 appender (local/ci/dev 공용) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
     <!-- local/ci: 콘솔만 -->
     <springProfile name="local | ci">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            </encoder>
-        </appender>
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
@@ -36,11 +38,6 @@
 
     <!-- dev: 콘솔 + 파일 로그 (Alloy 수집 대상) -->
     <springProfile name="dev">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            </encoder>
-        </appender>
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE-LOG"/>
@@ -53,7 +50,7 @@
             <appender-ref ref="FILE-LOG"/>
             <queueSize>8192</queueSize>
             <discardingThreshold>0</discardingThreshold>
-            <neverBlock>false</neverBlock>
+            <neverBlock>true</neverBlock>
         </appender>
         <root level="INFO">
             <appender-ref ref="ASYNC-FILE"/>
