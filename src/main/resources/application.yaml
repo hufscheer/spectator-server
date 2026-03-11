@@ -16,10 +16,12 @@ server:
       enabled: true
 
 management:
+  server:
+    port: 9090
   endpoints:
     web:
       exposure:
-        include: "prometheus"
+        include: "prometheus,health"
   metrics:
     tags:
       application: hufscheer-server

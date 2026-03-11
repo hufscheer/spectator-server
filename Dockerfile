@@ -1,5 +1,7 @@
 FROM eclipse-temurin:17-jre-alpine
 
+RUN apk add --no-cache curl
+
 WORKDIR /home/spring
 
 COPY build/libs/*.jar /home/spring/app.jar
