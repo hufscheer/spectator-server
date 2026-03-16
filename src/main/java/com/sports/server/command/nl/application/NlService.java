@@ -192,11 +192,9 @@ public class NlService {
                 continue;
             }
 
-            if (seenStudentNumbers.contains(parsed.studentNumber())) {
-                playerPreviews.add(toPlayerPreview(parsed, PlayerStatus.DUPLICATE_IN_INPUT, null));
+            if (!seenStudentNumbers.add(parsed.studentNumber())) {
                 continue;
             }
-            seenStudentNumbers.add(parsed.studentNumber());
 
             Player existingPlayer = existingPlayerMap.get(parsed.studentNumber());
             playerPreviews.add(classifyPlayer(parsed, existingPlayer, teamPlayerIdSet));
