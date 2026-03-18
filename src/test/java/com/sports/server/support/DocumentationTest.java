@@ -14,6 +14,8 @@ import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.league.application.LeagueService;
 import com.sports.server.command.league.presentation.LeagueController;
+import com.sports.server.command.nl.application.NlService;
+import com.sports.server.command.nl.presentation.NlController;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.player.application.PlayerService;
@@ -64,6 +66,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 MemberQueryController.class,
                 PlayerController.class,
                 PlayerQueryController.class,
+                NlController.class,
         })
 @Import({
         TimeLogTemplate.class,
@@ -156,6 +159,9 @@ public class DocumentationTest {
 
     @MockBean
     protected GameStatusScheduler gameStatusScheduler;
+
+    @MockBean
+    protected NlService nlService;
 
     @BeforeEach
     void setUp() {
