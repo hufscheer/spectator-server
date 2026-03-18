@@ -3,7 +3,6 @@ package com.sports.server.command.nl.application;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTeamRepository;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.dto.*;
 import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
 import com.sports.server.command.nl.dto.NlProcessResponse.*;
@@ -44,27 +43,18 @@ public class NlService {
     private static final Pattern NINE_DIGIT_PATTERN = Pattern.compile("(?<!\\d)\\d{9}(?!\\d)");
     private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[가-힣a-zA-Z\\s]{1,50}$");
 
-    @Transactional(readOnly = true)
-    public NlProcessResponse process(NlProcessRequest request, Member member) {
-        League league = entityUtils.getEntity(request.leagueId(), League.class);
-        PermissionValidator.checkPermission(league, member);
-        Team team = entityUtils.getEntity(request.teamId(), Team.class);
-        validateTeamBelongsToLeague(league, team);
-
+    public NlProcessResponse process(NlProcessRequest request) {
         NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history());
 
         if (!parseResult.parsed()) {
-            if (parseResult.textMessage() != null) {
-                return new NlProcessResponse(parseResult.textMessage(), null);
-            }
-            return new NlProcessResponse(NlErrorMessages.PARSE_FAILED, null);
+            return handleParseFailure(parseResult);
         }
 
         if (parseResult.players().isEmpty()) {
             return new NlProcessResponse(NlErrorMessages.NO_PLAYER_INFO, null);
         }
 
-        return buildPreview(request, team, parseResult.players());
+        return buildPreview(request.message(), parseResult.players());
     }
 
     @Transactional
@@ -83,6 +73,52 @@ public class NlService {
 
         String displayMessage = String.format("%s에 %d명의 선수가 등록되었습니다.", team.getName(), context.assigned);
         return new NlExecuteResponse(displayMessage, new NlExecuteResponse.Result(context.created, context.assigned, context.skipped));
+    }
+
+    private NlProcessResponse handleParseFailure(NlParseResult parseResult) {
+        if (parseResult.textMessage() != null) {
+            return new NlProcessResponse(parseResult.textMessage(), null);
+        }
+        return new NlProcessResponse(NlErrorMessages.PARSE_FAILED, null);
+    }
+
+    private NlProcessResponse buildPreview(String message, List<ParsedPlayer> parsedPlayers) {
+        Set<String> originalNineDigits = extractNineDigitNumbers(message);
+
+        List<ParsedPlayerPreview> playerPreviews = new ArrayList<>();
+        List<FailedLine> failedLines = new ArrayList<>();
+        classifyParsedPlayers(parsedPlayers, originalNineDigits, playerPreviews, failedLines);
+
+        String displayMessage = String.format("%d명의 선수가 인식되었습니다.", playerPreviews.size());
+        Preview preview = new Preview(playerPreviews, playerPreviews.size(), failedLines);
+        return new NlProcessResponse(displayMessage, preview);
+    }
+
+    private void classifyParsedPlayers(List<ParsedPlayer> parsedPlayers, Set<String> originalNineDigits,
+                                       List<ParsedPlayerPreview> playerPreviews, List<FailedLine> failedLines) {
+        Set<String> seenStudentNumbers = new HashSet<>();
+
+        for (int i = 0; i < parsedPlayers.size(); i++) {
+            ParsedPlayer parsed = parsedPlayers.get(i);
+
+            if (isInvalidStudentNumber(parsed, originalNineDigits)) {
+                failedLines.add(buildFailedLine(i, parsed));
+                continue;
+            }
+
+            if (!isValidName(parsed.name())) {
+                failedLines.add(new FailedLine(i + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME));
+                continue;
+            }
+
+            if (!seenStudentNumbers.add(parsed.studentNumber())) {
+                continue;
+            }
+
+            playerPreviews.add(new ParsedPlayerPreview(
+                    parsed.name(), parsed.studentNumber(), parsed.jerseyNumber()
+            ));
+        }
     }
 
     private ExecuteContext buildExecuteContext(NlExecuteRequest request) {
@@ -152,55 +188,6 @@ public class NlService {
         }
     }
 
-    private NlProcessResponse buildPreview(NlProcessRequest request, Team team, List<ParsedPlayer> parsedPlayers) {
-        Set<String> originalNineDigits = extractNineDigitNumbers(request.message());
-        Set<Long> teamPlayerIdSet = new HashSet<>(teamPlayerRepository.findPlayerIdsByTeamId(request.teamId()));
-        Map<String, Player> existingPlayerMap = findExistingPlayerMap(
-                parsedPlayers.stream().map(ParsedPlayer::studentNumber).filter(Objects::nonNull).toList()
-        );
-
-        List<PlayerPreview> playerPreviews = new ArrayList<>();
-        List<FailedLine> failedLines = new ArrayList<>();
-        classifyParsedPlayers(parsedPlayers, originalNineDigits, teamPlayerIdSet, existingPlayerMap, playerPreviews, failedLines);
-
-        Summary summary = buildSummary(playerPreviews);
-        int registrableCount = summary.newPlayers() + summary.existingPlayers();
-        String displayMessage = String.format("%s에 %d명의 선수를 등록합니다. 확인해주세요.", team.getName(), registrableCount);
-
-        Preview preview = new Preview(
-                "REGISTER_PLAYERS_BULK", request.teamId(), team.getName(),
-                playerPreviews, summary, failedLines
-        );
-        return new NlProcessResponse(displayMessage, preview);
-    }
-
-    private void classifyParsedPlayers(List<ParsedPlayer> parsedPlayers, Set<String> originalNineDigits,
-                                       Set<Long> teamPlayerIdSet, Map<String, Player> existingPlayerMap,
-                                       List<PlayerPreview> playerPreviews, List<FailedLine> failedLines) {
-        Set<String> seenStudentNumbers = new HashSet<>();
-
-        for (int i = 0; i < parsedPlayers.size(); i++) {
-            ParsedPlayer parsed = parsedPlayers.get(i);
-
-            if (isInvalidStudentNumber(parsed, originalNineDigits)) {
-                failedLines.add(buildFailedLine(i, parsed));
-                continue;
-            }
-
-            if (!isValidName(parsed.name())) {
-                failedLines.add(new FailedLine(i + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME));
-                continue;
-            }
-
-            if (!seenStudentNumbers.add(parsed.studentNumber())) {
-                continue;
-            }
-
-            Player existingPlayer = existingPlayerMap.get(parsed.studentNumber());
-            playerPreviews.add(classifyPlayer(parsed, existingPlayer, teamPlayerIdSet));
-        }
-    }
-
     private boolean isInvalidStudentNumber(ParsedPlayer parsed, Set<String> originalNineDigits) {
         return StudentNumber.isInvalid(parsed.studentNumber())
                 || !originalNineDigits.contains(parsed.studentNumber());
@@ -211,30 +198,6 @@ public class NlService {
                 ? NlErrorMessages.STUDENT_NUMBER_INVALID
                 : NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL;
         return new FailedLine(index + 1, parsed.studentNumber(), reason);
-    }
-
-    private PlayerPreview classifyPlayer(ParsedPlayer parsed, Player existingPlayer, Set<Long> teamPlayerIdSet) {
-        if (existingPlayer == null) {
-            return toPlayerPreview(parsed, PlayerStatus.NEW, null);
-        }
-        if (teamPlayerIdSet.contains(existingPlayer.getId())) {
-            return toPlayerPreview(parsed, PlayerStatus.ALREADY_IN_TEAM, existingPlayer.getId());
-        }
-        return toPlayerPreview(parsed, PlayerStatus.EXISTS, existingPlayer.getId());
-    }
-
-    private PlayerPreview toPlayerPreview(ParsedPlayer parsed, PlayerStatus status, Long existingPlayerId) {
-        return new PlayerPreview(
-                parsed.name(), parsed.studentNumber(), parsed.jerseyNumber(),
-                status, existingPlayerId
-        );
-    }
-
-    private Summary buildSummary(List<PlayerPreview> playerPreviews) {
-        int newCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.NEW).count();
-        int existsCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.EXISTS).count();
-        int alreadyInTeamCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.ALREADY_IN_TEAM).count();
-        return new Summary(playerPreviews.size(), newCount, existsCount, alreadyInTeamCount);
     }
 
     private Map<String, Player> findExistingPlayerMap(List<String> studentNumbers) {

@@ -22,8 +22,8 @@ public class NlController {
     private final NlService nlService;
 
     @PostMapping("/process")
-    public ResponseEntity<NlProcessResponse> process(@Valid @RequestBody NlProcessRequest request, Member member) {
-        return ResponseEntity.ok(nlService.process(request, member));
+    public ResponseEntity<NlProcessResponse> process(@Valid @RequestBody NlProcessRequest request) {
+        return ResponseEntity.ok(nlService.process(request));
     }
 
     @PostMapping("/execute")

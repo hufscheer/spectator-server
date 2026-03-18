@@ -44,8 +44,6 @@ public class NlAcceptanceTest extends AcceptanceTest {
                 )));
 
         Map<String, Object> request = Map.of(
-                "leagueId", 1,
-                "teamId", 1,
                 "history", List.of(),
                 "message", "홍길동 202600001 10\n김철수 202600002 7"
         );
@@ -62,9 +60,8 @@ public class NlAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("preview.type")).isEqualTo("REGISTER_PLAYERS_BULK");
         assertThat(response.jsonPath().getList("preview.players")).hasSize(2);
-        assertThat(response.jsonPath().getString("preview.players[0].status")).isEqualTo("NEW");
+        assertThat(response.jsonPath().getInt("preview.total")).isEqualTo(2);
     }
 
     @Test
@@ -95,13 +92,14 @@ public class NlAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 인증_없이_호출하면_실패한다() {
+    void 인증_없이_execute를_호출하면_실패한다() {
         // given
         Map<String, Object> request = Map.of(
                 "leagueId", 1,
                 "teamId", 1,
-                "history", List.of(),
-                "message", "홍길동 202600001 10"
+                "players", List.of(
+                        Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10)
+                )
         );
 
         // when
@@ -109,7 +107,7 @@ public class NlAcceptanceTest extends AcceptanceTest {
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .post("/nl/process")
+                .post("/nl/execute")
                 .then().log().all()
                 .extract();
 
@@ -147,33 +145,6 @@ public class NlAcceptanceTest extends AcceptanceTest {
     @Test
     void 기존_선수를_다른_팀에_배정한다() {
         // given: player 1(진승희, 202101001)은 team 3에 소속, team 1에는 미소속
-        given(nlClient.parsePlayers(anyString(), anyList()))
-                .willReturn(NlParseResult.ofPlayers(List.of(
-                        new ParsedPlayer("진승희", "202101001", 5)
-                )));
-
-        Map<String, Object> processRequest = Map.of(
-                "leagueId", 1,
-                "teamId", 1,
-                "history", List.of(),
-                "message", "진승희 202101001 5"
-        );
-
-        // when - process
-        ExtractableResponse<Response> processResponse = RestAssured.given().log().all()
-                .when()
-                .cookie(COOKIE_NAME, mockToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(processRequest)
-                .post("/nl/process")
-                .then().log().all()
-                .extract();
-
-        // then - EXISTS로 분류
-        assertThat(processResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(processResponse.jsonPath().getString("preview.players[0].status")).isEqualTo("EXISTS");
-
-        // when - execute
         Map<String, Object> executeRequest = Map.of(
                 "leagueId", 1,
                 "teamId", 1,
@@ -182,6 +153,7 @@ public class NlAcceptanceTest extends AcceptanceTest {
                 )
         );
 
+        // when
         ExtractableResponse<Response> executeResponse = RestAssured.given().log().all()
                 .when()
                 .cookie(COOKIE_NAME, mockToken)
@@ -196,5 +168,4 @@ public class NlAcceptanceTest extends AcceptanceTest {
         assertThat(executeResponse.jsonPath().getInt("result.created")).isEqualTo(0);
         assertThat(executeResponse.jsonPath().getInt("result.assigned")).isEqualTo(1);
     }
-
 }

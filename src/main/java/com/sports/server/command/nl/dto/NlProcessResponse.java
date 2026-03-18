@@ -1,7 +1,5 @@
 package com.sports.server.command.nl.dto;
 
-import com.sports.server.command.nl.domain.PlayerStatus;
-
 import java.util.List;
 
 public record NlProcessResponse(
@@ -9,29 +7,16 @@ public record NlProcessResponse(
         Preview preview
 ) {
     public record Preview(
-            String type,
-            Long teamId,
-            String teamName,
-            List<PlayerPreview> players,
-            Summary summary,
+            List<ParsedPlayerPreview> players,
+            int total,
             List<FailedLine> parseFailedLines
     ) {
     }
 
-    public record PlayerPreview(
+    public record ParsedPlayerPreview(
             String name,
             String studentNumber,
-            Integer jerseyNumber,
-            PlayerStatus status,
-            Long existingPlayerId
-    ) {
-    }
-
-    public record Summary(
-            int total,
-            int newPlayers,
-            int existingPlayers,
-            int alreadyInTeam
+            Integer jerseyNumber
     ) {
     }
 
