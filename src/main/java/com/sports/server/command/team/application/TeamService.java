@@ -47,6 +47,15 @@ public class TeamService {
         }
     }
 
+    public Long registerAndReturnId(final TeamRequest.Register request) {
+        String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
+        s3Service.doesFileExist(imgUrl);
+
+        Team team = request.toEntity(imgUrl);
+        teamRepository.save(team);
+        return team.getId();
+    }
+
     public void update(final TeamRequest.Update request, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
         s3Service.doesFileExist(team.getLogoImageUrl());

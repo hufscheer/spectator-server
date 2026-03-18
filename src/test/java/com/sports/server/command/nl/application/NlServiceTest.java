@@ -4,6 +4,7 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.LeagueTeamRepository;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.dto.*;
 import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
 import com.sports.server.command.nl.exception.NlErrorMessages;
@@ -77,7 +78,7 @@ class NlServiceTest {
     }
 
     @Nested
-    @DisplayName("process")
+    @DisplayName("process - 팀 컨텍스트 포함")
     class Process {
 
         @Test
@@ -85,6 +86,123 @@ class NlServiceTest {
         void 정상_파싱_프리뷰_반환() {
             // given
             NlProcessRequest request = new NlProcessRequest(
+                    186L, 1L, List.of(),
+                    "홍길동 202600001 10\n김철수 202600002 7"
+            );
+
+            given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10),
+                            new ParsedPlayer("김철수", "202600002", 7)
+                    )));
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
+
+            // when
+            NlProcessResponse response = nlService.process(request, mockMember);
+
+            // then
+            assertThat(response.preview()).isNotNull();
+            assertThat(response.preview().players()).hasSize(2);
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.NEW);
+            assertThat(response.preview().summary().newPlayers()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("이미 DB에 존재하는 선수는 EXISTS로 분류한다")
+        void 기존_선수_EXISTS_분류() {
+            // given
+            NlProcessRequest request = new NlProcessRequest(
+                    186L, 1L, List.of(),
+                    "홍길동 202600001 10"
+            );
+
+            Player existingPlayer = mock(Player.class);
+            given(existingPlayer.getStudentNumber()).willReturn("202600001");
+            given(existingPlayer.getId()).willReturn(42L);
+
+            given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10)
+                    )));
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
+
+            // when
+            NlProcessResponse response = nlService.process(request, mockMember);
+
+            // then
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.EXISTS);
+            assertThat(response.preview().players().get(0).existingPlayerId()).isEqualTo(42L);
+        }
+
+        @Test
+        @DisplayName("이미 팀에 소속된 선수는 ALREADY_IN_TEAM으로 분류한다")
+        void 팀_소속_선수_ALREADY_IN_TEAM_분류() {
+            // given
+            NlProcessRequest request = new NlProcessRequest(
+                    186L, 1L, List.of(),
+                    "홍길동 202600001 10"
+            );
+
+            Player existingPlayer = mock(Player.class);
+            given(existingPlayer.getStudentNumber()).willReturn("202600001");
+            given(existingPlayer.getId()).willReturn(42L);
+
+            given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10)
+                    )));
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of(42L));
+
+            // when
+            NlProcessResponse response = nlService.process(request, mockMember);
+
+            // then
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.ALREADY_IN_TEAM);
+        }
+
+        @Test
+        @DisplayName("입력 내 학번이 중복되면 첫 번째만 남기고 제거한다")
+        void 입력_내_학번_중복_제거() {
+            // given
+            NlProcessRequest request = new NlProcessRequest(
+                    186L, 1L, List.of(),
+                    "홍길동 202600001 10\n김철수 202600001 7"
+            );
+
+            given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10),
+                            new ParsedPlayer("김철수", "202600001", 7)
+                    )));
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
+
+            // when
+            NlProcessResponse response = nlService.process(request, mockMember);
+
+            // then
+            assertThat(response.preview().players()).hasSize(1);
+            assertThat(response.preview().players().get(0).name()).isEqualTo("홍길동");
+            assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.NEW);
+        }
+    }
+
+    @Nested
+    @DisplayName("parse - 팀 컨텍스트 없이 파싱만")
+    class Parse {
+
+        @Test
+        @DisplayName("정상적인 텍스트를 파싱하여 프리뷰를 반환한다")
+        void 정상_파싱_프리뷰_반환() {
+            // given
+            NlParseRequest request = new NlParseRequest(
                     List.of(), "홍길동 202600001 10\n김철수 202600002 7"
             );
 
@@ -95,7 +213,7 @@ class NlServiceTest {
                     )));
 
             // when
-            NlProcessResponse response = nlService.process(request);
+            NlParseResponse response = nlService.parse(request);
 
             // then
             assertThat(response.preview()).isNotNull();
@@ -108,7 +226,7 @@ class NlServiceTest {
         @DisplayName("입력 내 학번이 중복되면 첫 번째만 남기고 제거한다")
         void 입력_내_학번_중복_제거() {
             // given
-            NlProcessRequest request = new NlProcessRequest(
+            NlParseRequest request = new NlParseRequest(
                     List.of(), "홍길동 202600001 10\n김철수 202600001 7"
             );
 
@@ -119,7 +237,7 @@ class NlServiceTest {
                     )));
 
             // when
-            NlProcessResponse response = nlService.process(request);
+            NlParseResponse response = nlService.parse(request);
 
             // then
             assertThat(response.preview().players()).hasSize(1);
@@ -130,30 +248,28 @@ class NlServiceTest {
         @DisplayName("학번이 원본 텍스트에 없으면 파싱 실패로 처리한다")
         void 학번_원본_대조_실패() {
             // given
-            NlProcessRequest request = new NlProcessRequest(
-                    List.of(), "홍길동 20260001 10"  // 8자리 — 원본에 9자리 없음
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "홍길동 20260001 10"
             );
 
             given(nlClient.parsePlayers(anyString(), anyList()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
-                            new ParsedPlayer("홍길동", "202600001", 10)  // LLM이 9자리로 보정
+                            new ParsedPlayer("홍길동", "202600001", 10)
                     )));
 
             // when
-            NlProcessResponse response = nlService.process(request);
+            NlParseResponse response = nlService.parse(request);
 
             // then
             assertThat(response.preview().players()).isEmpty();
             assertThat(response.preview().parseFailedLines()).hasSize(1);
-            assertThat(response.preview().parseFailedLines().get(0).reason())
-                    .contains(NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
         }
 
         @Test
         @DisplayName("파싱에 실패하면 텍스트 메시지를 반환한다")
         void 파싱_실패시_텍스트_메시지() {
             // given
-            NlProcessRequest request = new NlProcessRequest(
+            NlParseRequest request = new NlParseRequest(
                     List.of(), "안녕하세요"
             );
 
@@ -161,30 +277,11 @@ class NlServiceTest {
                     .willReturn(NlParseResult.ofText("선수 정보를 입력해주세요."));
 
             // when
-            NlProcessResponse response = nlService.process(request);
+            NlParseResponse response = nlService.parse(request);
 
             // then
             assertThat(response.preview()).isNull();
             assertThat(response.displayMessage()).isEqualTo("선수 정보를 입력해주세요.");
-        }
-
-        @Test
-        @DisplayName("선수 정보가 없으면 안내 메시지를 반환한다")
-        void 선수_정보_없음() {
-            // given
-            NlProcessRequest request = new NlProcessRequest(
-                    List.of(), "아무 내용 202600001"
-            );
-
-            given(nlClient.parsePlayers(anyString(), anyList()))
-                    .willReturn(NlParseResult.ofPlayers(List.of()));
-
-            // when
-            NlProcessResponse response = nlService.process(request);
-
-            // then
-            assertThat(response.preview()).isNull();
-            assertThat(response.displayMessage()).isEqualTo(NlErrorMessages.NO_PLAYER_INFO);
         }
     }
 
@@ -276,10 +373,9 @@ class NlServiceTest {
         @DisplayName("팀이 리그에 소속되지 않으면 예외가 발생한다")
         void 팀_리그_불일치_예외() {
             // given
-            NlExecuteRequest request = new NlExecuteRequest(
-                    186L, 1L, List.of(
-                    new NlExecuteRequest.PlayerData("홍길동", "202600001", 10)
-            ));
+            NlProcessRequest request = new NlProcessRequest(
+                    186L, 1L, List.of(), "홍길동 202600001 10"
+            );
 
             Team otherTeam = mock(Team.class);
             given(entityUtils.getEntity(1L, Team.class)).willReturn(otherTeam);
@@ -287,7 +383,7 @@ class NlServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> nlService.execute(request, mockMember))
+            assertThatThrownBy(() -> nlService.process(request, mockMember))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessageContaining(NlErrorMessages.TEAM_NOT_IN_LEAGUE);
         }

@@ -293,6 +293,10 @@ operation::team-query-controller-test/팀별보기_페이지를_조회한다[sni
 
 operation::nl-controller-test/선수_정보를_파싱하여_프리뷰를_반환한다[snippets='http-request,request-cookies,request-fields,http-response,response-fields']
 
+=== 선수 정보 파싱 (팀 컨텍스트 없음)
+
+operation::nl-controller-test/팀_컨텍스트_없이_선수_정보를_파싱한다[snippets='http-request,request-fields,http-response,response-fields']
+
 === 선수 등록 실행
 
 operation::nl-controller-test/선수를_등록한다[snippets='http-request,request-cookies,request-fields,http-response,response-fields']
