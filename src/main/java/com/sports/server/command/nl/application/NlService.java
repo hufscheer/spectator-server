@@ -88,11 +88,8 @@ public class NlService {
     }
 
     @Transactional
-    public NlRegisterTeamResponse registerTeamWithPlayers(NlRegisterTeamRequest request, Member member) {
-        League league = entityUtils.getEntity(request.leagueId(), League.class);
-        PermissionValidator.checkPermission(league, member);
-
-        Team team = createTeamAndAddToLeague(request, league);
+    public NlRegisterTeamResponse registerTeamWithPlayers(NlRegisterTeamRequest request) {
+        Team team = createTeam(request);
 
         List<NlExecuteRequest.PlayerData> playerDataList = toExecutePlayerData(request.players());
         ExecuteContext context = buildExecuteContext(team.getId(), playerDataList);
@@ -243,15 +240,13 @@ public class NlService {
 
     // --- registerTeamWithPlayers 전용 ---
 
-    private Team createTeamAndAddToLeague(NlRegisterTeamRequest request, League league) {
+    private Team createTeam(NlRegisterTeamRequest request) {
         NlRegisterTeamRequest.TeamInfo teamInfo = request.team();
         TeamRequest.Register teamRegister = new TeamRequest.Register(
                 teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null
         );
         Long teamId = teamService.registerAndReturnId(teamRegister);
-        Team team = entityUtils.getEntity(teamId, Team.class);
-        leagueTeamRepository.save(LeagueTeam.of(league, team));
-        return team;
+        return entityUtils.getEntity(teamId, Team.class);
     }
 
     private List<NlExecuteRequest.PlayerData> toExecutePlayerData(List<NlRegisterTeamRequest.PlayerData> players) {

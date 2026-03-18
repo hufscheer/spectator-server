@@ -37,8 +37,8 @@ public class NlController {
 
     @PostMapping("/register-team")
     public ResponseEntity<NlRegisterTeamResponse> registerTeamWithPlayers(
-            @Valid @RequestBody NlRegisterTeamRequest request, Member member) {
-        return ResponseEntity.ok(nlService.registerTeamWithPlayers(request, member));
+            @Valid @RequestBody NlRegisterTeamRequest request) {
+        return ResponseEntity.ok(nlService.registerTeamWithPlayers(request));
     }
 
     @PostMapping("/execute")

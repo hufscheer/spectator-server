@@ -149,10 +149,9 @@ public class NlControllerTest extends DocumentationTest {
                 new NlRegisterTeamResponse.Result(2, 2, 0)
         );
 
-        given(nlService.registerTeamWithPlayers(any(), any())).willReturn(response);
+        given(nlService.registerTeamWithPlayers(any())).willReturn(response);
 
         Map<String, Object> request = Map.of(
-                "leagueId", 1,
                 "team", Map.of(
                         "name", "정치외교학과 DPS",
                         "logoImageUrl", "https://images.hufscheer.com/logo.png",
@@ -169,17 +168,12 @@ public class NlControllerTest extends DocumentationTest {
         ResultActions result = mockMvc.perform(post("/nl/register-team")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
-                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
-                        requestCookies(
-                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
-                        ),
                         requestFields(
-                                fieldWithPath("leagueId").type(JsonFieldType.NUMBER).description("리그 ID"),
                                 fieldWithPath("team.name").type(JsonFieldType.STRING).description("팀 이름"),
                                 fieldWithPath("team.logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 URL"),
                                 fieldWithPath("team.unit").type(JsonFieldType.STRING).description("팀 소속"),

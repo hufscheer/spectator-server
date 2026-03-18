@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record NlRegisterTeamRequest(
-        @NotNull Long leagueId,
         @Valid @NotNull TeamInfo team,
         @NotEmpty @Valid List<PlayerData> players
 ) {

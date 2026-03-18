@@ -295,7 +295,6 @@ class NlServiceTest {
         void 팀_생성_및_선수_등록() {
             // given
             NlRegisterTeamRequest request = new NlRegisterTeamRequest(
-                    186L,
                     new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000"),
                     List.of(new NlRegisterTeamRequest.PlayerData("홍길동", "202600001", 10))
             );
@@ -312,14 +311,13 @@ class NlServiceTest {
             given(playerService.register(any())).willReturn(100L);
 
             // when
-            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request, mockMember);
+            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request);
 
             // then
             assertThat(response.teamId()).isEqualTo(99L);
             assertThat(response.result().created()).isEqualTo(1);
             assertThat(response.result().assigned()).isEqualTo(1);
             verify(teamService).registerAndReturnId(any());
-            verify(leagueTeamRepository).save(any());
             verify(teamService).addPlayersToTeam(eq(99L), anyList());
         }
 
@@ -328,7 +326,6 @@ class NlServiceTest {
         void 기존_선수_배정() {
             // given
             NlRegisterTeamRequest request = new NlRegisterTeamRequest(
-                    186L,
                     new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000"),
                     List.of(new NlRegisterTeamRequest.PlayerData("김철수", "202600002", 7))
             );
@@ -348,7 +345,7 @@ class NlServiceTest {
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
 
             // when
-            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request, mockMember);
+            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request);
 
             // then
             assertThat(response.result().created()).isEqualTo(0);
