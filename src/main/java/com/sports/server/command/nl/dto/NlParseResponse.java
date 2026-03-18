@@ -9,7 +9,7 @@ public record NlParseResponse(
     public record Preview(
             List<ParsedPlayerPreview> players,
             int total,
-            List<FailedLine> parseFailedLines
+            List<NlFailedLine> parseFailedLines
     ) {
     }
 
@@ -17,13 +17,6 @@ public record NlParseResponse(
             String name,
             String studentNumber,
             Integer jerseyNumber
-    ) {
-    }
-
-    public record FailedLine(
-            int index,
-            String studentNumber,
-            String reason
     ) {
     }
 }

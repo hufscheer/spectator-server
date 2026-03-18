@@ -14,7 +14,7 @@ public record NlProcessResponse(
             String teamName,
             List<PlayerPreview> players,
             Summary summary,
-            List<FailedLine> parseFailedLines
+            List<NlFailedLine> parseFailedLines
     ) {
     }
 
@@ -32,13 +32,6 @@ public record NlProcessResponse(
             int newPlayers,
             int existingPlayers,
             int alreadyInTeam
-    ) {
-    }
-
-    public record FailedLine(
-            int index,
-            String studentNumber,
-            String reason
     ) {
     }
 }

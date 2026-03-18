@@ -45,6 +45,8 @@ public class NlService {
     private static final Pattern NINE_DIGIT_PATTERN = Pattern.compile("(?<!\\d)\\d{9}(?!\\d)");
     private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[가-힣a-zA-Z\\s]{1,50}$");
 
+    // --- public API ---
+
     @Transactional(readOnly = true)
     public NlProcessResponse process(NlProcessRequest request, Member member) {
         League league = entityUtils.getEntity(request.leagueId(), League.class);
@@ -52,10 +54,7 @@ public class NlService {
         Team team = entityUtils.getEntity(request.teamId(), Team.class);
         validateTeamBelongsToLeague(league, team);
 
-        NlParseResult parseResult = callLlm(request.message(), request.history());
-        if (parseResult == null) {
-            return new NlProcessResponse(NlErrorMessages.PARSE_FAILED, null);
-        }
+        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history());
 
         if (!parseResult.parsed()) {
             return new NlProcessResponse(
@@ -72,10 +71,7 @@ public class NlService {
     }
 
     public NlParseResponse parse(NlParseRequest request) {
-        NlParseResult parseResult = callLlm(request.message(), request.history());
-        if (parseResult == null) {
-            return new NlParseResponse(NlErrorMessages.PARSE_FAILED, null);
-        }
+        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history());
 
         if (!parseResult.parsed()) {
             return new NlParseResponse(
@@ -96,20 +92,19 @@ public class NlService {
         League league = entityUtils.getEntity(request.leagueId(), League.class);
         PermissionValidator.checkPermission(league, member);
 
-        Long teamId = createTeamAndAddToLeague(request, league);
-        Team team = entityUtils.getEntity(teamId, Team.class);
+        Team team = createTeamAndAddToLeague(request, league);
 
         List<NlExecuteRequest.PlayerData> playerDataList = toExecutePlayerData(request.players());
-        ExecuteContext context = buildExecuteContext(teamId, playerDataList);
+        ExecuteContext context = buildExecuteContext(team.getId(), playerDataList);
         processPlayersForExecution(playerDataList, context);
 
         if (!context.teamPlayerRegisters.isEmpty()) {
-            teamService.addPlayersToTeam(teamId, context.teamPlayerRegisters);
+            teamService.addPlayersToTeam(team.getId(), context.teamPlayerRegisters);
         }
 
         String displayMessage = String.format("%s에 %d명의 선수가 등록되었습니다.", team.getName(), context.assigned);
         return new NlRegisterTeamResponse(
-                displayMessage, teamId,
+                displayMessage, team.getId(),
                 new NlRegisterTeamResponse.Result(context.created, context.assigned, context.skipped)
         );
     }
@@ -121,7 +116,7 @@ public class NlService {
         Team team = entityUtils.getEntity(request.teamId(), Team.class);
         validateTeamBelongsToLeague(league, team);
 
-        ExecuteContext context = buildExecuteContext(request);
+        ExecuteContext context = buildExecuteContext(request.teamId(), request.players());
         processPlayersForExecution(request.players(), context);
 
         if (!context.teamPlayerRegisters.isEmpty()) {
@@ -130,10 +125,6 @@ public class NlService {
 
         String displayMessage = String.format("%s에 %d명의 선수가 등록되었습니다.", team.getName(), context.assigned);
         return new NlExecuteResponse(displayMessage, new NlExecuteResponse.Result(context.created, context.assigned, context.skipped));
-    }
-
-    private NlParseResult callLlm(String message, List<Map<String, String>> history) {
-        return nlClient.parsePlayers(message, history);
     }
 
     // --- process 전용 (팀 컨텍스트 포함) ---
@@ -146,7 +137,7 @@ public class NlService {
         );
 
         List<PlayerPreview> playerPreviews = new ArrayList<>();
-        List<NlProcessResponse.FailedLine> failedLines = new ArrayList<>();
+        List<NlFailedLine> failedLines = new ArrayList<>();
         classifyWithTeamContext(parsedPlayers, originalNineDigits, teamPlayerIdSet, existingPlayerMap, playerPreviews, failedLines);
 
         Summary summary = buildSummary(playerPreviews);
@@ -162,19 +153,15 @@ public class NlService {
 
     private void classifyWithTeamContext(List<ParsedPlayer> parsedPlayers, Set<String> originalNineDigits,
                                          Set<Long> teamPlayerIdSet, Map<String, Player> existingPlayerMap,
-                                         List<PlayerPreview> playerPreviews, List<NlProcessResponse.FailedLine> failedLines) {
+                                         List<PlayerPreview> playerPreviews, List<NlFailedLine> failedLines) {
         Set<String> seenStudentNumbers = new HashSet<>();
 
         for (int i = 0; i < parsedPlayers.size(); i++) {
             ParsedPlayer parsed = parsedPlayers.get(i);
 
-            if (isInvalidStudentNumber(parsed, originalNineDigits)) {
-                failedLines.add(buildProcessFailedLine(i, parsed));
-                continue;
-            }
-
-            if (!isValidName(parsed.name())) {
-                failedLines.add(new NlProcessResponse.FailedLine(i + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME));
+            NlFailedLine failedLine = validateParsedPlayer(i, parsed, originalNineDigits);
+            if (failedLine != null) {
+                failedLines.add(failedLine);
                 continue;
             }
 
@@ -205,17 +192,15 @@ public class NlService {
     }
 
     private Summary buildSummary(List<PlayerPreview> playerPreviews) {
-        int newCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.NEW).count();
-        int existsCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.EXISTS).count();
-        int alreadyInTeamCount = (int) playerPreviews.stream().filter(p -> p.status() == PlayerStatus.ALREADY_IN_TEAM).count();
+        int newCount = 0, existsCount = 0, alreadyInTeamCount = 0;
+        for (PlayerPreview p : playerPreviews) {
+            switch (p.status()) {
+                case NEW -> newCount++;
+                case EXISTS -> existsCount++;
+                case ALREADY_IN_TEAM -> alreadyInTeamCount++;
+            }
+        }
         return new Summary(playerPreviews.size(), newCount, existsCount, alreadyInTeamCount);
-    }
-
-    private NlProcessResponse.FailedLine buildProcessFailedLine(int index, ParsedPlayer parsed) {
-        String reason = StudentNumber.isInvalid(parsed.studentNumber())
-                ? NlErrorMessages.STUDENT_NUMBER_INVALID
-                : NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL;
-        return new NlProcessResponse.FailedLine(index + 1, parsed.studentNumber(), reason);
     }
 
     // --- parse 전용 (팀 컨텍스트 없음) ---
@@ -224,7 +209,7 @@ public class NlService {
         Set<String> originalNineDigits = extractNineDigitNumbers(message);
 
         List<NlParseResponse.ParsedPlayerPreview> playerPreviews = new ArrayList<>();
-        List<NlParseResponse.FailedLine> failedLines = new ArrayList<>();
+        List<NlFailedLine> failedLines = new ArrayList<>();
         classifyWithoutTeamContext(parsedPlayers, originalNineDigits, playerPreviews, failedLines);
 
         String displayMessage = String.format("%d명의 선수가 인식되었습니다.", playerPreviews.size());
@@ -234,19 +219,15 @@ public class NlService {
 
     private void classifyWithoutTeamContext(List<ParsedPlayer> parsedPlayers, Set<String> originalNineDigits,
                                              List<NlParseResponse.ParsedPlayerPreview> playerPreviews,
-                                             List<NlParseResponse.FailedLine> failedLines) {
+                                             List<NlFailedLine> failedLines) {
         Set<String> seenStudentNumbers = new HashSet<>();
 
         for (int i = 0; i < parsedPlayers.size(); i++) {
             ParsedPlayer parsed = parsedPlayers.get(i);
 
-            if (isInvalidStudentNumber(parsed, originalNineDigits)) {
-                failedLines.add(buildParseFailedLine(i, parsed));
-                continue;
-            }
-
-            if (!isValidName(parsed.name())) {
-                failedLines.add(new NlParseResponse.FailedLine(i + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME));
+            NlFailedLine failedLine = validateParsedPlayer(i, parsed, originalNineDigits);
+            if (failedLine != null) {
+                failedLines.add(failedLine);
                 continue;
             }
 
@@ -260,18 +241,26 @@ public class NlService {
         }
     }
 
-    private NlParseResponse.FailedLine buildParseFailedLine(int index, ParsedPlayer parsed) {
-        String reason = StudentNumber.isInvalid(parsed.studentNumber())
-                ? NlErrorMessages.STUDENT_NUMBER_INVALID
-                : NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL;
-        return new NlParseResponse.FailedLine(index + 1, parsed.studentNumber(), reason);
+    // --- registerTeamWithPlayers 전용 ---
+
+    private Team createTeamAndAddToLeague(NlRegisterTeamRequest request, League league) {
+        NlRegisterTeamRequest.TeamInfo teamInfo = request.team();
+        TeamRequest.Register teamRegister = new TeamRequest.Register(
+                teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null
+        );
+        Long teamId = teamService.registerAndReturnId(teamRegister);
+        Team team = entityUtils.getEntity(teamId, Team.class);
+        leagueTeamRepository.save(LeagueTeam.of(league, team));
+        return team;
     }
 
-    // --- execute 전용 ---
-
-    private ExecuteContext buildExecuteContext(NlExecuteRequest request) {
-        return buildExecuteContext(request.teamId(), request.players());
+    private List<NlExecuteRequest.PlayerData> toExecutePlayerData(List<NlRegisterTeamRequest.PlayerData> players) {
+        return players.stream()
+                .map(p -> new NlExecuteRequest.PlayerData(p.name(), p.studentNumber(), p.jerseyNumber()))
+                .toList();
     }
+
+    // --- execute 공용 ---
 
     private ExecuteContext buildExecuteContext(Long teamId, List<NlExecuteRequest.PlayerData> players) {
         Set<Long> teamPlayerIdSet = new HashSet<>(
@@ -340,26 +329,22 @@ public class NlService {
         }
     }
 
-    // --- registerTeamWithPlayers 전용 ---
-
-    private Long createTeamAndAddToLeague(NlRegisterTeamRequest request, League league) {
-        NlRegisterTeamRequest.TeamInfo teamInfo = request.team();
-        TeamRequest.Register teamRegister = new TeamRequest.Register(
-                teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null
-        );
-        Long teamId = teamService.registerAndReturnId(teamRegister);
-        Team team = entityUtils.getEntity(teamId, Team.class);
-        leagueTeamRepository.save(LeagueTeam.of(league, team));
-        return teamId;
-    }
-
-    private List<NlExecuteRequest.PlayerData> toExecutePlayerData(List<NlRegisterTeamRequest.PlayerData> players) {
-        return players.stream()
-                .map(p -> new NlExecuteRequest.PlayerData(p.name(), p.studentNumber(), p.jerseyNumber()))
-                .toList();
-    }
-
     // --- 공용 유틸 ---
+
+    private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Set<String> originalNineDigits) {
+        if (isInvalidStudentNumber(parsed, originalNineDigits)) {
+            String reason = StudentNumber.isInvalid(parsed.studentNumber())
+                    ? NlErrorMessages.STUDENT_NUMBER_INVALID
+                    : NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL;
+            return new NlFailedLine(index + 1, parsed.studentNumber(), reason);
+        }
+
+        if (!isValidName(parsed.name())) {
+            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME);
+        }
+
+        return null;
+    }
 
     private boolean isInvalidStudentNumber(ParsedPlayer parsed, Set<String> originalNineDigits) {
         return StudentNumber.isInvalid(parsed.studentNumber())

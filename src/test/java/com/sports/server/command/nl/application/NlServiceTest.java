@@ -303,6 +303,7 @@ class NlServiceTest {
             given(teamService.registerAndReturnId(any())).willReturn(99L);
 
             Team createdTeam = mock(Team.class);
+            given(createdTeam.getId()).willReturn(99L);
             given(createdTeam.getName()).willReturn("정치외교학과 DPS");
             given(entityUtils.getEntity(99L, Team.class)).willReturn(createdTeam);
 
@@ -335,6 +336,7 @@ class NlServiceTest {
             given(teamService.registerAndReturnId(any())).willReturn(99L);
 
             Team createdTeam = mock(Team.class);
+            given(createdTeam.getId()).willReturn(99L);
             given(createdTeam.getName()).willReturn("정치외교학과 DPS");
             given(entityUtils.getEntity(99L, Team.class)).willReturn(createdTeam);
 
