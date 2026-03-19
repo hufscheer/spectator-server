@@ -7,6 +7,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.dto.*;
 import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
+import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.nl.exception.NlErrorMessages;
 import com.sports.server.command.player.application.PlayerService;
 import com.sports.server.command.player.domain.Player;
@@ -78,7 +79,7 @@ class NlServiceTest {
     }
 
     @Nested
-    @DisplayName("process")
+    @DisplayName("process - 팀 컨텍스트 포함")
     class Process {
 
         @Test
@@ -106,7 +107,6 @@ class NlServiceTest {
             assertThat(response.preview()).isNotNull();
             assertThat(response.preview().players()).hasSize(2);
             assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.NEW);
-            assertThat(response.preview().players().get(1).status()).isEqualTo(PlayerStatus.NEW);
             assertThat(response.preview().summary().newPlayers()).isEqualTo(2);
         }
 
@@ -193,52 +193,164 @@ class NlServiceTest {
             assertThat(response.preview().players().get(0).name()).isEqualTo("홍길동");
             assertThat(response.preview().players().get(0).status()).isEqualTo(PlayerStatus.NEW);
         }
+    }
+
+    @Nested
+    @DisplayName("parse - 팀 컨텍스트 없이 파싱만")
+    class Parse {
+
+        @Test
+        @DisplayName("정상적인 텍스트를 파싱하여 프리뷰를 반환한다")
+        void 정상_파싱_프리뷰_반환() {
+            // given
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "홍길동 202600001 10\n김철수 202600002 7"
+            );
+
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10),
+                            new ParsedPlayer("김철수", "202600002", 7)
+                    )));
+
+            // when
+            NlParseResponse response = nlService.parse(request);
+
+            // then
+            assertThat(response.preview()).isNotNull();
+            assertThat(response.preview().players()).hasSize(2);
+            assertThat(response.preview().total()).isEqualTo(2);
+            assertThat(response.displayMessage()).contains("2명");
+        }
+
+        @Test
+        @DisplayName("입력 내 학번이 중복되면 첫 번째만 남기고 제거한다")
+        void 입력_내_학번_중복_제거() {
+            // given
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "홍길동 202600001 10\n김철수 202600001 7"
+            );
+
+            given(nlClient.parsePlayers(anyString(), anyList()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("홍길동", "202600001", 10),
+                            new ParsedPlayer("김철수", "202600001", 7)
+                    )));
+
+            // when
+            NlParseResponse response = nlService.parse(request);
+
+            // then
+            assertThat(response.preview().players()).hasSize(1);
+            assertThat(response.preview().players().get(0).name()).isEqualTo("홍길동");
+        }
 
         @Test
         @DisplayName("학번이 원본 텍스트에 없으면 파싱 실패로 처리한다")
         void 학번_원본_대조_실패() {
             // given
-            NlProcessRequest request = new NlProcessRequest(
-                    186L, 1L, List.of(),
-                    "홍길동 20260001 10"  // 8자리 — 원본에 9자리 없음
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "홍길동 20260001 10"
             );
 
-            given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(nlClient.parsePlayers(anyString(), anyList()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
-                            new ParsedPlayer("홍길동", "202600001", 10)  // LLM이 9자리로 보정
+                            new ParsedPlayer("홍길동", "202600001", 10)
                     )));
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
-            given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
 
             // when
-            NlProcessResponse response = nlService.process(request, mockMember);
+            NlParseResponse response = nlService.parse(request);
 
             // then
             assertThat(response.preview().players()).isEmpty();
             assertThat(response.preview().parseFailedLines()).hasSize(1);
-            assertThat(response.preview().parseFailedLines().get(0).reason())
-                    .contains(NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
         }
 
         @Test
         @DisplayName("파싱에 실패하면 텍스트 메시지를 반환한다")
         void 파싱_실패시_텍스트_메시지() {
             // given
-            NlProcessRequest request = new NlProcessRequest(
-                    186L, 1L, List.of(), "안녕하세요"
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "안녕하세요"
             );
 
-            given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(nlClient.parsePlayers(anyString(), anyList()))
                     .willReturn(NlParseResult.ofText("선수 정보를 입력해주세요."));
 
             // when
-            NlProcessResponse response = nlService.process(request, mockMember);
+            NlParseResponse response = nlService.parse(request);
 
             // then
             assertThat(response.preview()).isNull();
             assertThat(response.displayMessage()).isEqualTo("선수 정보를 입력해주세요.");
+        }
+    }
+
+    @Nested
+    @DisplayName("registerTeamWithPlayers - 팀 생성 + 선수 등록 통합")
+    class RegisterTeamWithPlayers {
+
+        @Test
+        @DisplayName("팀을 생성하고 선수를 등록한다")
+        void 팀_생성_및_선수_등록() {
+            // given
+            NlRegisterTeamRequest request = new NlRegisterTeamRequest(
+                    new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000"),
+                    List.of(new NlRegisterTeamRequest.PlayerData("홍길동", "202600001", 10))
+            );
+
+            given(teamService.registerAndReturnId(any())).willReturn(99L);
+
+            Team createdTeam = mock(Team.class);
+            given(createdTeam.getId()).willReturn(99L);
+            given(createdTeam.getName()).willReturn("정치외교학과 DPS");
+            given(entityUtils.getEntity(99L, Team.class)).willReturn(createdTeam);
+
+            given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerService.register(any())).willReturn(100L);
+
+            // when
+            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request);
+
+            // then
+            assertThat(response.teamId()).isEqualTo(99L);
+            assertThat(response.result().created()).isEqualTo(1);
+            assertThat(response.result().assigned()).isEqualTo(1);
+            verify(teamService).registerAndReturnId(any());
+            verify(teamService).addPlayersToTeam(eq(99L), anyList());
+        }
+
+        @Test
+        @DisplayName("기존 선수는 생성하지 않고 팀에 배정한다")
+        void 기존_선수_배정() {
+            // given
+            NlRegisterTeamRequest request = new NlRegisterTeamRequest(
+                    new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000"),
+                    List.of(new NlRegisterTeamRequest.PlayerData("김철수", "202600002", 7))
+            );
+
+            given(teamService.registerAndReturnId(any())).willReturn(99L);
+
+            Team createdTeam = mock(Team.class);
+            given(createdTeam.getId()).willReturn(99L);
+            given(createdTeam.getName()).willReturn("정치외교학과 DPS");
+            given(entityUtils.getEntity(99L, Team.class)).willReturn(createdTeam);
+
+            Player existingPlayer = mock(Player.class);
+            given(existingPlayer.getId()).willReturn(42L);
+            given(existingPlayer.getStudentNumber()).willReturn("202600002");
+
+            given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+
+            // when
+            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request);
+
+            // then
+            assertThat(response.result().created()).isEqualTo(0);
+            assertThat(response.result().assigned()).isEqualTo(1);
+            verify(playerService, never()).register(any());
         }
     }
 

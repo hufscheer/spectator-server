@@ -68,6 +68,36 @@ public class NlAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 팀_컨텍스트_없이_선수_정보를_파싱한다() {
+        // given
+        given(nlClient.parsePlayers(anyString(), anyList()))
+                .willReturn(NlParseResult.ofPlayers(List.of(
+                        new ParsedPlayer("홍길동", "202600001", 10),
+                        new ParsedPlayer("김철수", "202600002", 7)
+                )));
+
+        Map<String, Object> request = Map.of(
+                "history", List.of(),
+                "message", "홍길동 202600001 10\n김철수 202600002 7"
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/nl/parse")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("preview.players")).hasSize(2);
+        assertThat(response.jsonPath().getInt("preview.total")).isEqualTo(2);
+    }
+
+    @Test
     void 신규_선수를_등록하고_팀에_배정한다() {
         // given
         Map<String, Object> request = Map.of(
@@ -196,5 +226,4 @@ public class NlAcceptanceTest extends AcceptanceTest {
         assertThat(executeResponse.jsonPath().getInt("result.created")).isEqualTo(0);
         assertThat(executeResponse.jsonPath().getInt("result.assigned")).isEqualTo(1);
     }
-
 }

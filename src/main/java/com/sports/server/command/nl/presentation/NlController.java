@@ -4,8 +4,12 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.nl.application.NlService;
 import com.sports.server.command.nl.dto.NlExecuteRequest;
 import com.sports.server.command.nl.dto.NlExecuteResponse;
+import com.sports.server.command.nl.dto.NlParseRequest;
+import com.sports.server.command.nl.dto.NlParseResponse;
 import com.sports.server.command.nl.dto.NlProcessRequest;
 import com.sports.server.command.nl.dto.NlProcessResponse;
+import com.sports.server.command.nl.dto.NlRegisterTeamRequest;
+import com.sports.server.command.nl.dto.NlRegisterTeamResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,17 @@ public class NlController {
     @PostMapping("/process")
     public ResponseEntity<NlProcessResponse> process(@Valid @RequestBody NlProcessRequest request, Member member) {
         return ResponseEntity.ok(nlService.process(request, member));
+    }
+
+    @PostMapping("/parse")
+    public ResponseEntity<NlParseResponse> parse(@Valid @RequestBody NlParseRequest request) {
+        return ResponseEntity.ok(nlService.parse(request));
+    }
+
+    @PostMapping("/register-team")
+    public ResponseEntity<NlRegisterTeamResponse> registerTeamWithPlayers(
+            @Valid @RequestBody NlRegisterTeamRequest request) {
+        return ResponseEntity.ok(nlService.registerTeamWithPlayers(request));
     }
 
     @PostMapping("/execute")
