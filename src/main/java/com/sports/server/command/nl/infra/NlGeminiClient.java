@@ -62,11 +62,6 @@ public class NlGeminiClient implements NlClient {
         return result;
     }
 
-    private String getNextApiKey() {
-        int index = keyIndex.getAndUpdate(i -> (i + 1) % apiKeys.size());
-        return apiKeys.get(index);
-    }
-
     private static final Map<String, Object> FUNCTION_SCHEMA = Map.of(
             "name", "parse_players",
             "description", "텍스트에서 추출한 선수 정보 목록",
@@ -101,7 +96,8 @@ public class NlGeminiClient implements NlClient {
         Map<String, Object> body = buildRequestBody(contents);
 
         for (int attempt = 0; attempt <= MAX_RETRY; attempt++) {
-            String apiKey = getNextApiKey();
+            int currentKeyIndex = keyIndex.getAndUpdate(i -> (i + 1) % apiKeys.size());
+            String apiKey = apiKeys.get(currentKeyIndex);
             try {
                 return geminiWebClient.post()
                         .header("x-goog-api-key", apiKey)
@@ -110,11 +106,9 @@ public class NlGeminiClient implements NlClient {
                         .bodyToMono(GeminiFunctionCallResponse.class)
                         .block(Duration.ofSeconds(30));
             } catch (WebClientResponseException.TooManyRequests e) {
-                log.warn("Gemini API rate limit (429). attempt={}, keyIndex={}", attempt + 1, keyIndex.get());
+                log.warn("Gemini API rate limit (429). attempt={}/{}, keyIndex={}", attempt + 1, MAX_RETRY + 1, currentKeyIndex);
                 if (attempt < MAX_RETRY) {
                     sleep(RETRY_DELAY);
-                } else {
-                    throw new CustomException(HttpStatus.TOO_MANY_REQUESTS, "AI 서비스가 일시적으로 사용량이 많습니다. 잠시 후 다시 시도해주세요.");
                 }
             }
         }
