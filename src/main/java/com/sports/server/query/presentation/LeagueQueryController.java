@@ -61,6 +61,11 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findLeagueAndGames(leagueId));
     }
 
+    @GetMapping("/{leagueId}/cheer-count")
+    public ResponseEntity<LeagueCheerTalkCountResponse> findCheerTalkCount(@PathVariable final Long leagueId) {
+        return ResponseEntity.ok(leagueQueryService.findCheerTalkCount(leagueId));
+    }
+
     @GetMapping("/manager/manage")
     public ResponseEntity<List<LeagueResponseToManage>> findLeaguesByManagerToManage(final Member manager) {
         return ResponseEntity.ok(leagueQueryService.findLeaguesByManagerToManage(manager));
