@@ -229,6 +229,27 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 리그의_활성_응원톡_수를_조회한다() {
+        // given
+        Long leagueId = 1L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("leagueId", leagueId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/leagues/{leagueId}/cheer-count")
+                .then().log().all()
+                .extract();
+
+        // then
+        LeagueCheerTalkCountResponse actual = toResponse(response, LeagueCheerTalkCountResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual.cheerTalkCount()).isEqualTo(6L)
+        );
+    }
+
+    @Test
     void 존재하지_않는_엔드포인트_요청시_404를_반환한다() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
