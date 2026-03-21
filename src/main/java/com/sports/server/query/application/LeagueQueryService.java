@@ -2,7 +2,6 @@ package com.sports.server.query.application;
 
 import static java.util.stream.Collectors.toMap;
 
-import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
@@ -41,7 +40,7 @@ public class LeagueQueryService {
     private final LeagueQueryRepository leagueQueryRepository;
     private final TeamQueryDynamicRepositoryImpl teamDynamicRepository;
     private final GameQueryRepository gameQueryRepository;
-    private final CheerTalkRepository cheerTalkRepository;
+    private final CheerTalkQueryRepository cheerTalkQueryRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
     private final TeamPlayerRepository teamPlayerRepository;
@@ -198,7 +197,7 @@ public class LeagueQueryService {
 
     public LeagueCheerTalkCountResponse findCheerTalkCount(final Long leagueId) {
         entityUtils.getEntity(leagueId, League.class);
-        long count = cheerTalkRepository.countActiveCheerTalksByLeagueId(leagueId);
+        long count = cheerTalkQueryRepository.countActiveCheerTalksByLeagueId(leagueId);
         return new LeagueCheerTalkCountResponse(count);
     }
 
