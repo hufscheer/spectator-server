@@ -15,6 +15,7 @@ import com.sports.server.common.util.StudentNumber;
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.LeagueCheerTalkCountResponse;
 import com.sports.server.query.dto.response.TopScorerResponse;
 import com.sports.server.query.repository.*;
 
@@ -39,6 +40,7 @@ public class LeagueQueryService {
     private final LeagueQueryRepository leagueQueryRepository;
     private final TeamQueryDynamicRepositoryImpl teamDynamicRepository;
     private final GameQueryRepository gameQueryRepository;
+    private final CheerTalkQueryRepository cheerTalkQueryRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
     private final TeamPlayerRepository teamPlayerRepository;
@@ -191,6 +193,12 @@ public class LeagueQueryService {
         League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId).orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
         List<Game> games = gameQueryRepository.findByLeagueWithGameTeams(league);
         return LeagueResponseWithGames.of(league, games);
+    }
+
+    public LeagueCheerTalkCountResponse findCheerTalkCount(final Long leagueId) {
+        entityUtils.getEntity(leagueId, League.class);
+        long count = cheerTalkQueryRepository.countActiveCheerTalksByLeagueId(leagueId);
+        return new LeagueCheerTalkCountResponse(count);
     }
 
     public List<LeagueResponseToManage> findLeaguesByManagerToManage(final Member manager) {

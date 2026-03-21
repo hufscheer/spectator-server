@@ -2,6 +2,7 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.LeagueCheerTalkCountResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail.GameTeam;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
@@ -581,6 +582,30 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("topScorers[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("topScorers[].unit").type(JsonFieldType.STRING).description("선수 소속 단위"),
                                 fieldWithPath("topScorers[].totalGoals").type(JsonFieldType.NUMBER).description("총 득점 수")
+                        )
+                ));
+    }
+
+    @Test
+    void 리그의_활성_응원톡_수를_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+
+        given(leagueQueryService.findCheerTalkCount(leagueId))
+                .willReturn(new LeagueCheerTalkCountResponse(6L));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/cheer-count", leagueId)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("cheerTalkCount").type(JsonFieldType.NUMBER).description("리그 전체 활성 응원톡 수")
                         )
                 ));
     }

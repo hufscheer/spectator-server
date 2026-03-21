@@ -11,6 +11,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.LeagueCheerTalkCountResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithGames.GameDetail;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse;
 import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.GameDetailResponse.GameTeamResponse;
@@ -454,5 +455,46 @@ public class LeagueQueryServiceTest extends ServiceTest {
                         .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
                         .containsExactly(4, 2)
         );
+    }
+
+    @Nested
+    @DisplayName("리그의 응원톡 수를 조회할 때")
+    class FindCheerTalkCountTest {
+
+        @Test
+        void 리그에_속한_게임들의_활성_응원톡_수의_합을_반환한다() {
+            // given: league 1의 ACTIVE 응원톡 = game_team 1(2) + game_team 2(2) + game_team 3(1) + game_team 4(1) = 6
+            Long leagueId = 1L;
+
+            // when
+            LeagueCheerTalkCountResponse response = leagueQueryService.findCheerTalkCount(leagueId);
+
+            // then
+            assertThat(response.cheerTalkCount()).isEqualTo(6L);
+        }
+
+        @Test
+        void 차단된_응원톡은_집계에서_제외된다() {
+            // given: game_team 3에 BLOCKED_BY_ADMIN 응원톡 1개 존재
+            Long leagueId = 1L;
+
+            // when
+            LeagueCheerTalkCountResponse response = leagueQueryService.findCheerTalkCount(leagueId);
+
+            // then: BLOCKED 포함 시 7이어야 하지만, 차단된 것은 제외되어 6
+            assertThat(response.cheerTalkCount()).isEqualTo(6L);
+        }
+
+        @Test
+        void 다른_리그의_응원톡은_집계에서_제외된다() {
+            // given: league 2의 game_team 5에 ACTIVE 응원톡 1개 존재
+            Long leagueId = 1L;
+
+            // when
+            LeagueCheerTalkCountResponse response = leagueQueryService.findCheerTalkCount(leagueId);
+
+            // then: league 2의 응원톡은 포함되지 않음
+            assertThat(response.cheerTalkCount()).isEqualTo(6L);
+        }
     }
 }
