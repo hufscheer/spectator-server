@@ -27,7 +27,8 @@ public class TeamRequest {
             String name,
             String logoImageUrl,
             String unit,
-            String teamColor
+            String teamColor,
+            List<TeamPlayerRegister> teamPlayers
     ) {}
 
     public record TeamPlayerRegister(
