@@ -200,10 +200,11 @@ public class TeamServiceTest extends ServiceTest {
 
             // then
             assertThat(teamPlayers).hasSize(2);
-            teamPlayers.stream()
+            Optional<TeamPlayer> updatedPlayer = teamPlayers.stream()
                     .filter(tp -> tp.getPlayer().getId().equals(3L))
-                    .findFirst()
-                    .ifPresent(tp -> assertThat(tp.getJerseyNumber()).isEqualTo(99));
+                    .findFirst();
+            assertThat(updatedPlayer).isPresent();
+            assertThat(updatedPlayer.get().getJerseyNumber()).isEqualTo(99);
         }
 
         @Test

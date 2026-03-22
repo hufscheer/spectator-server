@@ -1,6 +1,8 @@
 package com.sports.server.command.team.acceptance;
 
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.command.team.domain.Unit;
 import com.sports.server.command.team.dto.TeamRequest;
@@ -16,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -24,6 +27,9 @@ public class TeamAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private TeamPlayerRepository teamPlayerRepository;
 
     @Value("${image.origin-prefix}")
     private String originPrefix;
@@ -118,6 +124,21 @@ public class TeamAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(1L);
+        assertThat(teamPlayers.size()).isEqualTo(3);
+
+        Optional<TeamPlayer> updatedPlayer = teamPlayers.stream()
+                .filter(tp -> tp.getPlayer().getId().equals(3L))
+                .findFirst();
+        assertThat(updatedPlayer.isPresent()).isTrue();
+        assertThat(updatedPlayer.get().getJerseyNumber()).isEqualTo(99);
+
+        Optional<TeamPlayer> newPlayer = teamPlayers.stream()
+                .filter(tp -> tp.getPlayer().getId().equals(1L))
+                .findFirst();
+        assertThat(newPlayer.isPresent()).isTrue();
+        assertThat(newPlayer.get().getJerseyNumber()).isEqualTo(10);
     }
 
     @Test
