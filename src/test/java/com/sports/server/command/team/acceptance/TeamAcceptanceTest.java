@@ -72,7 +72,8 @@ public class TeamAcceptanceTest extends AcceptanceTest {
                 "국제통상학과 무역풍",
                 originPrefix + "logo-url",
                 "경영대학",
-                "#FFFFFF"
+                "#FFFFFF",
+                null
         );
         configureMockJwtForEmail("john@example.com");
 
@@ -82,6 +83,36 @@ public class TeamAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .patch("/teams/{teamId}", savedTeam.getId())
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void 팀_정보를_수정할_때_선수를_upsert한다() {
+        // given
+        // fixture: teamId=1, 기존 선수 3L(등번호 9), 4L(등번호 11)
+        // 3L → 등번호 수정, 1L → 신규 추가
+        TeamRequest.Update request = new TeamRequest.Update(
+                null,
+                null,
+                null,
+                null,
+                List.of(
+                        new TeamRequest.TeamPlayerRegister(3L, 99),
+                        new TeamRequest.TeamPlayerRegister(1L, 10)
+                )
+        );
+        configureMockJwtForEmail("john@example.com");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .patch("/teams/{teamId}", 1L)
                 .then().log().all()
                 .extract();
 
