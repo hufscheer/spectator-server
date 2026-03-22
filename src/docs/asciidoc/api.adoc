@@ -261,7 +261,7 @@ operation::team-controller-test/팀을_삭제한다[snippets='http-request,reque
 
 === 팀 수정
 
-operation::team-controller-test/팀_정보를_수정한다[snippets='http-request,request-cookies,path-parameters,request-fields,http-response']
+operation::team-controller-test/팀_정보를_선수목록과_함께_수정한다[snippets='http-request,request-cookies,path-parameters,request-fields,http-response']
 
 === 팀 선수 추가
 

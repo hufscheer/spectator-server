@@ -98,14 +98,18 @@ public class TeamControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 팀_정보를_수정한다() throws Exception {
+    void 팀_정보를_선수목록과_함께_수정한다() throws Exception {
         // given
         Long teamId = 1L;
         TeamRequest.Update request = new TeamRequest.Update(
                 "국제통상학과 무역풍",
                 "logo-image-url",
                 "경영대학",
-                "team-color"
+                "team-color",
+                List.of(
+                        new TeamRequest.TeamPlayerRegister(1L, 10),
+                        new TeamRequest.TeamPlayerRegister(2L, 7)
+                )
         );
 
         doNothing().when(teamService).update(any(TeamRequest.Update.class), anyLong());
@@ -119,20 +123,22 @@ public class TeamControllerTest extends DocumentationTest {
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
-                            pathParameters(
-                                    parameterWithName("teamId").description("팀의 ID")
-                            ),
-                                requestFields(
-                                        fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 팀 이름"),
-                                        fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("변경할 팀의 로고 이미지 url"),
-                                        fieldWithPath("unit").type(JsonFieldType.STRING).description("변경할 팀의 소속"),
-                                        fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 대표 색의 hexCode")
-                                ),
-                                requestCookies(
-                                        cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
-                                )
+                        pathParameters(
+                                parameterWithName("teamId").description("팀의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 팀 이름"),
+                                fieldWithPath("logoImageUrl").type(JsonFieldType.STRING).description("변경할 팀의 로고 이미지 url"),
+                                fieldWithPath("unit").type(JsonFieldType.STRING).description("변경할 팀의 소속"),
+                                fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 대표 색의 hexCode"),
+                                fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("수정할 팀 선수 목록 (null이면 선수 변경 없음)").optional(),
+                                fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
+                                fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수의 등번호")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
-                );
+                ));
     }
 
     @Test
