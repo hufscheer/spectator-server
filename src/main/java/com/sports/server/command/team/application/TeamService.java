@@ -75,13 +75,9 @@ public class TeamService {
 
     public void addPlayersToTeam(final Long teamId, final List<TeamRequest.TeamPlayerRegister> request) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-
-        List<Long> playerIds = request.stream().map(TeamRequest.TeamPlayerRegister::playerId).toList();
-        List<Player> players = playerRepository.findAllById(playerIds);
-
-        validateExistence(players, playerIds);
-
+        List<Player> players = fetchAndValidatePlayers(request);
         Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
+
         List<TeamPlayer> newTeamPlayers = players.stream()
                 .map(player -> team.addPlayer(player, jerseyNumbers.get(player.getId())))
                 .toList();
@@ -102,30 +98,46 @@ public class TeamService {
     }
 
     private void upsertPlayersToTeam(Team team, List<TeamRequest.TeamPlayerRegister> request) {
-        List<Long> playerIds = request.stream().map(TeamRequest.TeamPlayerRegister::playerId).toList();
-        List<Player> players = playerRepository.findAllById(playerIds);
-
-        validateExistence(players, playerIds);
-
+        List<Player> players = fetchAndValidatePlayers(request);
         Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
-        Map<Long, TeamPlayer> existingTeamPlayersMap = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(team.getId())
-                .stream()
-                .collect(Collectors.toMap(tp -> tp.getPlayer().getId(), Function.identity()));
+        Map<Long, TeamPlayer> existingTeamPlayersMap = buildExistingTeamPlayerMap(team.getId());
 
-        List<TeamPlayer> newTeamPlayers = new ArrayList<>();
-        players.forEach(player -> {
-            Integer jerseyNumber = jerseyNumbers.get(player.getId());
-            TeamPlayer existing = existingTeamPlayersMap.get(player.getId());
-            if (existing != null) {
-                existing.updateJerseyNumber(jerseyNumber);
-            } else {
-                newTeamPlayers.add(TeamPlayer.of(team, player, jerseyNumber));
-            }
-        });
+        updateExistingPlayers(players, jerseyNumbers, existingTeamPlayersMap);
 
+        List<TeamPlayer> newTeamPlayers = createNewTeamPlayers(team, players, jerseyNumbers, existingTeamPlayersMap);
         if (!newTeamPlayers.isEmpty()) {
             teamPlayerRepository.saveAll(newTeamPlayers);
         }
+    }
+
+    private List<Player> fetchAndValidatePlayers(List<TeamRequest.TeamPlayerRegister> request) {
+        List<Long> playerIds = request.stream().map(TeamRequest.TeamPlayerRegister::playerId).toList();
+        List<Player> players = playerRepository.findAllById(playerIds);
+        validateExistence(players, playerIds);
+        return players;
+    }
+
+    private Map<Long, TeamPlayer> buildExistingTeamPlayerMap(Long teamId) {
+        return teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId)
+                .stream()
+                .collect(Collectors.toMap(tp -> tp.getPlayer().getId(), Function.identity()));
+    }
+
+    private void updateExistingPlayers(List<Player> players, Map<Long, Integer> jerseyNumbers,
+                                        Map<Long, TeamPlayer> existingTeamPlayersMap) {
+        players.stream()
+                .filter(player -> existingTeamPlayersMap.containsKey(player.getId()))
+                .forEach(player -> existingTeamPlayersMap.get(player.getId())
+                        .updateJerseyNumber(jerseyNumbers.get(player.getId())));
+    }
+
+    private List<TeamPlayer> createNewTeamPlayers(Team team, List<Player> players,
+                                                   Map<Long, Integer> jerseyNumbers,
+                                                   Map<Long, TeamPlayer> existingTeamPlayersMap) {
+        return players.stream()
+                .filter(player -> !existingTeamPlayersMap.containsKey(player.getId()))
+                .map(player -> TeamPlayer.of(team, player, jerseyNumbers.get(player.getId())))
+                .toList();
     }
 
     private static void validateExistence(List<Player> players, List<Long> playerIds) {
