@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,30 +108,24 @@ public class TeamService {
         validateExistence(players, playerIds);
 
         Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
-        List<TeamPlayer> existingTeamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(team.getId());
+        Map<Long, TeamPlayer> existingTeamPlayersMap = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(team.getId())
+                .stream()
+                .collect(Collectors.toMap(tp -> tp.getPlayer().getId(), Function.identity()));
 
         List<TeamPlayer> newTeamPlayers = new ArrayList<>();
         players.forEach(player -> {
-            TeamPlayer teamPlayer = upsertPlayer(existingTeamPlayers, team, player, jerseyNumbers.get(player.getId()));
-            if (teamPlayer.getId() == null) {
-                newTeamPlayers.add(teamPlayer);
+            Integer jerseyNumber = jerseyNumbers.get(player.getId());
+            TeamPlayer existing = existingTeamPlayersMap.get(player.getId());
+            if (existing != null) {
+                existing.updateJerseyNumber(jerseyNumber);
+            } else {
+                newTeamPlayers.add(TeamPlayer.of(team, player, jerseyNumber));
             }
         });
 
         if (!newTeamPlayers.isEmpty()) {
             teamPlayerRepository.saveAll(newTeamPlayers);
         }
-    }
-
-    private TeamPlayer upsertPlayer(List<TeamPlayer> existingTeamPlayers, Team team, Player player, Integer jerseyNumber) {
-        return existingTeamPlayers.stream()
-                .filter(tp -> tp.getPlayer().getId().equals(player.getId()))
-                .findFirst()
-                .map(tp -> {
-                    tp.updateJerseyNumber(jerseyNumber);
-                    return tp;
-                })
-                .orElseGet(() -> TeamPlayer.of(team, player, jerseyNumber));
     }
 
     private static void validateExistence(List<Player> players, List<Long> playerIds) {
