@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TeamService {
 
-    private final TeamPlayerRepository teamPlayerRepository;
     @Value("${image.origin-prefix}")
     private String originPrefix;
 
@@ -31,6 +31,7 @@ public class TeamService {
     private String replacePrefix;
 
     private final TeamRepository teamRepository;
+    private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerRepository playerRepository;
     private final EntityUtils entityUtils;
     private final S3Service s3Service;
@@ -59,10 +60,12 @@ public class TeamService {
     public void update(final TeamRequest.Update request, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
         s3Service.doesFileExist(team.getLogoImageUrl());
-        Unit unit = Optional.ofNullable(request.unit())
-                .map(Unit::from)
-                .orElse(null);
+        Unit unit = Optional.ofNullable(request.unit()).map(Unit::from).orElse(null);
         team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, unit, request.teamColor());
+
+        if (request.teamPlayers() != null) {
+            upsertPlayersToTeam(team, request.teamPlayers());
+        }
     }
 
     public void delete(final Long teamId) {
@@ -70,27 +73,14 @@ public class TeamService {
         teamRepository.delete(team);
     }
 
-    public void addPlayersToTeam(final Long teamId, final List<TeamRequest.TeamPlayerRegister> request){
+    public void addPlayersToTeam(final Long teamId, final List<TeamRequest.TeamPlayerRegister> request) {
         Team team = entityUtils.getEntity(teamId, Team.class);
+        List<Player> players = fetchAndValidatePlayers(request);
+        Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
 
-        List<Long> playerIds = request.stream()
-                .map(TeamRequest.TeamPlayerRegister::playerId)
+        List<TeamPlayer> newTeamPlayers = players.stream()
+                .map(player -> team.addPlayer(player, jerseyNumbers.get(player.getId())))
                 .toList();
-        List<Player> players = playerRepository.findAllById(playerIds);
-
-        if (players.size() != new HashSet<>(playerIds).size()) {
-            throw new NotFoundException(PlayerErrorMessages.PLAYER_NOT_EXIST_EXCEPTION);
-        }
-
-        Map<Long, Integer> playerJerseyNumbers = request.stream()
-                .collect(Collectors.toMap(TeamRequest.TeamPlayerRegister::playerId, TeamRequest.TeamPlayerRegister::jerseyNumber));
-
-        List<TeamPlayer> newTeamPlayers = new ArrayList<>();
-        players.forEach(player -> {
-            Integer jerseyNumber = playerJerseyNumbers.get(player.getId());
-            TeamPlayer teamPlayer = team.addPlayer(player, jerseyNumber);
-            newTeamPlayers.add(teamPlayer);
-        });
 
         teamPlayerRepository.saveAll(newTeamPlayers);
     }
@@ -105,6 +95,63 @@ public class TeamService {
     public void deleteLogoImage(Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
         team.deleteLogoImageUrl();
+    }
+
+    private void upsertPlayersToTeam(Team team, List<TeamRequest.TeamPlayerRegister> request) {
+        List<Player> players = fetchAndValidatePlayers(request);
+        Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
+        Map<Long, TeamPlayer> existingTeamPlayersMap = buildExistingTeamPlayerMap(team.getId());
+
+        updateExistingPlayers(players, jerseyNumbers, existingTeamPlayersMap);
+
+        List<TeamPlayer> newTeamPlayers = createNewTeamPlayers(team, players, jerseyNumbers, existingTeamPlayersMap);
+        if (!newTeamPlayers.isEmpty()) {
+            teamPlayerRepository.saveAll(newTeamPlayers);
+        }
+    }
+
+    private List<Player> fetchAndValidatePlayers(List<TeamRequest.TeamPlayerRegister> request) {
+        List<Long> playerIds = request.stream().map(TeamRequest.TeamPlayerRegister::playerId).toList();
+        List<Player> players = playerRepository.findAllById(playerIds);
+        validateExistence(players, playerIds);
+        return players;
+    }
+
+    private Map<Long, TeamPlayer> buildExistingTeamPlayerMap(Long teamId) {
+        return teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId)
+                .stream()
+                .collect(Collectors.toMap(tp -> tp.getPlayer().getId(), Function.identity()));
+    }
+
+    private void updateExistingPlayers(List<Player> players, Map<Long, Integer> jerseyNumbers,
+                                        Map<Long, TeamPlayer> existingTeamPlayersMap) {
+        players.stream()
+                .filter(player -> existingTeamPlayersMap.containsKey(player.getId()))
+                .forEach(player -> existingTeamPlayersMap.get(player.getId())
+                        .updateJerseyNumber(jerseyNumbers.get(player.getId())));
+    }
+
+    private List<TeamPlayer> createNewTeamPlayers(Team team, List<Player> players,
+                                                   Map<Long, Integer> jerseyNumbers,
+                                                   Map<Long, TeamPlayer> existingTeamPlayersMap) {
+        return players.stream()
+                .filter(player -> !existingTeamPlayersMap.containsKey(player.getId()))
+                .map(player -> TeamPlayer.of(team, player, jerseyNumbers.get(player.getId())))
+                .toList();
+    }
+
+    private static void validateExistence(List<Player> players, List<Long> playerIds) {
+        if (players.size() != new HashSet<>(playerIds).size()) {
+            throw new NotFoundException(PlayerErrorMessages.PLAYER_NOT_EXIST_EXCEPTION);
+        }
+    }
+
+    private static Map<Long, Integer> buildJerseyNumberMap(List<TeamRequest.TeamPlayerRegister> request) {
+        return request.stream()
+                .collect(Collectors.toMap(
+                        TeamRequest.TeamPlayerRegister::playerId,
+                        TeamRequest.TeamPlayerRegister::jerseyNumber
+                ));
     }
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl) {

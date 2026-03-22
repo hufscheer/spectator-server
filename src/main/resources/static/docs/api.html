@@ -6514,7 +6514,7 @@ Host: www.api.hufstreaming.site
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sat, 28 Mar 2026 09:00:05 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
+Set-Cookie: HCC_SES=testAccessToken; Path=/; Max-Age=604800; Expires=Sun, 29 Mar 2026 17:02:49 GMT; Secure; HttpOnly; SameSite=Strict</code></pre>
 </div>
 </div>
 </div>
@@ -7207,7 +7207,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /teams/1 HTTP/1.1
 Content-Type: application/json
-Content-Length: 139
+Content-Length: 163
 Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
@@ -7215,7 +7215,8 @@ Cookie: HCC_SES=temp-cookie
   "name" : "국제통상학과 무역풍",
   "logoImageUrl" : "logo-image-url",
   "unit" : "경영대학",
-  "teamColor" : "team-color"
+  "teamColor" : "team-color",
+  "teamPlayers" : null
 }</code></pre>
 </div>
 </div>
@@ -7298,6 +7299,11 @@ Cookie: HCC_SES=temp-cookie
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>teamColor</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">팀의 대표 색의 hexCode</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>teamPlayers</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">수정할 팀 선수 목록 (null이면 선수 변경 없음)</p></td>
 </tr>
 </tbody>
 </table>
@@ -8518,10 +8524,10 @@ Host: www.api.hufstreaming.site
 Cookie: HCC_SES=temp-cookie
 
 {
-  "history" : [ ],
-  "leagueId" : 1,
   "teamId" : 1,
-  "message" : "홍길동 202600001 10\n김철수 202600002 7"
+  "message" : "홍길동 202600001 10\n김철수 202600002 7",
+  "history" : [ ],
+  "leagueId" : 1
 }</code></pre>
 </div>
 </div>
@@ -8730,8 +8736,8 @@ Content-Length: 84
 Host: www.api.hufstreaming.site
 
 {
-  "history" : [ ],
-  "message" : "홍길동 202600001 10\n김철수 202600002 7"
+  "message" : "홍길동 202600001 10\n김철수 202600002 7",
+  "history" : [ ]
 }</code></pre>
 </div>
 </div>
@@ -8858,19 +8864,19 @@ Host: www.api.hufstreaming.site
 
 {
   "players" : [ {
+    "jerseyNumber" : 10,
     "studentNumber" : "202600001",
-    "name" : "홍길동",
-    "jerseyNumber" : 10
+    "name" : "홍길동"
   }, {
+    "jerseyNumber" : 7,
     "studentNumber" : "202600002",
-    "name" : "김철수",
-    "jerseyNumber" : 7
+    "name" : "김철수"
   } ],
   "team" : {
+    "logoImageUrl" : "https://www.api.hufstreaming.site/logo.png",
     "teamColor" : "#FF0000",
     "unit" : "정치외교학과",
-    "name" : "정치외교학과 DPS",
-    "logoImageUrl" : "https://www.api.hufstreaming.site/logo.png"
+    "name" : "정치외교학과 DPS"
   }
 }</code></pre>
 </div>
@@ -9019,13 +9025,13 @@ Cookie: HCC_SES=temp-cookie
 {
   "teamId" : 1,
   "players" : [ {
+    "jerseyNumber" : 10,
     "studentNumber" : "202600001",
-    "name" : "홍길동",
-    "jerseyNumber" : 10
+    "name" : "홍길동"
   }, {
+    "jerseyNumber" : 7,
     "studentNumber" : "202600002",
-    "name" : "김철수",
-    "jerseyNumber" : 7
+    "name" : "김철수"
   } ],
   "leagueId" : 1
 }</code></pre>
@@ -9165,7 +9171,7 @@ Content-Length: 170
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2026-03-21 17:45:58 +0900
+Last updated 2026-03-23 00:48:17 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

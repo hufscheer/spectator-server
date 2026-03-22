@@ -97,7 +97,7 @@ public class TeamServiceTest extends ServiceTest {
             // given
             Long teamId = 1L;
             String newName = "경영 경주마";
-            TeamRequest.Update request = new TeamRequest.Update(newName, imageUrl, null, null);
+            TeamRequest.Update request = new TeamRequest.Update(newName, imageUrl, null, null, null);
 
             doNothing().when(s3Service).doesFileExist(anyString());
 
@@ -114,7 +114,7 @@ public class TeamServiceTest extends ServiceTest {
             // given
             Long teamId = 1L;
             String invalidUrl = "invalid url";
-            TeamRequest.Update request = new TeamRequest.Update(null, invalidUrl, null, null);
+            TeamRequest.Update request = new TeamRequest.Update(null, invalidUrl, null, null, null);
 
             doNothing().when(s3Service).doesFileExist(anyString());
 
@@ -128,7 +128,7 @@ public class TeamServiceTest extends ServiceTest {
         void 존재하지_않는_팀의_수정을_시도할_경우_예외가_발생한다(){
             // given
             Long teamId = 999L;
-            TeamRequest.Update request = new TeamRequest.Update("newName", null, null, null);
+            TeamRequest.Update request = new TeamRequest.Update("newName", null, null, null, null);
 
             // when & then
             assertThatThrownBy(() -> teamService.update(request, teamId))
@@ -139,12 +139,89 @@ public class TeamServiceTest extends ServiceTest {
         void 존재하지_않는_단위를_요청할_경우_예외가_발생한다(){
             // given
             Long teamId =  1L;
-            TeamRequest.Update request = new TeamRequest.Update(null, null, "invalid unit", null);
+            TeamRequest.Update request = new TeamRequest.Update(null, null, "invalid unit", null, null);
 
             // when & then
             assertThatThrownBy(() -> teamService.update(request, teamId))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
+        }
+
+        @Test
+        void teamPlayers가_null이면_선수를_수정하지_않는다() {
+            // given
+            Long teamId = 1L; // 기존 선수: 3L, 4L 두 명
+            TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, null);
+
+            doNothing().when(s3Service).doesFileExist(anyString());
+
+            // when
+            teamService.update(request, teamId);
+            List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
+
+            // then
+            assertThat(teamPlayers).hasSize(2);
+        }
+
+        @Test
+        void 신규_선수가_포함되면_팀에_추가된다() {
+            // given
+            Long teamId = 1L; // 기존 선수: 3L, 4L 두 명
+            List<TeamRequest.TeamPlayerRegister> players = List.of(
+                    new TeamRequest.TeamPlayerRegister(1L, 10),
+                    new TeamRequest.TeamPlayerRegister(2L, 7)
+            );
+            TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
+
+            doNothing().when(s3Service).doesFileExist(anyString());
+
+            // when
+            teamService.update(request, teamId);
+            List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
+
+            // then
+            assertThat(teamPlayers).hasSize(4);
+        }
+
+        @Test
+        void 기존_선수가_포함되면_jerseyNumber가_수정된다() {
+            // given
+            Long teamId = 1L; // 기존 선수: 3L(등번호 9), 4L(등번호 11)
+            List<TeamRequest.TeamPlayerRegister> players = List.of(
+                    new TeamRequest.TeamPlayerRegister(3L, 99)
+            );
+            TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
+
+            doNothing().when(s3Service).doesFileExist(anyString());
+
+            // when
+            teamService.update(request, teamId);
+            List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
+
+            // then
+            assertThat(teamPlayers).hasSize(2);
+            Optional<TeamPlayer> updatedPlayer = teamPlayers.stream()
+                    .filter(tp -> tp.getPlayer().getId().equals(3L))
+                    .findFirst();
+            assertThat(updatedPlayer).isPresent();
+            assertThat(updatedPlayer.get().getJerseyNumber()).isEqualTo(99);
+        }
+
+        @Test
+        void 존재하지_않는_선수가_포함되면_예외가_발생한다() {
+            // given
+            Long teamId = 1L;
+            List<TeamRequest.TeamPlayerRegister> players = List.of(
+                    new TeamRequest.TeamPlayerRegister(999L, 10)
+            );
+            TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
+
+            doNothing().when(s3Service).doesFileExist(anyString());
+
+            // when & then
+            assertThatThrownBy(() -> teamService.update(request, teamId))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage(PlayerErrorMessages.PLAYER_NOT_EXIST_EXCEPTION);
         }
     }
 

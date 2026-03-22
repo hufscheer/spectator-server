@@ -42,4 +42,8 @@ public class TeamPlayer extends BaseEntity<TeamPlayer> {
         return teamPlayer;
     }
 
+    public void updateJerseyNumber(Integer jerseyNumber) {
+        this.jerseyNumber = jerseyNumber;
+    }
+
 }
