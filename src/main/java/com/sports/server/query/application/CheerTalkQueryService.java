@@ -2,10 +2,7 @@ package com.sports.server.query.application;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.sports.server.command.game.domain.Game;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +42,9 @@ public class CheerTalkQueryService {
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
-		return toManagerResponses(reportedCheerTalks);
+		return reportedCheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
 
 	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
@@ -53,7 +52,9 @@ public class CheerTalkQueryService {
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
-		return toManagerResponses(cheerTalks);
+		return cheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
 
 	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
@@ -61,21 +62,8 @@ public class CheerTalkQueryService {
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
-		return toManagerResponses(blockedCheerTalks);
-	}
-
-	private List<CheerTalkResponse.ForManager> toManagerResponses(List<CheerTalk> cheerTalks) {
-		return cheerTalks.stream()
-				.map(this::toManagerResponse)
-				.filter(Objects::nonNull)
-				.toList();
-	}
-
-	private CheerTalkResponse.ForManager toManagerResponse(CheerTalk cheerTalk) {
-		Game game = gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId());
-		if (game == null) {
-			return null;
-		}
-		return new CheerTalkResponse.ForManager(cheerTalk, game);
+		return blockedCheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
 }
