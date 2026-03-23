@@ -34,6 +34,7 @@ public class GameDynamicRepositoryImpl implements GameDynamicRepository {
     public List<Game> findByYearAndMonth(Integer year, Integer month) {
         return jpaQueryFactory
                 .selectFrom(game)
+                .join(game.league, league).fetchJoin()
                 .where(DynamicBooleanBuilder.builder()
                         .and(() -> game.startTime.year().eq(year))
                         .and(() -> game.startTime.month().eq(month))
