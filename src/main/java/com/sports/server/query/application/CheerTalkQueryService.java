@@ -2,7 +2,10 @@ package com.sports.server.query.application;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.sports.server.command.game.domain.Game;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,13 +67,12 @@ public class CheerTalkQueryService {
 	private List<CheerTalkResponse.ForManager> toManagerResponses(List<CheerTalk> cheerTalks) {
 		return cheerTalks.stream()
 				.map(this::toManagerResponse)
-				.filter(java.util.Objects::nonNull)
+				.filter(Objects::nonNull)
 				.toList();
 	}
 
 	private CheerTalkResponse.ForManager toManagerResponse(CheerTalk cheerTalk) {
-		com.sports.server.command.game.domain.Game game =
-				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId());
+		Game game = gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId());
 		if (game == null) {
 			return null;
 		}
