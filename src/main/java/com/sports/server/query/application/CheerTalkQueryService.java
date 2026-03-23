@@ -42,9 +42,7 @@ public class CheerTalkQueryService {
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
-		return reportedCheerTalks.stream()
-			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
-				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+		return toManagerResponses(reportedCheerTalks);
 	}
 
 	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
@@ -52,9 +50,7 @@ public class CheerTalkQueryService {
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
-		return cheerTalks.stream()
-			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
-				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+		return toManagerResponses(cheerTalks);
 	}
 
 	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
@@ -62,8 +58,22 @@ public class CheerTalkQueryService {
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
 
-		return blockedCheerTalks.stream()
-			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
-				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+		return toManagerResponses(blockedCheerTalks);
+	}
+
+	private List<CheerTalkResponse.ForManager> toManagerResponses(List<CheerTalk> cheerTalks) {
+		return cheerTalks.stream()
+				.map(this::toManagerResponse)
+				.filter(java.util.Objects::nonNull)
+				.toList();
+	}
+
+	private CheerTalkResponse.ForManager toManagerResponse(CheerTalk cheerTalk) {
+		com.sports.server.command.game.domain.Game game =
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId());
+		if (game == null) {
+			return null;
+		}
+		return new CheerTalkResponse.ForManager(cheerTalk, game);
 	}
 }
