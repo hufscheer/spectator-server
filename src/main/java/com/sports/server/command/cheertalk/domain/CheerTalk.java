@@ -27,7 +27,7 @@ public class CheerTalk extends BaseEntity<CheerTalk> {
     @Column(name = "block_status", nullable = false)
     private CheerTalkBlockStatus blockStatus;
 
-    @Column(name = "game_team_id", nullable = false)
+    @Column(name = "game_team_id")
     private Long gameTeamId;
 
     public boolean isBlocked() {

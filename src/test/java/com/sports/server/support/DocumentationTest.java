@@ -163,6 +163,9 @@ public class DocumentationTest {
     @MockBean
     protected NlService nlService;
 
+    @MockBean
+    protected com.sports.server.common.application.AlertService alertService;
+
     @BeforeEach
     void setUp() {
         setupMockAuthentication();

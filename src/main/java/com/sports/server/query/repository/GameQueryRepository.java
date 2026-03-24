@@ -58,16 +58,17 @@ public interface GameQueryRepository extends Repository<Game, Long> {
     Optional<Game> findGameDetailsById(@Param("gameId") Long gameId);
 
     @Query(value = """
-            SELECT g.* 
+            SELECT g.*
             FROM (
-                SELECT g_inner.*, 
+                SELECT g_inner.*,
                        gt.team_id,
                        ROW_NUMBER() OVER (
-                           PARTITION BY gt.team_id 
+                           PARTITION BY gt.team_id
                            ORDER BY g_inner.start_time DESC, g_inner.id DESC
                        ) as rn
-                FROM games g_inner 
+                FROM games g_inner
                 JOIN game_teams gt ON g_inner.id = gt.game_id
+                JOIN leagues l ON g_inner.league_id = l.id AND l.is_deleted = 0
                 WHERE gt.team_id IN :teamIds
             ) g
             WHERE g.rn <= :limit

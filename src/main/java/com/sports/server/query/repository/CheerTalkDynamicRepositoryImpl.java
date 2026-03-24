@@ -45,7 +45,8 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
                         .join(member).on(league.administrator.id.eq(member.id))
                         .join(report).on(report.cheerTalk.eq(cheerTalk))
                         .where(report.state.eq(ReportState.PENDING))
-                        .where(member.id.eq(adminId)),
+                        .where(member.id.eq(adminId))
+                        .where(league.isDeleted.isFalse()),
                 cursor,
                 size
         );
@@ -60,7 +61,8 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
                         .join(league).on(game.league.id.eq(league.id))
                         .join(member).on(league.administrator.id.eq(member.id))
                         .where(member.id.eq(adminId))
-                        .where(cheerTalk.blockStatus.eq(CheerTalkBlockStatus.ACTIVE)),
+                        .where(cheerTalk.blockStatus.eq(CheerTalkBlockStatus.ACTIVE))
+                        .where(league.isDeleted.isFalse()),
                 cursor,
                 size
         );
@@ -75,7 +77,8 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
                         .join(league).on(game.league.id.eq(league.id))
                         .join(member).on(league.administrator.id.eq(member.id))
                         .where(member.id.eq(adminId))
-                        .where(cheerTalk.blockStatus.ne(CheerTalkBlockStatus.ACTIVE)),
+                        .where(cheerTalk.blockStatus.ne(CheerTalkBlockStatus.ACTIVE))
+                        .where(league.isDeleted.isFalse()),
                 cursor,
                 size
         );
