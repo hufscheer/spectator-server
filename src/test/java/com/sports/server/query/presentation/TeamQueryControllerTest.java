@@ -73,9 +73,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
         );
 
         List<PlayerResponse> teamPlayers = List.of(
-                new PlayerResponse(1L, 10L, "양선수", "202500001", null, 5, null),
-                new PlayerResponse(2L, 20L, "김선수", "202500002", null, 2, null),
-                new PlayerResponse(3L, 30L, "박선수", "202500003", null, 2, null)
+                new PlayerResponse(1L, 10L, "양선수", "202500001", 7, 5, null),
+                new PlayerResponse(2L, 20L, "김선수", "202500002", 11, 2, null),
+                new PlayerResponse(3L, 30L, "박선수", "202500003", 9, 2, null)
         );
 
         TeamDetailResponse response = new TeamDetailResponse(
@@ -102,6 +102,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                                         fieldWithPath("teamPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("팀선수 ID"),
                                         fieldWithPath("teamPlayers[].name").type(JsonFieldType.STRING).description("선수 이름"),
                                         fieldWithPath("teamPlayers[].studentNumber").type(JsonFieldType.STRING).description("선수 학번"),
+                                        fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수 등번호").optional(),
                                         fieldWithPath("teamPlayers[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 리그 내 총 득점 수"),
 
                                         fieldWithPath("winCount").type(JsonFieldType.NUMBER).description("팀의 전체 승리 횟수"),
@@ -121,9 +122,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
         // given
         Long teamId = 1L;
         List<PlayerResponse> players = List.of(
-                new PlayerResponse(1L, 10L, "양선수", "202500001", null, 5, null),
-                new PlayerResponse(2L, 20L, "김선수", "202500002", null, 2, null),
-                new PlayerResponse(3L, 30L, "박선수", "202500003", null, 2, null)
+                new PlayerResponse(1L, 10L, "양선수", "202500001", 7, 5, null),
+                new PlayerResponse(2L, 20L, "김선수", "202500002", 11, 2, null),
+                new PlayerResponse(3L, 30L, "박선수", "202500003", 9, 2, null)
         );
 
         given(teamQueryService.getAllTeamPlayers(teamId)).willReturn(players);
@@ -143,6 +144,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].teamPlayerId").type(JsonFieldType.NUMBER).description("팀선수 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수 등번호").optional(),
                                 fieldWithPath("[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 리그 내 총 득점 수")
                         )
                 ));
