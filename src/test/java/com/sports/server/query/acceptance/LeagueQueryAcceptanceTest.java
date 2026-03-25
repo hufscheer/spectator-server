@@ -12,11 +12,13 @@ import io.restassured.response.Response;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 
 @Sql(scripts = "/league-fixture.sql")
 public class LeagueQueryAcceptanceTest extends AcceptanceTest {
@@ -247,6 +249,64 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual.cheerTalkCount()).isEqualTo(6L)
         );
+    }
+
+    @Nested
+    @DisplayName("최근 리그 게임 조회")
+    @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
+    class FindRecentLeagueGames {
+
+        private ExtractableResponse<Response> 최근_리그_게임_조회() {
+            return RestAssured.given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues/recent/games")
+                    .then().log().all()
+                    .extract();
+        }
+
+        @Test
+        @Sql(scripts = "/recent-league-games-in-progress-fixture.sql")
+        void 진행_중인_리그가_있으면_진행_중인_리그의_게임만_반환한다() {
+            // when
+            ExtractableResponse<Response> response = 최근_리그_게임_조회();
+
+            // then
+            List<Long> leagueIds = response.jsonPath().getList("leagueId", Long.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(leagueIds).containsExactly(1L),
+                    () -> assertThat(leagueIds).doesNotContain(2L, 3L)
+            );
+        }
+
+        @Test
+        @Sql(scripts = "/recent-league-games-ended-fixture.sql")
+        void 진행_중인_리그가_없으면_가장_최근_종료된_리그들의_게임을_반환한다() {
+            // when
+            ExtractableResponse<Response> response = 최근_리그_게임_조회();
+
+            // then
+            List<Long> leagueIds = response.jsonPath().getList("leagueId", Long.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(leagueIds).containsExactlyInAnyOrder(1L, 2L),
+                    () -> assertThat(leagueIds).doesNotContain(3L)
+            );
+        }
+
+        @Test
+        @Sql(scripts = "/recent-league-games-no-games-fixture.sql")
+        void 경기가_없어도_리그_정보는_반환된다() {
+            // when
+            ExtractableResponse<Response> response = 최근_리그_게임_조회();
+
+            // then
+            List<Long> leagueIds = response.jsonPath().getList("leagueId", Long.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(leagueIds).containsExactly(1L)
+            );
+        }
     }
 
     @Test

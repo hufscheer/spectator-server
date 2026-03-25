@@ -301,6 +301,9 @@ public class LeagueQueryService {
     }
 
     private Map<Long, List<GameTeam>> getTeamsByGameId(List<Game> games) {
+        if (games.isEmpty()) {
+            return Collections.emptyMap();
+        }
         List<Long> gameIds = games.stream().map(Game::getId).toList();
         return gameTeamQueryRepository.findAllByGameIds(gameIds).stream()
                 .collect(Collectors.groupingBy(gameTeam -> gameTeam.getGame().getId()));
