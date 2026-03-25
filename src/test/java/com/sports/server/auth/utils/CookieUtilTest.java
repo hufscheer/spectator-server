@@ -29,7 +29,7 @@ public class CookieUtilTest {
         assertEquals(COOKIE_NAME, cookie.getName());
         assertEquals(TOKEN, cookie.getValue());
         assertEquals("/", cookie.getPath());
-        assertEquals("Strict", cookie.getSameSite());
+        assertEquals("None", cookie.getSameSite());
         assertTrue(cookie.isSecure());
         assertEquals(Math.toIntExact(COOKIE_VALID_TIME), cookie.getMaxAge().getSeconds());
         assertTrue(cookie.isHttpOnly());
