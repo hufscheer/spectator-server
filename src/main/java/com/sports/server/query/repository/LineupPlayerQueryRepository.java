@@ -23,6 +23,8 @@ public interface LineupPlayerQueryRepository extends Repository<LineupPlayer, Lo
             "join fetch lp.gameTeam gt " +
             "join fetch gt.team " +
             "join fetch lp.player " +
+            "left join fetch lp.replacedPlayer rp " +
+            "left join fetch rp.player " +
             "where gt.game.id = :gameId " +
             "and lp.isPlaying = true " +
             "order by lp.jerseyNumber asc")
