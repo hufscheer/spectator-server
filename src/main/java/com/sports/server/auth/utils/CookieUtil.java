@@ -10,7 +10,7 @@ public final class CookieUtil {
                                               final Long cookieValidTime) {
         return ResponseCookie.from(nameOfCookie, token)
                 .path("/")
-                .sameSite("Strict")
+                .sameSite("None")
                 .secure(true)
                 .maxAge(Math.toIntExact(cookieValidTime))
                 .httpOnly(true)
