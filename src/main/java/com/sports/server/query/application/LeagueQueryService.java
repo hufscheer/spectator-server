@@ -3,6 +3,7 @@ package com.sports.server.query.application;
 import static java.util.stream.Collectors.toMap;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.Team;
@@ -40,6 +41,7 @@ public class LeagueQueryService {
     private final LeagueQueryRepository leagueQueryRepository;
     private final TeamQueryDynamicRepositoryImpl teamDynamicRepository;
     private final GameQueryRepository gameQueryRepository;
+    private final GameTeamQueryRepository gameTeamQueryRepository;
     private final CheerTalkQueryRepository cheerTalkQueryRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final EntityUtils entityUtils;
@@ -248,5 +250,56 @@ public class LeagueQueryService {
         return results.stream()
                 .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))
                 .toList();
+    }
+
+    public List<RecentLeagueGamesResponse> findRecentLeaguesGames() {
+        List<League> recentLeagues = getRecentLeagues();
+        if (recentLeagues.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> leagueIds = recentLeagues.stream().map(League::getId).toList();
+        List<Game> games = gameQueryRepository.findAllByLeagueIds(leagueIds);
+
+        Map<Long, List<GameTeam>> teamsByGameId = getTeamsByGameId(games);
+        Map<League, List<Game>> gamesByLeague = games.stream()
+                .collect(Collectors.groupingBy(Game::getLeague));
+
+        return recentLeagues.stream()
+                .map(league -> toRecentLeagueGamesResponse(
+                        league,
+                        gamesByLeague.getOrDefault(league, Collections.emptyList()),
+                        teamsByGameId
+                ))
+                .toList();
+    }
+
+    private List<League> getRecentLeagues() {
+        LocalDateTime now = LocalDateTime.now();
+        List<League> inProgressLeagues = leagueQueryRepository.findInProgressLeagues(now);
+        if (!inProgressLeagues.isEmpty()) {
+            return inProgressLeagues;
+        }
+        return leagueQueryRepository.findLeaguesByLatestEndAt(now);
+    }
+
+    private Map<Long, List<GameTeam>> getTeamsByGameId(List<Game> games) {
+        if (games.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> gameIds = games.stream().map(Game::getId).toList();
+        return gameTeamQueryRepository.findAllByGameIds(gameIds).stream()
+                .collect(Collectors.groupingBy(gameTeam -> gameTeam.getGame().getId()));
+    }
+
+    private RecentLeagueGamesResponse toRecentLeagueGamesResponse(
+            League league, List<Game> games, Map<Long, List<GameTeam>> teamsByGameId) {
+        List<RecentLeagueGamesResponse.GameResponse> gameResponses = games.stream()
+                .map(game -> new RecentLeagueGamesResponse.GameResponse(
+                        game,
+                        teamsByGameId.getOrDefault(game.getId(), Collections.emptyList())
+                ))
+                .toList();
+        return new RecentLeagueGamesResponse(league.getId(), league.getName(), gameResponses);
     }
 }

@@ -190,6 +190,10 @@ operation::league-query-controller-test/연도별_득점왕을_조회한다[snip
 
 operation::league-query-controller-test/최근_대회_요약_정보를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
 
+=== 최근 리그 게임 목록 조회
+
+operation::league-query-controller-test/최근_리그의_게임_목록을_조회한다[snippets='http-request,http-response,response-fields']
+
 
 == 타임라인 API
 

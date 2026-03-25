@@ -3,8 +3,6 @@ package com.sports.server.query.presentation;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
 import com.sports.server.command.cheertalk.domain.CheerTalkMaskingEvent;
-import com.sports.server.command.cheertalk.domain.PendingCheerTalk;
-import com.sports.server.command.cheertalk.domain.PendingCheerTalkRepository;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +19,6 @@ public class CheerTalkEventHandler {
 
     private static final String DESTINATION = "/topic/games/";
     private final SimpMessagingTemplate messagingTemplate;
-    private final PendingCheerTalkRepository pendingCheerTalkRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @TransactionalEventListener
@@ -39,12 +36,6 @@ public class CheerTalkEventHandler {
             eventPublisher.publishEvent(new CheerTalkMaskingEvent(cheerTalk, event.gameId()));
 
         } catch (Exception e) {
-            pendingCheerTalkRepository.save(
-                    new PendingCheerTalk(
-                            destination,
-                            cheerTalk
-                    )
-            );
 
             log.error(
                     "CheerTalk WebSocket 전송 실패: cheerTalkId={}, gameTeamId={}, error={}",

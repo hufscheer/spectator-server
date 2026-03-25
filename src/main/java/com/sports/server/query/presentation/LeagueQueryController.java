@@ -87,4 +87,9 @@ public class LeagueQueryController {
     ) {
         return ResponseEntity.ok(leagueQueryService.findRecentSummary(year, recordLimit, topScorerLimit));
     }
+
+    @GetMapping("/recent/games")
+    public ResponseEntity<List<RecentLeagueGamesResponse>> findRecentLeaguesGames() {
+        return ResponseEntity.ok(leagueQueryService.findRecentLeaguesGames());
+    }
 }

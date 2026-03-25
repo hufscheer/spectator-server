@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 
 @Sql(scripts = "/league-fixture.sql")
 public class LeagueQueryServiceTest extends ServiceTest {
@@ -495,6 +496,150 @@ public class LeagueQueryServiceTest extends ServiceTest {
 
             // then: league 2의 응원톡은 포함되지 않음
             assertThat(response.cheerTalkCount()).isEqualTo(6L);
+        }
+    }
+
+    @Nested
+    @DisplayName("최근 리그 게임 조회 - 진행 중인 리그가 있을 때")
+    @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
+    @Sql(scripts = "/recent-league-games-in-progress-fixture.sql")
+    class FindRecentLeagueGamesWhenInProgress {
+
+        @Test
+        void 진행_중인_리그들의_게임만_반환한다() {
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            List<Long> returnedLeagueIds = result.stream()
+                    .map(RecentLeagueGamesResponse::leagueId)
+                    .toList();
+
+            assertAll(
+                    () -> assertThat(returnedLeagueIds).containsExactly(1L),
+                    () -> assertThat(returnedLeagueIds).doesNotContain(2L, 3L)
+            );
+        }
+
+        @Test
+        void 진행_중인_리그의_게임이_모두_반환된다() {
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            List<Long> gameIds = result.stream()
+                    .flatMap(league -> league.games().stream())
+                    .map(RecentLeagueGamesResponse.GameResponse::id)
+                    .toList();
+
+            assertThat(gameIds).containsExactlyInAnyOrder(1L, 2L);
+        }
+
+        @Test
+        void 반환된_게임에_올바른_팀_정보가_포함된다() {
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            RecentLeagueGamesResponse.GameResponse firstGame = result.get(0).games().stream()
+                    .filter(g -> g.id().equals(1L))
+                    .findFirst()
+                    .orElseThrow();
+
+            assertAll(
+                    () -> assertThat(firstGame.gameTeams()).hasSize(2),
+                    () -> assertThat(firstGame.gameTeams().stream()
+                            .map(RecentLeagueGamesResponse.GameResponse.TeamResponse::gameTeamId)
+                            .toList()).containsExactly(1L, 2L)
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("최근 리그 게임 조회 - 진행 중인 리그가 없을 때")
+    @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
+    @Sql(scripts = "/recent-league-games-ended-fixture.sql")
+    class FindRecentLeagueGamesWhenEnded {
+
+        @Test
+        void 가장_최근_종료된_리그들의_게임을_반환한다() {
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            List<Long> returnedLeagueIds = result.stream()
+                    .map(RecentLeagueGamesResponse::leagueId)
+                    .toList();
+
+            assertAll(
+                    () -> assertThat(returnedLeagueIds).containsExactlyInAnyOrder(1L, 2L),
+                    () -> assertThat(returnedLeagueIds).doesNotContain(3L)
+            );
+        }
+
+        @Test
+        void 동일한_종료일자를_가진_여러_리그가_모두_반환된다() {
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            assertThat(result).hasSize(2);
+        }
+
+        @Test
+        void 더_오래된_종료_리그의_게임은_포함되지_않는다() {
+            // given: league 3의 game id = 4
+            long olderLeagueGameId = 4L;
+
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            List<Long> allGameIds = result.stream()
+                    .flatMap(league -> league.games().stream())
+                    .map(RecentLeagueGamesResponse.GameResponse::id)
+                    .toList();
+
+            assertThat(allGameIds).doesNotContain(olderLeagueGameId);
+        }
+
+        @Test
+        void 반환된_게임_목록은_startTime_오름차순으로_정렬된다() {
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            RecentLeagueGamesResponse leagueA = result.stream()
+                    .filter(r -> r.leagueId().equals(1L))
+                    .findFirst()
+                    .orElseThrow();
+
+            List<Long> gameIds = leagueA.games().stream()
+                    .map(RecentLeagueGamesResponse.GameResponse::id)
+                    .toList();
+
+            assertThat(gameIds).containsExactly(1L, 2L);
+        }
+    }
+
+    @Nested
+    @DisplayName("최근 리그 게임 조회 - 경기가 없을 때")
+    @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
+    @Sql(scripts = "/recent-league-games-no-games-fixture.sql")
+    class FindRecentLeagueGamesWhenNoGames {
+
+        @Test
+        void 경기가_없어도_리그_정보는_반환된다() {
+            // when
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+
+            // then
+            assertAll(
+                    () -> assertThat(result).hasSize(1),
+                    () -> assertThat(result.get(0).leagueId()).isEqualTo(1L),
+                    () -> assertThat(result.get(0).leagueName()).isEqualTo("경기 없는 진행중 대회"),
+                    () -> assertThat(result.get(0).games()).isEmpty()
+            );
         }
     }
 }

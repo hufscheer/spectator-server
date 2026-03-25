@@ -587,6 +587,62 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     }
 
     @Test
+    void 최근_리그의_게임_목록을_조회한다() throws Exception {
+        // given
+        List<RecentLeagueGamesResponse> responses = List.of(
+                new RecentLeagueGamesResponse(
+                        1L,
+                        "2025 외대 월드컵",
+                        List.of(
+                                new RecentLeagueGamesResponse.GameResponse(
+                                        1L,
+                                        LocalDateTime.of(2026, 3, 1, 10, 0),
+                                        "1쿼터",
+                                        "결승전",
+                                        2,
+                                        "abc123",
+                                        List.of(
+                                                new RecentLeagueGamesResponse.GameResponse.TeamResponse(1L, "팀 A", "http://logo.com/a.png", 2, null),
+                                                new RecentLeagueGamesResponse.GameResponse.TeamResponse(2L, "팀 B", "http://logo.com/b.png", 1, null)
+                                        ),
+                                        false
+                                )
+                        )
+                )
+        );
+
+        given(leagueQueryService.findRecentLeaguesGames())
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/recent/games")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        responseFields(
+                                fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
+                                fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("리그의 이름"),
+                                fieldWithPath("[].games").type(JsonFieldType.ARRAY).description("경기 목록"),
+                                fieldWithPath("[].games[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
+                                fieldWithPath("[].games[].startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),
+                                fieldWithPath("[].games[].gameQuarter").type(JsonFieldType.STRING).description("현재 경기 쿼터"),
+                                fieldWithPath("[].games[].gameName").type(JsonFieldType.STRING).description("경기 이름"),
+                                fieldWithPath("[].games[].round").type(JsonFieldType.NUMBER).description("경기 라운드"),
+                                fieldWithPath("[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID").optional(),
+                                fieldWithPath("[].games[].isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),
+                                fieldWithPath("[].games[].gameTeams").type(JsonFieldType.ARRAY).description("경기 팀 목록"),
+                                fieldWithPath("[].games[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀 ID"),
+                                fieldWithPath("[].games[].gameTeams[].gameTeamName").type(JsonFieldType.STRING).description("경기 팀 이름"),
+                                fieldWithPath("[].games[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 URL"),
+                                fieldWithPath("[].games[].gameTeams[].score").type(JsonFieldType.NUMBER).description("팀 점수"),
+                                fieldWithPath("[].games[].gameTeams[].pkScore").type(JsonFieldType.NUMBER).description("팀 승부차기 점수").optional()
+                        )
+                ));
+    }
+
+    @Test
     void 리그의_활성_응원톡_수를_조회한다() throws Exception {
         // given
         Long leagueId = 1L;
