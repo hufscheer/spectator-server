@@ -57,8 +57,7 @@ public class LeagueQueryService {
         }
 
         List<Long> leagueIds = leagues.stream().map(League::getId).toList();
-        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(
-                        leagueIds).stream()
+        Map<Long, String> firstWinnerTeamsInfo = leagueStatisticsQueryRepository.findWinnerTeamInfoByLeagueIds(leagueIds).stream()
                 .collect(Collectors.toMap(
                         LeagueWinnerInfo::leagueId,
                         LeagueWinnerInfo::winnerTeamName
@@ -81,15 +80,13 @@ public class LeagueQueryService {
 
         List<LeagueRecentSummaryResponse.LeagueRecord> records = safeRecordLimit == 0
                 ? Collections.emptyList()
-                : leagueQueryRepository.findRecentFinishedLeagues(yearStart, yearEnd, now,
-                                PageRequest.of(0, safeRecordLimit)).stream()
-                        .map(LeagueRecentRecordResult::toResponse)
-                        .toList();
+                : leagueQueryRepository.findRecentFinishedLeagues(yearStart, yearEnd, now, PageRequest.of(0, safeRecordLimit)).stream()
+                .map(LeagueRecentRecordResult::toResponse)
+                .toList();
 
         List<PlayerGoalCountWithRank> topScorerResults = safeTopScorerLimit == 0
                 ? Collections.emptyList()
-                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(targetYear,
-                        PageRequest.of(0, safeTopScorerLimit));
+                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(targetYear, PageRequest.of(0, safeTopScorerLimit));
 
         Map<Long, String> unitByPlayerId = getUnitByPlayerId(topScorerResults.stream()
                 .map(PlayerGoalCountWithRank::playerId)
@@ -147,8 +144,7 @@ public class LeagueQueryService {
 
     public LeagueDetailResponse findLeagueDetail(Long leagueId) {
         return leagueQueryRepository.findById(leagueId)
-                .map(league -> LeagueDetailResponse.of(league,
-                        teamDynamicRepository.findByLeagueAndRound(league, null).size()))
+                .map(league -> LeagueDetailResponse.of(league, teamDynamicRepository.findByLeagueAndRound(league, null).size()))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
     }
 
@@ -175,9 +171,7 @@ public class LeagueQueryService {
         Map<League, List<Game>> gamesForLeagues = getPlayingGamesOfLeagues(leagues);
 
         return leagues.stream()
-                .map(league -> LeagueResponseWithInProgressGames.of(league,
-                        LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(),
-                        gamesForLeagues.get(league)))
+                .map(league -> LeagueResponseWithInProgressGames.of(league, LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(), gamesForLeagues.get(league)))
                 .toList();
     }
 
@@ -198,8 +192,7 @@ public class LeagueQueryService {
     }
 
     public LeagueResponseWithGames findLeagueAndGames(final Long leagueId) {
-        League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
+        League league = leagueQueryRepository.findByIdWithLeagueTeam(leagueId).orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
         List<Game> games = gameQueryRepository.findByLeagueWithGameTeams(league);
         return LeagueResponseWithGames.of(league, games);
     }
@@ -220,19 +213,11 @@ public class LeagueQueryService {
 
     public LeagueStatisticsResponse findLeagueStatistic(Long leagueId) {
         entityUtils.getEntity(leagueId, League.class);
-        LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId)
-                .orElseThrow(() -> new NotFoundException("리그 통계 데이터가 아직 업데이트되지 않았습니다."));
+        LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId).orElseThrow(() -> new NotFoundException("리그 통계 데이터가 아직 업데이트되지 않았습니다."));
 
-        Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeamQueryRepository.findByLeagueId(leagueId).stream()
-                .collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));
+        Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeamQueryRepository.findByLeagueId(leagueId).stream().collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));
 
-        return LeagueStatisticsResponse.builder()
-                .firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeamsInfo))
-                .secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeamsInfo))
-                .mostCheeredTeam(LeagueTeamResponse.ofWithCheerCount(
-                        findLeagueTeamFor(statistics.getMostCheeredTeam(), leagueTeamsInfo))).mostCheerTalksTeam(
-                        LeagueTeamResponse.ofWithTotalTalkCount(
-                                findLeagueTeamFor(statistics.getMostCheerTalksTeam(), leagueTeamsInfo))).build();
+        return LeagueStatisticsResponse.builder().firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeamsInfo)).secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeamsInfo)).mostCheeredTeam(LeagueTeamResponse.ofWithCheerCount(findLeagueTeamFor(statistics.getMostCheeredTeam(), leagueTeamsInfo))).mostCheerTalksTeam(LeagueTeamResponse.ofWithTotalTalkCount(findLeagueTeamFor(statistics.getMostCheerTalksTeam(), leagueTeamsInfo))).build();
     }
 
     private LeagueTeamResponse createLeagueTeamResponseForWinner(Team team, Map<Long, LeagueTeam> leagueTeamsInfo) {
@@ -260,12 +245,10 @@ public class LeagueQueryService {
     }
 
     public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {
-        List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year,
-                PageRequest.of(0, limit));
+        List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, limit));
 
         return results.stream()
-                .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(),
-                        result.goalCount().intValue(), result.rank().intValue()))
+                .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))
                 .toList();
     }
 
