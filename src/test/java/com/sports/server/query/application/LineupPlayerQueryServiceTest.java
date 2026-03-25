@@ -60,7 +60,7 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
         // then
         List<LineupPlayer> lineupPlayers = responses.stream()
                 .flatMap(lpr -> lpr.gameTeamPlayers().stream()
-                        .map(pr -> entityUtils.getEntity(pr.id(), LineupPlayer.class)))
+                        .map(pr -> entityUtils.getEntity(pr.lineupPlayerId(), LineupPlayer.class)))
                 .toList();
 
         Assertions.assertThat(lineupPlayers)

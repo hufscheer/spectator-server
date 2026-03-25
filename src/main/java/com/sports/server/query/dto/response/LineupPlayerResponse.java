@@ -50,7 +50,8 @@ public class LineupPlayerResponse {
 	}
 
 	public record PlayerResponse(
-			Long id,
+			Long lineupPlayerId,
+			Long playerId,
 			String playerName,
 			Integer jerseyNumber,
 			boolean isCaptain,
@@ -61,6 +62,7 @@ public class LineupPlayerResponse {
 		public PlayerResponse(LineupPlayer lineupPlayer) {
 			this(
 					lineupPlayer.getId(),
+					lineupPlayer.getPlayer().getId(),
 					lineupPlayer.getPlayer().getName(),
 					lineupPlayer.getJerseyNumber(),
 					lineupPlayer.isCaptain(),

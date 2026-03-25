@@ -205,18 +205,18 @@ class GameQueryControllerTest extends DocumentationTest {
         // given
         Long gameId = 1L;
         List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수A", 1, true, LineupPlayerState.STARTER, true, new LineupPlayerResponse.PlayerSummary(4L, "선수D", 4)),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수B", 2, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수C", 3, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수D", 4, false, LineupPlayerState.CANDIDATE, true, new LineupPlayerResponse.PlayerSummary(1L, "선수A", 1)),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수E", 5, false, LineupPlayerState.STARTER, false, null)
+                new LineupPlayerResponse.PlayerResponse(1L, 101L, "선수A", 1, true, LineupPlayerState.STARTER, true, new LineupPlayerResponse.PlayerSummary(4L, "선수D", 4)),
+                new LineupPlayerResponse.PlayerResponse(2L, 102L, "선수B", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, 103L, "선수C", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, 104L, "선수D", 4, false, LineupPlayerState.CANDIDATE, true, new LineupPlayerResponse.PlayerSummary(1L, "선수A", 1)),
+                new LineupPlayerResponse.PlayerResponse(5L, 105L, "선수E", 5, false, LineupPlayerState.STARTER, false, null)
         );
         List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수F", 1, true, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수G", 2, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수H", 3, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수I", 4, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수J", 5, false, LineupPlayerState.CANDIDATE, false, null)
+                new LineupPlayerResponse.PlayerResponse(1L, 106L, "선수F", 1, true, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(2L, 107L, "선수G", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, 108L, "선수H", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, 109L, "선수I", 4, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(5L, 110L, "선수J", 5, false, LineupPlayerState.CANDIDATE, false, null)
         );
 
         given(lineupPlayerQueryService.getLineup(gameId))
@@ -243,7 +243,9 @@ class GameQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
-                                fieldWithPath("[].starterPlayers[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("[].starterPlayers[].lineupPlayerId").type(JsonFieldType.NUMBER)
+                                        .description("선발 선수 라인업 ID"),
+                                fieldWithPath("[].starterPlayers[].playerId").type(JsonFieldType.NUMBER)
                                         .description("선발 선수 ID"),
                                 fieldWithPath("[].starterPlayers[].playerName").type(JsonFieldType.STRING)
                                         .description("선발 선수 이름"),
@@ -275,7 +277,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .type(JsonFieldType.NUMBER)
                                         .optional()
                                         .description("교체된 선수의 등번호"),
-                                fieldWithPath("[].candidatePlayers[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("[].candidatePlayers[].lineupPlayerId").type(JsonFieldType.NUMBER)
+                                        .description("후보 선수 라인업 ID"),
+                                fieldWithPath("[].candidatePlayers[].playerId").type(JsonFieldType.NUMBER)
                                         .description("후보 선수 ID"),
                                 fieldWithPath("[].candidatePlayers[].playerName").type(JsonFieldType.STRING)
                                         .description("후보 선수 이름"),
@@ -316,18 +320,18 @@ class GameQueryControllerTest extends DocumentationTest {
         // given
         Long gameId = 1L;
         List<LineupPlayerResponse.PlayerResponse> playersA = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수A", 1, true, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수B", 2, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수C", 3, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수D", 4, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수E", 5, false, LineupPlayerState.STARTER, false, null)
+                new LineupPlayerResponse.PlayerResponse(1L, 101L, "선수A", 1, true, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(2L, 102L, "선수B", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, 103L, "선수C", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, 104L, "선수D", 4, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(5L, 105L, "선수E", 5, false, LineupPlayerState.STARTER, false, null)
         );
         List<LineupPlayerResponse.PlayerResponse> playersB = List.of(
-                new LineupPlayerResponse.PlayerResponse(1L, "선수F", 1, true, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(2L, "선수G", 2, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(3L, "선수H", 3, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(4L, "선수I", 4, false, LineupPlayerState.STARTER, false, null),
-                new LineupPlayerResponse.PlayerResponse(5L, "선수J", 5, false, LineupPlayerState.STARTER, false, null)
+                new LineupPlayerResponse.PlayerResponse(1L, 106L, "선수F", 1, true, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(2L, 107L, "선수G", 2, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(3L, 108L, "선수H", 3, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(4L, 109L, "선수I", 4, false, LineupPlayerState.STARTER, false, null),
+                new LineupPlayerResponse.PlayerResponse(5L, 110L, "선수J", 5, false, LineupPlayerState.STARTER, false, null)
         );
 
         given(lineupPlayerQueryService.getPlayingLineup(gameId))
@@ -351,7 +355,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
                                 fieldWithPath("[].teamColor").type(JsonFieldType.STRING).description("게임팀 팀색깔"),
-                                fieldWithPath("[].gameTeamPlayers[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("[].gameTeamPlayers[].lineupPlayerId").type(JsonFieldType.NUMBER)
+                                        .description("선수 라인업 ID"),
+                                fieldWithPath("[].gameTeamPlayers[].playerId").type(JsonFieldType.NUMBER)
                                         .description("선수 ID"),
                                 fieldWithPath("[].gameTeamPlayers[].playerName").type(JsonFieldType.STRING)
                                         .description("선수 이름"),
