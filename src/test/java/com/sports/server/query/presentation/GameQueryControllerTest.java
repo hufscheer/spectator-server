@@ -243,7 +243,7 @@ class GameQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
-                                fieldWithPath("[].starterPlayers[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("[].starterPlayers[].lineupPlayerId").type(JsonFieldType.NUMBER)
                                         .description("선발 선수 라인업 ID"),
                                 fieldWithPath("[].starterPlayers[].playerId").type(JsonFieldType.NUMBER)
                                         .description("선발 선수 ID"),
@@ -277,7 +277,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .type(JsonFieldType.NUMBER)
                                         .optional()
                                         .description("교체된 선수의 등번호"),
-                                fieldWithPath("[].candidatePlayers[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("[].candidatePlayers[].lineupPlayerId").type(JsonFieldType.NUMBER)
                                         .description("후보 선수 라인업 ID"),
                                 fieldWithPath("[].candidatePlayers[].playerId").type(JsonFieldType.NUMBER)
                                         .description("후보 선수 ID"),
@@ -355,7 +355,7 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("게임팀의 ID"),
                                 fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("게임팀 이름"),
                                 fieldWithPath("[].teamColor").type(JsonFieldType.STRING).description("게임팀 팀색깔"),
-                                fieldWithPath("[].gameTeamPlayers[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("[].gameTeamPlayers[].lineupPlayerId").type(JsonFieldType.NUMBER)
                                         .description("선수 라인업 ID"),
                                 fieldWithPath("[].gameTeamPlayers[].playerId").type(JsonFieldType.NUMBER)
                                         .description("선수 ID"),

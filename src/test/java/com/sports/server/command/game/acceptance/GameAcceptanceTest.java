@@ -85,12 +85,12 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).starterPlayers().stream()
-                .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
+                .filter(playerResponse -> playerResponse.lineupPlayerId().equals(lineupPlayerId))
                 .toList();
 
         assertAll(
                 () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
-                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).lineupPlayerId()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).state()).isEqualTo(LineupPlayerState.STARTER)
         );
     }
@@ -124,12 +124,12 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).candidatePlayers().stream()
-                .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
+                .filter(playerResponse -> playerResponse.lineupPlayerId().equals(lineupPlayerId))
                 .toList();
 
         assertAll(
                 () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
-                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).lineupPlayerId()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).state()).isEqualTo(LineupPlayerState.CANDIDATE)
         );
     }
@@ -300,12 +300,12 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).starterPlayers().stream()
-                .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
+                .filter(playerResponse -> playerResponse.lineupPlayerId().equals(lineupPlayerId))
                 .toList();
 
         assertAll(
                 () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
-                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).lineupPlayerId()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(true)
         );
     }
@@ -338,12 +338,12 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         List<LineupPlayerResponse.PlayerResponse> actual = lineupPlayerResponses.get(0).starterPlayers().stream()
-                .filter(playerResponse -> playerResponse.id().equals(lineupPlayerId))
+                .filter(playerResponse -> playerResponse.lineupPlayerId().equals(lineupPlayerId))
                 .toList();
 
         assertAll(
                 () -> assertThat(lineupPlayerResponses.get(0).gameTeamId()).isEqualTo(gameTeamId),
-                () -> assertThat(actual.get(0).id()).isEqualTo(lineupPlayerId),
+                () -> assertThat(actual.get(0).lineupPlayerId()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(false)
         );
     }

@@ -50,7 +50,7 @@ public class LineupPlayerResponse {
 	}
 
 	public record PlayerResponse(
-			Long id,
+			Long lineupPlayerId,
 			Long playerId,
 			String playerName,
 			Integer jerseyNumber,
