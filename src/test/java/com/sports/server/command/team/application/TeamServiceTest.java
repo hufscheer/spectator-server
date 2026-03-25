@@ -300,7 +300,7 @@ public class TeamServiceTest extends ServiceTest {
             Long teamPlayerIdToDelete = 1L;
 
             // when
-            teamService.delete(teamPlayerIdToDelete);
+            teamService.deleteTeamPlayer(teamPlayerIdToDelete);
 
             //then
             Optional<TeamPlayer> result = teamPlayerRepository.findById(teamPlayerIdToDelete);

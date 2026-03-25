@@ -90,6 +90,7 @@ public class TeamService {
         Team team = teamPlayer.getTeam();
         Player player = teamPlayer.getPlayer();
         team.removeTeamPlayer(player);
+        teamPlayerRepository.delete(teamPlayer);
     }
 
     public void deleteLogoImage(Long teamId) {
