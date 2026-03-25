@@ -11,11 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
 @Table(name = "teams")
+@Where(clause = "is_deleted = 0")
+@SQLDelete(sql = "UPDATE teams SET is_deleted = 1 WHERE id = ?")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team extends BaseEntity<Team> {
@@ -33,13 +37,16 @@ public class Team extends BaseEntity<Team> {
     @Column(name = "team_color", nullable = false)
     private String teamColor;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamPlayer> teamPlayers = new ArrayList<>();
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeagueTeam> leagueTeams = new ArrayList<>();
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<GameTeam> gameTeams = new ArrayList<>();
 
     @Builder
