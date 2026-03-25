@@ -3,8 +3,6 @@ package com.sports.server.query.presentation;
 import com.sports.server.command.cheertalk.application.CheerTalkMaskingService;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkMaskingEvent;
-import com.sports.server.command.cheertalk.domain.PendingCheerTalk;
-import com.sports.server.command.cheertalk.domain.PendingCheerTalkRepository;
 import com.sports.server.command.cheertalk.dto.CheerTalkMaskedResponse;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Component;
 public class CheerTalkMaskingEventHandler {
     private static final String DESTINATION = "/topic/games/";
     private final SimpMessagingTemplate messagingTemplate;
-    private final PendingCheerTalkRepository pendingCheerTalkRepository;
     private final CheerTalkMaskingService cheerTalkMaskingService;
 
     @EventListener
@@ -43,12 +40,6 @@ public class CheerTalkMaskingEventHandler {
             );
 
         } catch (Exception e) {
-            pendingCheerTalkRepository.save(
-                    new PendingCheerTalk(
-                            destination,
-                            cheerTalk
-                    )
-            );
 
             log.error(
                     "CheerTalk WebSocket 전송 실패: cheerTalkId={}, gameTeamId={}, error={}",

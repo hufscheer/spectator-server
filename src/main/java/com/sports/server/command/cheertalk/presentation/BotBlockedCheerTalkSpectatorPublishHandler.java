@@ -2,8 +2,6 @@ package com.sports.server.command.cheertalk.presentation;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkBlockedByBotEvent;
-import com.sports.server.command.cheertalk.domain.PendingCheerTalk;
-import com.sports.server.command.cheertalk.domain.PendingCheerTalkRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import lombok.RequiredArgsConstructor;
