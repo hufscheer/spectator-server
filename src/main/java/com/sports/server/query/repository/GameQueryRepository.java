@@ -57,6 +57,9 @@ public interface GameQueryRepository extends Repository<Game, Long> {
             "WHERE g.id = :gameId")
     Optional<Game> findGameDetailsById(@Param("gameId") Long gameId);
 
+    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE g.league.id IN :leagueIds ORDER BY g.startTime ASC, g.id ASC")
+    List<Game> findAllByLeagueIds(@Param("leagueIds") List<Long> leagueIds);
+
     @Query(value = """
             SELECT g.*
             FROM (
