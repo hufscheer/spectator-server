@@ -253,7 +253,8 @@ public class LeagueQueryService {
     }
 
     public List<RecentLeagueGamesResponse> findRecentLeaguesGames() {
-        List<League> recentLeagues = getRecentLeagues();
+        LocalDateTime now = LocalDateTime.now();
+        List<League> recentLeagues = getRecentLeagues(now);
         if (recentLeagues.isEmpty()) {
             return Collections.emptyList();
         }
@@ -269,13 +270,13 @@ public class LeagueQueryService {
                 .map(league -> toRecentLeagueGamesResponse(
                         league,
                         gamesByLeague.getOrDefault(league, Collections.emptyList()),
-                        teamsByGameId
+                        teamsByGameId,
+                        now
                 ))
                 .toList();
     }
 
-    private List<League> getRecentLeagues() {
-        LocalDateTime now = LocalDateTime.now();
+    private List<League> getRecentLeagues(LocalDateTime now) {
         List<League> inProgressLeagues = leagueQueryRepository.findInProgressLeagues(now);
         if (!inProgressLeagues.isEmpty()) {
             return inProgressLeagues;
@@ -293,13 +294,14 @@ public class LeagueQueryService {
     }
 
     private RecentLeagueGamesResponse toRecentLeagueGamesResponse(
-            League league, List<Game> games, Map<Long, List<GameTeam>> teamsByGameId) {
+            League league, List<Game> games, Map<Long, List<GameTeam>> teamsByGameId, LocalDateTime now) {
+        String leagueProgress = LeagueProgress.fromDate(now, league).name();
         List<RecentLeagueGamesResponse.GameResponse> gameResponses = games.stream()
                 .map(game -> new RecentLeagueGamesResponse.GameResponse(
                         game,
                         teamsByGameId.getOrDefault(game.getId(), Collections.emptyList())
                 ))
                 .toList();
-        return new RecentLeagueGamesResponse(league.getId(), league.getName(), gameResponses);
+        return RecentLeagueGamesResponse.of(league, leagueProgress, gameResponses);
     }
 }
