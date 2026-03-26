@@ -26,6 +26,8 @@ public class ControllerExceptionAdvice {
         if (e.getStatus().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
             log.error("Custom 500 에러 발생: {}", e.getMessage(), e);
             alertService.sendErrorAlert(request.getRequestURI(), request.getMethod(), e.getMessage(), e);
+        } else {
+            logClientError(request, e.getStatus(), e.getMessage());
         }
         return ResponseEntity.status(e.getStatus())
                 .body(ErrorResponse.of(e.getMessage()));
@@ -40,20 +42,28 @@ public class ControllerExceptionAdvice {
     }
 
     @ExceptionHandler(BindException.class)
-    protected ResponseEntity<ErrorResponse> handleBindException(BindException e) {
+    protected ResponseEntity<ErrorResponse> handleBindException(BindException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(e.getBindingResult()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ErrorResponse> handleMethodArgumentsNotValidException(MethodArgumentNotValidException e) {
+    protected ResponseEntity<ErrorResponse> handleMethodArgumentsNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(e.getBindingResult()));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    protected ResponseEntity<ErrorResponse> handleNotFoundEndpointException(NoHandlerFoundException e) {
+    protected ResponseEntity<ErrorResponse> handleNotFoundEndpointException(NoHandlerFoundException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.NOT_FOUND, e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.of("요청한 엔드포인트를 찾을 수 없습니다."));
+    }
+
+    private void logClientError(HttpServletRequest request, HttpStatus status, String message) {
+        log.warn("[{} {}] {} {}: {}", request.getMethod(), request.getRequestURI(),
+                status.value(), status.getReasonPhrase(), message);
     }
 }
