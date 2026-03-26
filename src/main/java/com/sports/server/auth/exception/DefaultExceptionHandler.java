@@ -8,10 +8,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
+public class DefaultExceptionHandler {
 
     @ExceptionHandler({AuthenticationException.class})
     @ResponseBody
