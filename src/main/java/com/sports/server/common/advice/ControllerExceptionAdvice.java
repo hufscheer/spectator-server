@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.stream.Collectors;
@@ -56,6 +57,13 @@ public class ControllerExceptionAdvice {
         logClientError(request, HttpStatus.BAD_REQUEST, formatBindingResult(e.getBindingResult()));
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(e.getBindingResult()));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ResponseEntity<ErrorResponse> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.METHOD_NOT_ALLOWED, e.getMessage());
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(ErrorResponse.of("지원하지 않는 HTTP 메서드입니다."));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
