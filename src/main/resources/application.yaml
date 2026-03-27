@@ -8,6 +8,8 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 server:
   port: 8080
@@ -15,10 +17,6 @@ server:
   tomcat:
     mbeanregistry:
       enabled: true
-
-spring:
-  lifecycle:
-    timeout-per-shutdown-phase: 30s
 
 management:
   server:
