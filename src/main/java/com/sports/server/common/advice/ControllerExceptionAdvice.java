@@ -72,7 +72,8 @@ public class ControllerExceptionAdvice {
 
     private String formatBindingResult(BindingResult bindingResult) {
         return bindingResult.getFieldErrors().stream()
-                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .map(fe -> String.format("%s: %s (rejected value: %s)",
+                        fe.getField(), fe.getDefaultMessage(), fe.getRejectedValue()))
                 .collect(Collectors.joining(", "));
     }
 }
