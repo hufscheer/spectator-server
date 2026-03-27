@@ -9,10 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -43,14 +46,14 @@ public class ControllerExceptionAdvice {
 
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<ErrorResponse> handleBindException(BindException e, HttpServletRequest request) {
-        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
+        logClientError(request, HttpStatus.BAD_REQUEST, formatBindingResult(e.getBindingResult()));
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(e.getBindingResult()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentsNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
-        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
+        logClientError(request, HttpStatus.BAD_REQUEST, formatBindingResult(e.getBindingResult()));
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(e.getBindingResult()));
     }
@@ -65,5 +68,11 @@ public class ControllerExceptionAdvice {
     private void logClientError(HttpServletRequest request, HttpStatus status, String message) {
         log.warn("[{} {}] {} {}: {}", request.getMethod(), request.getRequestURI(),
                 status.value(), status.getReasonPhrase(), message);
+    }
+
+    private String formatBindingResult(BindingResult bindingResult) {
+        return bindingResult.getFieldErrors().stream()
+                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .collect(Collectors.joining(", "));
     }
 }
