@@ -37,7 +37,7 @@ jobs:
             echo "TARGET=dev" >> $GITHUB_OUTPUT
             echo "HOST=${{ secrets.WAS_HOST_DEV }}" >> $GITHUB_OUTPUT
             echo "KEY_SECRET=KEY_DEV" >> $GITHUB_OUTPUT
-            echo "IMG=${{ secrets.DOCKER_IMG }}:dev" >> $GITHUB_OUTPUT
+            echo "IMG=${{ secrets.DOCKER_IMG_DEV }}:dev" >> $GITHUB_OUTPUT
             echo "COMPOSE=docker-compose.dev.yml" >> $GITHUB_OUTPUT
           fi
 
