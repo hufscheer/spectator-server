@@ -514,6 +514,7 @@ class NlServiceTest {
             assertThat(response.players().get(1).existingPlayerId()).isNull();
             assertThat(response.summary().newPlayers()).isEqualTo(1);
             assertThat(response.summary().existingPlayers()).isEqualTo(1);
+            assertThat(response.summary().alreadyInTeam()).isEqualTo(0);
         }
 
         @Test

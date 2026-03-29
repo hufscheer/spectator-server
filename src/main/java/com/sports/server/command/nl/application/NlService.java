@@ -245,29 +245,15 @@ public class NlService {
                 .toList();
         Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers);
 
-        int newCount = 0;
-        int existsCount = 0;
-        List<NlCheckDuplicatesResponse.PlayerPreview> previews = new ArrayList<>();
+        List<PlayerPreview> playerPreviews = request.players().stream()
+                .map(p -> classifyPlayer(
+                        new ParsedPlayer(p.name(), p.studentNumber(), p.jerseyNumber()),
+                        existingPlayerMap.get(p.studentNumber()),
+                        Collections.emptySet()))
+                .toList();
 
-        for (NlCheckDuplicatesRequest.PlayerData playerData : request.players()) {
-            Player existing = existingPlayerMap.get(playerData.studentNumber());
-            if (existing != null) {
-                previews.add(new NlCheckDuplicatesResponse.PlayerPreview(
-                        playerData.name(), playerData.studentNumber(), playerData.jerseyNumber(),
-                        PlayerStatus.EXISTS, existing.getId()));
-                existsCount++;
-            } else {
-                previews.add(new NlCheckDuplicatesResponse.PlayerPreview(
-                        playerData.name(), playerData.studentNumber(), playerData.jerseyNumber(),
-                        PlayerStatus.NEW, null));
-                newCount++;
-            }
-        }
-
-        return new NlCheckDuplicatesResponse(
-                previews,
-                new NlCheckDuplicatesResponse.Summary(request.players().size(), newCount, existsCount)
-        );
+        Summary summary = buildSummary(playerPreviews);
+        return new NlCheckDuplicatesResponse(playerPreviews, summary);
     }
 
     // --- registerTeamWithPlayers 전용 ---
