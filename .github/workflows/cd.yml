@@ -3,7 +3,7 @@ name: spring server cd
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "5th-release" ]
+    branches: [ "main", "develop" ]
 
 jobs:
   deploy:
@@ -24,8 +24,25 @@ jobs:
       - name: 빌드
         run: ./gradlew build
 
+      - name: 환경 결정
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "TARGET=prod" >> $GITHUB_OUTPUT
+            echo "HOST=${{ secrets.WAS_HOST }}" >> $GITHUB_OUTPUT
+            echo "KEY_SECRET=KEY" >> $GITHUB_OUTPUT
+            echo "IMG=${{ secrets.DOCKER_IMG }}" >> $GITHUB_OUTPUT
+            echo "COMPOSE=docker-compose.yml" >> $GITHUB_OUTPUT
+          else
+            echo "TARGET=dev" >> $GITHUB_OUTPUT
+            echo "HOST=${{ secrets.WAS_HOST_DEV }}" >> $GITHUB_OUTPUT
+            echo "KEY_SECRET=KEY_DEV" >> $GITHUB_OUTPUT
+            echo "IMG=${{ secrets.DOCKER_IMG }}:dev" >> $GITHUB_OUTPUT
+            echo "COMPOSE=docker-compose.dev.yml" >> $GITHUB_OUTPUT
+          fi
+
       - name: 도커 이미지 빌드
-        run: docker build -t ${{ secrets.DOCKER_IMG }} .
+        run: docker build -t ${{ steps.env.outputs.IMG }} .
 
       - name: Docker Hub 로그인
         uses: docker/login-action@v2
@@ -34,9 +51,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker Hub push
-        run: docker push ${{ secrets.DOCKER_IMG }}
+        run: docker push ${{ steps.env.outputs.IMG }}
 
-      - name: scp docker-compose
+      - name: scp docker-compose (prod)
+        if: steps.env.outputs.TARGET == 'prod'
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.WAS_HOST }}
@@ -46,7 +64,8 @@ jobs:
           target: "/home/ubuntu"
           strip_components: 6
 
-      - name: scp monitoring compose
+      - name: scp monitoring compose (prod)
+        if: steps.env.outputs.TARGET == 'prod'
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.WAS_HOST }}
@@ -56,7 +75,8 @@ jobs:
           target: "/home/ubuntu"
           strip_components: 6
 
-      - name: scp monitoring configs
+      - name: scp monitoring configs (prod)
+        if: steps.env.outputs.TARGET == 'prod'
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.WAS_HOST }}
@@ -66,13 +86,37 @@ jobs:
           target: "/home/ubuntu/monitoring"
           strip_components: 6
 
-      - name: 배포
+      - name: 배포 (prod)
+        if: steps.env.outputs.TARGET == 'prod'
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.WAS_HOST }}
           username: ubuntu
           key: ${{ secrets.KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_IMG }}
+            docker pull ${{ steps.env.outputs.IMG }}
             docker compose -f docker-compose.yml up -d --force-recreate --no-deps web
+            docker image prune -f
+
+      - name: scp docker-compose (dev)
+        if: steps.env.outputs.TARGET == 'dev'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.WAS_HOST_DEV }}
+          username: ubuntu
+          key: ${{ secrets.KEY_DEV }}
+          source: "./src/main/resources/be-config/docker/docker-compose.dev.yml"
+          target: "/home/ubuntu"
+          strip_components: 6
+
+      - name: 배포 (dev)
+        if: steps.env.outputs.TARGET == 'dev'
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.WAS_HOST_DEV }}
+          username: ubuntu
+          key: ${{ secrets.KEY_DEV }}
+          script: |
+            docker pull ${{ steps.env.outputs.IMG }}
+            DOCKER_IMG=${{ steps.env.outputs.IMG }} docker compose -f docker-compose.dev.yml up -d --force-recreate
             docker image prune -f
