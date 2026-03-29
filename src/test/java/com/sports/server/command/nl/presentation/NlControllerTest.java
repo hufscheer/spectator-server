@@ -19,7 +19,6 @@ import com.sports.server.command.nl.dto.NlProcessResponse;
 import com.sports.server.command.nl.dto.NlRegisterTeamResponse;
 import com.sports.server.command.nl.dto.NlProcessResponse.PlayerPreview;
 import com.sports.server.command.nl.dto.NlProcessResponse.Preview;
-import com.sports.server.command.nl.dto.NlProcessResponse.Summary;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;

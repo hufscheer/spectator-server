@@ -245,7 +245,9 @@ public class NlService {
                 .toList();
         Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers);
 
+        Set<String> seenStudentNumbers = new HashSet<>();
         List<PlayerPreview> playerPreviews = request.players().stream()
+                .filter(p -> seenStudentNumbers.add(p.studentNumber()))
                 .map(p -> classifyPlayer(
                         new ParsedPlayer(p.name(), p.studentNumber(), p.jerseyNumber()),
                         existingPlayerMap.get(p.studentNumber()),
