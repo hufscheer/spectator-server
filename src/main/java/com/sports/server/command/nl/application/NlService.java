@@ -242,7 +242,7 @@ public class NlService {
     public NlCheckDuplicatesResponse checkDuplicates(NlCheckDuplicatesRequest request) {
         Map<String, Player> existingPlayerMap = findExistingPlayerMap(request.studentNumbers());
         List<NlCheckDuplicatesResponse.DuplicatePlayer> duplicates = existingPlayerMap.values().stream()
-                .map(p -> new NlCheckDuplicatesResponse.DuplicatePlayer(p.getStudentNumber(), p.getName()))
+                .map(NlCheckDuplicatesResponse.DuplicatePlayer::from)
                 .toList();
         return new NlCheckDuplicatesResponse(duplicates);
     }
