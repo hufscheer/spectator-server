@@ -240,8 +240,8 @@ public class NlService {
 
     @Transactional(readOnly = true)
     public NlCheckDuplicatesResponse checkDuplicates(NlCheckDuplicatesRequest request) {
-        List<Player> existingPlayers = playerRepository.findByStudentNumberIn(request.studentNumbers());
-        List<NlCheckDuplicatesResponse.DuplicatePlayer> duplicates = existingPlayers.stream()
+        Map<String, Player> existingPlayerMap = findExistingPlayerMap(request.studentNumbers());
+        List<NlCheckDuplicatesResponse.DuplicatePlayer> duplicates = existingPlayerMap.values().stream()
                 .map(p -> new NlCheckDuplicatesResponse.DuplicatePlayer(p.getStudentNumber(), p.getName()))
                 .toList();
         return new NlCheckDuplicatesResponse(duplicates);

@@ -481,4 +481,49 @@ class NlServiceTest {
             verify(playerService, times(1)).register(any());
         }
     }
+
+    @Nested
+    @DisplayName("checkDuplicates - 학번 중복 체크")
+    class CheckDuplicates {
+
+        @Test
+        @DisplayName("중복 학번이 있으면 해당 선수 정보를 반환한다")
+        void 중복_학번_반환() {
+            // given
+            NlCheckDuplicatesRequest request = new NlCheckDuplicatesRequest(
+                    List.of("202600001", "202600002")
+            );
+
+            Player existingPlayer = mock(Player.class);
+            given(existingPlayer.getStudentNumber()).willReturn("202600001");
+            given(existingPlayer.getName()).willReturn("홍길동");
+
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+
+            // when
+            NlCheckDuplicatesResponse response = nlService.checkDuplicates(request);
+
+            // then
+            assertThat(response.duplicates()).hasSize(1);
+            assertThat(response.duplicates().get(0).studentNumber()).isEqualTo("202600001");
+            assertThat(response.duplicates().get(0).name()).isEqualTo("홍길동");
+        }
+
+        @Test
+        @DisplayName("중복 학번이 없으면 빈 리스트를 반환한다")
+        void 중복_없으면_빈_리스트() {
+            // given
+            NlCheckDuplicatesRequest request = new NlCheckDuplicatesRequest(
+                    List.of("202600001", "202600002")
+            );
+
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+
+            // when
+            NlCheckDuplicatesResponse response = nlService.checkDuplicates(request);
+
+            // then
+            assertThat(response.duplicates()).isEmpty();
+        }
+    }
 }

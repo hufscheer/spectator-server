@@ -11,6 +11,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.nl.domain.PlayerStatus;
+import com.sports.server.command.nl.dto.NlCheckDuplicatesResponse;
 import com.sports.server.command.nl.dto.NlExecuteResponse;
 import com.sports.server.command.nl.dto.NlParseResponse;
 import com.sports.server.command.nl.dto.NlProcessResponse;
@@ -188,6 +189,38 @@ public class NlControllerTest extends DocumentationTest {
                                 fieldWithPath("result.created").type(JsonFieldType.NUMBER).description("신규 생성된 선수 수"),
                                 fieldWithPath("result.assigned").type(JsonFieldType.NUMBER).description("팀에 배정된 선수 수"),
                                 fieldWithPath("result.skipped").type(JsonFieldType.NUMBER).description("건너뛴 선수 수")
+                        )
+                ));
+    }
+
+    @Test
+    void 학번_중복_여부를_확인한다() throws Exception {
+        // given
+        NlCheckDuplicatesResponse response = new NlCheckDuplicatesResponse(
+                List.of(new NlCheckDuplicatesResponse.DuplicatePlayer("202600001", "홍길동"))
+        );
+
+        given(nlService.checkDuplicates(any())).willReturn(response);
+
+        Map<String, Object> request = Map.of(
+                "studentNumbers", List.of("202600001", "202600002")
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/nl/check-duplicates")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        requestFields(
+                                fieldWithPath("studentNumbers").type(JsonFieldType.ARRAY).description("확인할 학번 목록")
+                        ),
+                        responseFields(
+                                fieldWithPath("duplicates[].studentNumber").type(JsonFieldType.STRING).description("중복된 학번"),
+                                fieldWithPath("duplicates[].name").type(JsonFieldType.STRING).description("기존 선수 이름")
                         )
                 ));
     }
