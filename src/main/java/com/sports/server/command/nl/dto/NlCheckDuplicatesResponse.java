@@ -1,17 +1,25 @@
 package com.sports.server.command.nl.dto;
 
-import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.nl.domain.PlayerStatus;
 import java.util.List;
 
 public record NlCheckDuplicatesResponse(
-        List<DuplicatePlayer> duplicates
+        List<PlayerPreview> players,
+        Summary summary
 ) {
-    public record DuplicatePlayer(
+    public record PlayerPreview(
+            String name,
             String studentNumber,
-            String name
+            Integer jerseyNumber,
+            PlayerStatus status,
+            Long existingPlayerId
     ) {
-        public static DuplicatePlayer from(Player player) {
-            return new DuplicatePlayer(player.getStudentNumber(), player.getName());
-        }
+    }
+
+    public record Summary(
+            int total,
+            int newPlayers,
+            int existingPlayers
+    ) {
     }
 }

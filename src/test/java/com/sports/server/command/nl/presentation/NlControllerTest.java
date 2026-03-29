@@ -197,13 +197,20 @@ public class NlControllerTest extends DocumentationTest {
     void 학번_중복_여부를_확인한다() throws Exception {
         // given
         NlCheckDuplicatesResponse response = new NlCheckDuplicatesResponse(
-                List.of(new NlCheckDuplicatesResponse.DuplicatePlayer("202600001", "홍길동"))
+                List.of(
+                        new NlCheckDuplicatesResponse.PlayerPreview("홍길동", "202600001", 10, PlayerStatus.EXISTS, 42L),
+                        new NlCheckDuplicatesResponse.PlayerPreview("김철수", "202600002", 7, PlayerStatus.NEW, null)
+                ),
+                new NlCheckDuplicatesResponse.Summary(2, 1, 1)
         );
 
         given(nlService.checkDuplicates(any())).willReturn(response);
 
         Map<String, Object> request = Map.of(
-                "studentNumbers", List.of("202600001", "202600002")
+                "players", List.of(
+                        Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10),
+                        Map.of("name", "김철수", "studentNumber", "202600002", "jerseyNumber", 7)
+                )
         );
 
         // when
@@ -216,11 +223,19 @@ public class NlControllerTest extends DocumentationTest {
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                         requestFields(
-                                fieldWithPath("studentNumbers").type(JsonFieldType.ARRAY).description("확인할 학번 목록")
+                                fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("players[].studentNumber").type(JsonFieldType.STRING).description("학번"),
+                                fieldWithPath("players[].jerseyNumber").type(JsonFieldType.NUMBER).description("등번호")
                         ),
                         responseFields(
-                                fieldWithPath("duplicates[].studentNumber").type(JsonFieldType.STRING).description("중복된 학번"),
-                                fieldWithPath("duplicates[].name").type(JsonFieldType.STRING).description("기존 선수 이름")
+                                fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("players[].studentNumber").type(JsonFieldType.STRING).description("학번"),
+                                fieldWithPath("players[].jerseyNumber").type(JsonFieldType.NUMBER).description("등번호"),
+                                fieldWithPath("players[].status").type(JsonFieldType.STRING).description("상태 (NEW/EXISTS)"),
+                                fieldWithPath("players[].existingPlayerId").type(JsonFieldType.NUMBER).description("기존 선수 ID (NEW면 null)").optional(),
+                                fieldWithPath("summary.total").type(JsonFieldType.NUMBER).description("전체 선수 수"),
+                                fieldWithPath("summary.newPlayers").type(JsonFieldType.NUMBER).description("신규 선수 수"),
+                                fieldWithPath("summary.existingPlayers").type(JsonFieldType.NUMBER).description("기존 선수 수")
                         )
                 ));
     }

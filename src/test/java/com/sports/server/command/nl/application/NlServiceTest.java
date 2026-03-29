@@ -487,16 +487,19 @@ class NlServiceTest {
     class CheckDuplicates {
 
         @Test
-        @DisplayName("중복 학번이 있으면 해당 선수 정보를 반환한다")
-        void 중복_학번_반환() {
+        @DisplayName("중복 학번이 있으면 EXISTS로 표시한다")
+        void 중복_학번_EXISTS() {
             // given
             NlCheckDuplicatesRequest request = new NlCheckDuplicatesRequest(
-                    List.of("202600001", "202600002")
+                    List.of(
+                            new NlCheckDuplicatesRequest.PlayerData("홍길동", "202600001", 10),
+                            new NlCheckDuplicatesRequest.PlayerData("김철수", "202600002", 7)
+                    )
             );
 
             Player existingPlayer = mock(Player.class);
+            given(existingPlayer.getId()).willReturn(42L);
             given(existingPlayer.getStudentNumber()).willReturn("202600001");
-            given(existingPlayer.getName()).willReturn("홍길동");
 
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
 
@@ -504,17 +507,23 @@ class NlServiceTest {
             NlCheckDuplicatesResponse response = nlService.checkDuplicates(request);
 
             // then
-            assertThat(response.duplicates()).hasSize(1);
-            assertThat(response.duplicates().get(0).studentNumber()).isEqualTo("202600001");
-            assertThat(response.duplicates().get(0).name()).isEqualTo("홍길동");
+            assertThat(response.players()).hasSize(2);
+            assertThat(response.players().get(0).status()).isEqualTo(PlayerStatus.EXISTS);
+            assertThat(response.players().get(0).existingPlayerId()).isEqualTo(42L);
+            assertThat(response.players().get(1).status()).isEqualTo(PlayerStatus.NEW);
+            assertThat(response.players().get(1).existingPlayerId()).isNull();
+            assertThat(response.summary().newPlayers()).isEqualTo(1);
+            assertThat(response.summary().existingPlayers()).isEqualTo(1);
         }
 
         @Test
-        @DisplayName("중복 학번이 없으면 빈 리스트를 반환한다")
-        void 중복_없으면_빈_리스트() {
+        @DisplayName("중복 학번이 없으면 전부 NEW로 표시한다")
+        void 중복_없으면_전부_NEW() {
             // given
             NlCheckDuplicatesRequest request = new NlCheckDuplicatesRequest(
-                    List.of("202600001", "202600002")
+                    List.of(
+                            new NlCheckDuplicatesRequest.PlayerData("홍길동", "202600001", 10)
+                    )
             );
 
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
@@ -523,7 +532,10 @@ class NlServiceTest {
             NlCheckDuplicatesResponse response = nlService.checkDuplicates(request);
 
             // then
-            assertThat(response.duplicates()).isEmpty();
+            assertThat(response.players()).hasSize(1);
+            assertThat(response.players().get(0).status()).isEqualTo(PlayerStatus.NEW);
+            assertThat(response.summary().newPlayers()).isEqualTo(1);
+            assertThat(response.summary().existingPlayers()).isEqualTo(0);
         }
     }
 }
