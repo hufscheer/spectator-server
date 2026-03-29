@@ -11,13 +11,14 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.nl.domain.PlayerStatus;
+import com.sports.server.command.nl.dto.NlCheckDuplicatesResponse;
 import com.sports.server.command.nl.dto.NlExecuteResponse;
+import com.sports.server.command.nl.dto.NlProcessResponse.Summary;
 import com.sports.server.command.nl.dto.NlParseResponse;
 import com.sports.server.command.nl.dto.NlProcessResponse;
 import com.sports.server.command.nl.dto.NlRegisterTeamResponse;
 import com.sports.server.command.nl.dto.NlProcessResponse.PlayerPreview;
 import com.sports.server.command.nl.dto.NlProcessResponse.Preview;
-import com.sports.server.command.nl.dto.NlProcessResponse.Summary;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
@@ -188,6 +189,54 @@ public class NlControllerTest extends DocumentationTest {
                                 fieldWithPath("result.created").type(JsonFieldType.NUMBER).description("신규 생성된 선수 수"),
                                 fieldWithPath("result.assigned").type(JsonFieldType.NUMBER).description("팀에 배정된 선수 수"),
                                 fieldWithPath("result.skipped").type(JsonFieldType.NUMBER).description("건너뛴 선수 수")
+                        )
+                ));
+    }
+
+    @Test
+    void 학번_중복_여부를_확인한다() throws Exception {
+        // given
+        NlCheckDuplicatesResponse response = new NlCheckDuplicatesResponse(
+                List.of(
+                        new PlayerPreview("홍길동", "202600001", 10, PlayerStatus.EXISTS, 42L),
+                        new PlayerPreview("김철수", "202600002", 7, PlayerStatus.NEW, null)
+                ),
+                new Summary(2, 1, 1, 0)
+        );
+
+        given(nlService.checkDuplicates(any())).willReturn(response);
+
+        Map<String, Object> request = Map.of(
+                "players", List.of(
+                        Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10),
+                        Map.of("name", "김철수", "studentNumber", "202600002", "jerseyNumber", 7)
+                )
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/nl/check-duplicates")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        requestFields(
+                                fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("players[].studentNumber").type(JsonFieldType.STRING).description("학번"),
+                                fieldWithPath("players[].jerseyNumber").type(JsonFieldType.NUMBER).description("등번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("players[].studentNumber").type(JsonFieldType.STRING).description("학번"),
+                                fieldWithPath("players[].jerseyNumber").type(JsonFieldType.NUMBER).description("등번호"),
+                                fieldWithPath("players[].status").type(JsonFieldType.STRING).description("상태 (NEW/EXISTS)"),
+                                fieldWithPath("players[].existingPlayerId").type(JsonFieldType.NUMBER).description("기존 선수 ID (NEW면 null)").optional(),
+                                fieldWithPath("summary.total").type(JsonFieldType.NUMBER).description("전체 선수 수"),
+                                fieldWithPath("summary.newPlayers").type(JsonFieldType.NUMBER).description("신규 선수 수"),
+                                fieldWithPath("summary.existingPlayers").type(JsonFieldType.NUMBER).description("기존 선수 수"),
+                                fieldWithPath("summary.alreadyInTeam").type(JsonFieldType.NUMBER).description("이미 팀에 소속된 선수 수")
                         )
                 ));
     }

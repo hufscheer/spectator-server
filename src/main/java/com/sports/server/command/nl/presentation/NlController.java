@@ -2,6 +2,8 @@ package com.sports.server.command.nl.presentation;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.nl.application.NlService;
+import com.sports.server.command.nl.dto.NlCheckDuplicatesRequest;
+import com.sports.server.command.nl.dto.NlCheckDuplicatesResponse;
 import com.sports.server.command.nl.dto.NlExecuteRequest;
 import com.sports.server.command.nl.dto.NlExecuteResponse;
 import com.sports.server.command.nl.dto.NlParseRequest;
@@ -39,6 +41,12 @@ public class NlController {
     public ResponseEntity<NlRegisterTeamResponse> registerTeamWithPlayers(
             @Valid @RequestBody NlRegisterTeamRequest request) {
         return ResponseEntity.ok(nlService.registerTeamWithPlayers(request));
+    }
+
+    @PostMapping("/check-duplicates")
+    public ResponseEntity<NlCheckDuplicatesResponse> checkDuplicates(
+            @Valid @RequestBody NlCheckDuplicatesRequest request) {
+        return ResponseEntity.ok(nlService.checkDuplicates(request));
     }
 
     @PostMapping("/execute")

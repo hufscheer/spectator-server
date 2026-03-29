@@ -238,6 +238,26 @@ public class NlService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public NlCheckDuplicatesResponse checkDuplicates(NlCheckDuplicatesRequest request) {
+        List<String> studentNumbers = request.players().stream()
+                .map(NlCheckDuplicatesRequest.PlayerData::studentNumber)
+                .toList();
+        Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers);
+
+        Set<String> seenStudentNumbers = new HashSet<>();
+        List<PlayerPreview> playerPreviews = request.players().stream()
+                .filter(p -> seenStudentNumbers.add(p.studentNumber()))
+                .map(p -> classifyPlayer(
+                        new ParsedPlayer(p.name(), p.studentNumber(), p.jerseyNumber()),
+                        existingPlayerMap.get(p.studentNumber()),
+                        Collections.emptySet()))
+                .toList();
+
+        Summary summary = buildSummary(playerPreviews);
+        return new NlCheckDuplicatesResponse(playerPreviews, summary);
+    }
+
     // --- registerTeamWithPlayers 전용 ---
 
     private Team createTeam(NlRegisterTeamRequest request) {
