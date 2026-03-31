@@ -15,12 +15,15 @@ import java.util.Map;
 public class SlackAlertClient implements AlertService {
 
     private final String webhookUrl;
+    private final String profile;
     private final WebClient webClient;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public SlackAlertClient(@Value("${slack.webhook.url:}") String webhookUrl) {
+    public SlackAlertClient(@Value("${slack.webhook.url:}") String webhookUrl,
+                            @Value("${spring.profiles.active:unknown}") String profile) {
         this.webhookUrl = webhookUrl;
+        this.profile = profile.toUpperCase();
         this.webClient = WebClient.create();
     }
 
@@ -33,11 +36,11 @@ public class SlackAlertClient implements AlertService {
         String timestamp = LocalDateTime.now().format(FORMATTER);
         String exceptionName = exception.getClass().getSimpleName();
         String text = String.format(
-                ":rotating_light: *[500 ERROR]* `%s %s`\n" +
+                ":rotating_light: *[%s 500 ERROR]* `%s %s`\n" +
                 "*Exception:* `%s`\n" +
                 "*Message:* %s\n" +
                 "*Time:* %s",
-                method, path, exceptionName, errorMessage, timestamp
+                profile, method, path, exceptionName, errorMessage, timestamp
         );
 
         try {
