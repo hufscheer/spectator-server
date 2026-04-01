@@ -21,16 +21,19 @@ public abstract class TimelineRequest {
     public static class RegisterScore extends TimelineRequest {
         private final Long gameTeamId;
         private final Long scoreLineupPlayerId;
+        private final Long assistLineupPlayerId;
 
         public RegisterScore(
                 Long gameTeamId,
                 Quarter recordedQuarter,
                 Long scoreLineupPlayerId,
-                Integer recordedAt
+                Integer recordedAt,
+                Long assistLineupPlayerId
         ) {
             super(recordedQuarter, recordedAt);
             this.gameTeamId = gameTeamId;
             this.scoreLineupPlayerId = scoreLineupPlayerId;
+            this.assistLineupPlayerId = assistLineupPlayerId;
         }
 
         @Override
