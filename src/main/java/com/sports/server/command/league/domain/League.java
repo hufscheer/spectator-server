@@ -77,7 +77,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.endAt = endAt;
         this.maxRound = maxRound;
         this.inProgressRound = maxRound;
-        this.sportType = SportType.SOCCER;
+        this.sportType = SportType.SOCCER; // TODO: 후속 작업에서 파라미터로 받도록 수정
         this.isDeleted = false;
     }
 
