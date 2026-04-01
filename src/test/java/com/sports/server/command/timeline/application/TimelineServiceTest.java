@@ -153,6 +153,20 @@ class TimelineServiceTest extends ServiceTest {
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
                     .isInstanceOf(BadRequestException.class);
         }
+
+        @Test
+        void 득점_선수_본인을_어시스트로_등록하면_예외가_발생한다() {
+            // given
+            Long team1Id = 1L;
+            Long scorerId = 1L;
+
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, Quarter.SECOND_HALF,
+                    scorerId, 3, scorerId);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
     }
 
     @DisplayName("교체 타임라인을")

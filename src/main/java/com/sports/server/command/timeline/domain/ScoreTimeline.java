@@ -65,7 +65,8 @@ public class ScoreTimeline extends Timeline {
             LineupPlayer scorer,
             LineupPlayer assistLineupPlayer
     ) {
-        if (assistLineupPlayer != null && !scorer.isSameTeam(assistLineupPlayer)) {
+        if (assistLineupPlayer != null
+                && (!scorer.isSameTeam(assistLineupPlayer) || scorer.getId().equals(assistLineupPlayer.getId()))) {
             throw new BadRequestException(ExceptionMessages.INVALID_ASSIST_PLAYER);
         }
 
