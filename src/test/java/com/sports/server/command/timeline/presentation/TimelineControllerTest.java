@@ -29,7 +29,8 @@ public class TimelineControllerTest extends DocumentationTest {
                 1L,
                 Quarter.FIRST_HALF,
                 1L,
-                10
+                10,
+                null
         );
 
         // when
@@ -49,7 +50,8 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
                                 fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
-                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간")
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
+                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional()
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
