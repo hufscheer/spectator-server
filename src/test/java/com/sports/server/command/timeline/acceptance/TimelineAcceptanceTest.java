@@ -33,7 +33,8 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 team1Id,
                 Quarter.FIRST_HALF,
                 team1PlayerId,
-                3
+                3,
+                null
         );
 
         // when
@@ -48,6 +49,60 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 어시스트와_함께_득점_타임라인을_생성한다() {
+        // given
+        long assistPlayerId = 2L; // 팀1 소속 선수
+
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+                team1Id,
+                Quarter.FIRST_HALF,
+                team1PlayerId,
+                3,
+                assistPlayerId
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/score", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 다른_팀_선수를_어시스트로_등록하면_400을_반환한다() {
+        // given
+        long team2PlayerId = 6L; // 팀2 소속 선수 (팀1 득점 타임라인에 어시스트로 등록 시도)
+
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+                team1Id,
+                Quarter.FIRST_HALF,
+                team1PlayerId,
+                3,
+                team2PlayerId
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/score", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

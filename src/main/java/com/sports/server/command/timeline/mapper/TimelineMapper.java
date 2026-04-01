@@ -37,11 +37,16 @@ public class TimelineMapper {
 
     private ScoreTimeline toScoreTimeline(Game game,
                                           TimelineRequest.RegisterScore scoreRequest) {
+        LineupPlayer assist = scoreRequest.getAssistLineupPlayerId() != null
+                ? getPlayer(scoreRequest.getAssistLineupPlayerId())
+                : null;
+
         return ScoreTimeline.score(
                 game,
                 scoreRequest.getRecordedQuarter(),
                 scoreRequest.getRecordedAt(),
-                getPlayer(scoreRequest.getScoreLineupPlayerId())
+                getPlayer(scoreRequest.getScoreLineupPlayerId()),
+                assist
         );
     }
 
