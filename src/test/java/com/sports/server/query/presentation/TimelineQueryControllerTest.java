@@ -51,7 +51,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
-                                        )),
+                                        ), null),
                                         new ReplacementRecordResponse(1L, "선수3"),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_START),
                                         new PkRecordResponse(1L, true),
@@ -69,7 +69,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
-                                        )),
+                                        ), null),
                                         new ReplacementRecordResponse(1L, "선수3"),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                         new PkRecordResponse(4L, false),
@@ -114,6 +114,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이미지"),
                                 fieldWithPath("[].records[].scoreRecord.snapshot[].score").type(JsonFieldType.NUMBER)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 점수"),
+                                fieldWithPath("[].records[].scoreRecord.assistPlayerName").type(JsonFieldType.NULL)
+                                        .description("SCORE 타입일 때 어시스트 선수 이름 (없으면 null)").optional(),
                                 fieldWithPath("[].records[].replacementRecord.replacementRecordId").type(
                                                 JsonFieldType.NUMBER)
                                         .description("REPLACEMENT 타입 기록의  ID"),
