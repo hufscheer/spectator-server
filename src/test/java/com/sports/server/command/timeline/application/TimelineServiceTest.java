@@ -10,6 +10,7 @@ import com.sports.server.command.timeline.TimelineFixtureRepository;
 import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -62,7 +63,7 @@ class TimelineServiceTest extends ServiceTest {
         Long team1PlayerId = 1L;
 
         TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, Quarter.SECOND_HALF,
-                team1PlayerId, 3);
+                team1PlayerId, 3, null);
 
         // when & then
         assertThatThrownBy(() -> timelineService.register(nonManager, gameId, request)).isInstanceOf(
@@ -80,7 +81,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1PlayerId = 1L;
 
             TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, Quarter.SECOND_HALF,
-                    team1PlayerId, 3);
+                    team1PlayerId, 3, null);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -103,7 +104,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team2PlayerId = 6L;
 
             TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team2Id, Quarter.SECOND_HALF,
-                    team2PlayerId, 5);
+                    team2PlayerId, 5, null);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -116,6 +117,41 @@ class TimelineServiceTest extends ServiceTest {
                     () -> assertThat(actual.getSnapshotScore2()).isEqualTo(11),
                     () -> assertThat(actual.getRecordedQuarter()).isEqualTo(Quarter.SECOND_HALF),
                     () -> assertThat(actual.getRecordedAt()).isEqualTo(5));
+        }
+
+        @Test
+        void 같은_팀_선수를_어시스트로_등록한다() {
+            // given
+            Long team1Id = 1L;
+            Long scorerId = 1L;
+            Long assistId = 2L; // 같은 팀1 소속 선수
+
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, Quarter.SECOND_HALF,
+                    scorerId, 3, assistId);
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId).get(0);
+
+            assertAll(() -> assertThat(actual.getScorer().getId()).isEqualTo(scorerId),
+                    () -> assertThat(actual.getAssistLineupPlayer().getId()).isEqualTo(assistId));
+        }
+
+        @Test
+        void 다른_팀_선수를_어시스트로_등록하면_예외가_발생한다() {
+            // given
+            Long team1Id = 1L;
+            Long scorerId = 1L;   // 팀1 선수
+            Long assistId = 6L;   // 팀2 선수
+
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, Quarter.SECOND_HALF,
+                    scorerId, 3, assistId);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
+                    .isInstanceOf(BadRequestException.class);
         }
     }
 
@@ -287,7 +323,7 @@ class TimelineServiceTest extends ServiceTest {
         Long finishedGameId = 2L;
 
         TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, Quarter.SECOND_HALF,
-                team1PlayerId, 3);
+                team1PlayerId, 3, null);
 
         // when & then
         assertThatThrownBy(() -> timelineService.register(manager, finishedGameId, request)).isInstanceOf(
@@ -311,7 +347,7 @@ class TimelineServiceTest extends ServiceTest {
             // given
             AtomicInteger successCount = new AtomicInteger(0);
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(1L, Quarter.SECOND_HALF, 1L, 1);
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(1L, Quarter.SECOND_HALF, 1L, 1, null);
 
             int initialScore1 = 15;
             int initialScore2 = 10;
