@@ -132,13 +132,18 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
         return queryFactory.selectFrom(cheerTalk)
                 .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
                 .join(game).on(gameTeam.game.id.eq(game.id))
-                .where(game.league.id.eq(leagueId));
+                .join(league).on(game.league.id.eq(league.id))
+                .where(league.id.eq(leagueId))
+                .where(league.isDeleted.isFalse());
     }
 
     private JPAQuery<CheerTalk> baseQueryByGame(Long gameId) {
         return queryFactory.selectFrom(cheerTalk)
                 .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                .where(gameTeam.game.id.eq(gameId));
+                .join(game).on(gameTeam.game.id.eq(game.id))
+                .join(league).on(game.league.id.eq(league.id))
+                .where(game.id.eq(gameId))
+                .where(league.isDeleted.isFalse());
     }
 
     private List<CheerTalk> applyPagination(JPAQuery<CheerTalk> query, Long cursor, Integer size) {
