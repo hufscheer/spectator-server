@@ -246,7 +246,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
 		);
 
-		given(cheerTalkQueryService.getReportedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto)))
+		given(cheerTalkQueryService.getReportedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto), any(Member.class)))
 			.willReturn(response);
 
 		// when
@@ -297,7 +297,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
 		);
 
-		given(cheerTalkQueryService.getUnblockedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto)))
+		given(cheerTalkQueryService.getUnblockedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto), any(Member.class)))
 			.willReturn(response);
 
 		// when
@@ -348,7 +348,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 		);
 
 		doReturn(response).when(cheerTalkQueryService)
-			.getBlockedCheerTalksByLeagueId(eq(leagueId), any(PageRequestDto.class));
+			.getBlockedCheerTalksByLeagueId(eq(leagueId), any(PageRequestDto.class), any(Member.class));
 
 		// when
 		ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/cheer-talks/blocked", leagueId)
@@ -398,7 +398,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
 		);
 
-		given(cheerTalkQueryService.getReportedCheerTalksByGameId(eq(gameId), eq(pageRequestDto)))
+		given(cheerTalkQueryService.getReportedCheerTalksByGameId(eq(gameId), eq(pageRequestDto), any(Member.class)))
 			.willReturn(response);
 
 		// when
@@ -449,7 +449,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 		);
 
 		doReturn(response).when(cheerTalkQueryService)
-			.getBlockedCheerTalksByGameId(eq(gameId), any(PageRequestDto.class));
+			.getBlockedCheerTalksByGameId(eq(gameId), any(PageRequestDto.class), any(Member.class));
 
 		// when
 		ResultActions result = mockMvc.perform(get("/games/{gameId}/cheer-talks/blocked", gameId)
