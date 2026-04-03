@@ -18,4 +18,8 @@ public interface CheerTalkDynamicRepository {
     List<CheerTalk> findUnblockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size);
 
     List<CheerTalk> findBlockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size);
+
+    List<CheerTalk> findReportedCheerTalksByGameId(Long gameId, Long cursor, Integer size);
+
+    List<CheerTalk> findBlockedCheerTalksByGameId(Long gameId, Long cursor, Integer size);
 }

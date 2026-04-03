@@ -96,4 +96,24 @@ public class CheerTalkQueryService {
 			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
 				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
+
+	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
+		List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByGameId(
+				gameId, pageRequest.cursor(), pageRequest.size()
+		);
+
+		return reportedCheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+	}
+
+	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
+		List<CheerTalk> blockedCheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByGameId(
+				gameId, pageRequest.cursor(), pageRequest.size()
+		);
+
+		return blockedCheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+	}
 }
