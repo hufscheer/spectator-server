@@ -10,12 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
+import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.dto.PageRequestDto;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.GameTeamGameInfoDto;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.query.repository.CheerTalkDynamicRepository;
 import com.sports.server.query.repository.GameQueryRepository;
+import com.sports.server.query.repository.LeagueQueryRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +31,7 @@ public class CheerTalkQueryService {
 
 	private final CheerTalkDynamicRepository cheerTalkDynamicRepository;
 	private final GameQueryRepository gameQueryRepository;
+	private final LeagueQueryRepository leagueQueryRepository;
 
 	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
@@ -61,39 +67,59 @@ public class CheerTalkQueryService {
 		return toForManagerResponses(cheerTalks);
 	}
 
-	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest) {
+	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
+		League league = getLeague(leagueId);
+		PermissionValidator.checkPermission(league, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
 				leagueId, pageRequest.cursor(), pageRequest.size()
 		);
 		return toForManagerResponses(cheerTalks);
 	}
 
-	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest) {
+	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
+		League league = getLeague(leagueId);
+		PermissionValidator.checkPermission(league, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
 				leagueId, pageRequest.cursor(), pageRequest.size()
 		);
 		return toForManagerResponses(cheerTalks);
 	}
 
-	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest) {
+	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
+		League league = getLeague(leagueId);
+		PermissionValidator.checkPermission(league, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByLeagueId(
 				leagueId, pageRequest.cursor(), pageRequest.size()
 		);
 		return toForManagerResponses(cheerTalks);
 	}
 
-	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
+	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest, final Member member) {
+		Game game = getGame(gameId);
+		PermissionValidator.checkPermission(game, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByGameId(
 				gameId, pageRequest.cursor(), pageRequest.size()
 		);
 		return toForManagerResponses(cheerTalks);
 	}
 
-	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
+	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest, final Member member) {
+		Game game = getGame(gameId);
+		PermissionValidator.checkPermission(game, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByGameId(
 				gameId, pageRequest.cursor(), pageRequest.size()
 		);
 		return toForManagerResponses(cheerTalks);
+	}
+
+	private League getLeague(Long leagueId) {
+		return leagueQueryRepository.findById(leagueId)
+				.orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다."));
+	}
+
+	private Game getGame(Long gameId) {
+		return gameQueryRepository.findById(gameId)
+				.orElseThrow(() -> new NotFoundException("존재하지 않는 경기입니다."));
 	}
 
 	private List<CheerTalkResponse.ForManager> toForManagerResponses(List<CheerTalk> cheerTalks) {

@@ -12,6 +12,8 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 public interface GameQueryRepository extends Repository<Game, Long> {
+    Optional<Game> findById(Long id);
+
     @Query(
             "SELECT g FROM Game g "
                     + "JOIN FETCH g.gameTeams "
