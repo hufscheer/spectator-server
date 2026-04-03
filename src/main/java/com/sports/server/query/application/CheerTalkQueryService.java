@@ -66,4 +66,34 @@ public class CheerTalkQueryService {
 			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
 				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
 	}
+
+	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest) {
+		List<CheerTalk> reportedCheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
+				leagueId, pageRequest.cursor(), pageRequest.size()
+		);
+
+		return reportedCheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+	}
+
+	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest) {
+		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
+				leagueId, pageRequest.cursor(), pageRequest.size()
+		);
+
+		return cheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+	}
+
+	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest) {
+		List<CheerTalk> blockedCheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByLeagueId(
+				leagueId, pageRequest.cursor(), pageRequest.size()
+		);
+
+		return blockedCheerTalks.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForManager(cheerTalk,
+				gameQueryRepository.findByGameTeamIdWithLeague(cheerTalk.getGameTeamId()))).toList();
+	}
 }
