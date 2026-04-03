@@ -2,6 +2,7 @@ package com.sports.server.query.repository;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.query.dto.GameTeamGameInfoDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,15 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "WHERE gt.id = :gameTeamId"
     )
     Game findByGameTeamIdWithLeague(@Param("gameTeamId") Long gameTeamId);
+
+    @Query(
+            "SELECT new com.sports.server.query.dto.GameTeamGameInfoDto(gt.id, g.id, g.name, l.id, l.name) "
+                    + "FROM Game g "
+                    + "JOIN g.league l "
+                    + "JOIN g.gameTeams gt "
+                    + "WHERE gt.id IN :gameTeamIds"
+    )
+    List<GameTeamGameInfoDto> findGameInfoByGameTeamIds(@Param("gameTeamIds") List<Long> gameTeamIds);
 
     @Query(
             "SELECT g FROM Game g "
