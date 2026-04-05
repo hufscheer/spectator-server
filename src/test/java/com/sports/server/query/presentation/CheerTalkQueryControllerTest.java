@@ -233,4 +233,257 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 			));
 	}
 
+	@Test
+	void 리그별_신고된_응원톡을_조회한다() throws Exception {
+		// given
+		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+		Long leagueId = 1L;
+		PageRequestDto pageRequestDto = new PageRequestDto(1L, 2);
+
+		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
+		List<CheerTalkResponse.ForManager> response = List.of(
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
+		);
+
+		given(cheerTalkQueryService.getReportedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto), any(Member.class)))
+			.willReturn(response);
+
+		// when
+		ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
+			.queryParam("cursor", String.valueOf(1))
+			.queryParam("size", String.valueOf(2))
+			.contentType(MediaType.APPLICATION_JSON)
+			.cookie(cookie)
+		);
+
+		// then
+		result.andExpect(status().isOk())
+			.andDo(restDocsHandler.document(
+				requestCookies(
+					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+				),
+				pathParameters(
+					parameterWithName("leagueId").description("리그의 ID")
+				),
+				queryParameters(
+					parameterWithName("cursor").description("마지막 응원톡의 ID"),
+					parameterWithName("size").description("조회하고자 하는 응원톡의 개수")
+				),
+				responseFields(
+					fieldWithPath("[].cheerTalkId").type(JsonFieldType.NUMBER).description("응원톡의 ID"),
+					fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 게임의 ID"),
+					fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 리그의 ID"),
+					fieldWithPath("[].content").type(JsonFieldType.STRING).description("응원톡의 내용"),
+					fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("응원톡에 해당하는 게임팀의 ID"),
+					fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
+					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
+					fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
+					fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+				)
+			));
+	}
+
+	@Test
+	void 리그별_가려지지_않은_응원톡을_조회한다() throws Exception {
+		// given
+		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+		Long leagueId = 1L;
+		PageRequestDto pageRequestDto = new PageRequestDto(1L, 2);
+
+		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
+		List<CheerTalkResponse.ForManager> response = List.of(
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
+		);
+
+		given(cheerTalkQueryService.getUnblockedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto), any(Member.class)))
+			.willReturn(response);
+
+		// when
+		ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/cheer-talks", leagueId)
+			.queryParam("cursor", String.valueOf(1))
+			.queryParam("size", String.valueOf(2))
+			.contentType(MediaType.APPLICATION_JSON)
+			.cookie(cookie)
+		);
+
+		// then
+		result.andExpect(status().isOk())
+			.andDo(restDocsHandler.document(
+				requestCookies(
+					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+				),
+				pathParameters(
+					parameterWithName("leagueId").description("리그의 ID")
+				),
+				queryParameters(
+					parameterWithName("cursor").description("마지막 응원톡의 ID"),
+					parameterWithName("size").description("조회하고자 하는 응원톡의 개수")
+				),
+				responseFields(
+					fieldWithPath("[].cheerTalkId").type(JsonFieldType.NUMBER).description("응원톡의 ID"),
+					fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 게임의 ID"),
+					fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 리그의 ID"),
+					fieldWithPath("[].content").type(JsonFieldType.STRING).description("응원톡의 내용"),
+					fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("응원톡에 해당하는 게임팀의 ID"),
+					fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
+					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
+					fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
+					fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+				)
+			));
+	}
+
+	@Test
+	void 리그별_가려진_응원톡을_조회한다() throws Exception {
+		// given
+		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+		Long leagueId = 1L;
+
+		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
+		List<CheerTalkResponse.ForManager> response = List.of(
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "나쁜말", 1L, createdAt, true, "게임 이름", "리그 이름"),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "또나쁜말", 2L, createdAt, true, "게임 이름", "리그 이름")
+		);
+
+		doReturn(response).when(cheerTalkQueryService)
+			.getBlockedCheerTalksByLeagueId(eq(leagueId), any(PageRequestDto.class), any(Member.class));
+
+		// when
+		ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/cheer-talks/blocked", leagueId)
+			.queryParam("cursor", String.valueOf(1))
+			.queryParam("size", String.valueOf(2))
+			.contentType(MediaType.APPLICATION_JSON)
+			.cookie(cookie)
+		);
+
+		// then
+		result.andExpect(status().isOk())
+			.andDo(restDocsHandler.document(
+				requestCookies(
+					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+				),
+				pathParameters(
+					parameterWithName("leagueId").description("리그의 ID")
+				),
+				queryParameters(
+					parameterWithName("cursor").description("마지막 응원톡의 ID"),
+					parameterWithName("size").description("조회하고자 하는 응원톡의 개수")
+				),
+				responseFields(
+					fieldWithPath("[].cheerTalkId").type(JsonFieldType.NUMBER).description("응원톡의 ID"),
+					fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 게임의 ID"),
+					fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 리그의 ID"),
+					fieldWithPath("[].content").type(JsonFieldType.STRING).description("응원톡의 내용"),
+					fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("응원톡에 해당하는 게임팀의 ID"),
+					fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
+					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
+					fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
+					fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+				)
+			));
+	}
+
+	@Test
+	void 경기별_신고된_응원톡을_조회한다() throws Exception {
+		// given
+		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+		Long gameId = 1L;
+		PageRequestDto pageRequestDto = new PageRequestDto(1L, 2);
+
+		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
+		List<CheerTalkResponse.ForManager> response = List.of(
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
+		);
+
+		given(cheerTalkQueryService.getReportedCheerTalksByGameId(eq(gameId), eq(pageRequestDto), any(Member.class)))
+			.willReturn(response);
+
+		// when
+		ResultActions result = mockMvc.perform(get("/games/{gameId}/cheer-talks/reported", gameId)
+			.queryParam("cursor", String.valueOf(1))
+			.queryParam("size", String.valueOf(2))
+			.contentType(MediaType.APPLICATION_JSON)
+			.cookie(cookie)
+		);
+
+		// then
+		result.andExpect(status().isOk())
+			.andDo(restDocsHandler.document(
+				requestCookies(
+					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+				),
+				pathParameters(
+					parameterWithName("gameId").description("경기의 ID")
+				),
+				queryParameters(
+					parameterWithName("cursor").description("마지막 응원톡의 ID"),
+					parameterWithName("size").description("조회하고자 하는 응원톡의 개수")
+				),
+				responseFields(
+					fieldWithPath("[].cheerTalkId").type(JsonFieldType.NUMBER).description("응원톡의 ID"),
+					fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 게임의 ID"),
+					fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 리그의 ID"),
+					fieldWithPath("[].content").type(JsonFieldType.STRING).description("응원톡의 내용"),
+					fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("응원톡에 해당하는 게임팀의 ID"),
+					fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
+					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
+					fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
+					fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+				)
+			));
+	}
+
+	@Test
+	void 경기별_가려진_응원톡을_조회한다() throws Exception {
+		// given
+		Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
+		Long gameId = 1L;
+
+		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
+		List<CheerTalkResponse.ForManager> response = List.of(
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "나쁜말", 1L, createdAt, true, "게임 이름", "리그 이름"),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "또나쁜말", 2L, createdAt, true, "게임 이름", "리그 이름")
+		);
+
+		doReturn(response).when(cheerTalkQueryService)
+			.getBlockedCheerTalksByGameId(eq(gameId), any(PageRequestDto.class), any(Member.class));
+
+		// when
+		ResultActions result = mockMvc.perform(get("/games/{gameId}/cheer-talks/blocked", gameId)
+			.queryParam("cursor", String.valueOf(1))
+			.queryParam("size", String.valueOf(2))
+			.contentType(MediaType.APPLICATION_JSON)
+			.cookie(cookie)
+		);
+
+		// then
+		result.andExpect(status().isOk())
+			.andDo(restDocsHandler.document(
+				requestCookies(
+					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+				),
+				pathParameters(
+					parameterWithName("gameId").description("경기의 ID")
+				),
+				queryParameters(
+					parameterWithName("cursor").description("마지막 응원톡의 ID"),
+					parameterWithName("size").description("조회하고자 하는 응원톡의 개수")
+				),
+				responseFields(
+					fieldWithPath("[].cheerTalkId").type(JsonFieldType.NUMBER).description("응원톡의 ID"),
+					fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 게임의 ID"),
+					fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("응원톡이 등록된 리그의 ID"),
+					fieldWithPath("[].content").type(JsonFieldType.STRING).description("응원톡의 내용"),
+					fieldWithPath("[].gameTeamId").type(JsonFieldType.NUMBER).description("응원톡에 해당하는 게임팀의 ID"),
+					fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
+					fieldWithPath("[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
+					fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
+					fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+				)
+			));
+	}
+
 }
