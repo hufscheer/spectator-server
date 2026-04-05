@@ -284,7 +284,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
             cancelPk();
         }
 
-        this.gameQuarter = (quarter == null) ? null : quarter.name();
+        this.gameQuarter = (quarter == null) ? Quarter.PRE_GAME.name() : quarter.name();
         this.quarterChangedAt = changedAt;
     }
 
@@ -297,7 +297,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return Quarter.valueOf(gameQuarter);
+        try {
+            return Quarter.valueOf(gameQuarter);
+        } catch (IllegalArgumentException e) {
+            return Quarter.fromName(gameQuarter);
+        }
     }
 
     public void checkStateForTimeline() {
