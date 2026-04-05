@@ -30,16 +30,6 @@ public enum Quarter {
         throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, name));
     }
 
-    public static Quarter fromId(Long id) {
-        if (id == null) {
-            throw new BadRequestException(ExceptionMessages.QUARTER_ID_NULL);
-        }
-        Quarter[] values = Quarter.values();
-        if (id < 1 || id > values.length) {
-            throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_ID, id));
-        }
-        return values[(int) (id - 1)];
-    }
 
     public boolean isOrder(Integer order) {
         return this.order.equals(order);

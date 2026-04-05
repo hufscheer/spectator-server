@@ -40,8 +40,6 @@ import org.springframework.util.StringUtils;
 public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public static final int MINIMUM_TEAMS = 2;
-    private static final String NAME_OF_PK_QUARTER = "승부차기";
-    private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "administrator_id")
@@ -268,13 +266,13 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
 
     public void updateQuarter(Quarter quarter) {
-        this.gameQuarter = quarter.getName();
+        this.gameQuarter = quarter.name();
 
-        if (gameQuarter.equals(NAME_OF_FIRST_HALF_QUARTER)) {
+        if (quarter == Quarter.FIRST_HALF) {
             this.state = GameState.PLAYING;
         }
 
-        if (gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+        if (quarter == Quarter.PENALTY_SHOOTOUT) {
             startPk();
         }
 
@@ -282,15 +280,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
-        if (this.gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+        if (getQuarter() == Quarter.PENALTY_SHOOTOUT) {
             cancelPk();
         }
 
-        if (quarter == null) {
-            this.gameQuarter = null;
-        } else {
-            this.gameQuarter = quarter.getName();
-        }
+        this.gameQuarter = (quarter == null) ? Quarter.PRE_GAME.name() : quarter.name();
         this.quarterChangedAt = changedAt;
     }
 
@@ -303,7 +297,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return Quarter.fromName(gameQuarter);
+        try {
+            return Quarter.valueOf(gameQuarter);
+        } catch (IllegalArgumentException e) {
+            return Quarter.fromName(gameQuarter);
+        }
     }
 
     public void checkStateForTimeline() {
