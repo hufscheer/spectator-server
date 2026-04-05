@@ -123,6 +123,10 @@ public class CheerTalkQueryService {
 	}
 
 	private List<CheerTalkResponse.ForManager> toForManagerResponses(List<CheerTalk> cheerTalks) {
+		if (cheerTalks.isEmpty()) {
+			return Collections.emptyList();
+		}
+
 		List<Long> gameTeamIds = cheerTalks.stream()
 				.map(CheerTalk::getGameTeamId)
 				.distinct()
