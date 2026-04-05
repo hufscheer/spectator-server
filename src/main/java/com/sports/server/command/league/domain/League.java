@@ -49,6 +49,10 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     @Column(name = "in_progress_round")
     private Round inProgressRound;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sport_type", nullable = false)
+    private SportType sportType;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
@@ -73,6 +77,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.endAt = endAt;
         this.maxRound = maxRound;
         this.inProgressRound = maxRound;
+        this.sportType = SportType.SOCCER; // TODO: 후속 작업에서 파라미터로 받도록 수정
         this.isDeleted = false;
     }
 
