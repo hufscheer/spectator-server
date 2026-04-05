@@ -60,8 +60,8 @@ VALUES (1, 1, 1, 10, 5, 1),
 
 
 INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
-VALUES (1, 1, 1, '외대 월드컵 4강', '2023-11-12 10:00:00', 'abc123', '2023-11-12 10:15:00', '후반전', 'PLAYING', '4강', FALSE),
-       (2, 1, 1, '외대 월드컵 결승', '2023-11-13 14:00:00', 'def456', '2023-11-13 16:00:00', '후반전', 'FINISHED', '결승', FALSE);
+VALUES (1, 1, 1, '외대 월드컵 4강', '2023-11-12 10:00:00', 'abc123', '2023-11-12 10:15:00', 'SECOND_HALF', 'PLAYING', '4강', FALSE),
+       (2, 1, 1, '외대 월드컵 결승', '2023-11-13 14:00:00', 'def456', '2023-11-13 16:00:00', 'SECOND_HALF', 'FINISHED', '결승', FALSE);
 
 
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
@@ -186,17 +186,17 @@ VALUES (10, 10, 10, 0, 0, 1),
 -- 게임많은팀의 게임
 INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
 VALUES 
-    (100, 1, 10, '최근게임1', '2025-12-15 14:00:00', 'video', '2024-12-15 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
-    (101, 1, 10, '최근게임2', '2025-12-10 14:00:00', 'video', '2024-12-10 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
-    (102, 1, 10, '최근게임3', '2025-12-05 14:00:00', 'video', '2024-12-05 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
-    (103, 1, 10, '최근게임4', '2025-11-30 14:00:00', 'video', '2024-11-30 16:00:00', '후반전', 'FINISHED', '4강', FALSE),
-    (104, 1, 10, '최근게임5', '2025-11-25 14:00:00', 'video', '2024-11-25 16:00:00', '후반전', 'FINISHED', '4강', FALSE);
+    (100, 1, 10, '최근게임1', '2025-12-15 14:00:00', 'video', '2024-12-15 16:00:00', 'SECOND_HALF', 'FINISHED', '결승', FALSE),
+    (101, 1, 10, '최근게임2', '2025-12-10 14:00:00', 'video', '2024-12-10 16:00:00', 'SECOND_HALF', 'FINISHED', '결승', FALSE),
+    (102, 1, 10, '최근게임3', '2025-12-05 14:00:00', 'video', '2024-12-05 16:00:00', 'SECOND_HALF', 'FINISHED', '결승', FALSE),
+    (103, 1, 10, '최근게임4', '2025-11-30 14:00:00', 'video', '2024-11-30 16:00:00', 'SECOND_HALF', 'FINISHED', '4강', FALSE),
+    (104, 1, 10, '최근게임5', '2025-11-25 14:00:00', 'video', '2024-11-25 16:00:00', 'SECOND_HALF', 'FINISHED', '4강', FALSE);
 
 -- 게임2개팀의 게임
 INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
 VALUES 
-    (200, 1, 10, '게임2개팀 게임1', '2024-12-20 14:00:00', 'video', '2024-12-20 16:00:00', '후반전', 'FINISHED', '결승', FALSE),
-    (201, 1, 10, '게임2개팀 게임2', '2024-12-01 14:00:00', 'video', '2024-12-01 16:00:00', '후반전', 'FINISHED', '결승', FALSE);
+    (200, 1, 10, '게임2개팀 게임1', '2024-12-20 14:00:00', 'video', '2024-12-20 16:00:00', 'SECOND_HALF', 'FINISHED', '결승', FALSE),
+    (201, 1, 10, '게임2개팀 게임2', '2024-12-01 14:00:00', 'video', '2024-12-01 16:00:00', 'SECOND_HALF', 'FINISHED', '결승', FALSE);
 
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
 VALUES 

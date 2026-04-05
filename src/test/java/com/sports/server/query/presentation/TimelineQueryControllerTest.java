@@ -20,7 +20,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class TimelineQueryControllerTest extends DocumentationTest {
 
-    private static final String QUARTER2 = "2쿼터";
+    private static final String QUARTER2 = "SECOND_HALF";
+    private static final String QUARTER2_DISPLAY = "후반전";
 
     private static final String TEAM_A = "팀A";
     public static final String TEAM_A_IMAGE_URL = "http://example.com/logo_a.png";
@@ -38,7 +39,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
         BDDMockito.given(timelineQueryService.getTimelines(gameId))
                 .willReturn(List.of(
                         new TimelineResponse(
-                                QUARTER2, List.of(
+                                QUARTER2, QUARTER2_DISPLAY, List.of(
                                 new RecordResponse(
                                         null, 1L, SCORE_TYPE,
                                         13,
@@ -91,6 +92,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("쿼터의 이름"),
+                                fieldWithPath("[].gameQuarterDisplayName").type(JsonFieldType.STRING).description("쿼터 표시명"),
                                 fieldWithPath("[].records[].recordId").type(JsonFieldType.NUMBER).description("기록의 ID"),
                                 fieldWithPath("[].records[].type").type(JsonFieldType.STRING).description("기록의 타입"),
                                 fieldWithPath("[].records[].recordedAt").type(JsonFieldType.NUMBER)

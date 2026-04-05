@@ -22,10 +22,10 @@ VALUES (1, 1, 1),
        (4, 3, 2);
 
 INSERT INTO games (id, administrator_id, league_id, name, start_time, game_quarter, state, round, is_pk_taken)
-VALUES (1, 1, 1, '진행중 대회 경기1', '2026-03-01 10:00:00', '1쿼터', 'PLAYING', '4강', false),
-       (2, 1, 1, '진행중 대회 경기2', '2026-03-02 10:00:00', '1쿼터', 'SCHEDULED', '결승', false),
-       (3, 1, 2, '최근 종료 대회 경기', '2025-12-01 10:00:00', '1쿼터', 'FINISHED', '결승', false),
-       (4, 1, 3, '이전 종료 대회 경기', '2024-03-01 10:00:00', '1쿼터', 'FINISHED', '결승', false);
+VALUES (1, 1, 1, '진행중 대회 경기1', '2026-03-01 10:00:00', 'FIRST_HALF', 'PLAYING', '4강', false),
+       (2, 1, 1, '진행중 대회 경기2', '2026-03-02 10:00:00', 'FIRST_HALF', 'SCHEDULED', '결승', false),
+       (3, 1, 2, '최근 종료 대회 경기', '2025-12-01 10:00:00', 'FIRST_HALF', 'FINISHED', '결승', false),
+       (4, 1, 3, '이전 종료 대회 경기', '2024-03-01 10:00:00', 'FIRST_HALF', 'FINISHED', '결승', false);
 
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score)
 VALUES (1, 1, 1, 0, 1, 0),
