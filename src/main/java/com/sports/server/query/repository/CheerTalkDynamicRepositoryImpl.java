@@ -38,15 +38,9 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
     @Override
     public List<CheerTalk> findReportedCheerTalksByAdminId(Long adminId, Long cursor, Integer size) {
         return applyPagination(
-                queryFactory.selectFrom(cheerTalk)
-                        .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                        .join(game).on(gameTeam.game.id.eq(game.id))
-                        .join(league).on(game.league.id.eq(league.id))
-                        .join(member).on(league.administrator.id.eq(member.id))
+                baseQueryByAdmin(adminId)
                         .join(report).on(report.cheerTalk.eq(cheerTalk))
-                        .where(report.state.eq(ReportState.PENDING))
-                        .where(member.id.eq(adminId))
-                        .where(league.isDeleted.isFalse()),
+                        .where(report.state.eq(ReportState.PENDING)),
                 cursor,
                 size
         );
@@ -55,14 +49,8 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
     @Override
     public List<CheerTalk> findUnblockedCheerTalksByAdminId(Long adminId, Long cursor, Integer size) {
         return applyPagination(
-                queryFactory.selectFrom(cheerTalk)
-                        .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                        .join(game).on(gameTeam.game.id.eq(game.id))
-                        .join(league).on(game.league.id.eq(league.id))
-                        .join(member).on(league.administrator.id.eq(member.id))
-                        .where(member.id.eq(adminId))
-                        .where(cheerTalk.blockStatus.eq(CheerTalkBlockStatus.ACTIVE))
-                        .where(league.isDeleted.isFalse()),
+                baseQueryByAdmin(adminId)
+                        .where(cheerTalk.blockStatus.eq(CheerTalkBlockStatus.ACTIVE)),
                 cursor,
                 size
         );
@@ -71,17 +59,91 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
     @Override
     public List<CheerTalk> findBlockedCheerTalksByAdminId(Long adminId, Long cursor, Integer size) {
         return applyPagination(
-                queryFactory.selectFrom(cheerTalk)
-                        .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
-                        .join(game).on(gameTeam.game.id.eq(game.id))
-                        .join(league).on(game.league.id.eq(league.id))
-                        .join(member).on(league.administrator.id.eq(member.id))
-                        .where(member.id.eq(adminId))
-                        .where(cheerTalk.blockStatus.ne(CheerTalkBlockStatus.ACTIVE))
-                        .where(league.isDeleted.isFalse()),
+                baseQueryByAdmin(adminId)
+                        .where(cheerTalk.blockStatus.ne(CheerTalkBlockStatus.ACTIVE)),
                 cursor,
                 size
         );
+    }
+
+    @Override
+    public List<CheerTalk> findReportedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+        return applyPagination(
+                baseQueryByLeague(leagueId)
+                        .join(report).on(report.cheerTalk.eq(cheerTalk))
+                        .where(report.state.eq(ReportState.PENDING)),
+                cursor,
+                size
+        );
+    }
+
+    @Override
+    public List<CheerTalk> findUnblockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+        return applyPagination(
+                baseQueryByLeague(leagueId)
+                        .where(cheerTalk.blockStatus.eq(CheerTalkBlockStatus.ACTIVE)),
+                cursor,
+                size
+        );
+    }
+
+    @Override
+    public List<CheerTalk> findBlockedCheerTalksByLeagueId(Long leagueId, Long cursor, Integer size) {
+        return applyPagination(
+                baseQueryByLeague(leagueId)
+                        .where(cheerTalk.blockStatus.ne(CheerTalkBlockStatus.ACTIVE)),
+                cursor,
+                size
+        );
+    }
+
+    @Override
+    public List<CheerTalk> findReportedCheerTalksByGameId(Long gameId, Long cursor, Integer size) {
+        return applyPagination(
+                baseQueryByGame(gameId)
+                        .join(report).on(report.cheerTalk.eq(cheerTalk))
+                        .where(report.state.eq(ReportState.PENDING)),
+                cursor,
+                size
+        );
+    }
+
+    @Override
+    public List<CheerTalk> findBlockedCheerTalksByGameId(Long gameId, Long cursor, Integer size) {
+        return applyPagination(
+                baseQueryByGame(gameId)
+                        .where(cheerTalk.blockStatus.ne(CheerTalkBlockStatus.ACTIVE)),
+                cursor,
+                size
+        );
+    }
+
+    private JPAQuery<CheerTalk> baseQueryByAdmin(Long adminId) {
+        return queryFactory.selectFrom(cheerTalk)
+                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                .join(game).on(gameTeam.game.id.eq(game.id))
+                .join(league).on(game.league.id.eq(league.id))
+                .join(member).on(league.administrator.id.eq(member.id))
+                .where(member.id.eq(adminId))
+                .where(league.isDeleted.isFalse());
+    }
+
+    private JPAQuery<CheerTalk> baseQueryByLeague(Long leagueId) {
+        return queryFactory.selectFrom(cheerTalk)
+                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                .join(game).on(gameTeam.game.id.eq(game.id))
+                .join(league).on(game.league.id.eq(league.id))
+                .where(league.id.eq(leagueId))
+                .where(league.isDeleted.isFalse());
+    }
+
+    private JPAQuery<CheerTalk> baseQueryByGame(Long gameId) {
+        return queryFactory.selectFrom(cheerTalk)
+                .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
+                .join(game).on(gameTeam.game.id.eq(game.id))
+                .join(league).on(game.league.id.eq(league.id))
+                .where(game.id.eq(gameId))
+                .where(league.isDeleted.isFalse());
     }
 
     private List<CheerTalk> applyPagination(JPAQuery<CheerTalk> query, Long cursor, Integer size) {
