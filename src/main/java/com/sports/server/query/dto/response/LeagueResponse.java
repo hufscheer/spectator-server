@@ -13,7 +13,8 @@ public record LeagueResponse(
         int maxRound,
         int inProgressRound,
         String leagueProgress,
-        String winnerTeamName
+        String winnerTeamName,
+        String sportType
 ) {
     public LeagueResponse(League league, String winnerTeamName) {
         this(
@@ -21,7 +22,9 @@ public record LeagueResponse(
                 league.getName(),
                 league.getMaxRound().getNumber(),
                 league.getInProgressRound().getNumber(),
-                LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(), winnerTeamName
+                LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(),
+                winnerTeamName,
+                league.getSportType().name()
         );
     }
 }

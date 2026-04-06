@@ -1,6 +1,7 @@
 package com.sports.server.command.league.dto;
 
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.domain.SportType;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,10 +14,11 @@ public class LeagueRequest {
 		int maxRound,
 		LocalDateTime startAt,
 		LocalDateTime endAt,
-		List<Long> teamIds
+		List<Long> teamIds,
+		SportType sportType
 	) {
 		public League toEntity(final Member manager) {
-			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.from(maxRound));
+			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.from(maxRound), sportType);
 		}
 	}
 

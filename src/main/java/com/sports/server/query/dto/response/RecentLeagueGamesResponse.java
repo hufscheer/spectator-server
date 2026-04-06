@@ -12,10 +12,11 @@ public record RecentLeagueGamesResponse(
         Long leagueId,
         String leagueName,
         String leagueProgress,
+        String sportType,
         List<GameResponse> games
 ) {
     public static RecentLeagueGamesResponse of(League league, String leagueProgress, List<GameResponse> games) {
-        return new RecentLeagueGamesResponse(league.getId(), league.getName(), leagueProgress, games);
+        return new RecentLeagueGamesResponse(league.getId(), league.getName(), leagueProgress, league.getSportType().name(), games);
     }
 
     public record GameResponse(

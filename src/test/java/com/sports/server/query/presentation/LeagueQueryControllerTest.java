@@ -34,10 +34,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
 
         // given
         List<LeagueResponse> responses = List.of(
-                new LeagueResponse(1L, "2025 외대 월드컵", 16, 2, "종료", "정치외교학과 DPS"),
-                new LeagueResponse(2L, "2025 트로이카", 32, 32, "진행 중", null),
-                new LeagueResponse(3L, "2025 삼건물대회", 16, 2, "종료", "경영대학 야생마"),
-                new LeagueResponse(4L, "2100 화성 월드컵", 8, 8, "시작전", null)
+                new LeagueResponse(1L, "2025 외대 월드컵", 16, 2, "종료", "정치외교학과 DPS", "SOCCER"),
+                new LeagueResponse(2L, "2025 트로이카", 32, 32, "진행 중", null, "SOCCER"),
+                new LeagueResponse(3L, "2025 삼건물대회", 16, 2, "종료", "경영대학 야생마", "SOCCER"),
+                new LeagueResponse(4L, "2100 화성 월드컵", 8, 8, "시작전", null, "BASKETBALL")
         );
 
         given(leagueQueryService.findLeagues(any()))
@@ -63,7 +63,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
                                 fieldWithPath("[].inProgressRound").type(JsonFieldType.NUMBER).description("현재 진행 중인 라운드"),
                                 fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
-                                fieldWithPath("[].winnerTeamName").type(JsonFieldType.STRING).description("대회의 우승팀 이름").optional()
+                                fieldWithPath("[].winnerTeamName").type(JsonFieldType.STRING).description("대회의 우승팀 이름").optional(),
+                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)")
                         )
                 ));
     }
@@ -295,7 +296,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         );
 
         List<LeagueResponseWithInProgressGames> responses = List.of(
-                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", inProgressGames));
+                new LeagueResponseWithInProgressGames(1L, "삼건물 대회", "진행 중", "SOCCER", inProgressGames));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -318,6 +319,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].state").type(JsonFieldType.STRING)
                                         .description("리그의 진행 상태 ex. 진행 중, 종료"),
+                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
                                 fieldWithPath("[].inProgressGames").type(JsonFieldType.ARRAY).description("진행 중인 게임들"),
                                 fieldWithPath("[].inProgressGames[].id").type(JsonFieldType.NUMBER)
                                         .description("진행 중인 게임의 ID"),
@@ -350,9 +352,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         List<LeagueResponseToManage> responses = List.of(
                 new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, 16, fixedDateTime,
-                        fixedDateTime),
+                        fixedDateTime, "SOCCER"),
                 new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, 16, fixedDateTime,
-                        fixedDateTime));
+                        fixedDateTime, "SOCCER"));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -378,7 +380,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].sizeOfLeagueTeams").type(JsonFieldType.NUMBER).description("리그 팀의 수"),
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
                                 fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
-                                fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜")
+                                fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
+                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)")
                         )
                 ));
     }
@@ -414,7 +417,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         );
         LeagueResponseWithGames response = new LeagueResponseWithGames(
                 1L, "첫번째 리그", 6, 16, LocalDateTime.of(2024, 8, 11, 13, 30), LocalDateTime.of(2024, 8, 30, 13, 30),
-                playingGames, scheduledGames, finishedGames
+                "SOCCER", playingGames, scheduledGames, finishedGames
         );
 
         given(leagueQueryService.findLeagueAndGames(leagueId))
@@ -437,6 +440,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("리그 최대 라운드"),
                                 fieldWithPath("startAt").type(JsonFieldType.STRING).description("리그 시작 시간"),
                                 fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
                                 fieldWithPath("playingGames").type(JsonFieldType.ARRAY).description("진행 중인 경기 목록"),
                                 fieldWithPath("playingGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("playingGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
@@ -544,8 +548,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // given
         LeagueRecentSummaryResponse response = new LeagueRecentSummaryResponse(
                 List.of(
-                        new LeagueRecentSummaryResponse.LeagueRecord(7L, "종료된 축구대회 7", "서어 뻬데뻬"),
-                        new LeagueRecentSummaryResponse.LeagueRecord(6L, "종료된 축구대회 6", "경영 야생마")
+                        new LeagueRecentSummaryResponse.LeagueRecord(7L, "종료된 축구대회 7", "서어 뻬데뻬", "SOCCER"),
+                        new LeagueRecentSummaryResponse.LeagueRecord(6L, "종료된 축구대회 6", "경영 야생마", "SOCCER")
                 ),
                 List.of(
                         new LeagueRecentSummaryResponse.TopScorer(4L, "22", 1, "고병룡", "경영대학", 4),
@@ -575,6 +579,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("records[].leagueId").type(JsonFieldType.NUMBER).description("대회 ID"),
                                 fieldWithPath("records[].name").type(JsonFieldType.STRING).description("대회 이름"),
                                 fieldWithPath("records[].winnerTeamName").type(JsonFieldType.STRING).description("우승 팀 이름"),
+                                fieldWithPath("records[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
                                 fieldWithPath("topScorers").type(JsonFieldType.ARRAY).description("연도별 득점왕 목록"),
                                 fieldWithPath("topScorers[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
                                 fieldWithPath("topScorers[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
@@ -594,6 +599,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         1L,
                         "2025 외대 월드컵",
                         "IN_PROGRESS",
+                        "SOCCER",
                         List.of(
                                 new RecentLeagueGamesResponse.GameResponse(
                                         1L,
@@ -628,6 +634,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
                                 fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("리그의 이름"),
                                 fieldWithPath("[].leagueProgress").type(JsonFieldType.STRING).description("리그 진행 상태 (BEFORE_START, IN_PROGRESS, FINISHED)"),
+                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
                                 fieldWithPath("[].games").type(JsonFieldType.ARRAY).description("경기 목록"),
                                 fieldWithPath("[].games[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("[].games[].startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),

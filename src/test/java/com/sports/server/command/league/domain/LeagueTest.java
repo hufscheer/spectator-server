@@ -45,7 +45,7 @@ class LeagueTest {
             // when
             sut = new League(manager, organization, nameArbitrary().sample(), LocalDateTime.now(),
                     LocalDateTime.now(),
-                    maxRoundArbitrary().sample());
+                    maxRoundArbitrary().sample(), null);
 
             // then
             assertThat(sut.isDeleted()).isEqualTo(false);
@@ -58,7 +58,7 @@ class LeagueTest {
 
             // when
             sut = new League(manager, organization, nameArbitrary().sample(), LocalDateTime.now(), LocalDateTime.now(),
-                    maxRoundArbitrary().sample());
+                    maxRoundArbitrary().sample(), null);
 
             // then
             assertThat(sut.getMaxRound()).isEqualTo(sut.getInProgressRound());
@@ -77,7 +77,8 @@ class LeagueTest {
                         .ofMinLength(5).sample(),
                 LocalDateTime.of(20, 12, 11, 0, 0, 0),
                 LocalDateTime.of(20, 12, 12, 0, 0, 0),
-                Round.from(8)
+                Round.from(8),
+                null
         );
 
         // when
