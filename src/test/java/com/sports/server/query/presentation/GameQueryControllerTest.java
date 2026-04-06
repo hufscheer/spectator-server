@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.QuarterResponse;
 import com.sports.server.support.DocumentationTest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +35,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(gameId,
-                startTime, "videoId", "FIRST_HALF", "전반전", "여름축구", gameTeams, "PLAYING", 4, false, 1L, "외대 월드컵"
+                startTime, "videoId", new QuarterResponse("FIRST_HALF", "전반전"), "여름축구", gameTeams, "PLAYING", 4, false, 1L, "외대 월드컵"
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);
@@ -54,8 +55,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameId").type(JsonFieldType.NUMBER).description("게임 ID"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING).description("게임 비디오 ID"),
-                                fieldWithPath("gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
-                                fieldWithPath("gameQuarterDisplayName").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
+                                fieldWithPath("gameQuarter").type(JsonFieldType.OBJECT).description("게임 쿼터"),
+                                fieldWithPath("gameQuarter.key").type(JsonFieldType.STRING).description("게임 쿼터 키"),
+                                fieldWithPath("gameQuarter.label").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
                                 fieldWithPath("gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("게임의 라운드"),
                                 fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
@@ -114,8 +116,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2, 0)
         );
         List<GameResponseDto> responses = List.of(
-                new GameResponseDto(1L, startTime, "FIRST_HALF", "전반전", "4강", 4, "abc123", gameTeams1, false),
-                new GameResponseDto(2L, startTime, "FIRST_HALF", "전반전", "결승전", 2, "abc123", gameTeams2, false)
+                new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "4강", 4, "abc123", gameTeams1, false),
+                new GameResponseDto(2L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "결승전", 2, "abc123", gameTeams2, false)
         );
         List<LeagueWithGamesResponse> finalResponse = List.of(
                 new LeagueWithGamesResponse(1L, "2025 외대월드컵", responses)
@@ -152,8 +154,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].games").type(JsonFieldType.ARRAY).description("게임 목록"),
                                 fieldWithPath("[].games[].id").type(JsonFieldType.NUMBER).description("게임의 ID"),
                                 fieldWithPath("[].games[].startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
-                                fieldWithPath("[].games[].gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
-                                fieldWithPath("[].games[].gameQuarterDisplayName").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
+                                fieldWithPath("[].games[].gameQuarter").type(JsonFieldType.OBJECT).description("게임 쿼터"),
+                                fieldWithPath("[].games[].gameQuarter.key").type(JsonFieldType.STRING).description("게임 쿼터 키"),
+                                fieldWithPath("[].games[].gameQuarter.label").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
                                 fieldWithPath("[].games[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("[].games[].round").type(JsonFieldType.NUMBER)
                                         .description("라운드의 이름 ex. 4강->4, 결승->2"),
@@ -414,8 +417,8 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         
         List<GameDetailResponse> responses = List.of(
-                new GameDetailResponse(1L, startTime1, "video1", "FIRST_HALF", "전반전", "4강", gameTeams1, "FINISHED", 4, false, 1L, "춘계리그"),
-                new GameDetailResponse(2L, startTime2, "video2", "SECOND_HALF", "후반전", "결승", gameTeams2, "PLAYING", 2, false, 1L, "춘계리그")
+                new GameDetailResponse(1L, startTime1, "video1", new QuarterResponse("FIRST_HALF", "전반전"), "4강", gameTeams1, "FINISHED", 4, false, 1L, "춘계리그"),
+                new GameDetailResponse(2L, startTime2, "video2", new QuarterResponse("SECOND_HALF", "후반전"), "결승", gameTeams2, "PLAYING", 2, false, 1L, "춘계리그")
         );
 
         given(gameQueryService.getGamesByYearAndMonth(year, month))
@@ -439,8 +442,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameId").type(JsonFieldType.NUMBER).description("게임 ID"),
                                 fieldWithPath("[].startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
                                 fieldWithPath("[].videoId").type(JsonFieldType.STRING).description("게임 비디오 ID"),
-                                fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("게임 쿼터"),
-                                fieldWithPath("[].gameQuarterDisplayName").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
+                                fieldWithPath("[].gameQuarter").type(JsonFieldType.OBJECT).description("게임 쿼터"),
+                                fieldWithPath("[].gameQuarter.key").type(JsonFieldType.STRING).description("게임 쿼터 키"),
+                                fieldWithPath("[].gameQuarter.label").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
                                 fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("[].round").type(JsonFieldType.NUMBER).description("게임의 라운드"),
                                 fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)

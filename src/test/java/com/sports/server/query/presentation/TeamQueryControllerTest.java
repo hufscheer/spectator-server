@@ -3,6 +3,7 @@ package com.sports.server.query.presentation;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.QuarterResponse;
 import com.sports.server.support.DocumentationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -165,9 +166,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
         );
 
         List<GameDetailResponse> response = List.of(
-                new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", "SECOND_HALF", "후반전", "혁명 대전 결승",
+                new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", new QuarterResponse("SECOND_HALF", "후반전"), "혁명 대전 결승",
                         gameTeams1, "PLAYING", 2, false,1L, "혁명 대전"),
-                new GameDetailResponse(2L, LocalDateTime.of(2024, 10, 10, 13, 0, 0), "video-id", "PENALTY_SHOOTOUT", "승부차기", "외교 대전 4강",
+                new GameDetailResponse(2L, LocalDateTime.of(2024, 10, 10, 13, 0, 0), "video-id", new QuarterResponse("PENALTY_SHOOTOUT", "승부차기"), "외교 대전 4강",
                         gameTeams2, "FINISHED", 4, true, 2L,"외교 대전")
         );
 
@@ -216,9 +217,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new GameDetailResponse.TeamResponse(4L, "LD학부", "s3:logoImageUrl3", 1, 1, "#00000")
         );
         List<GameDetailResponse> recentGames = List.of(
-                new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", "SECOND_HALF", "후반전", "혁명 대전 결승",
+                new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", new QuarterResponse("SECOND_HALF", "후반전"), "혁명 대전 결승",
                         gameTeams1, "PLAYING", 2, false,1L, "혁명 대전"),
-                new GameDetailResponse(2L, LocalDateTime.of(2024, 10, 10, 13, 0, 0), "video-id", "PENALTY_SHOOTOUT", "승부차기", "외교 대전 4강",
+                new GameDetailResponse(2L, LocalDateTime.of(2024, 10, 10, 13, 0, 0), "video-id", new QuarterResponse("PENALTY_SHOOTOUT", "승부차기"), "외교 대전 4강",
                         gameTeams2, "FINISHED", 4, true, 2L,"외교 대전")
         );
 
@@ -301,8 +302,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 fieldWithPath(prefix + "leagueName").type(JsonFieldType.STRING).description("이 경기가 소속된 리그 이름"),
                 fieldWithPath(prefix + "startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),
                 fieldWithPath(prefix + "videoId").type(JsonFieldType.STRING).description("경기 영상 URL"),
-                fieldWithPath(prefix + "gameQuarter").type(JsonFieldType.STRING).description("현재 쿼터"),
-                fieldWithPath(prefix + "gameQuarterDisplayName").type(JsonFieldType.STRING).description("쿼터 표시명"),
+                fieldWithPath(prefix + "gameQuarter").type(JsonFieldType.OBJECT).description("현재 쿼터"),
+                fieldWithPath(prefix + "gameQuarter.key").type(JsonFieldType.STRING).description("쿼터 키"),
+                fieldWithPath(prefix + "gameQuarter.label").type(JsonFieldType.STRING).description("쿼터 표시명"),
                 fieldWithPath(prefix + "gameName").type(JsonFieldType.STRING).description("경기 이름"),
                 fieldWithPath(prefix + "state").type(JsonFieldType.STRING).description("경기 상태 (SCHEDULED, PLAYING, FINISHED)"),
                 fieldWithPath(prefix + "round").type(JsonFieldType.NUMBER).description("현재 라운드"),

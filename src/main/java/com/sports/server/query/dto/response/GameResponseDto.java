@@ -10,8 +10,7 @@ import java.util.List;
 public record GameResponseDto(
         Long id,
         LocalDateTime startTime,
-        String gameQuarter,
-        String gameQuarterDisplayName,
+        QuarterResponse gameQuarter,
         String gameName,
         int round,
         String videoId,
@@ -22,8 +21,7 @@ public record GameResponseDto(
         this(
                 game.getId(),
                 game.getStartTime(),
-                game.getGameQuarter(),
-                game.getQuarter().getName(),
+                QuarterResponse.from(game.getQuarter()),
                 game.getName(),
                 game.getRound().getNumber(),
                 game.getVideoId(),

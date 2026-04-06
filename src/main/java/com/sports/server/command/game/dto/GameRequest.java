@@ -6,6 +6,7 @@ import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.timeline.domain.Quarter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +30,7 @@ public class GameRequest {
                     .name(this.name())
                     .startTime(this.startTime())
                     .videoId(this.videoId())
-                    .gameQuarter(this.quarter())
+                    .gameQuarter(Quarter.resolve(this.quarter()).name())
                     .state(GameState.from(this.state()))
                     .round(Round.from(this.round()))
                     .isPkTaken(false)

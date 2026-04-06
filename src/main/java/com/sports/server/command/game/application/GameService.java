@@ -3,6 +3,7 @@ package com.sports.server.command.game.application;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.timeline.domain.Quarter;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
@@ -80,7 +81,7 @@ public class GameService {
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
-        game.updateGameQuarter(request.quarter());
+        game.updateGameQuarter(Quarter.resolve(request.quarter()));
         game.updateState(state);
         game.updateRound(Round.from(request.round()));
         game.updateResult();

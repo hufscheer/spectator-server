@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.QuarterResponse;
 import com.sports.server.support.DocumentationTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
         BDDMockito.given(timelineQueryService.getTimelines(gameId))
                 .willReturn(List.of(
                         new TimelineResponse(
-                                QUARTER2, QUARTER2_DISPLAY, List.of(
+                                new QuarterResponse(QUARTER2, QUARTER2_DISPLAY), List.of(
                                 new RecordResponse(
                                         null, 1L, SCORE_TYPE,
                                         13,
@@ -91,8 +92,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 parameterWithName("gameId").description("게임의 ID")
                         ),
                         responseFields(
-                                fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("쿼터의 이름"),
-                                fieldWithPath("[].gameQuarterDisplayName").type(JsonFieldType.STRING).description("쿼터 표시명"),
+                                fieldWithPath("[].gameQuarter").type(JsonFieldType.OBJECT).description("쿼터 정보"),
+                                fieldWithPath("[].gameQuarter.key").type(JsonFieldType.STRING).description("쿼터의 키"),
+                                fieldWithPath("[].gameQuarter.label").type(JsonFieldType.STRING).description("쿼터 표시명"),
                                 fieldWithPath("[].records[].recordId").type(JsonFieldType.NUMBER).description("기록의 ID"),
                                 fieldWithPath("[].records[].type").type(JsonFieldType.STRING).description("기록의 타입"),
                                 fieldWithPath("[].records[].recordedAt").type(JsonFieldType.NUMBER)
