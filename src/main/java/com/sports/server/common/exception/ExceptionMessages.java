@@ -10,8 +10,6 @@ public class ExceptionMessages {
 
     // Quarter 관련
     public static final String QUARTER_NOT_FOUND_BY_NAME = "해당 쿼터 이름이 존재하지 않습니다: %s";
-    public static final String QUARTER_ID_NULL = "쿼터 아이디는 null이 될 수 없습니다.";
-    public static final String QUARTER_NOT_FOUND_BY_ID = "해당 아이디의 쿼터가 존재하지 않습니다: %d";
 
     // Player 관련
     public static final String INVALID_PLAYER_SUBSTITUTION = "다른 팀의 선수끼리 교체할 수 없습니다.";

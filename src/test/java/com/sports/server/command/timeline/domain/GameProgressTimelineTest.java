@@ -20,7 +20,7 @@ class GameProgressTimelineTest {
     void setUp() {
         game = entityBuilder(Game.class)
                 .set("gameTeams", new ArrayList<>())
-                .set("gameQuarter", Quarter.PRE_GAME.getName())
+                .set("gameQuarter", Quarter.PRE_GAME.name())
                 .set("state", GameState.SCHEDULED)
                 .set("isPkTaken", false)
                 .sample();
@@ -38,7 +38,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -55,7 +55,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -73,7 +73,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -92,7 +92,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -111,7 +111,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.POST_GAME.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.POST_GAME.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.FINISHED)
             );
         }
@@ -158,7 +158,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.PRE_GAME.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.PRE_GAME.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.SCHEDULED)
             );
         }
@@ -177,7 +177,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -196,7 +196,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -231,7 +231,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.getName()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }

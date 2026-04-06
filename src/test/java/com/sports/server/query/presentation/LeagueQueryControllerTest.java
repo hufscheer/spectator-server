@@ -598,7 +598,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 new RecentLeagueGamesResponse.GameResponse(
                                         1L,
                                         LocalDateTime.of(2026, 3, 1, 10, 0),
-                                        "1쿼터",
+                                        "FIRST_HALF",
+                                        "전반전",
                                         "결승전",
                                         2,
                                         "abc123",
@@ -631,6 +632,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].games[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("[].games[].startTime").type(JsonFieldType.STRING).description("경기 시작 시간"),
                                 fieldWithPath("[].games[].gameQuarter").type(JsonFieldType.STRING).description("현재 경기 쿼터"),
+                                fieldWithPath("[].games[].gameQuarterDisplayName").type(JsonFieldType.STRING).description("경기 쿼터 표시명"),
                                 fieldWithPath("[].games[].gameName").type(JsonFieldType.STRING).description("경기 이름"),
                                 fieldWithPath("[].games[].round").type(JsonFieldType.NUMBER).description("경기 라운드"),
                                 fieldWithPath("[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID").optional(),
