@@ -20,8 +20,6 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameProgressTimeline extends Timeline {
 
-    private static final String NAME_OF_BEFORE_GAME_QUARTER = "경기전";
-
     @Enumerated(EnumType.STRING)
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
@@ -75,8 +73,7 @@ public class GameProgressTimeline extends Timeline {
         game.updateQuarter(previousQuarter, previousQuarterChangedAt);
 
         if (gameProgressType == GameProgressType.QUARTER_START &&
-                previousQuarter != null &&
-                previousQuarter.getName().equals(NAME_OF_BEFORE_GAME_QUARTER)) {
+                previousQuarter == Quarter.PRE_GAME) {
             game.updateState(GameState.SCHEDULED);
         }
 

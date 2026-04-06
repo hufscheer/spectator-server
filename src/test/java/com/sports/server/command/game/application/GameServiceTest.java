@@ -73,7 +73,7 @@ public class GameServiceTest extends ServiceTest {
         );
         team2 = new GameRequest.TeamLineupRequest(2L, team2Players);
 
-        this.requestDto = new GameRequest.Register(nameOfGame, 16, "전반전", "SCHEDULED", LocalDateTime.now(), null, team1, team2);
+        this.requestDto = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED", LocalDateTime.now(), null, team1, team2);
         LocalDateTime fixedNow = LocalDateTime.of(2024, 11, 26, 0, 0, 0, 0);
         Clock fixedClock = Clock.fixed(fixedNow.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -165,7 +165,7 @@ public class GameServiceTest extends ServiceTest {
             // given
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
-            GameRequest.Register requestDto = new GameRequest.Register(nameOfGame, 32, "전반전", "SCHEDULED",
+            GameRequest.Register requestDto = new GameRequest.Register(nameOfGame, 32, "FIRST_HALF", "SCHEDULED",
                     LocalDateTime.now(), null, team1, team2);
 
             // when & then
@@ -186,7 +186,7 @@ public class GameServiceTest extends ServiceTest {
         @BeforeEach
         void setUp() {
             LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-            updateDto = new GameRequest.Update(nameOfGame, 8, "후반전", "PLAYING", fixedLocalDateTime, "videoId");
+            updateDto = new GameRequest.Update(nameOfGame, 8, "SECOND_HALF", "PLAYING", fixedLocalDateTime, "videoId");
             leagueId = 1L;
             gameId = 1L;
             manager = entityUtils.getEntity(1L, Member.class);
@@ -267,11 +267,11 @@ public class GameServiceTest extends ServiceTest {
             Member manager = entityUtils.getEntity(1L, Member.class);
             Round round = Round.ROUND_16;
 
-            Game recentGame = new Game(manager, league, "종료되면 안되는 경기", now.minusHours(4), "videoId", "전반전",
+            Game recentGame = new Game(manager, league, "종료되면 안되는 경기", now.minusHours(4), "videoId", "FIRST_HALF",
                     GameState.PLAYING, round, false);
-            Game oldGame1 = new Game(manager, league, "오래된 경기1", now.minusHours(5), "videoId", "전반전",
+            Game oldGame1 = new Game(manager, league, "오래된 경기1", now.minusHours(5), "videoId", "FIRST_HALF",
                     GameState.PLAYING, round, false);
-            Game oldGame2 = new Game(manager, league, "오래된 경기2", now.minusHours(6), "videoId", "전반전",
+            Game oldGame2 = new Game(manager, league, "오래된 경기2", now.minusHours(6), "videoId", "FIRST_HALF",
                     GameState.PLAYING, round, false);
 
             gameFixtureRepository.save(recentGame);

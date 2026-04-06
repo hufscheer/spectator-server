@@ -174,7 +174,7 @@ public class GameControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         Long gameId = 1L;
         GameRequest.Update requestDto = new GameRequest.Update(
-                "게임 이름", 16, "전반전", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
+                "게임 이름", 16, "FIRST_HALF", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
         );
 
         // when
