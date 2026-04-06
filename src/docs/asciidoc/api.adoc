@@ -28,6 +28,26 @@ operation::cheer-talk-query-controller-test/계정별_가려지지_않은_응원
 
 operation::cheer-talk-query-controller-test/계정별_가려진_응원톡을_모두_조회한다[snippets='http-request,request-cookies,query-parameters,path-parameters,http-response,response-fields']
 
+=== 리그별 신고된 응원톡 조회
+
+operation::cheer-talk-query-controller-test/리그별_신고된_응원톡을_조회한다[snippets='http-request,request-cookies,path-parameters,query-parameters,http-response,response-fields']
+
+=== 리그별 가려지지 않은 응원톡 조회
+
+operation::cheer-talk-query-controller-test/리그별_가려지지_않은_응원톡을_조회한다[snippets='http-request,request-cookies,path-parameters,query-parameters,http-response,response-fields']
+
+=== 리그별 가려진 응원톡 조회
+
+operation::cheer-talk-query-controller-test/리그별_가려진_응원톡을_조회한다[snippets='http-request,request-cookies,path-parameters,query-parameters,http-response,response-fields']
+
+=== 경기별 신고된 응원톡 조회
+
+operation::cheer-talk-query-controller-test/경기별_신고된_응원톡을_조회한다[snippets='http-request,request-cookies,path-parameters,query-parameters,http-response,response-fields']
+
+=== 경기별 가려진 응원톡 조회
+
+operation::cheer-talk-query-controller-test/경기별_가려진_응원톡을_조회한다[snippets='http-request,request-cookies,path-parameters,query-parameters,http-response,response-fields']
+
 === 리그 응원톡 블락
 
 operation::cheer-talk-controller-test/리그_응원톡을_가린다[snippets='http-request,request-cookies,path-parameters,http-response']
