@@ -76,7 +76,7 @@ public abstract class TimelineRequest {
                 Quarter recordedQuarter,
                 GameProgressType gameProgressType
         ) {
-            super(recordedQuarter, recordedAt);
+            super(recordedQuarter, recordedAt == null ? 0 : recordedAt);
             this.gameProgressType = gameProgressType;
         }
 
