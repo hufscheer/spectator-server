@@ -31,11 +31,12 @@ public enum Quarter {
     }
 
     public static Quarter resolve(String value) {
-        try {
-            return Quarter.valueOf(value);
-        } catch (IllegalArgumentException e) {
-            return fromName(value);
+        for (Quarter quarter : Quarter.values()) {
+            if (quarter.name().equals(value) || quarter.name.equals(value)) {
+                return quarter;
+            }
         }
+        throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value));
     }
 
 
