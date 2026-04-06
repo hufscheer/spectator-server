@@ -30,6 +30,14 @@ public enum Quarter {
         throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, name));
     }
 
+    public static Quarter resolve(String value) {
+        try {
+            return Quarter.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            return fromName(value);
+        }
+    }
+
 
     public boolean isOrder(Integer order) {
         return this.order.equals(order);
