@@ -220,7 +220,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         16,
                         4,
                         "진행 중",
-                        3
+                        3,
+                        "SOCCER"
                 ));
 
         // when
@@ -241,7 +242,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("inProgressRound").type(JsonFieldType.NUMBER).description("리그의 현재 라운드"),
                                 fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("리그 총 라운드"),
                                 fieldWithPath("leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
-                                fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수")
+                                fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수"),
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)")
                         )
                 ));
     }

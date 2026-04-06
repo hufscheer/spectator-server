@@ -48,7 +48,10 @@ class LeagueTest {
                     maxRoundArbitrary().sample(), null);
 
             // then
-            assertThat(sut.isDeleted()).isEqualTo(false);
+            assertAll(
+                    () -> assertThat(sut.isDeleted()).isFalse(),
+                    () -> assertThat(sut.getSportType()).isEqualTo(SportType.SOCCER)
+            );
         }
 
         @Test
