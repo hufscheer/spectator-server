@@ -58,7 +58,7 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
     List<League> findLeaguesByLatestEndAt(@Param("now") LocalDateTime now);
 
     @Query(
-            "SELECT new com.sports.server.query.repository.LeagueRecentRecordResult(l.id, l.name, ls.firstWinnerTeam.name) "
+            "SELECT new com.sports.server.query.repository.LeagueRecentRecordResult(l.id, l.name, ls.firstWinnerTeam.name, CAST(l.sportType AS string)) "
                     + "FROM League l "
                     + "JOIN LeagueStatistics ls ON ls.league = l "
                     + "WHERE l.startAt >= :yearStart "

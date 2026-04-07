@@ -11,12 +11,14 @@ public record LeagueResponseWithInProgressGames(
         Long id,
         String name,
         String state,
+        String sportType,
         List<GameDetailResponse> inProgressGames
 
 ) {
     public static LeagueResponseWithInProgressGames of(League league, String state, List<Game> games) {
         return new LeagueResponseWithInProgressGames(
                 league.getId(), league.getName(), state,
+                league.getSportType().name(),
                 games.stream()
                         .map(GameDetailResponse::of)
                         .toList()

@@ -68,7 +68,8 @@ public class League extends BaseEntity<League> implements ManagedEntity {
             final String name,
             final LocalDateTime startAt,
             final LocalDateTime endAt,
-            final Round maxRound
+            final Round maxRound,
+            final SportType sportType
     ) {
         this.administrator = administrator;
         this.organization = organization;
@@ -77,7 +78,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.endAt = endAt;
         this.maxRound = maxRound;
         this.inProgressRound = maxRound;
-        this.sportType = SportType.SOCCER; // TODO: 후속 작업에서 파라미터로 받도록 수정
+        this.sportType = sportType != null ? sportType : SportType.SOCCER;
         this.isDeleted = false;
     }
 

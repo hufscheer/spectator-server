@@ -12,7 +12,8 @@ public record LeagueResponseToManage(
         int sizeOfLeagueTeams,
         int maxRound,
         LocalDateTime startAt,
-        LocalDateTime endAt
+        LocalDateTime endAt,
+        String sportType
 ) {
     public static LeagueResponseToManage of(League league) {
         return new LeagueResponseToManage(
@@ -22,7 +23,8 @@ public record LeagueResponseToManage(
                 league.getLeagueTeams().size(),
                 league.getMaxRound().getNumber(),
                 league.getStartAt(),
-                league.getEndAt()
+                league.getEndAt(),
+                league.getSportType().name()
         );
     }
 }

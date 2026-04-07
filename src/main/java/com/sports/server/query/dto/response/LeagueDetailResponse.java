@@ -12,7 +12,8 @@ public record LeagueDetailResponse(
         int maxRound,
         int inProgressRound,
         String leagueProgress,
-        Integer leagueTeamCount
+        Integer leagueTeamCount,
+        String sportType
 ) {
     public static LeagueDetailResponse of(League league, Integer leagueTeamCount) {
         return new LeagueDetailResponse(
@@ -22,7 +23,8 @@ public record LeagueDetailResponse(
                 league.getMaxRound().getNumber(),
                 league.getInProgressRound().getNumber(),
                 LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(),
-                leagueTeamCount
+                leagueTeamCount,
+                league.getSportType().name()
         );
     }
 }
