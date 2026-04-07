@@ -47,7 +47,7 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_FIRST_HALF, EXTRA_SECOND_HALF, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간")
                         ),
@@ -83,7 +83,7 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_FIRST_HALF, EXTRA_SECOND_HALF, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER)
                                         .description("기존 선수 Id"),
                                 fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER)
@@ -119,7 +119,7 @@ public class TimelineControllerTest extends DocumentationTest {
                                 parameterWithName("gameId").description("경기의 ID")
                         ),
                         requestFields(
-                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_FIRST_HALF, EXTRA_SECOND_HALF, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("기록 시간"),
                                 fieldWithPath("gameProgressType").type(JsonFieldType.STRING).description("변경할 게임 진행 상황 (QUARTER_START, GAME_END)")
                         ),
@@ -155,7 +155,7 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_FIRST_HALF, EXTRA_SECOND_HALF, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("scorerId").type(JsonFieldType.NUMBER).description("승부차기 득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
                                 fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("승부차기 득점 성공 여부")
@@ -192,7 +192,7 @@ public class TimelineControllerTest extends DocumentationTest {
                         ),
                         requestFields(
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_FIRST_HALF, EXTRA_SECOND_HALF, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("warnedLineupPlayerId").type(JsonFieldType.NUMBER).description("경고 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("경고 시간"),
                                 fieldWithPath("cardType").type(JsonFieldType.STRING).description("경고 카드 종류(YELLOW, RED)")

@@ -9,9 +9,10 @@ public enum Quarter {
     PRE_GAME("경기전", 0),
     FIRST_HALF("전반전", 1),
     SECOND_HALF("후반전", 2),
-    EXTRA_TIME("연장전", 3),
-    PENALTY_SHOOTOUT("승부차기", 4),
-    POST_GAME("경기후", 5);
+    EXTRA_FIRST_HALF("연장전반", 3),
+    EXTRA_SECOND_HALF("연장후반", 4),
+    PENALTY_SHOOTOUT("승부차기", 5),
+    POST_GAME("경기후", 6);
 
     private final String name;
     private final Integer order;

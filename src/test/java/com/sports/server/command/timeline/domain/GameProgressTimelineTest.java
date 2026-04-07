@@ -132,6 +132,88 @@ class GameProgressTimelineTest {
         }
 
         @Test
+        void 연장전반_시작_타임라인을_생성한다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+
+            // when
+            GameProgressTimeline timeline = 연장전반_시작_타임라인_생성(game);
+            timeline.apply();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.EXTRA_FIRST_HALF.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 연장전반_종료_타임라인을_생성한다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+            연장전반_시작_타임라인_생성(game).apply();
+
+            // when
+            GameProgressTimeline timeline = 연장전반_종료_타임라인_생성(game);
+            timeline.apply();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.EXTRA_FIRST_HALF.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 연장후반_시작_타임라인을_생성한다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+            연장전반_시작_타임라인_생성(game).apply();
+            연장전반_종료_타임라인_생성(game).apply();
+
+            // when
+            GameProgressTimeline timeline = 연장후반_시작_타임라인_생성(game);
+            timeline.apply();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.EXTRA_SECOND_HALF.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 연장후반_종료_타임라인을_생성한다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+            연장전반_시작_타임라인_생성(game).apply();
+            연장전반_종료_타임라인_생성(game).apply();
+            연장후반_시작_타임라인_생성(game).apply();
+
+            // when
+            GameProgressTimeline timeline = 연장후반_종료_타임라인_생성(game);
+            timeline.apply();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.EXTRA_SECOND_HALF.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
         void 승부차기_시작_타임라인을_등록하는_경우_game의_승부차기_진행_여부_필드가_true가_된다() {
             // given
             GameProgressTimeline timeline = 승부차기_시작_타임라인_생성(game);
@@ -215,6 +297,50 @@ class GameProgressTimelineTest {
         }
 
         @Test
+        void 연장전반_시작_타임라인을_롤백한다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+
+            GameProgressTimeline timeline = 연장전반_시작_타임라인_생성(game);
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 연장후반_시작_타임라인을_롤백한다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+            연장전반_시작_타임라인_생성(game).apply();
+            연장전반_종료_타임라인_생성(game).apply();
+
+            GameProgressTimeline timeline = 연장후반_시작_타임라인_생성(game);
+            timeline.apply();
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.EXTRA_FIRST_HALF.getName()),
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
         void 경기_종료_타임라인을_롤백한다() {
             // given
             전반전_시작_타임라인_생성(game).apply();
@@ -269,6 +395,42 @@ class GameProgressTimelineTest {
                 game,
                 Quarter.SECOND_HALF,
                 50,
+                GameProgressType.QUARTER_END
+        );
+    }
+
+    private GameProgressTimeline 연장전반_시작_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                Quarter.EXTRA_FIRST_HALF,
+                0,
+                GameProgressType.QUARTER_START
+        );
+    }
+
+    private GameProgressTimeline 연장전반_종료_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                Quarter.EXTRA_FIRST_HALF,
+                15,
+                GameProgressType.QUARTER_END
+        );
+    }
+
+    private GameProgressTimeline 연장후반_시작_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                Quarter.EXTRA_SECOND_HALF,
+                0,
+                GameProgressType.QUARTER_START
+        );
+    }
+
+    private GameProgressTimeline 연장후반_종료_타임라인_생성(Game game) {
+        return new GameProgressTimeline(
+                game,
+                Quarter.EXTRA_SECOND_HALF,
+                15,
                 GameProgressType.QUARTER_END
         );
     }
