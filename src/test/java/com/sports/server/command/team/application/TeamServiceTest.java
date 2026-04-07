@@ -63,7 +63,7 @@ public class TeamServiceTest extends ServiceTest {
                     new TeamRequest.TeamPlayerRegister(2L, 7));
 
             TeamRequest.Register request = new TeamRequest.Register("name", "invalid-logo-url",
-                    "사회과학대학","color code", playerRegisterRequests);
+                    "사회과학대학","color code", playerRegisterRequests, null);
 
             // when & then
             assertThatThrownBy(() -> teamService.register(request))
@@ -79,7 +79,7 @@ public class TeamServiceTest extends ServiceTest {
                     new TeamRequest.TeamPlayerRegister(2L, 7));
 
             TeamRequest.Register request = new TeamRequest.Register("name", imageUrl,
-                    "invalid unit","color code", playerRegisterRequests);
+                    "invalid unit","color code", playerRegisterRequests, null);
 
             // when & then
             assertThatThrownBy(() -> teamService.register(request))

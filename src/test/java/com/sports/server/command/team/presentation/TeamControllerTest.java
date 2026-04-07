@@ -40,7 +40,8 @@ public class TeamControllerTest extends DocumentationTest {
                 "logo-image-url",
                 "사회과학대학",
                 "team-color",
-                teamPlayersRequest
+                teamPlayersRequest,
+                null
         );
 
         Mockito.doNothing().when(teamService).register(Mockito.any(TeamRequest.Register.class));
@@ -60,6 +61,7 @@ public class TeamControllerTest extends DocumentationTest {
                                         fieldWithPath("unit").type(JsonFieldType.STRING).description("팀의 소속 (영어대학, 서양어대학, 아시아언어문화대학, 중국학대학," +
                                                 " 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD학부, LT학부, KFL학부, 자유전공학부, 기타)"),
                                         fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 대표 색의 hexCode"),
+                                        fieldWithPath("sportType").type(JsonFieldType.STRING).description("팀의 종목 (SOCCER, BASKETBALL)").optional(),
                                         fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("팀에 추가할 선수들 목록 (없다면 빈 리스트)"),
                                         fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 Id"),
                                         fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호 (nullable)")

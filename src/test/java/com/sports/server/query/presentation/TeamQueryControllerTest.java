@@ -29,12 +29,12 @@ public class TeamQueryControllerTest extends DocumentationTest {
         // given
         List<String> units = List.of("사회과학대학", "영어대학");
         List<TeamResponse> response = List.of(
-                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9"),
-                new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl2", "사회과학대학", "#92A8D1"),
-                new TeamResponse(3L, "영어영문학과", "s3:logoImageUrl2", "영어대학", "#92A8D1")
+                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER"),
+                new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl2", "사회과학대학", "#92A8D1", "SOCCER"),
+                new TeamResponse(3L, "영어영문학과", "s3:logoImageUrl2", "영어대학", "#92A8D1", "SOCCER")
         );
 
-        given(teamQueryService.getAllTeamsByUnits(units)).willReturn(response);
+        given(teamQueryService.getAllTeamsByUnits(units, null)).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams")
@@ -80,7 +80,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
         );
 
         TeamDetailResponse response = new TeamDetailResponse(
-                1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", teamPlayers,
+                1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER", teamPlayers,
                 5, 2, 3, topScorers, trophies);
 
         given(teamQueryService.getTeamDetail(teamId)).willReturn(response);
@@ -205,7 +205,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new TeamDetailResponse.Trophy(2L, "2025 삼건물대회", "준우승")
         );
         TeamDetailResponse teamDetail = new TeamDetailResponse(1L, "정치외교학과 PSD", "image url", "사회과학대학",
-                "#000000", null, 5, 1, 3, topScorers, trophies);
+                "#000000", "SOCCER", null, 5, 1, 3, topScorers, trophies);
 
 
         List<GameDetailResponse.TeamResponse> gameTeams1 = List.of(
@@ -225,7 +225,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
 
         List<TeamSummaryResponse> teamSummaryResponses = List.of(new TeamSummaryResponse(teamDetail, recentGames));
 
-        given(teamQueryService.getAllTeamsSummary(units)).willReturn(teamSummaryResponses);
+        given(teamQueryService.getAllTeamsSummary(units, null)).willReturn(teamSummaryResponses);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/summary")
@@ -263,7 +263,8 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 fieldWithPath(prefix + "name").type(JsonFieldType.STRING).description("팀의 이름"),
                 fieldWithPath(prefix + "logoImageUrl").type(JsonFieldType.STRING).description("팀의 로고 이미지 URL"),
                 fieldWithPath(prefix + "unit").type(JsonFieldType.STRING).description("팀의 소속 단위"),
-                fieldWithPath(prefix + "teamColor").type(JsonFieldType.STRING).description("팀의 대표 색상")
+                fieldWithPath(prefix + "teamColor").type(JsonFieldType.STRING).description("팀의 대표 색상"),
+                fieldWithPath(prefix + "sportType").type(JsonFieldType.STRING).description("팀의 종목 (SOCCER, BASKETBALL)")
         };
     }
 
@@ -273,7 +274,8 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 fieldWithPath(prefix + "name").type(JsonFieldType.STRING).description("팀의 이름"),
                 fieldWithPath(prefix + "logoImageUrl").type(JsonFieldType.STRING).description("팀의 로고 이미지 URL"),
                 fieldWithPath(prefix + "unit").type(JsonFieldType.STRING).description("팀의 소속 단위"),
-                fieldWithPath(prefix + "teamColor").type(JsonFieldType.STRING).description("팀의 대표 색상")
+                fieldWithPath(prefix + "teamColor").type(JsonFieldType.STRING).description("팀의 대표 색상"),
+                fieldWithPath(prefix + "sportType").type(JsonFieldType.STRING).description("팀의 종목 (SOCCER, BASKETBALL)")
         };
     }
 
