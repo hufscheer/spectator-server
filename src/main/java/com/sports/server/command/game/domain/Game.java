@@ -297,11 +297,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        try {
-            return Quarter.valueOf(gameQuarter);
-        } catch (IllegalArgumentException e) {
-            return Quarter.fromName(gameQuarter);
-        }
+        return Quarter.resolve(gameQuarter);
     }
 
     public void checkStateForTimeline() {
