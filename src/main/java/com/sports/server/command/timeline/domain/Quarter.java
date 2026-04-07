@@ -21,15 +21,6 @@ public enum Quarter {
         this.order = order;
     }
 
-    public static Quarter fromName(String name) {
-        for (Quarter quarter : Quarter.values()) {
-            if (quarter.name.equals(name)) {
-                return quarter;
-            }
-        }
-        throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, name));
-    }
-
     public static Quarter resolve(String value) {
         for (Quarter quarter : Quarter.values()) {
             if (quarter.name().equals(value) || quarter.name.equals(value)) {

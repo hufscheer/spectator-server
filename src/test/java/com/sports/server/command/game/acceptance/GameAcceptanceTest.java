@@ -239,7 +239,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         GameDetailResponse updatedGame = toResponse(getResponse, GameDetailResponse.class);
         assertAll(
                 () -> assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(updatedGame.gameQuarter()).isEqualTo(quarter),
+                () -> assertThat(updatedGame.gameQuarter().key()).isEqualTo(quarter),
                 () -> assertThat(updatedGame.round()).isEqualTo(round),
                 () -> assertThat(updatedGame.gameName()).isEqualTo(name),
                 () -> assertThat(updatedGame.startTime()).isEqualTo(fixedLocalDateTime),

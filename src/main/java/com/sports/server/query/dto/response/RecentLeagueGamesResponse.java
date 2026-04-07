@@ -22,8 +22,7 @@ public record RecentLeagueGamesResponse(
     public record GameResponse(
             Long id,
             LocalDateTime startTime,
-            String gameQuarter,
-            String gameQuarterDisplayName,
+            QuarterResponse gameQuarter,
             String gameName,
             int round,
             String videoId,
@@ -35,8 +34,7 @@ public record RecentLeagueGamesResponse(
             this(
                     game.getId(),
                     game.getStartTime(),
-                    game.getGameQuarter(),
-                    game.getQuarter().getName(),
+                    QuarterResponse.from(game.getQuarter()),
                     game.getName(),
                     game.getRound().getNumber(),
                     game.getVideoId(),

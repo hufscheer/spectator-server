@@ -29,8 +29,7 @@ public class TimelineQueryService {
                 .stream()
                 .sorted(comparingLong(Quarter::getOrder).reversed())
                 .map(quarter -> TimelineResponse.of(
-                        quarter.name(),
-                        quarter.getName(),
+                        quarter,
                         timelines.get(quarter)
                 )).toList();
     }

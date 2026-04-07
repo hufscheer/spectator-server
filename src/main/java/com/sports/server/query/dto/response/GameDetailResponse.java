@@ -10,8 +10,7 @@ public record GameDetailResponse(
         Long gameId,
         LocalDateTime startTime,
         String videoId,
-        String gameQuarter,
-        String gameQuarterDisplayName,
+        QuarterResponse gameQuarter,
         String gameName,
         List<TeamResponse> gameTeams,
         String state,
@@ -26,8 +25,7 @@ public record GameDetailResponse(
                 game.getId(),
                 game.getStartTime(),
                 game.getVideoId(),
-                game.getGameQuarter(),
-                game.getQuarter().getName(),
+                QuarterResponse.from(game.getQuarter()),
                 game.getName(),
                 gameTeams.stream()
                         .sorted(Comparator.comparingLong(GameTeam::getId))

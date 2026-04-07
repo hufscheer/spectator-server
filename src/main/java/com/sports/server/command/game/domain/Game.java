@@ -161,9 +161,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
-    public void updateGameQuarter(String gameQuarter) {
-        if (StringUtils.hasText(gameQuarter)) {
-            this.gameQuarter = gameQuarter;
+    public void updateGameQuarter(Quarter quarter) {
+        if (quarter != null) {
+            this.gameQuarter = quarter.name();
         }
     }
 
