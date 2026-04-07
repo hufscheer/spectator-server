@@ -117,6 +117,40 @@ class GameProgressTimelineTest {
         }
 
         @Test
+        void 전반전에서는_경기를_종료할_수_없다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+
+            // when then
+            assertThatThrownBy(() -> new GameProgressTimeline(
+                    game,
+                    Quarter.POST_GAME,
+                    45,
+                    GameProgressType.GAME_END)
+            ).isInstanceOf(CustomException.class)
+                    .hasMessage("현재 쿼터에서는 경기를 종료할 수 없습니다.");
+        }
+
+        @Test
+        void 연장전반에서는_경기를_종료할_수_없다() {
+            // given
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+            연장전반_시작_타임라인_생성(game).apply();
+
+            // when then
+            assertThatThrownBy(() -> new GameProgressTimeline(
+                    game,
+                    Quarter.POST_GAME,
+                    15,
+                    GameProgressType.GAME_END)
+            ).isInstanceOf(CustomException.class)
+                    .hasMessage("현재 쿼터에서는 경기를 종료할 수 없습니다.");
+        }
+
+        @Test
         void 쿼터_순서를_오름차순으로만_생성할_수_있다() {
             // given
             후반전_시작_타임라인_생성(game).apply();

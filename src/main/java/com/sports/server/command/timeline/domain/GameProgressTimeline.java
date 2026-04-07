@@ -51,6 +51,10 @@ public class GameProgressTimeline extends Timeline {
         if (recordedQuarter.isPreviousThan(previousQuarter)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이전 쿼터로의 진행은 불가능합니다.");
         }
+
+        if (gameProgressType == GameProgressType.GAME_END && !previousQuarter.isGameEndable()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "현재 쿼터에서는 경기를 종료할 수 없습니다.");
+        }
     }
 
     @Override

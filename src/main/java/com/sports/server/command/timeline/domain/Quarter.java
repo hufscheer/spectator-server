@@ -49,4 +49,8 @@ public enum Quarter {
     public boolean isPreviousThan(Quarter other) {
         return this.order < other.order;
     }
+
+    public boolean isGameEndable() {
+        return this == SECOND_HALF || this == EXTRA_SECOND_HALF || this == PENALTY_SHOOTOUT;
+    }
 }
