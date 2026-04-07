@@ -30,6 +30,15 @@ public enum Quarter {
         throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, name));
     }
 
+    public static Quarter resolve(String value) {
+        for (Quarter quarter : Quarter.values()) {
+            if (quarter.name().equals(value) || quarter.name.equals(value)) {
+                return quarter;
+            }
+        }
+        throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value));
+    }
+
 
     public boolean isOrder(Integer order) {
         return this.order.equals(order);
