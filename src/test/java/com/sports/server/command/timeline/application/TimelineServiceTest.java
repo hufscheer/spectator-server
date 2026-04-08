@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
@@ -62,7 +63,7 @@ class TimelineServiceTest extends ServiceTest {
         Long team1Id = 1L;
         Long team1PlayerId = 1L;
 
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SoccerQuarter.SECOND_HALF,
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                 team1PlayerId, 3, null);
 
         // when & then
@@ -80,7 +81,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1Id = 1L;
             Long team1PlayerId = 1L;
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SoccerQuarter.SECOND_HALF,
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     team1PlayerId, 3, null);
 
             // when
@@ -103,7 +104,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team2Id = 2L;
             Long team2PlayerId = 6L;
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team2Id, SoccerQuarter.SECOND_HALF,
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     team2PlayerId, 5, null);
 
             // when
@@ -126,7 +127,7 @@ class TimelineServiceTest extends ServiceTest {
             Long scorerId = 1L;
             Long assistId = 2L; // 같은 팀1 소속 선수
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SoccerQuarter.SECOND_HALF,
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     scorerId, 3, assistId);
 
             // when
@@ -146,7 +147,7 @@ class TimelineServiceTest extends ServiceTest {
             Long scorerId = 1L;   // 팀1 선수
             Long assistId = 6L;   // 팀2 선수
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SoccerQuarter.SECOND_HALF,
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     scorerId, 3, assistId);
 
             // when & then
@@ -160,7 +161,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1Id = 1L;
             Long scorerId = 1L;
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SoccerQuarter.SECOND_HALF,
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     scorerId, 3, scorerId);
 
             // when & then
@@ -184,8 +185,7 @@ class TimelineServiceTest extends ServiceTest {
         void 팀1에서_생성한다() {
             // given
 
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id,
-                    SoccerQuarter.SECOND_HALF, team1OriginPlayerId, team1ReplacedPlayerId, 3);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1OriginPlayerId, team1ReplacedPlayerId, 3);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -205,8 +205,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 팀2에서_생성한다() {
             // given
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id,
-                    SoccerQuarter.SECOND_HALF, team2OriginPlayerId, team2ReplacedPlayerId, 3);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team2OriginPlayerId, team2ReplacedPlayerId, 3);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -226,8 +225,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 다른_팀끼리_생성할_수_없다() {
             // given
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id,
-                    SoccerQuarter.SECOND_HALF, team1OriginPlayerId, team2ReplacedPlayerId, 3);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1OriginPlayerId, team2ReplacedPlayerId, 3);
 
             // when then
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request)).isInstanceOf(
@@ -241,7 +239,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 생성한다() {
             // given
-            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(10, SoccerQuarter.SECOND_HALF,
+            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(10, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     GameProgressType.QUARTER_START);
 
             // when
@@ -264,7 +262,7 @@ class TimelineServiceTest extends ServiceTest {
             Long teamPlayerId = 1L;
             int recordedAt = 10;
 
-            TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(recordedAt, SoccerQuarter.PENALTY_SHOOTOUT,
+            TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(recordedAt, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(),
                     teamId, teamPlayerId, true);
 
             // when
@@ -287,8 +285,7 @@ class TimelineServiceTest extends ServiceTest {
             Long playerId = 1L;
             int recordedAt = 10;
 
-            TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(recordedAt,
-                    SoccerQuarter.SECOND_HALF, teamId, playerId, WarningCardType.YELLOW);
+            TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(recordedAt, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), teamId, playerId, WarningCardType.YELLOW);
 
             //when
             timelineService.register(manager, gameId, request);
@@ -336,7 +333,7 @@ class TimelineServiceTest extends ServiceTest {
         Long team1PlayerId = 1L;
         Long finishedGameId = 2L;
 
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SoccerQuarter.SECOND_HALF,
+        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                 team1PlayerId, 3, null);
 
         // when & then
@@ -361,7 +358,7 @@ class TimelineServiceTest extends ServiceTest {
             // given
             AtomicInteger successCount = new AtomicInteger(0);
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(1L, SoccerQuarter.SECOND_HALF, 1L, 1, null);
+            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(1L, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), 1L, 1, null);
 
             int initialScore1 = 15;
             int initialScore2 = 10;
@@ -407,8 +404,7 @@ class TimelineServiceTest extends ServiceTest {
             Long originPlayerId = 1L;
             Long replacedPlayerId = 2L;
 
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id,
-                    SoccerQuarter.SECOND_HALF, originPlayerId, replacedPlayerId, 1);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), originPlayerId, replacedPlayerId, 1);
 
             // when
             List<CompletableFuture<Void>> futures = IntStream.range(0, numberOfAttempts)
@@ -450,7 +446,7 @@ class TimelineServiceTest extends ServiceTest {
             // given
             AtomicInteger successCount = new AtomicInteger(0);
 
-            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(10, SoccerQuarter.SECOND_HALF,
+            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(10, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     GameProgressType.QUARTER_START);
 
             // when
@@ -483,7 +479,7 @@ class TimelineServiceTest extends ServiceTest {
             // given
             AtomicInteger successCount = new AtomicInteger(0);
 
-            TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(1, SoccerQuarter.PENALTY_SHOOTOUT, 1L,
+            TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(1, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(), 1L,
                     // teamId
                     1L, // playerId
                     true // isSuccess
@@ -518,8 +514,7 @@ class TimelineServiceTest extends ServiceTest {
             // given
             AtomicInteger successCount = new AtomicInteger(0);
 
-            TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(1,
-                    SoccerQuarter.SECOND_HALF, 1L, // teamId
+            TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(1, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), 1L, // teamId
                     1L, // playerId
                     WarningCardType.YELLOW);
 
