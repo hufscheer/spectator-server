@@ -41,32 +41,8 @@ public interface Quarter {
 
     static Quarter resolve(SportType sportType, String value) {
         return switch (sportType) {
-            case SOCCER -> resolveSoccer(value);
-            case BASKETBALL -> resolveBasketball(value);
+            case SOCCER -> SoccerQuarter.resolve(value);
+            case BASKETBALL -> BasketballQuarter.resolve(value);
         };
-    }
-
-    private static Quarter resolveSoccer(String value) {
-        for (SoccerQuarter quarter : SoccerQuarter.values()) {
-            if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {
-                return quarter;
-            }
-        }
-        throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value));
-    }
-
-    private static Quarter resolveBasketball(String value) {
-        for (SoccerQuarter quarter : SoccerQuarter.values()) {
-            if ((quarter == SoccerQuarter.PRE_GAME || quarter == SoccerQuarter.POST_GAME)
-                    && (quarter.name().equals(value) || quarter.getDisplayName().equals(value))) {
-                return quarter;
-            }
-        }
-        for (BasketballQuarter quarter : BasketballQuarter.values()) {
-            if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {
-                return quarter;
-            }
-        }
-        throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value));
     }
 }
