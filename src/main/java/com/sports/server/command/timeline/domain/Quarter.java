@@ -32,6 +32,13 @@ public interface Quarter {
         throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value));
     }
 
+    static Quarter firstOf(SportType sportType) {
+        return switch (sportType) {
+            case SOCCER -> SoccerQuarter.FIRST_HALF;
+            case BASKETBALL -> BasketballQuarter.FIRST_QUARTER;
+        };
+    }
+
     static Quarter resolve(SportType sportType, String value) {
         return switch (sportType) {
             case SOCCER -> resolveSoccer(value);

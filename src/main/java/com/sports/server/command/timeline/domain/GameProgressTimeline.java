@@ -74,7 +74,8 @@ public class GameProgressTimeline extends Timeline {
         game.updateQuarter(previousQuarter, previousQuarterChangedAt);
 
         if (gameProgressType == GameProgressType.QUARTER_START &&
-                previousQuarter == SoccerQuarter.PRE_GAME) {
+                previousQuarter != null &&
+                previousQuarter.getOrder() == 0) {
             game.updateState(GameState.SCHEDULED);
         }
 
