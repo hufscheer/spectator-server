@@ -1,8 +1,10 @@
-package com.sports.server.command.timeline.domain;
+package com.sports.server.command.league.domain;
 
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
 import lombok.Getter;
+
+import java.util.Optional;
 
 @Getter
 public enum SoccerQuarter implements Quarter {
@@ -21,12 +23,23 @@ public enum SoccerQuarter implements Quarter {
         this.order = order;
     }
 
-    public static SoccerQuarter resolve(String value) {
-        for (SoccerQuarter quarter : SoccerQuarter.values()) {
+    @Override
+    public Quarter firstQuarter() {
+        return FIRST_HALF;
+    }
+
+    public static Optional<SoccerQuarter> tryResolve(String value) {
+        for (SoccerQuarter quarter : values()) {
             if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {
-                return quarter;
+                return Optional.of(quarter);
             }
         }
-        throw new BadRequestException(String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value));
+        return Optional.empty();
+    }
+
+    public static SoccerQuarter resolve(String value) {
+        return tryResolve(value)
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value)));
     }
 }

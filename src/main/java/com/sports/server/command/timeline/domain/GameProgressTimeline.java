@@ -2,6 +2,8 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.QuarterConverter;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

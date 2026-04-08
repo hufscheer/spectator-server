@@ -1,4 +1,4 @@
-package com.sports.server.command.timeline.domain;
+package com.sports.server.command.league.domain;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -19,6 +19,6 @@ public class QuarterConverter implements AttributeConverter<Quarter, String> {
         if (dbData == null) {
             return null;
         }
-        return Quarter.resolve(dbData);
+        return QuarterResolver.resolve(dbData);
     }
 }

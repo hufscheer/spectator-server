@@ -3,7 +3,7 @@ package com.sports.server.command.timeline.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.command.timeline.domain.Quarter;
+import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.timeline.domain.TimelineType;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public abstract class TimelineRequest {
     public abstract TimelineType getType();
 
     public Quarter resolveQuarter() {
-        return Quarter.resolve(sportType, recordedQuarter);
+        return sportType.resolveQuarter(recordedQuarter);
     }
 
     @Getter

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;

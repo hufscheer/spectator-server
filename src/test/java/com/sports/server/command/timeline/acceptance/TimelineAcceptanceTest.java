@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.SportType;
-import com.sports.server.command.timeline.domain.SoccerQuarter;
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.AcceptanceTest;

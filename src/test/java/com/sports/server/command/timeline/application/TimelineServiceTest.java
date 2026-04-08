@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.TimelineFixtureRepository;

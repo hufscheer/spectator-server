@@ -1,6 +1,8 @@
 package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.QuarterConverter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
@@ -43,11 +45,7 @@ public abstract class Timeline extends BaseEntity<Timeline> {
 
     public abstract TimelineType getType();
 
-    protected Timeline(
-            Game game,
-            Quarter recordedQuarter,
-            Integer recordedAt
-    ) {
+    protected Timeline(Game game, Quarter recordedQuarter, Integer recordedAt) {
         validateRecordedAt(recordedAt);
 
         this.game = game;

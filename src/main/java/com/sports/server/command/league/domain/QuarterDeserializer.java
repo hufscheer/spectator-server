@@ -1,4 +1,4 @@
-package com.sports.server.command.timeline.domain;
+package com.sports.server.command.league.domain;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -14,6 +14,6 @@ public class QuarterDeserializer extends StdDeserializer<Quarter> {
 
     @Override
     public Quarter deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
-        return Quarter.resolve(p.getText());
+        return QuarterResolver.resolve(p.getText());
     }
 }

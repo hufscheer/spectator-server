@@ -3,6 +3,8 @@ package com.sports.server.command.timeline.domain;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
