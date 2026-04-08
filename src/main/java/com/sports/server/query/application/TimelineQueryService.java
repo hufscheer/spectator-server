@@ -1,6 +1,6 @@
 package com.sports.server.query.application;
 
-import static java.util.Comparator.comparingLong;
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
 
 import com.sports.server.command.timeline.domain.Quarter;
@@ -27,7 +27,7 @@ public class TimelineQueryService {
 
         return timelines.keySet()
                 .stream()
-                .sorted(comparingLong(Quarter::getOrder).reversed())
+                .sorted(comparingInt(Quarter::getOrder).reversed())
                 .map(quarter -> TimelineResponse.of(
                         quarter,
                         timelines.get(quarter)

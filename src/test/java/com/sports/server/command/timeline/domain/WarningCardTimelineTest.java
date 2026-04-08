@@ -15,7 +15,7 @@ public class WarningCardTimelineTest {
 
     private final Game game = entityBuilder(Game.class).sample();
     private final GameTeam gameTeam = entityBuilder(GameTeam.class).sample();
-    private final Quarter quarter = entityBuilder(Quarter.class).sample();
+    private final Quarter quarter = SoccerQuarter.FIRST_HALF;
 
     @Nested
     @DisplayName("경고 카드 타임라인을")

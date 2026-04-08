@@ -7,6 +7,7 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.Quarter;
+import com.sports.server.command.timeline.domain.SoccerQuarter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.BadRequestException;
@@ -209,12 +210,12 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void play() {
         this.state = GameState.PLAYING;
-        updateQuarter(Quarter.FIRST_HALF);
+        updateQuarter(SoccerQuarter.FIRST_HALF);
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        updateQuarter(Quarter.POST_GAME);
+        updateQuarter(SoccerQuarter.POST_GAME);
     }
 
     public void determineResult() {
@@ -268,11 +269,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.name();
 
-        if (quarter == Quarter.FIRST_HALF) {
+        if (quarter == SoccerQuarter.FIRST_HALF) {
             this.state = GameState.PLAYING;
         }
 
-        if (quarter == Quarter.PENALTY_SHOOTOUT) {
+        if (quarter == SoccerQuarter.PENALTY_SHOOTOUT) {
             startPk();
         }
 
@@ -280,11 +281,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
-        if (getQuarter() == Quarter.PENALTY_SHOOTOUT) {
+        if (getQuarter() == SoccerQuarter.PENALTY_SHOOTOUT) {
             cancelPk();
         }
 
-        this.gameQuarter = (quarter == null) ? Quarter.PRE_GAME.name() : quarter.name();
+        this.gameQuarter = (quarter == null) ? SoccerQuarter.PRE_GAME.name() : quarter.name();
         this.quarterChangedAt = changedAt;
     }
 

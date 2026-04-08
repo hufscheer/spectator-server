@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.Quarter;
+import com.sports.server.command.timeline.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.DocumentationTest;
@@ -27,7 +28,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                 1L,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 1L,
                 10,
                 null
@@ -64,7 +65,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                 1L,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 2L,
                 3L,
                 5
@@ -103,7 +104,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
                 10,
-                Quarter.SECOND_HALF,
+                SoccerQuarter.SECOND_HALF,
                 GameProgressType.QUARTER_START
         );
 
@@ -136,7 +137,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
                 10,
-                Quarter.PENALTY_SHOOTOUT,
+                SoccerQuarter.PENALTY_SHOOTOUT,
                 1L,
                 1L,
                 true
@@ -173,7 +174,7 @@ public class TimelineControllerTest extends DocumentationTest {
         // given
         TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(
                 10,
-                Quarter.SECOND_HALF,
+                SoccerQuarter.SECOND_HALF,
                 1L,
                 2L,
                 WarningCardType.YELLOW

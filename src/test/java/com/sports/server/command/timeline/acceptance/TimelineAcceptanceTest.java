@@ -3,7 +3,7 @@ package com.sports.server.command.timeline.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.command.timeline.domain.Quarter;
+import com.sports.server.command.timeline.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.support.AcceptanceTest;
@@ -31,7 +31,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
     void 득점_타임라인을_생성한다() {
         TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                 team1Id,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 team1PlayerId,
                 3,
                 null
@@ -58,7 +58,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
         TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                 team1Id,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 team1PlayerId,
                 3,
                 assistPlayerId
@@ -85,7 +85,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
         TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
                 team1Id,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 team1PlayerId,
                 3,
                 team2PlayerId
@@ -111,7 +111,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
         long replacedPlayerId = 2L;
         TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                 team1Id,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 team1PlayerId,
                 replacedPlayerId,
                 10
@@ -136,7 +136,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
         // given
         TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
                 10,
-                Quarter.SECOND_HALF,
+                SoccerQuarter.SECOND_HALF,
                 GameProgressType.QUARTER_START
         );
 
@@ -159,7 +159,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
         // given
         TimelineRequest.RegisterPk request = new TimelineRequest.RegisterPk(
                 10,
-                Quarter.PENALTY_SHOOTOUT,
+                SoccerQuarter.PENALTY_SHOOTOUT,
                 team1Id,
                 team1PlayerId,
                 true
@@ -184,7 +184,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
         //given
         TimelineRequest.RegisterWarningCard request = new TimelineRequest.RegisterWarningCard(
                 10,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 team1Id,
                 team1PlayerId,
                 WarningCardType.YELLOW

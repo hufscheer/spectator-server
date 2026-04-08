@@ -22,8 +22,7 @@ class ReplacementTimelineTest {
             .set("game", game)
             .sample();
 
-    private final Quarter quarter = entityBuilder(Quarter.class)
-            .sample();
+    private final Quarter quarter = SoccerQuarter.FIRST_HALF;
 
     @Nested
     @DisplayName("교체 타임라인은")

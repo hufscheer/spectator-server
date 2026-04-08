@@ -20,7 +20,7 @@ class GameProgressTimelineTest {
     void setUp() {
         game = entityBuilder(Game.class)
                 .set("gameTeams", new ArrayList<>())
-                .set("gameQuarter", Quarter.PRE_GAME.name())
+                .set("gameQuarter", SoccerQuarter.PRE_GAME.name())
                 .set("state", GameState.SCHEDULED)
                 .set("isPkTaken", false)
                 .sample();
@@ -38,7 +38,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -55,7 +55,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -73,7 +73,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.SECOND_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -92,7 +92,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.SECOND_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -111,7 +111,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.POST_GAME.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.POST_GAME.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.FINISHED)
             );
         }
@@ -124,7 +124,7 @@ class GameProgressTimelineTest {
             // when then
             assertThatThrownBy(() -> new GameProgressTimeline(
                     game,
-                    Quarter.FIRST_HALF,
+                    SoccerQuarter.FIRST_HALF,
                     10,
                     GameProgressType.QUARTER_START)
             ).isInstanceOf(CustomException.class)
@@ -158,7 +158,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.PRE_GAME.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.PRE_GAME.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.SCHEDULED)
             );
         }
@@ -177,7 +177,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -196,7 +196,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.FIRST_HALF.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.FIRST_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -231,7 +231,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(Quarter.SECOND_HALF.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.SECOND_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
             );
         }
@@ -240,7 +240,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 전반전_시작_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 0,
                 GameProgressType.QUARTER_START
         );
@@ -249,7 +249,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 전반전_종료_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                Quarter.FIRST_HALF,
+                SoccerQuarter.FIRST_HALF,
                 45,
                 GameProgressType.QUARTER_END
         );
@@ -258,7 +258,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 후반전_시작_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                Quarter.SECOND_HALF,
+                SoccerQuarter.SECOND_HALF,
                 50,
                 GameProgressType.QUARTER_START
         );
@@ -267,7 +267,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 후반전_종료_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                Quarter.SECOND_HALF,
+                SoccerQuarter.SECOND_HALF,
                 50,
                 GameProgressType.QUARTER_END
         );
@@ -276,7 +276,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 승부차기_시작_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                Quarter.PENALTY_SHOOTOUT,
+                SoccerQuarter.PENALTY_SHOOTOUT,
                 50,
                 GameProgressType.QUARTER_START
         );
@@ -285,7 +285,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 경기_종료_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                Quarter.POST_GAME,
+                SoccerQuarter.POST_GAME,
                 50,
                 GameProgressType.GAME_END
         );

@@ -5,11 +5,10 @@ import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -35,7 +34,7 @@ public abstract class Timeline extends BaseEntity<Timeline> {
     @JoinColumn(name = "game_id", nullable = false)
     protected Game game;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = QuarterConverter.class)
     @Column(name = "recorded_quarter", nullable = false)
     protected Quarter recordedQuarter;
 
