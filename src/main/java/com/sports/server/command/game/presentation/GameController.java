@@ -4,8 +4,10 @@ import com.sports.server.command.game.application.GameService;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -59,6 +61,14 @@ public class GameController {
     public void updateGame(@PathVariable final Long leagueId, @PathVariable final Long gameId,
                            @RequestBody final GameRequest.Update request, final Member member) {
         gameService.updateGame(leagueId, gameId, request, member);
+        updateLeagueStatisticsIfFinalFinished(request, gameId);
+    }
+
+    private void updateLeagueStatisticsIfFinalFinished(GameRequest.Update request, Long gameId) {
+        if (GameState.FINISHED == GameState.from(request.state())
+                && Round.FINAL == Round.from(request.round())) {
+            gameStatusScheduler.manualUpdateLeagueStatisticsForFinalGames(List.of(gameId));
+        }
     }
 
     @DeleteMapping("/leagues/{leagueId}/{gameId}")

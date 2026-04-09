@@ -39,6 +39,7 @@ public class GameStatusScheduler {
     }
 
     public void manualUpdateLeagueStatisticsForFinalGames(List<Long> gameIds) {
+        gameService.determineResults(gameIds);
         List<Game> games = gameService.findGamesByIds(gameIds);
         updateLeagueStatisticsForFinalGames(games);
     }
