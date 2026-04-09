@@ -22,6 +22,7 @@ public class LeagueQueryConditionMapper {
         conditions.and(getYearCondition(requestDto.year()));
         conditions.and(getProgressCondition(requestDto.leagueProgress()));
         conditions.and(getSportTypeCondition(requestDto.sportType()));
+        conditions.and(getOrganizationCondition(requestDto.organizationId()));
 
         return conditions;
     }
@@ -51,6 +52,13 @@ public class LeagueQueryConditionMapper {
             return null;
         }
         return league.sportType.eq(sportType);
+    }
+
+    private BooleanExpression getOrganizationCondition(Long organizationId) {
+        if (organizationId == null) {
+            return null;
+        }
+        return league.organization.id.eq(organizationId);
     }
 
 }

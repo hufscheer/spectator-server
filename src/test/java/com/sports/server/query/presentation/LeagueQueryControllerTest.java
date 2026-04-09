@@ -621,7 +621,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 )
         );
 
-        given(leagueQueryService.findRecentLeaguesGames())
+        given(leagueQueryService.findRecentLeaguesGames(null, null))
                 .willReturn(responses);
 
         // when
