@@ -110,7 +110,7 @@ public class LeagueServiceTest extends ServiceTest {
             assertThatThrownBy(
                     () -> leagueService.addTeams(manager, leagueId, teamsRequest))
                     .isInstanceOf(CustomException.class)
-                    .hasMessage("리그와 동일한 종목의 팀만 추가할 수 있습니다.");
+                    .hasMessage(LeagueErrorMessages.SPORT_TYPE_MISMATCH_EXCEPTION);
         }
 
         @Test

@@ -99,7 +99,7 @@ public class LeagueService {
 		boolean hasMismatch = teams.stream()
 				.anyMatch(team -> team.getSportType() != league.getSportType());
 		if (hasMismatch) {
-			throw new CustomException(HttpStatus.BAD_REQUEST, "리그와 동일한 종목의 팀만 추가할 수 있습니다.");
+			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.SPORT_TYPE_MISMATCH_EXCEPTION);
 		}
 	}
 
