@@ -34,12 +34,13 @@ public class CheerTalkQueryService {
 	private final LeagueQueryRepository leagueQueryRepository;
 
 	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
+		Game game = getGame(gameId);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
 			gameId, pageRequest.cursor(), pageRequest.size()
 		);
 
 		List<CheerTalkResponse.ForSpectator> responses = cheerTalks.stream()
-			.map(CheerTalkResponse.ForSpectator::new)
+			.map(cheerTalk -> new CheerTalkResponse.ForSpectator(cheerTalk, game))
 			.collect(Collectors.toList());
 
 		Collections.reverse(responses);
