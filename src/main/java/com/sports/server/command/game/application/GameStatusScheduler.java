@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.application.LeagueStatisticsService;
 import com.sports.server.command.league.application.LeagueTopScorerService;
 import com.sports.server.command.league.application.LeagueService;
@@ -38,9 +39,15 @@ public class GameStatusScheduler {
                 });
     }
 
+    public void updateLeagueStatisticsIfNeeded(Long gameId, GameState state, Round round) {
+        if (GameState.FINISHED != state || Round.FINAL != round) {
+            return;
+        }
+        manualUpdateLeagueStatisticsForFinalGames(List.of(gameId));
+    }
+
     public void manualUpdateLeagueStatisticsForFinalGames(List<Long> gameIds) {
-        gameService.determineResults(gameIds);
-        List<Game> games = gameService.findGamesByIds(gameIds);
+        List<Game> games = gameService.determineResultsAndGet(gameIds);
         updateLeagueStatisticsForFinalGames(games);
     }
 }

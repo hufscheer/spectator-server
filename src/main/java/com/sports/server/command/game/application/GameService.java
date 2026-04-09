@@ -69,9 +69,10 @@ public class GameService {
     }
 
     @Transactional
-    public void determineResults(List<Long> gameIds) {
+    public List<Game> determineResultsAndGet(List<Long> gameIds) {
         List<Game> games = gameRepository.findAllByIdIn(gameIds);
         games.forEach(Game::updateResult);
+        return games;
     }
 
     @Transactional
