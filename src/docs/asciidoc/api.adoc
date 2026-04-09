@@ -309,6 +309,10 @@ operation::nl-controller-test/팀_컨텍스트_없이_선수_정보를_파싱한
 
 operation::nl-controller-test/팀_생성과_선수_등록을_한번에_처리한다[snippets='http-request,request-cookies,request-fields,http-response,response-fields']
 
+=== 학번 중복 체크
+
+operation::nl-controller-test/학번_중복_여부를_확인한다[snippets='http-request,request-fields,http-response,response-fields']
+
 === 선수 등록 실행
 
 operation::nl-controller-test/선수를_등록한다[snippets='http-request,request-cookies,request-fields,http-response,response-fields']
