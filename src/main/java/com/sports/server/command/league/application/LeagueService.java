@@ -1,7 +1,6 @@
 package com.sports.server.command.league.application;
 
 import com.sports.server.command.league.domain.*;
-import com.sports.server.command.league.dto.LeagueTeamStats;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
@@ -21,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -90,11 +87,20 @@ public class LeagueService {
 	}
 
 	private void saveLeagueTeams(League league, List<Team> teams){
+		validateTeamsSportType(league, teams);
 		List<LeagueTeam> leagueTeams = teams.stream()
 				.map(team -> LeagueTeam.of(league, team))
 				.toList();
 
 		leagueTeamRepository.saveAll(leagueTeams);
+	}
+
+	private void validateTeamsSportType(League league, List<Team> teams) {
+		boolean hasMismatch = teams.stream()
+				.anyMatch(team -> team.getSportType() != league.getSportType());
+		if (hasMismatch) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "리그와 동일한 종목의 팀만 추가할 수 있습니다.");
+		}
 	}
 
 	private List<Team> findValidatedTeams(final List<Long> teamIds) {
