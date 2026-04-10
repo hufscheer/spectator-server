@@ -45,6 +45,13 @@ public class TeamQueryService {
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
+    public List<UnitResponse> getUnitsWithTeams(final SportType sportType) {
+        Set<Unit> unitsWithTeam = new HashSet<>(teamQueryDynamicRepository.findDistinctUnitsBySportType(sportType));
+        return Arrays.stream(Unit.values())
+                .map(unit -> UnitResponse.of(unit, unitsWithTeam.contains(unit)))
+                .toList();
+    }
+
     public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType) {
         List<Team> teams = findTeamsByUnits(units, sportType);
         return teams.stream()
