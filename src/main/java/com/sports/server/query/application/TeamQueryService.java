@@ -46,7 +46,8 @@ public class TeamQueryService {
     private final GameQueryRepository gameQueryRepository;
 
     public List<UnitResponse> getUnitsWithTeams(final SportType sportType) {
-        Set<Unit> unitsWithTeam = new HashSet<>(teamQueryDynamicRepository.findDistinctUnitsBySportType(sportType));
+        List<Unit> distinctUnits = teamQueryDynamicRepository.findDistinctUnitsBySportType(sportType);
+        Set<Unit> unitsWithTeam = distinctUnits.isEmpty() ? EnumSet.noneOf(Unit.class) : EnumSet.copyOf(distinctUnits);
         return Arrays.stream(Unit.values())
                 .map(unit -> UnitResponse.of(unit, unitsWithTeam.contains(unit)))
                 .toList();
