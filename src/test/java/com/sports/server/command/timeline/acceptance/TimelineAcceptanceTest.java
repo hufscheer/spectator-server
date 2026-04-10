@@ -131,8 +131,9 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
     @Test
     void 진행_타임라인을_생성한다() {
         // given
+        long preGameId = 4L;
         TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
-                10, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 GameProgressType.QUARTER_START
         );
 
@@ -142,7 +143,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .post("/games/{gameId}/timelines/progress", gameId)
+                .post("/games/{gameId}/timelines/progress", preGameId)
                 .then().log().all()
                 .extract();
 
