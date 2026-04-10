@@ -280,7 +280,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 연도_필터링_조건으로_리그를_조회한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, null, null);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, null, null, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
@@ -298,7 +298,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 리그_진행_상태_필터링_조건으로_리그를_조회한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, LeagueProgress.FINISHED, null);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, LeagueProgress.FINISHED, null, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
@@ -316,7 +316,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 연도와_진행_상태_모든_필터링_조건으로_리그를_조회한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, LeagueProgress.FINISHED, null);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, LeagueProgress.FINISHED, null, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
@@ -334,7 +334,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 필터링_조건이_없을_경우_전체_결과를_반환한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null, null);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null, null, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
@@ -508,7 +508,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 진행_중인_리그들의_게임만_반환한다() {
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             List<Long> returnedLeagueIds = result.stream()
@@ -524,7 +524,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 진행_중인_리그의_게임이_모두_반환된다() {
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             List<Long> gameIds = result.stream()
@@ -538,7 +538,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 반환된_게임에_올바른_팀_정보가_포함된다() {
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             RecentLeagueGamesResponse.GameResponse firstGame = result.get(0).games().stream()
@@ -564,7 +564,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 가장_최근_종료된_리그들의_게임을_반환한다() {
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             List<Long> returnedLeagueIds = result.stream()
@@ -580,7 +580,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 동일한_종료일자를_가진_여러_리그가_모두_반환된다() {
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             assertThat(result).hasSize(2);
@@ -592,7 +592,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
             long olderLeagueGameId = 4L;
 
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             List<Long> allGameIds = result.stream()
@@ -606,7 +606,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 반환된_게임_목록은_startTime_오름차순으로_정렬된다() {
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             RecentLeagueGamesResponse leagueA = result.stream()
@@ -631,7 +631,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 경기가_없어도_리그_정보는_반환된다() {
             // when
-            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames();
+            List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
             // then
             assertAll(

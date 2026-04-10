@@ -6,6 +6,7 @@ import com.sports.server.command.league.domain.SportType;
 public record LeagueQueryRequestDto(
         Integer year,
         LeagueProgress leagueProgress,
-        SportType sportType
+        SportType sportType,
+        Long organizationId
 ) {
 }
