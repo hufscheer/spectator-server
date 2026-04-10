@@ -7,7 +7,8 @@ public record TeamResponse(
         String name,
         String logoImageUrl,
         String unit,
-        String teamColor
+        String teamColor,
+        String sportType
 ) {
     public TeamResponse(final Team team){
         this(
@@ -15,7 +16,8 @@ public record TeamResponse(
                 team.getName(),
                 team.getLogoImageUrl(),
                 team.getUnit().getName(),
-                team.getTeamColor()
+                team.getTeamColor(),
+                team.getSportType().name()
         );
     }
 }

@@ -24,12 +24,12 @@ public class PlayerQueryControllerTest extends DocumentationTest {
     void 선수_전체를_조회한다() throws Exception {
         // given
         List<TeamResponse> teamResponses1 = List.of(
-                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9"),
-                new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl1", "사회과학대학", "#92A8D1")
+                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER"),
+                new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl1", "사회과학대학", "#92A8D1", "SOCCER")
         );
 
         List<TeamResponse> teamResponses2 = List.of(
-                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9")
+                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER")
         );
 
         List<PlayerResponse> responses = List.of(
@@ -59,7 +59,8 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].teams[].name").type(JsonFieldType.STRING).description("소속팀의 이름"),
                                 fieldWithPath("[].teams[].logoImageUrl").type(JsonFieldType.STRING).description("소속팀의 로고 이미지 url"),
                                 fieldWithPath("[].teams[].unit").type(JsonFieldType.STRING).description("소속팀의 소속 단위"),
-                                fieldWithPath("[].teams[].teamColor").type(JsonFieldType.STRING).description("소속팀의 대표 색상")
+                                fieldWithPath("[].teams[].teamColor").type(JsonFieldType.STRING).description("소속팀의 대표 색상"),
+                                fieldWithPath("[].teams[].sportType").type(JsonFieldType.STRING).description("소속팀의 종목")
                         )
                 ));
     }
@@ -69,8 +70,8 @@ public class PlayerQueryControllerTest extends DocumentationTest {
         // given
         Long playerId = 1L;
         List<TeamResponse> teamResponses = List.of(
-                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9"),
-                new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl1", "사회과학대학", "#92A8D1")
+                new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER"),
+                new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl1", "사회과학대학", "#92A8D1", "SOCCER")
         );
         PlayerResponse response = new PlayerResponse(playerId, null, "선수1", "202500001", null,  0, teamResponses);
         given(playerQueryService.getPlayerDetail(playerId))
@@ -97,7 +98,8 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("teams[].name").type(JsonFieldType.STRING).description("소속팀의 이름"),
                                 fieldWithPath("teams[].logoImageUrl").type(JsonFieldType.STRING).description("소속팀의 로고 이미지 url"),
                                 fieldWithPath("teams[].unit").type(JsonFieldType.STRING).description("소속팀의 소속 단위"),
-                                fieldWithPath("teams[].teamColor").type(JsonFieldType.STRING).description("소속팀의 대표 색상")
+                                fieldWithPath("teams[].teamColor").type(JsonFieldType.STRING).description("소속팀의 대표 색상"),
+                                fieldWithPath("teams[].sportType").type(JsonFieldType.STRING).description("소속팀의 종목")
                         )
                 ));
     }

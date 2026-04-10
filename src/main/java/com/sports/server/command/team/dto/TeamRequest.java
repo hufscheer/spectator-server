@@ -1,5 +1,6 @@
 package com.sports.server.command.team.dto;
 
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.Unit;
 
@@ -11,7 +12,8 @@ public class TeamRequest {
             String logoImageUrl,
             String unit,
             String teamColor,
-            List<TeamPlayerRegister> teamPlayers
+            List<TeamPlayerRegister> teamPlayers,
+            SportType sportType
     ) {
         public Team toEntity(String logoImageUrl) {
             return Team.builder()
@@ -19,6 +21,7 @@ public class TeamRequest {
                     .logoImageUrl(logoImageUrl)
                     .unit(Unit.from(this.unit))
                     .teamColor(this.teamColor)
+                    .sportType(this.sportType)
                     .build();
         }
     }

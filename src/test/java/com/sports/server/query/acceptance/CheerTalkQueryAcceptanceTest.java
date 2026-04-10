@@ -48,7 +48,9 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     null,
                                     1L,
                                     LocalDateTime.of(2023, 1, 2, 16, 0, 0),
-                                    true
+                                    true,
+                                    "축구 대전",
+                                    "삼건물 대회"
                             )),
                     () -> assertThat(actual)
                             .map(CheerTalkResponse.ForSpectator::cheerTalkId)
