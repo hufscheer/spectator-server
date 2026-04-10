@@ -17,11 +17,7 @@ public interface Quarter {
         return this.getOrder() < other.getOrder();
     }
 
-    default boolean canEndGame() {
-        return false;
-    }
+    boolean canEndGame();
 
-    default boolean canHaveQuarterEnd() {
-        return true;
-    }
+    boolean canHaveQuarterEnd();
 }

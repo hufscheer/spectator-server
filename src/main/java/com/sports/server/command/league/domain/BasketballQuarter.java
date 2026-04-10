@@ -34,6 +34,11 @@ public enum BasketballQuarter implements Quarter {
         return this == FOURTH_QUARTER || this == OVERTIME;
     }
 
+    @Override
+    public boolean canHaveQuarterEnd() {
+        return this != OVERTIME;
+    }
+
     public static Optional<BasketballQuarter> tryResolve(String value) {
         for (BasketballQuarter quarter : values()) {
             if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {
