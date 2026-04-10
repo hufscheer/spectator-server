@@ -16,4 +16,8 @@ public interface Quarter {
     default boolean isPreviousThan(Quarter other) {
         return this.getOrder() < other.getOrder();
     }
+
+    default boolean canEndGame() {
+        return false;
+    }
 }

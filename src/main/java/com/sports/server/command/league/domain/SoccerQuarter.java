@@ -28,6 +28,11 @@ public enum SoccerQuarter implements Quarter {
         return FIRST_HALF;
     }
 
+    @Override
+    public boolean canEndGame() {
+        return this == SECOND_HALF || this == EXTRA_TIME || this == PENALTY_SHOOTOUT;
+    }
+
     public static Optional<SoccerQuarter> tryResolve(String value) {
         for (SoccerQuarter quarter : values()) {
             if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {
