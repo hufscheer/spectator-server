@@ -269,7 +269,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.name();
 
-        if (quarter.getOrder() == 1) {
+        if (quarter == league.getSportType().firstQuarter()) {
             this.state = GameState.PLAYING;
         }
 
