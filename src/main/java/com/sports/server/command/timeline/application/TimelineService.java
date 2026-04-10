@@ -77,7 +77,7 @@ public class TimelineService {
 
     private boolean isValidFromQuarterStart(Quarter lastQuarter, Quarter requestQuarter, GameProgressType requestType) {
         return switch (requestType) {
-            case QUARTER_END -> requestQuarter.equals(lastQuarter);
+            case QUARTER_END -> lastQuarter.canHaveQuarterEnd() && requestQuarter.equals(lastQuarter);
             case GAME_END -> lastQuarter.canEndGame();
             default -> false;
         };

@@ -20,4 +20,8 @@ public interface Quarter {
     default boolean canEndGame() {
         return false;
     }
+
+    default boolean canHaveQuarterEnd() {
+        return true;
+    }
 }

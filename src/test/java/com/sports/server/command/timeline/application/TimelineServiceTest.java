@@ -240,14 +240,15 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 생성한다() {
             // given
-            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(10, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+            Long freshGameId = 4L; // PRE_GAME, SCHEDULED 상태
+            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                     GameProgressType.QUARTER_START);
 
             // when
-            timelineService.register(manager, gameId, request);
+            timelineService.register(manager, freshGameId, request);
 
             // then
-            Timeline actual = timelineFixtureRepository.findAllLatest(gameId).get(0);
+            Timeline actual = timelineFixtureRepository.findAllLatest(freshGameId).get(0);
             assertThat(actual).isInstanceOf(GameProgressTimeline.class);
         }
     }
