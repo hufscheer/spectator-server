@@ -37,9 +37,9 @@ class QuarterResolverTest {
     }
 
     @Test
-    void PRE_GAME은_SoccerQuarter로_resolve된다() {
+    void PRE_GAME은_CommonQuarter로_resolve된다() {
         Quarter result = QuarterResolver.resolve("PRE_GAME");
-        assertThat(result).isInstanceOf(SoccerQuarter.class);
+        assertThat(result).isInstanceOf(CommonQuarter.class);
         assertThat(result.getOrder()).isEqualTo(0);
     }
 

@@ -7,38 +7,35 @@ import lombok.Getter;
 import java.util.Optional;
 
 @Getter
-public enum BasketballQuarter implements Quarter {
-    FIRST_QUARTER("1쿼터", 1),
-    SECOND_QUARTER("2쿼터", 2),
-    THIRD_QUARTER("3쿼터", 3),
-    FOURTH_QUARTER("4쿼터", 4),
-    OVERTIME("연장전", 5);
+public enum CommonQuarter implements Quarter {
+    PRE_GAME("경기전", 0),
+    POST_GAME("경기후", 99);
 
     private final String displayName;
     private final int order;
 
-    BasketballQuarter(String displayName, int order) {
+    CommonQuarter(String displayName, int order) {
         this.displayName = displayName;
         this.order = order;
     }
 
     @Override
     public Quarter firstQuarter() {
-        return FIRST_QUARTER;
+        throw new UnsupportedOperationException("CommonQuarter does not have a firstQuarter");
     }
 
     @Override
     public boolean canEndGame() {
-        return this == FOURTH_QUARTER || this == OVERTIME;
+        return false;
     }
 
     @Override
     public boolean canHaveQuarterEnd() {
-        return this != OVERTIME;
+        return false;
     }
 
-    public static Optional<BasketballQuarter> tryResolve(String value) {
-        for (BasketballQuarter quarter : values()) {
+    public static Optional<CommonQuarter> tryResolve(String value) {
+        for (CommonQuarter quarter : values()) {
             if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {
                 return Optional.of(quarter);
             }
@@ -46,7 +43,7 @@ public enum BasketballQuarter implements Quarter {
         return Optional.empty();
     }
 
-    public static BasketballQuarter resolve(String value) {
+    public static CommonQuarter resolve(String value) {
         return tryResolve(value)
                 .orElseThrow(() -> new BadRequestException(
                         String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value)));

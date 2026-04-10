@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.league.domain.SportType;
@@ -27,7 +28,7 @@ class GameProgressTimelineTest {
         game = entityBuilder(Game.class)
                 .set("league", league)
                 .set("gameTeams", new ArrayList<>())
-                .set("gameQuarter", SoccerQuarter.PRE_GAME.name())
+                .set("gameQuarter", CommonQuarter.PRE_GAME.name())
                 .set("state", GameState.SCHEDULED)
                 .set("isPkTaken", false)
                 .sample();
@@ -118,7 +119,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.POST_GAME.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(CommonQuarter.POST_GAME.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.FINISHED)
             );
         }
@@ -165,7 +166,7 @@ class GameProgressTimelineTest {
 
             // then
             assertAll(
-                    () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.PRE_GAME.name()),
+                    () -> assertThat(game.getGameQuarter()).isEqualTo(CommonQuarter.PRE_GAME.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.SCHEDULED)
             );
         }
@@ -292,7 +293,7 @@ class GameProgressTimelineTest {
     private GameProgressTimeline 경기_종료_타임라인_생성(Game game) {
         return new GameProgressTimeline(
                 game,
-                SoccerQuarter.POST_GAME,
+                CommonQuarter.POST_GAME,
                 50,
                 GameProgressType.GAME_END
         );

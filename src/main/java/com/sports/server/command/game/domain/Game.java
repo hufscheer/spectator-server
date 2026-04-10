@@ -6,6 +6,7 @@ import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.common.domain.BaseEntity;
@@ -285,7 +286,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
             cancelPk();
         }
 
-        this.gameQuarter = (quarter == null) ? SoccerQuarter.PRE_GAME.name() : quarter.name();
+        this.gameQuarter = (quarter == null) ? CommonQuarter.PRE_GAME.name() : quarter.name();
         this.quarterChangedAt = changedAt;
     }
 
