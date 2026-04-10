@@ -11,6 +11,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.domain.SportType;
 import java.util.List;
 
 import com.sports.server.command.team.domain.Team;
@@ -38,12 +39,13 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
     }
 
     @Override
-    public List<Team> findAllByUnits(final List<Unit> units) {
-        BooleanExpression condition = teamsInUnits(units);
-
+    public List<Team> findAllByUnitsAndSportType(final List<Unit> units, final SportType sportType) {
         return jpaQueryFactory
                 .selectFrom(team)
-                .where(condition)
+                .where(
+                        teamsInUnits(units),
+                        teamsWithSportType(sportType)
+                )
                 .orderBy(team.name.asc())
                 .fetch();
     }
@@ -70,5 +72,12 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
             return null;
         }
         return team.unit.in(units);
+    }
+
+    private BooleanExpression teamsWithSportType(final SportType sportType) {
+        if (sportType == null) {
+            return null;
+        }
+        return team.sportType.eq(sportType);
     }
 }

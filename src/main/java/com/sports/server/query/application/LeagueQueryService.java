@@ -252,9 +252,9 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    public List<RecentLeagueGamesResponse> findRecentLeaguesGames() {
+    public List<RecentLeagueGamesResponse> findRecentLeaguesGames(Long organizationId, SportType sportType) {
         LocalDateTime now = LocalDateTime.now();
-        List<League> recentLeagues = getRecentLeagues(now);
+        List<League> recentLeagues = getRecentLeagues(now, organizationId, sportType);
         if (recentLeagues.isEmpty()) {
             return Collections.emptyList();
         }
@@ -276,12 +276,12 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    private List<League> getRecentLeagues(LocalDateTime now) {
-        List<League> inProgressLeagues = leagueQueryRepository.findInProgressLeagues(now);
+    private List<League> getRecentLeagues(LocalDateTime now, Long organizationId, SportType sportType) {
+        List<League> inProgressLeagues = leagueQueryRepository.findInProgressLeagues(now, organizationId, sportType);
         if (!inProgressLeagues.isEmpty()) {
             return inProgressLeagues;
         }
-        return leagueQueryRepository.findLeaguesByLatestEndAt(now);
+        return leagueQueryRepository.findLeaguesByLatestEndAt(now, organizationId, sportType);
     }
 
     private Map<Long, List<GameTeam>> getTeamsByGameId(List<Game> games) {

@@ -47,7 +47,8 @@ public class TeamAcceptanceTest extends AcceptanceTest {
                 originPrefix + "logo-url",
                 "경영대학",
                 "#FF0000",
-                playersToRegister
+                playersToRegister,
+                null
         );
 
         configureMockJwtForEmail("john@example.com");

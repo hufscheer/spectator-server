@@ -1,5 +1,6 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
@@ -89,7 +90,10 @@ public class LeagueQueryController {
     }
 
     @GetMapping("/recent/games")
-    public ResponseEntity<List<RecentLeagueGamesResponse>> findRecentLeaguesGames() {
-        return ResponseEntity.ok(leagueQueryService.findRecentLeaguesGames());
+    public ResponseEntity<List<RecentLeagueGamesResponse>> findRecentLeaguesGames(
+            @RequestParam(required = false) final Long organizationId,
+            @RequestParam(required = false) final SportType sportType
+    ) {
+        return ResponseEntity.ok(leagueQueryService.findRecentLeaguesGames(organizationId, sportType));
     }
 }
