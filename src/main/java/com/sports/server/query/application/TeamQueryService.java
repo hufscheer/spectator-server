@@ -168,8 +168,9 @@ public class TeamQueryService {
     }
 
     private Map<Long, List<GameDetailResponse>> getRecentGames(List<Long> teamIds) {
-        List<Game> recentGames = gameQueryRepository.findRecentGamesByTeamIds(teamIds, RECENT_GAMES_LIMIT);
-        if (recentGames.isEmpty()) return Collections.emptyMap();
+        List<Long> recentGameIds = gameQueryRepository.findRecentGameIdsByTeamIds(teamIds, RECENT_GAMES_LIMIT);
+        if (recentGameIds.isEmpty()) return Collections.emptyMap();
+        List<Game> recentGames = gameQueryRepository.findAllByIdsWithLeague(recentGameIds);
 
         List<Long> gameIds = recentGames.stream().map(Game::getId).toList();
         List<GameTeam> allGameTeams = gameTeamRepository.findAllByGameIds(gameIds);
