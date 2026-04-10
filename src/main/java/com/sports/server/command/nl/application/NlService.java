@@ -263,7 +263,7 @@ public class NlService {
     private Team createTeam(NlRegisterTeamRequest request) {
         NlRegisterTeamRequest.TeamInfo teamInfo = request.team();
         TeamRequest.Register teamRegister = new TeamRequest.Register(
-                teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null
+                teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null, null
         );
         Long teamId = teamService.registerAndReturnId(teamRegister);
         return entityUtils.getEntity(teamId, Team.class);

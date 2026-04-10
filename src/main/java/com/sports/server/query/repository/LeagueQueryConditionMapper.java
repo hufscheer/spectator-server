@@ -3,6 +3,7 @@ package com.sports.server.query.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sports.server.command.league.domain.LeagueProgress;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class LeagueQueryConditionMapper {
 
         conditions.and(getYearCondition(requestDto.year()));
         conditions.and(getProgressCondition(requestDto.leagueProgress()));
+        conditions.and(getSportTypeCondition(requestDto.sportType()));
 
         return conditions;
     }
@@ -42,6 +44,13 @@ public class LeagueQueryConditionMapper {
             case IN_PROGRESS -> league.startAt.loe(now).and(league.endAt.goe(now));
             case FINISHED -> league.endAt.lt(now);
         };
+    }
+
+    private BooleanExpression getSportTypeCondition(SportType sportType) {
+        if (sportType == null) {
+            return null;
+        }
+        return league.sportType.eq(sportType);
     }
 
 }

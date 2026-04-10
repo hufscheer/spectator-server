@@ -280,7 +280,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 연도_필터링_조건으로_리그를_조회한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, null);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, null, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
@@ -298,7 +298,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 리그_진행_상태_필터링_조건으로_리그를_조회한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, LeagueProgress.FINISHED);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, LeagueProgress.FINISHED, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
@@ -316,7 +316,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 연도와_진행_상태_모든_필터링_조건으로_리그를_조회한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, LeagueProgress.FINISHED);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(2025, LeagueProgress.FINISHED, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
@@ -334,7 +334,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         @Test
         void 필터링_조건이_없을_경우_전체_결과를_반환한다() {
             // given
-            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null);
+            LeagueQueryRequestDto requestDto = new LeagueQueryRequestDto(null, null, null);
 
             // when
             List<LeagueResponse> leagues = leagueQueryService.findLeagues(requestDto);
