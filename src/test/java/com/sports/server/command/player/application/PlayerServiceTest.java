@@ -1,5 +1,6 @@
 package com.sports.server.command.player.application;
 
+import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.dto.PlayerRequest;
@@ -10,7 +11,6 @@ import com.sports.server.support.ServiceTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -30,12 +30,13 @@ public class PlayerServiceTest extends ServiceTest {
     void 선수_등록_시_학번이_중복되면_예외가_발생한다() {
         // given
         String duplicatedStudentNumber = "202500001";
-        playerRepository.save(new Player("손흥민", duplicatedStudentNumber));
+        Organization organization = entityUtils.getEntity(1L, Organization.class);
+        playerRepository.save(new Player("손흥민", duplicatedStudentNumber, organization.getStudentNumberDigits()));
 
         // when & then
         PlayerRequest.Register request = new PlayerRequest.Register("박지성", duplicatedStudentNumber);
 
-        assertThatThrownBy(() -> playerService.register(request))
+        assertThatThrownBy(() -> playerService.register(request, organization))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 존재하는 학번입니다.");
     }
@@ -43,7 +44,8 @@ public class PlayerServiceTest extends ServiceTest {
     @Test
     void 삭제한_이후에는_해당_객체를_찾을_수_없다() {
         // given
-        Player player = new Player("손흥민", "202500001");
+        Organization organization = entityUtils.getEntity(1L, Organization.class);
+        Player player = new Player("손흥민", "202500001", organization.getStudentNumberDigits());
         playerRepository.save(player);
 
         // when

@@ -1,14 +1,14 @@
 SET foreign_key_checks = 0;
 
 -- organization 테이블에 단체 이름 삽입
-INSERT INTO organizations (id, name)
-VALUES (1, '축구 협회');
-INSERT INTO organizations (id, name)
-VALUES (2, '농구 협회');
-INSERT INTO organizations (id, name)
-VALUES (3, '리그 오브 레전드 동호회');
-INSERT INTO organizations (id, name)
-VALUES (4, '루미큐브 클럽');
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (1, '축구 협회', 9);
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (2, '농구 협회', 9);
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (3, '리그 오브 레전드 동호회', 9);
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (4, '루미큐브 클럽', 10);
 
 -- members 테이블에 데이터 삽입
 -- 비밀번호 1234
