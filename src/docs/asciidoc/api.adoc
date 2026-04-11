@@ -217,9 +217,13 @@ operation::league-query-controller-test/최근_리그의_게임_목록을_조회
 
 == 타임라인 API
 
-=== 득점 타임라인 생성
+=== 득점 타임라인 생성 (축구)
 
 operation::timeline-controller-test/득점_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+=== 득점 타임라인 생성 (농구)
+
+operation::timeline-controller-test/농구_득점_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 === 교체 타임라인 생성
 
@@ -240,6 +244,10 @@ operation::timeline-controller-test/경고_타임라인을_생성한다[snippets
 === 게임의 타임라인 조회
 
 operation::timeline-query-controller-test/타임라인을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 쿼터별 득점 조회
+
+operation::timeline-query-controller-test/쿼터별_득점을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 가능한 경기 진행 액션 조회
 
