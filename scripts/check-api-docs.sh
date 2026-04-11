@@ -21,21 +21,16 @@ fi
 missing=()
 total=0
 
-for class_dir in "$SNIPPETS_DIR"/*/; do
-    [ -d "$class_dir" ] || continue
-    class_name=$(basename "$class_dir")
-
-    for method_dir in "$class_dir"*/; do
-        [ -d "$method_dir" ] || continue
-        method_name=$(basename "$method_dir")
-        operation="${class_name}/${method_name}"
+while IFS= read -r -d '' op_dir; do
+    operation=${op_dir#$SNIPPETS_DIR/}
+    operation=${operation%/}
+    if ls "$op_dir"/*.adoc >/dev/null 2>&1; then
         total=$((total + 1))
-
         if ! grep -qF "operation::${operation}[" "$ADOC_FILE"; then
             missing+=("$operation")
         fi
-    done
-done
+    fi
+done < <(find "$SNIPPETS_DIR" -mindepth 1 -type d -print0)
 
 if [ ${#missing[@]} -gt 0 ]; then
     echo "❌ api.adoc에 누락된 엔드포인트가 있습니다. (총 ${#missing[@]}개)"

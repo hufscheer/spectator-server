@@ -1,5 +1,8 @@
 name: CI TEST
 on:
+  push:
+    branches:
+      - 'chore/#531-ci-adoc'
   pull_request:
     branches:
       - '**'
@@ -55,4 +58,5 @@ jobs:
           fi
 
       - name: API 문서 누락 검사
+        if: success()
         run: bash scripts/check-api-docs.sh
