@@ -12,13 +12,11 @@ class BasketballQuarterTest {
 
     @ParameterizedTest
     @CsvSource({
-            "PRE_GAME,       PRE_GAME",
             "FIRST_QUARTER,  FIRST_QUARTER",
             "SECOND_QUARTER, SECOND_QUARTER",
             "THIRD_QUARTER,  THIRD_QUARTER",
             "FOURTH_QUARTER, FOURTH_QUARTER",
-            "OVERTIME,       OVERTIME",
-            "POST_GAME,      POST_GAME"
+            "OVERTIME,       OVERTIME"
     })
     void enum_이름으로_resolve한다(String value, BasketballQuarter expected) {
         assertThat(BasketballQuarter.resolve(value)).isEqualTo(expected);
@@ -26,13 +24,11 @@ class BasketballQuarterTest {
 
     @ParameterizedTest
     @CsvSource({
-            "경기전, PRE_GAME",
             "1쿼터,  FIRST_QUARTER",
             "2쿼터,  SECOND_QUARTER",
             "3쿼터,  THIRD_QUARTER",
             "4쿼터,  FOURTH_QUARTER",
-            "연장전, OVERTIME",
-            "경기후, POST_GAME"
+            "연장전, OVERTIME"
     })
     void 한글_displayName으로_resolve한다(String value, BasketballQuarter expected) {
         assertThat(BasketballQuarter.resolve(value)).isEqualTo(expected);
@@ -62,10 +58,10 @@ class BasketballQuarterTest {
     }
 
     @Test
-    void PRE_GAME과_POST_GAME이_SoccerQuarter_없이_독립적으로_존재한다() {
-        assertThat(BasketballQuarter.PRE_GAME).isNotNull();
-        assertThat(BasketballQuarter.POST_GAME).isNotNull();
-        assertThat(BasketballQuarter.PRE_GAME.getOrder()).isEqualTo(0);
+    void PRE_GAME과_POST_GAME은_CommonQuarter로_존재한다() {
+        assertThat(CommonQuarter.PRE_GAME).isNotNull();
+        assertThat(CommonQuarter.POST_GAME).isNotNull();
+        assertThat(CommonQuarter.PRE_GAME.getOrder()).isEqualTo(0);
     }
 
     @Test

@@ -65,7 +65,8 @@ VALUES (1, 1, 1, 10, 5, 1),
 INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
 VALUES (1, 1, 1, '농구 대전', '2023-11-12 10:00:00', 'abc123', '2023-11-12 10:15:00', 'SECOND_HALF', 'PLAYING', '4강', FALSE),
        (2, 1, 1, '농구 대전 2', '2023-11-12 14:00:00', 'def456', '2023-11-12 14:15:00', 'SECOND_HALF', 'FINISHED', '4강', FALSE),
-       (3, 1, 2, '다른 리그 경기', '2023-12-10 10:00:00', 'ghi789', '2023-12-10 10:15:00', 'FIRST_HALF', 'FINISHED', '준결승', FALSE);
+       (3, 1, 2, '다른 리그 경기', '2023-12-10 10:00:00', 'ghi789', '2023-12-10 10:15:00', 'FIRST_HALF', 'FINISHED', '준결승', FALSE),
+       (4, 1, 1, '경기_시작_전_테스트용', '2023-11-12 10:00:00', null, null, 'PRE_GAME', 'SCHEDULED', '4강', FALSE);
 
 -- 경기 팀 연결
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)

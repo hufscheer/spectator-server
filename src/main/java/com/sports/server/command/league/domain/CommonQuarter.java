@@ -7,42 +7,35 @@ import lombok.Getter;
 import java.util.Optional;
 
 @Getter
-public enum SoccerQuarter implements Quarter {
-    FIRST_HALF("전반전", 1),
-    SECOND_HALF("후반전", 2),
-    EXTRA_TIME("연장전", 3),
-    PENALTY_SHOOTOUT("승부차기", 4);
+public enum CommonQuarter implements Quarter {
+    PRE_GAME("경기전", 0),
+    POST_GAME("경기후", 99);
 
     private final String displayName;
     private final int order;
 
-    SoccerQuarter(String displayName, int order) {
+    CommonQuarter(String displayName, int order) {
         this.displayName = displayName;
         this.order = order;
     }
 
     @Override
     public Quarter firstQuarter() {
-        return FIRST_HALF;
+        throw new UnsupportedOperationException("CommonQuarter does not have a firstQuarter");
     }
 
     @Override
     public boolean canEndGame() {
-        return this == SECOND_HALF || this == EXTRA_TIME || this == PENALTY_SHOOTOUT;
+        return false;
     }
 
     @Override
     public boolean canHaveQuarterEnd() {
-        return this != PENALTY_SHOOTOUT;
+        return false;
     }
 
-    @Override
-    public boolean canEndGameAfterQuarterEnd() {
-        return canEndGame();
-    }
-
-    public static Optional<SoccerQuarter> tryResolve(String value) {
-        for (SoccerQuarter quarter : values()) {
+    public static Optional<CommonQuarter> tryResolve(String value) {
+        for (CommonQuarter quarter : values()) {
             if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {
                 return Optional.of(quarter);
             }
@@ -50,7 +43,7 @@ public enum SoccerQuarter implements Quarter {
         return Optional.empty();
     }
 
-    public static SoccerQuarter resolve(String value) {
+    public static CommonQuarter resolve(String value) {
         return tryResolve(value)
                 .orElseThrow(() -> new BadRequestException(
                         String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value)));

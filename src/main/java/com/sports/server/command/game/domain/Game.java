@@ -6,8 +6,8 @@ import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.Quarter;
-import com.sports.server.command.league.domain.QuarterResolver;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
@@ -270,7 +270,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.name();
 
-        if (quarter.getOrder() == 1) {
+        if (quarter == league.getSportType().firstQuarter()) {
             this.state = GameState.PLAYING;
         }
 
@@ -286,7 +286,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
             cancelPk();
         }
 
-        this.gameQuarter = (quarter == null) ? SoccerQuarter.PRE_GAME.name() : quarter.name();
+        this.gameQuarter = (quarter == null) ? CommonQuarter.PRE_GAME.name() : quarter.name();
         this.quarterChangedAt = changedAt;
     }
 
@@ -299,7 +299,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return QuarterResolver.resolve(gameQuarter);
+        return league.getSportType().resolveQuarter(gameQuarter);
     }
 
     public void checkStateForTimeline() {

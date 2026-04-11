@@ -43,22 +43,20 @@ class SportTypeTest {
     }
 
     @Test
-    void 축구의_postGameQuarter는_SoccerQuarter_POST_GAME이다() {
-        Quarter result = SportType.SOCCER.postGameQuarter();
-        assertThat(result).isEqualTo(SoccerQuarter.POST_GAME);
-        assertThat(result).isInstanceOf(SoccerQuarter.class);
+    void postGameQuarter는_CommonQuarter_POST_GAME이다() {
+        Quarter soccerResult = SportType.SOCCER.postGameQuarter();
+        Quarter basketballResult = SportType.BASKETBALL.postGameQuarter();
+        assertThat(soccerResult).isEqualTo(CommonQuarter.POST_GAME);
+        assertThat(basketballResult).isEqualTo(CommonQuarter.POST_GAME);
+        assertThat(soccerResult).isInstanceOf(CommonQuarter.class);
+        assertThat(basketballResult).isInstanceOf(CommonQuarter.class);
     }
 
     @Test
-    void 농구의_postGameQuarter는_BasketballQuarter_POST_GAME이다() {
-        Quarter result = SportType.BASKETBALL.postGameQuarter();
-        assertThat(result).isEqualTo(BasketballQuarter.POST_GAME);
-        assertThat(result).isInstanceOf(BasketballQuarter.class);
-    }
-
-    @Test
-    void PRE_GAME은_각_종목의_구현체로_resolve된다() {
-        assertThat(SportType.SOCCER.resolveQuarter("PRE_GAME")).isInstanceOf(SoccerQuarter.class);
-        assertThat(SportType.BASKETBALL.resolveQuarter("PRE_GAME")).isInstanceOf(BasketballQuarter.class);
+    void PRE_GAME은_CommonQuarter로_resolve된다() {
+        assertThat(SportType.SOCCER.resolveQuarter("PRE_GAME")).isEqualTo(CommonQuarter.PRE_GAME);
+        assertThat(SportType.BASKETBALL.resolveQuarter("PRE_GAME")).isEqualTo(CommonQuarter.PRE_GAME);
+        assertThat(SportType.SOCCER.resolveQuarter("PRE_GAME")).isInstanceOf(CommonQuarter.class);
+        assertThat(SportType.BASKETBALL.resolveQuarter("PRE_GAME")).isInstanceOf(CommonQuarter.class);
     }
 }
