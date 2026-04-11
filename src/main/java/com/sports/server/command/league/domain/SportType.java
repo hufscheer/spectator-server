@@ -30,6 +30,11 @@ public enum SportType {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("해당 순서의 쿼터가 없습니다: " + order));
         }
+
+        @Override
+        public Quarter nextQuarter(Quarter current) {
+            return quarterByOrder(current.getOrder() + 1);
+        }
     },
     BASKETBALL {
         @Override
@@ -58,6 +63,14 @@ public enum SportType {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("해당 순서의 쿼터가 없습니다: " + order));
         }
+
+        @Override
+        public Quarter nextQuarter(Quarter current) {
+            if (current == BasketballQuarter.OVERTIME) {
+                return BasketballQuarter.OVERTIME;
+            }
+            return quarterByOrder(current.getOrder() + 1);
+        }
     };
 
     public abstract Quarter resolveQuarter(String value);
@@ -67,4 +80,6 @@ public enum SportType {
     public abstract Quarter postGameQuarter();
 
     public abstract Quarter quarterByOrder(int order);
+
+    public abstract Quarter nextQuarter(Quarter current);
 }

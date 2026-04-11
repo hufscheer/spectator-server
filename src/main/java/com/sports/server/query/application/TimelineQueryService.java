@@ -86,9 +86,9 @@ public class TimelineQueryService {
 
     private List<ProgressAction> actionsFromQuarterEnd(Quarter lastQuarter, SportType sportType) {
         List<ProgressAction> actions = new ArrayList<>();
-        Quarter nextQuarter = sportType.quarterByOrder(lastQuarter.getOrder() + 1);
+        Quarter nextQuarter = sportType.nextQuarter(lastQuarter);
         actions.add(ProgressAction.of(nextQuarter, GameProgressType.QUARTER_START));
-        if (lastQuarter.canEndGame()) {
+        if (lastQuarter.canEndGameAfterQuarterEnd()) {
             actions.add(ProgressAction.of(lastQuarter, GameProgressType.GAME_END));
         }
         return actions;

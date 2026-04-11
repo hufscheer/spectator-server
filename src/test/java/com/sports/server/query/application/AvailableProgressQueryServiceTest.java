@@ -3,6 +3,7 @@ package com.sports.server.query.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
@@ -38,6 +39,27 @@ class AvailableProgressQueryServiceTest extends ServiceTest {
                 () -> assertThat(action.displayName()).isEqualTo(displayName)
         );
     }
+
+    private void assertAction(ProgressAction action, BasketballQuarter quarter, GameProgressType type, String displayName) {
+        assertAll(
+                () -> assertThat(action.quarter()).isEqualTo(quarter.name()),
+                () -> assertThat(action.gameProgressType()).isEqualTo(type),
+                () -> assertThat(action.displayName()).isEqualTo(displayName)
+        );
+    }
+
+    private static final long BASKETBALL_GAME_PRE_GAME = 10L;
+    private static final long BASKETBALL_GAME_1Q_STARTED = 11L;
+    private static final long BASKETBALL_GAME_1Q_ENDED = 12L;
+    private static final long BASKETBALL_GAME_2Q_STARTED = 13L;
+    private static final long BASKETBALL_GAME_2Q_ENDED = 14L;
+    private static final long BASKETBALL_GAME_3Q_STARTED = 15L;
+    private static final long BASKETBALL_GAME_3Q_ENDED = 16L;
+    private static final long BASKETBALL_GAME_4Q_STARTED = 17L;
+    private static final long BASKETBALL_GAME_4Q_ENDED = 18L;
+    private static final long BASKETBALL_GAME_OT_STARTED = 19L;
+    private static final long BASKETBALL_GAME_OT_ENDED = 20L;
+    private static final long BASKETBALL_GAME_FINISHED = 21L;
 
     @Nested
     @DisplayName("경기 시작 전에는")
@@ -154,6 +176,163 @@ class AvailableProgressQueryServiceTest extends ServiceTest {
         @Test
         void 가능한_액션이_없다() {
             List<ProgressAction> actions = timelineQueryService.getAvailableProgress(GAME_FINISHED).availableActions();
+
+            assertThat(actions).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 경기 시작 전에는")
+    class 농구_경기_시작_전 {
+
+        @Test
+        void 경기_시작_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_PRE_GAME).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.FIRST_QUARTER, GameProgressType.QUARTER_START, "1쿼터 시작");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 1Q 진행 중에는")
+    class 농구_1Q_진행_중 {
+
+        @Test
+        void Q1_종료_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_1Q_STARTED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.FIRST_QUARTER, GameProgressType.QUARTER_END, "1쿼터 종료");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 1Q 종료 후에는")
+    class 농구_1Q_종료_후 {
+
+        @Test
+        void Q2_시작_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_1Q_ENDED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.SECOND_QUARTER, GameProgressType.QUARTER_START, "2쿼터 시작");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 2Q 진행 중에는")
+    class 농구_2Q_진행_중 {
+
+        @Test
+        void Q2_종료_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_2Q_STARTED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.SECOND_QUARTER, GameProgressType.QUARTER_END, "2쿼터 종료");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 2Q 종료 후에는")
+    class 농구_2Q_종료_후 {
+
+        @Test
+        void Q3_시작_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_2Q_ENDED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.THIRD_QUARTER, GameProgressType.QUARTER_START, "3쿼터 시작");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 3Q 진행 중에는")
+    class 농구_3Q_진행_중 {
+
+        @Test
+        void Q3_종료_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_3Q_STARTED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.THIRD_QUARTER, GameProgressType.QUARTER_END, "3쿼터 종료");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 3Q 종료 후에는")
+    class 농구_3Q_종료_후 {
+
+        @Test
+        void Q4_시작_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_3Q_ENDED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.FOURTH_QUARTER, GameProgressType.QUARTER_START, "4쿼터 시작");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 4Q 진행 중에는")
+    class 농구_4Q_진행_중 {
+
+        @Test
+        void Q4_종료와_경기_종료_액션을_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_4Q_STARTED).availableActions();
+
+            assertThat(actions).hasSize(2);
+            assertAction(actions.get(0), BasketballQuarter.FOURTH_QUARTER, GameProgressType.QUARTER_END, "4쿼터 종료");
+            assertAction(actions.get(1), BasketballQuarter.FOURTH_QUARTER, GameProgressType.GAME_END, "경기 종료");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 4Q 종료 후에는")
+    class 농구_4Q_종료_후 {
+
+        @Test
+        void OT_시작_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_4Q_ENDED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.OVERTIME, GameProgressType.QUARTER_START, "연장전 시작");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] OT 진행 중에는")
+    class 농구_OT_진행_중 {
+
+        @Test
+        void OT_종료와_경기_종료_액션을_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_OT_STARTED).availableActions();
+
+            assertThat(actions).hasSize(2);
+            assertAction(actions.get(0), BasketballQuarter.OVERTIME, GameProgressType.QUARTER_END, "연장전 종료");
+            assertAction(actions.get(1), BasketballQuarter.OVERTIME, GameProgressType.GAME_END, "경기 종료");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] OT 종료 후에는")
+    class 농구_OT_종료_후 {
+
+        @Test
+        void OT_시작_액션_하나만_반환한다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_OT_ENDED).availableActions();
+
+            assertThat(actions).hasSize(1);
+            assertAction(actions.get(0), BasketballQuarter.OVERTIME, GameProgressType.QUARTER_START, "연장전 시작");
+        }
+    }
+
+    @Nested
+    @DisplayName("[농구] 경기 종료 후에는")
+    class 농구_경기_종료_후 {
+
+        @Test
+        void 가능한_액션이_없다() {
+            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_FINISHED).availableActions();
 
             assertThat(actions).isEmpty();
         }
