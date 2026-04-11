@@ -1,8 +1,8 @@
 package com.sports.server.query.application;
 
 import static java.util.Comparator.comparingInt;
-import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
@@ -11,6 +11,7 @@ import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
@@ -94,14 +95,14 @@ public class TimelineQueryService {
                 .sorted(comparingInt(Quarter::getOrder))
                 .toList();
 
-        Map<Quarter, Map<Long, Long>> scoreByQuarterAndTeam = timelineQueryRepository
+        Map<Quarter, Map<Long, Integer>> scoreByQuarterAndTeam = timelineQueryRepository
                 .findScoreTimelinesByGameId(gameId)
                 .stream()
                 .collect(groupingBy(
                         Timeline::getRecordedQuarter,
                         groupingBy(
                                 st -> st.getScorer().getGameTeam().getId(),
-                                counting()
+                                summingInt(ScoreTimeline::getScore)
                         )
                 ));
 

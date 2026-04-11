@@ -52,6 +52,7 @@ public abstract class TimelineRequest {
             this.assistLineupPlayerId = assistLineupPlayerId;
         }
 
+        @JsonIgnore
         public abstract int getScoreValue();
 
         @Override

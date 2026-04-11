@@ -12,10 +12,10 @@ public record QuarterScoreResponse(
 ) {
     public record TeamScore(Long gameTeamId, int score) {}
 
-    public static QuarterScoreResponse of(Quarter quarter, Map<Long, Long> teamScoreMap) {
+    public static QuarterScoreResponse of(Quarter quarter, Map<Long, Integer> teamScoreMap) {
         List<TeamScore> scores = teamScoreMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> new TeamScore(e.getKey(), e.getValue().intValue()))
+                .map(e -> new TeamScore(e.getKey(), e.getValue()))
                 .toList();
         return new QuarterScoreResponse(quarter.name(), quarter.getDisplayName(), scores);
     }

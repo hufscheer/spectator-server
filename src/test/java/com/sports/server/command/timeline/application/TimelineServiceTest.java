@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
@@ -64,7 +65,7 @@ class TimelineServiceTest extends ServiceTest {
         Long team1Id = 1L;
         Long team1PlayerId = 1L;
 
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                 team1PlayerId, 3, null);
 
         // when & then
@@ -82,7 +83,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1Id = 1L;
             Long team1PlayerId = 1L;
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     team1PlayerId, 3, null);
 
             // when
@@ -105,7 +106,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team2Id = 2L;
             Long team2PlayerId = 6L;
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     team2PlayerId, 5, null);
 
             // when
@@ -128,7 +129,7 @@ class TimelineServiceTest extends ServiceTest {
             Long scorerId = 1L;
             Long assistId = 2L; // 같은 팀1 소속 선수
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     scorerId, 3, assistId);
 
             // when
@@ -148,7 +149,7 @@ class TimelineServiceTest extends ServiceTest {
             Long scorerId = 1L;   // 팀1 선수
             Long assistId = 6L;   // 팀2 선수
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     scorerId, 3, assistId);
 
             // when & then
@@ -162,7 +163,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1Id = 1L;
             Long scorerId = 1L;
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     scorerId, 3, scorerId);
 
             // when & then
@@ -277,6 +278,47 @@ class TimelineServiceTest extends ServiceTest {
         }
     }
 
+    @DisplayName("농구 득점 타임라인을")
+    @Nested
+    class BasketballScoreTest {
+        private final Long basketballGameId = 5L;
+        private final Long teamAId = 7L;
+        private final Long playerAId = 17L;
+
+        @Test
+        void 농구_3점_득점으로_생성한다() {
+            // given
+            TimelineRequest.RegisterBasketballScore request = new TimelineRequest.RegisterBasketballScore(
+                    teamAId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    playerAId, 10, null, 3
+            );
+
+            // when
+            timelineService.register(manager, basketballGameId, request);
+
+            // then
+            ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            assertThat(actual.getScore()).isEqualTo(3);
+        }
+
+        @Test
+        void 축구_득점은_항상_1점으로_저장된다() {
+            // given
+            Long team1Id = 1L;
+            Long team1PlayerId = 1L;
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                    team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1PlayerId, 3, null
+            );
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId).get(0);
+            assertThat(actual.getScore()).isEqualTo(1);
+        }
+    }
+
     @DisplayName("경고 타임라인을")
     @Nested
     class WarningCardTest {
@@ -335,7 +377,7 @@ class TimelineServiceTest extends ServiceTest {
         Long team1PlayerId = 1L;
         Long finishedGameId = 2L;
 
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                 team1PlayerId, 3, null);
 
         // when & then
@@ -360,7 +402,7 @@ class TimelineServiceTest extends ServiceTest {
             // given
             AtomicInteger successCount = new AtomicInteger(0);
 
-            TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(1L, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), 1L, 1, null);
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(1L, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), 1L, 1, null);
 
             int initialScore1 = 15;
             int initialScore2 = 10;

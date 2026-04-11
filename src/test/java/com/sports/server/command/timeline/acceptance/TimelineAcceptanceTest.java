@@ -3,6 +3,7 @@ package com.sports.server.command.timeline.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
@@ -30,7 +31,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 득점_타임라인을_생성한다() {
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
                 team1Id, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 team1PlayerId,
                 3,
@@ -56,7 +57,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
         // given
         long assistPlayerId = 2L; // 팀1 소속 선수
 
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
                 team1Id, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 team1PlayerId,
                 3,
@@ -82,7 +83,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
         // given
         long team2PlayerId = 6L; // 팀2 소속 선수 (팀1 득점 타임라인에 어시스트로 등록 시도)
 
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
                 team1Id, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 team1PlayerId,
                 3,
@@ -173,6 +174,50 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 농구_3점_득점_타임라인을_생성한다() {
+        // given
+        long basketballGameId = 5L;
+        long basketballTeamAId = 7L;
+        long basketballPlayerAId = 17L;
+
+        TimelineRequest.RegisterBasketballScore request = new TimelineRequest.RegisterBasketballScore(
+                basketballTeamAId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                basketballPlayerAId, 10, null, 3
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/score", basketballGameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 쿼터별_득점을_조회한다() {
+        // given: 5번 경기(농구)는 fixture에 1쿼터 종료 데이터가 있음
+        long basketballGameId = 5L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/games/{gameId}/quarter-scores", basketballGameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
