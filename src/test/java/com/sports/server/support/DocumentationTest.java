@@ -67,6 +67,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 PlayerController.class,
                 PlayerQueryController.class,
                 NlController.class,
+                OrganizationQueryController.class,
         })
 @Import({
         TimeLogTemplate.class,
@@ -162,6 +163,9 @@ public class DocumentationTest {
 
     @MockBean
     protected NlService nlService;
+
+    @MockBean
+    protected OrganizationQueryService organizationQueryService;
 
     @MockBean
     protected com.sports.server.common.application.AlertService alertService;
