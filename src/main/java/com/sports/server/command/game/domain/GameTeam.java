@@ -77,9 +77,7 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
     public void cancelScore(int value) {
-        if (this.score > 0) {
-            this.score -= value;
-        }
+        this.score = Math.max(0, this.score - value);
     }
 
     public void cancelPkScore() {
