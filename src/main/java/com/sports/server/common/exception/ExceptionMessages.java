@@ -24,6 +24,7 @@ public class ExceptionMessages {
 
     // Player 관련
     public static final String PLAYER_STUDENT_NUMBER_DUPLICATE = "이미 존재하는 학번입니다.";
+    public static final String PLAYER_STUDENT_NUMBER_INVALID = "학번은 %d자리 숫자여야 합니다.";
 
     // League 관련
     public static final String LEAGUE_ROUND_EXCEEDS_MAX = "최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.";
