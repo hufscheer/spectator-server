@@ -1,6 +1,7 @@
 package com.sports.server.query.application;
 
 import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
 import com.sports.server.command.game.domain.Game;
@@ -14,6 +15,7 @@ import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
+import com.sports.server.query.dto.response.QuarterScoreResponse;
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import java.util.ArrayList;
@@ -82,6 +84,33 @@ public class TimelineQueryService {
             actions.add(ProgressAction.of(lastQuarter, GameProgressType.GAME_END));
         }
         return actions;
+    }
+
+    public List<QuarterScoreResponse> getQuarterScores(Long gameId) {
+        List<Quarter> completedQuarters = gameProgressTimelineRepository
+                .findByGameIdAndType(gameId, GameProgressType.QUARTER_END)
+                .stream()
+                .map(GameProgressTimeline::getRecordedQuarter)
+                .sorted(comparingInt(Quarter::getOrder))
+                .toList();
+
+        Map<Quarter, Map<Long, Long>> scoreByQuarterAndTeam = timelineQueryRepository
+                .findScoreTimelinesByGameId(gameId)
+                .stream()
+                .collect(groupingBy(
+                        Timeline::getRecordedQuarter,
+                        groupingBy(
+                                st -> st.getScorer().getGameTeam().getId(),
+                                counting()
+                        )
+                ));
+
+        return completedQuarters.stream()
+                .map(quarter -> QuarterScoreResponse.of(
+                        quarter,
+                        scoreByQuarterAndTeam.getOrDefault(quarter, Map.of())
+                ))
+                .toList();
     }
 
     private List<ProgressAction> actionsFromQuarterEnd(Quarter lastQuarter, SportType sportType) {
