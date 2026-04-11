@@ -1,8 +1,5 @@
 name: CI TEST
 on:
-  push:
-    branches:
-      - 'chore/#531-ci-adoc'
   pull_request:
     branches:
       - '**'
