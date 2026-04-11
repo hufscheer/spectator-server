@@ -46,7 +46,8 @@ public class TimelineMapper {
                 scoreRequest.resolveQuarter(),
                 scoreRequest.getRecordedAt(),
                 getPlayer(scoreRequest.getScoreLineupPlayerId()),
-                assist
+                assist,
+                scoreRequest.getScoreValue()
         );
     }
 

@@ -21,7 +21,6 @@ public class GameTeam extends BaseEntity<GameTeam> {
     private static final int MAXIMUM_OF_CHEER_COUNT = 500;
     private static final int MAXIMUM_OF_TOTAL_CHEER_COUNT = 100_000_000;
     private static final int MINIMUM_OF_CHEER_COUNT = 0;
-    private static final int SCORE_VALUE = 1;
     private static final int PK_SCORE_VALUE = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -69,17 +68,17 @@ public class GameTeam extends BaseEntity<GameTeam> {
         lineupPlayer.changeStateToCandidate();
     }
 
-    public void score() {
-        this.score += SCORE_VALUE;
+    public void score(int value) {
+        this.score += value;
     }
 
     public void scoreInPk() {
         this.pkScore += PK_SCORE_VALUE;
     }
 
-    public void cancelScore() {
+    public void cancelScore(int value) {
         if (this.score > 0) {
-            this.score -= SCORE_VALUE;
+            this.score -= value;
         }
     }
 

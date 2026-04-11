@@ -116,16 +116,16 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
-    public void score(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_SCORE_EXCEPTION).score();
+    public void score(LineupPlayer scorer, int scoreValue) {
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_SCORE_EXCEPTION).score(scoreValue);
     }
 
     public void scoreInPk(LineupPlayer scorer) {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_PK_SCORE_EXCEPTION).scoreInPk();
     }
 
-    public void cancelScore(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelScore();
+    public void cancelScore(LineupPlayer scorer, int scoreValue) {
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelScore(scoreValue);
     }
 
     public void cancelPkScore(LineupPlayer scorer) {

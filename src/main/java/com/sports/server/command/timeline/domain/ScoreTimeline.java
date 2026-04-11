@@ -23,8 +23,6 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 public class ScoreTimeline extends Timeline {
 
-    private static final int SCORE_VALUE = 1;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "scorer_id")
@@ -64,7 +62,8 @@ public class ScoreTimeline extends Timeline {
             Quarter recordedQuarter,
             Integer recordedAt,
             LineupPlayer scorer,
-            LineupPlayer assistLineupPlayer
+            LineupPlayer assistLineupPlayer,
+            int scoreValue
     ) {
         if (assistLineupPlayer != null
                 && (!scorer.isSameTeam(assistLineupPlayer) || scorer.getId().equals(assistLineupPlayer.getId()))) {
@@ -80,7 +79,7 @@ public class ScoreTimeline extends Timeline {
                 recordedAt,
                 scorer,
                 assistLineupPlayer,
-                SCORE_VALUE,
+                scoreValue,
                 team1,
                 team1.getScore(),
                 team2,
@@ -113,7 +112,7 @@ public class ScoreTimeline extends Timeline {
 
     @Override
     public void apply() {
-        game.score(scorer);
+        game.score(scorer, score);
 
         snapshotScore1 = gameTeam1.getScore();
         snapshotScore2 = gameTeam2.getScore();
@@ -121,6 +120,6 @@ public class ScoreTimeline extends Timeline {
 
     @Override
     public void rollback() {
-        game.cancelScore(scorer);
+        game.cancelScore(scorer, score);
     }
 }
