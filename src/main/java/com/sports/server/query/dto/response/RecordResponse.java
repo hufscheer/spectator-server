@@ -61,6 +61,8 @@ public record RecordResponse(
             return Optional.of(pkTimeline.getScorer());
         } else if (timeline instanceof WarningCardTimeline warningCardTimeline) {
             return Optional.of(warningCardTimeline.getScorer());
+        } else if (timeline instanceof FoulTimeline foulTimeline) {
+            return Optional.of(foulTimeline.getFouledPlayer());
         }
         return Optional.empty();
     }

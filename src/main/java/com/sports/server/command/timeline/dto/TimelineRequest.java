@@ -122,6 +122,29 @@ public abstract class TimelineRequest {
     }
 
     @Getter
+    public static class RegisterFoul extends TimelineRequest {
+        private final Long gameTeamId;
+        private final Long fouledLineupPlayerId;
+
+        public RegisterFoul(
+                Integer recordedAt,
+                SportType sportType,
+                String recordedQuarter,
+                Long gameTeamId,
+                Long fouledLineupPlayerId
+        ) {
+            super(sportType, recordedQuarter, recordedAt);
+            this.gameTeamId = gameTeamId;
+            this.fouledLineupPlayerId = fouledLineupPlayerId;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.FOUL;
+        }
+    }
+
+    @Getter
     public static class RegisterWarningCard extends TimelineRequest {
         private final Long gameTeamId;
         private final Long warnedLineupPlayerId;

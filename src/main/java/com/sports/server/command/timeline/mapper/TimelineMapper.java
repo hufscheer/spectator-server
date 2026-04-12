@@ -26,7 +26,9 @@ public class TimelineMapper {
             (game, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
             TimelineType.PK, (game, request) -> toPkTimeline(game, (TimelineRequest.RegisterPk) request),
             TimelineType.WARNING_CARD,
-            (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
+            (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request),
+            TimelineType.FOUL,
+            (game, request) -> toFoulTimeline(game, (TimelineRequest.RegisterFoul) request)
     );
 
     public Timeline toEntity(Game game, TimelineRequest request) {
@@ -90,6 +92,15 @@ public class TimelineMapper {
                 warningCardRequest.getRecordedAt(),
                 getPlayer(warningCardRequest.getWarnedLineupPlayerId()),
                 warningCardRequest.getCardType()
+        );
+    }
+
+    private FoulTimeline toFoulTimeline(Game game, TimelineRequest.RegisterFoul foulRequest) {
+        return new FoulTimeline(
+                game,
+                foulRequest.resolveQuarter(),
+                foulRequest.getRecordedAt(),
+                getPlayer(foulRequest.getFouledLineupPlayerId())
         );
     }
 

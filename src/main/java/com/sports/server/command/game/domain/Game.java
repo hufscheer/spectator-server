@@ -140,6 +140,14 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION);
     }
 
+    public void issueFoul(LineupPlayer fouledPlayer) {
+        findTeamOf(fouledPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION);
+    }
+
+    public void cancelFoul(LineupPlayer fouledPlayer) {
+        findTeamOf(fouledPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION);
+    }
+
     private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {
         return gameTeams.stream()
                 .filter(scorer::isInTeam)
