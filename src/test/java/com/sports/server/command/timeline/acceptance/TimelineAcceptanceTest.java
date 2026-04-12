@@ -2,6 +2,7 @@ package com.sports.server.command.timeline.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;
@@ -111,7 +112,8 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 team1Id, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 team1PlayerId,
                 replacedPlayerId,
-                10
+                10,
+                null
         );
 
         // when
@@ -168,6 +170,57 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .post("/games/{gameId}/timelines/pk", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 농구_교체_타임라인을_생성한다() {
+        // given
+        long basketballGameId = 5L;
+        long basketballTeamId = 7L;
+
+        TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
+                basketballTeamId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                17L, 21L, 10, true
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/replacement", basketballGameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 파울_타임라인을_생성한다() {
+        // given
+        long basketballGameId = 5L;
+        long basketballTeamId = 7L;
+        long basketballPlayerId = 17L;
+
+        TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                basketballTeamId, basketballPlayerId
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/foul", basketballGameId)
                 .then().log().all()
                 .extract();
 
