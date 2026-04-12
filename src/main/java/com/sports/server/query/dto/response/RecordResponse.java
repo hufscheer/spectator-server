@@ -42,7 +42,10 @@ public record RecordResponse(
                 timeline instanceof ScoreTimeline scoreTimeline
                         ? ScoreRecordResponse.from(scoreTimeline) : null,
                 timeline instanceof ReplacementTimeline replacementTimeline
-                        ? new ReplacementRecordResponse(replacementTimeline.getId(), replacementTimeline.getReplacedPlayerName()) : null,
+                        ? new ReplacementRecordResponse(
+                                replacementTimeline.getId(),
+                                replacementTimeline.getReplacedPlayerName(),
+                                timeline instanceof BasketballReplacementTimeline b ? b.isFoulOut() : null) : null,
                 timeline instanceof GameProgressTimeline progressTimeline
                         ? new ProgressRecordResponse(progressTimeline.getGameProgressType()) : null,
                 timeline instanceof PKTimeline pkTimeline

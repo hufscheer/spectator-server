@@ -54,6 +54,7 @@ public abstract class TimelineRequest {
         private final Long gameTeamId;
         private final Long originLineupPlayerId;
         private final Long replacementLineupPlayerId;
+        private final Boolean isFoulOut;
 
         public RegisterReplacement(
                 Long gameTeamId,
@@ -61,16 +62,21 @@ public abstract class TimelineRequest {
                 String recordedQuarter,
                 Long originLineupPlayerId,
                 Long replacementLineupPlayerId,
-                Integer recordedAt
+                Integer recordedAt,
+                Boolean isFoulOut
         ) {
             super(sportType, recordedQuarter, recordedAt);
             this.gameTeamId = gameTeamId;
             this.originLineupPlayerId = originLineupPlayerId;
             this.replacementLineupPlayerId = replacementLineupPlayerId;
+            this.isFoulOut = isFoulOut;
         }
 
         @Override
         public TimelineType getType() {
+            if (getSportType() == SportType.BASKETBALL) {
+                return TimelineType.BASKETBALL_REPLACEMENT;
+            }
             return TimelineType.SOCCER_REPLACEMENT;
         }
     }

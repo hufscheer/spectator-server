@@ -141,6 +141,13 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION);
     }
 
+    public void issueBasketballReplacement(LineupPlayer originPlayer, LineupPlayer replacedPlayer) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.BASKETBALL_REPLACEMENT_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
+        findTeamOf(originPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_REPLACEMENT_EXCEPTION);
+    }
+
     public void issueFoul(LineupPlayer fouledPlayer) {
         if (!league.getSportType().equals(SportType.BASKETBALL)) {
             throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
