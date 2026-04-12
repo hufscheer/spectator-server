@@ -3,6 +3,7 @@ package com.sports.server.command.team.domain;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.SportType;
+import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
@@ -41,6 +42,10 @@ public class Team extends BaseEntity<Team> {
     @Enumerated(EnumType.STRING)
     @Column(name = "sport_type", nullable = false)
     private SportType sportType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
