@@ -88,15 +88,15 @@ public class NlService {
     }
 
     @Transactional
-    public NlRegisterTeamResponse registerTeamWithPlayers(NlRegisterTeamRequest request) {
-        Team team = createTeam(request);
+    public NlRegisterTeamResponse registerTeamWithPlayers(NlRegisterTeamRequest request, Member member) {
+        Team team = createTeam(request, member);
 
         List<NlExecuteRequest.PlayerData> playerDataList = toExecutePlayerData(request.players());
         ExecuteContext context = buildExecuteContext(team.getId(), playerDataList);
-        processPlayersForExecution(playerDataList, context);
+        processPlayersForExecution(playerDataList, context, member);
 
         if (!context.teamPlayerRegisters.isEmpty()) {
-            teamService.addPlayersToTeam(team.getId(), context.teamPlayerRegisters);
+            teamService.addPlayersToTeam(member, team.getId(), context.teamPlayerRegisters);
         }
 
         String displayMessage = String.format("%s에 %d명의 선수가 등록되었습니다.", team.getName(), context.assigned);
@@ -114,10 +114,10 @@ public class NlService {
         validateTeamBelongsToLeague(league, team);
 
         ExecuteContext context = buildExecuteContext(request.teamId(), request.players());
-        processPlayersForExecution(request.players(), context);
+        processPlayersForExecution(request.players(), context, member);
 
         if (!context.teamPlayerRegisters.isEmpty()) {
-            teamService.addPlayersToTeam(request.teamId(), context.teamPlayerRegisters);
+            teamService.addPlayersToTeam(member, request.teamId(), context.teamPlayerRegisters);
         }
 
         String displayMessage = String.format("%s에 %d명의 선수가 등록되었습니다.", team.getName(), context.assigned);
@@ -260,12 +260,12 @@ public class NlService {
 
     // --- registerTeamWithPlayers 전용 ---
 
-    private Team createTeam(NlRegisterTeamRequest request) {
+    private Team createTeam(NlRegisterTeamRequest request, Member member) {
         NlRegisterTeamRequest.TeamInfo teamInfo = request.team();
         TeamRequest.Register teamRegister = new TeamRequest.Register(
                 teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null, null
         );
-        Long teamId = teamService.registerAndReturnId(teamRegister);
+        Long teamId = teamService.registerAndReturnId(member, teamRegister);
         return entityUtils.getEntity(teamId, Team.class);
     }
 
@@ -288,14 +288,14 @@ public class NlService {
         return new ExecuteContext(teamPlayerIdSet, existingPlayerMap);
     }
 
-    private void processPlayersForExecution(List<NlExecuteRequest.PlayerData> players, ExecuteContext context) {
+    private void processPlayersForExecution(List<NlExecuteRequest.PlayerData> players, ExecuteContext context, Member member) {
         for (NlExecuteRequest.PlayerData playerData : players) {
             if (!isValidName(playerData.name()) || !context.seenStudentNumbers.add(playerData.studentNumber())) {
                 context.skipped++;
                 continue;
             }
 
-            Long playerId = getOrCreatePlayerId(playerData, context);
+            Long playerId = getOrCreatePlayerId(playerData, context, member);
             if (playerId == null) {
                 context.skipped++;
                 continue;
@@ -311,7 +311,7 @@ public class NlService {
         }
     }
 
-    private Long getOrCreatePlayerId(NlExecuteRequest.PlayerData playerData, ExecuteContext context) {
+    private Long getOrCreatePlayerId(NlExecuteRequest.PlayerData playerData, ExecuteContext context, Member member) {
         Player existingPlayer = context.existingPlayerMap.get(playerData.studentNumber());
 
         if (existingPlayer != null) {
@@ -322,7 +322,7 @@ public class NlService {
         }
 
         Long playerId = playerService.register(
-                new PlayerRequest.Register(playerData.name(), playerData.studentNumber())
+                member, new PlayerRequest.Register(playerData.name(), playerData.studentNumber())
         );
         context.created++;
         return playerId;

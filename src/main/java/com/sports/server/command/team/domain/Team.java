@@ -5,7 +5,9 @@ import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
 
@@ -24,7 +26,7 @@ import org.springframework.http.HttpStatus;
 @SQLDelete(sql = "UPDATE teams SET is_deleted = 1 WHERE id = ?")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team extends BaseEntity<Team> {
+public class Team extends BaseEntity<Team> implements ManagedEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -135,6 +137,15 @@ public class Team extends BaseEntity<Team> {
 
     public void removeGameTeam(GameTeam gameTeam) {
         this.gameTeams.remove(gameTeam);
+    }
+
+    @Override
+    public boolean isManagedBy(Member manager) {
+        return manager.getId() == 1 || (this.organization != null && this.organization.equals(manager.getOrganization()));
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
 }
