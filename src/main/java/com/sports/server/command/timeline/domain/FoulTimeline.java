@@ -19,15 +19,15 @@ public class FoulTimeline extends Timeline {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "scorer_id")
-    private LineupPlayer fouledPlayer;
+    private LineupPlayer offender;
 
     public FoulTimeline(Game game,
                         Quarter recordedQuarter,
                         Integer recordedAt,
-                        LineupPlayer fouledPlayer
+                        LineupPlayer offender
     ) {
         super(game, recordedQuarter, recordedAt);
-        this.fouledPlayer = fouledPlayer;
+        this.offender = offender;
     }
 
     @Override
@@ -37,11 +37,11 @@ public class FoulTimeline extends Timeline {
 
     @Override
     public void apply() {
-        game.issueFoul(fouledPlayer);
+        game.issueFoul(offender);
     }
 
     @Override
     public void rollback() {
-        game.cancelFoul(fouledPlayer);
+        game.cancelFoul(offender);
     }
 }

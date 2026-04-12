@@ -117,7 +117,7 @@ public class TimelineMapper {
                 game,
                 foulRequest.resolveQuarter(),
                 foulRequest.getRecordedAt(),
-                getPlayer(foulRequest.getFouledLineupPlayerId())
+                getPlayer(foulRequest.getOffenderLineupPlayerId())
         );
     }
 
