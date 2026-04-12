@@ -1,5 +1,6 @@
 package com.sports.server.command.player.application;
 
+import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.dto.PlayerRequest;
@@ -18,15 +19,14 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final EntityUtils entityUtils;
 
-    public Long register(final PlayerRequest.Register request){
+    public Long register(final PlayerRequest.Register request, final Organization organization) {
         validateUniqueStudentNumber(request.studentNumber());
-
-        Player player = request.toEntity(request.name(), request.studentNumber());
+        Player player = new Player(request.name(), request.studentNumber(), organization.getStudentNumberDigits());
         playerRepository.save(player);
         return player.getId();
     }
 
-    public void update(final Long playerId, final PlayerRequest.Update request){
+    public void update(final Long playerId, final PlayerRequest.Update request, final Organization organization) {
         Player player = entityUtils.getEntity(playerId, Player.class);
 
         String newStudentNumber = request.studentNumber();
@@ -34,10 +34,10 @@ public class PlayerService {
             validateUniqueStudentNumber(newStudentNumber);
         }
 
-        player.update(request.name(), request.studentNumber());
+        player.update(request.name(), request.studentNumber(), organization.getStudentNumberDigits());
     }
 
-    public void delete(final Long playerId){
+    public void delete(final Long playerId) {
         Player player = entityUtils.getEntity(playerId, Player.class);
         playerRepository.delete(player);
     }

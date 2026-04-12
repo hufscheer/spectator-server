@@ -184,6 +184,8 @@ public class DocumentationTest {
         );
         Mockito.when(memberRepository.findMemberByEmail(mockEmail))
                 .thenReturn(Optional.of(mockManager));
+        Mockito.when(memberRepository.findMemberByEmailWithOrganization(mockEmail))
+                .thenReturn(Optional.of(mockManager));
         Mockito.when(authMemberResolver.resolveArgument(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(mockManager);
     }

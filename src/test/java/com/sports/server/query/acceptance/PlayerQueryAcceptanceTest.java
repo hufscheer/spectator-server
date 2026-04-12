@@ -30,8 +30,8 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-        player1 = new Player("손흥민", "202500111");
-        player2 = new Player("박지성", "202500112");
+        player1 = new Player("손흥민", "202500111", 9);
+        player2 = new Player("박지성", "202500112", 9);
         playerRepository.save(player1);
         playerRepository.save(player2);
     }

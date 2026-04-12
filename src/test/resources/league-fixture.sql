@@ -1,9 +1,9 @@
 SET foreign_key_checks = 0;
 
 
-INSERT INTO organizations (id, name)
-VALUES (1, '훕치치'),
-       (2, '외대 축구부');
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (1, '훕치치', 9),
+       (2, '외대 축구부', 9);
 
 
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)

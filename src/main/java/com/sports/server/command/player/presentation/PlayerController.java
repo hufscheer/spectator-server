@@ -1,5 +1,6 @@
 package com.sports.server.command.player.presentation;
 
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.application.PlayerService;
 import com.sports.server.command.player.dto.PlayerRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,14 +15,14 @@ public class PlayerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(@RequestBody PlayerRequest.Register request) {
-        playerService.register(request);
+    public void register(@RequestBody PlayerRequest.Register request, Member member) {
+        playerService.register(request, member.getOrganization());
     }
 
     @PatchMapping("/{playerId}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@PathVariable Long playerId, @RequestBody PlayerRequest.Update update) {
-        playerService.update(playerId, update);
+    public void update(@PathVariable Long playerId, @RequestBody PlayerRequest.Update update, Member member) {
+        playerService.update(playerId, update, member.getOrganization());
     }
 
     @DeleteMapping("/{playerId}")
