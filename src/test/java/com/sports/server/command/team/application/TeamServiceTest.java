@@ -1,5 +1,7 @@
 package com.sports.server.command.team.application;
 
+import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.team.domain.*;
 import com.sports.server.command.team.dto.TeamRequest;
@@ -45,11 +47,17 @@ public class TeamServiceTest extends ServiceTest {
     @Autowired
     private TeamPlayerRepository teamPlayerRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     private String imageUrl;
+    private Member manager;
 
     @BeforeEach
     void setUp() {
         imageUrl = originPrefix + "image_url.png";
+        manager = memberRepository.findMemberByEmailWithOrganization("john@example.com")
+                .orElseThrow();
     }
 
     @Nested
@@ -66,7 +74,7 @@ public class TeamServiceTest extends ServiceTest {
                     "사회과학대학","color code", playerRegisterRequests, null);
 
             // when & then
-            assertThatThrownBy(() -> teamService.register(request))
+            assertThatThrownBy(() -> teamService.register(manager, request))
                     .isInstanceOf(CustomException.class)
                     .hasMessage("잘못된 이미지 url 입니다.");
         }
@@ -82,7 +90,7 @@ public class TeamServiceTest extends ServiceTest {
                     "invalid unit","color code", playerRegisterRequests, null);
 
             // when & then
-            assertThatThrownBy(() -> teamService.register(request))
+            assertThatThrownBy(() -> teamService.register(manager, request))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
         }
@@ -102,7 +110,7 @@ public class TeamServiceTest extends ServiceTest {
             doNothing().when(s3Service).doesFileExist(anyString());
 
             // when
-            teamService.update(request, teamId);
+            teamService.update(manager, request, teamId);
             Team team = entityUtils.getEntity(1L, Team.class);
 
             // then
@@ -119,7 +127,7 @@ public class TeamServiceTest extends ServiceTest {
             doNothing().when(s3Service).doesFileExist(anyString());
 
             // when & then
-            assertThatThrownBy(() -> teamService.update(request, teamId))
+            assertThatThrownBy(() -> teamService.update(manager, request, teamId))
                     .isInstanceOf(CustomException.class)
                     .hasMessage("잘못된 이미지 url 입니다.");
         }
@@ -131,7 +139,7 @@ public class TeamServiceTest extends ServiceTest {
             TeamRequest.Update request = new TeamRequest.Update("newName", null, null, null, null);
 
             // when & then
-            assertThatThrownBy(() -> teamService.update(request, teamId))
+            assertThatThrownBy(() -> teamService.update(manager, request, teamId))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -142,7 +150,7 @@ public class TeamServiceTest extends ServiceTest {
             TeamRequest.Update request = new TeamRequest.Update(null, null, "invalid unit", null, null);
 
             // when & then
-            assertThatThrownBy(() -> teamService.update(request, teamId))
+            assertThatThrownBy(() -> teamService.update(manager, request, teamId))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
         }
@@ -156,7 +164,7 @@ public class TeamServiceTest extends ServiceTest {
             doNothing().when(s3Service).doesFileExist(anyString());
 
             // when
-            teamService.update(request, teamId);
+            teamService.update(manager, request, teamId);
             List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
 
             // then
@@ -176,7 +184,7 @@ public class TeamServiceTest extends ServiceTest {
             doNothing().when(s3Service).doesFileExist(anyString());
 
             // when
-            teamService.update(request, teamId);
+            teamService.update(manager, request, teamId);
             List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
 
             // then
@@ -195,7 +203,7 @@ public class TeamServiceTest extends ServiceTest {
             doNothing().when(s3Service).doesFileExist(anyString());
 
             // when
-            teamService.update(request, teamId);
+            teamService.update(manager, request, teamId);
             List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
 
             // then
@@ -219,7 +227,7 @@ public class TeamServiceTest extends ServiceTest {
             doNothing().when(s3Service).doesFileExist(anyString());
 
             // when & then
-            assertThatThrownBy(() -> teamService.update(request, teamId))
+            assertThatThrownBy(() -> teamService.update(manager, request, teamId))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(PlayerErrorMessages.PLAYER_NOT_EXIST_EXCEPTION);
         }
@@ -239,7 +247,7 @@ public class TeamServiceTest extends ServiceTest {
             );
 
             // when
-            teamService.addPlayersToTeam(teamId, playerToAdd);
+            teamService.addPlayersToTeam(manager, teamId, playerToAdd);
             List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
 
             //then
@@ -256,7 +264,7 @@ public class TeamServiceTest extends ServiceTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> teamService.addPlayersToTeam(teamId, playerToAdd))
+            assertThatThrownBy(() -> teamService.addPlayersToTeam(manager, teamId, playerToAdd))
                     .isInstanceOf(CustomException.class)
                     .hasMessage("이미 팀에 소속된 선수입니다.");
         }
@@ -268,7 +276,7 @@ public class TeamServiceTest extends ServiceTest {
             List<TeamRequest.TeamPlayerRegister> playerToAdd = List.of();
 
             // when
-            teamService.addPlayersToTeam(teamId, playerToAdd);
+            teamService.addPlayersToTeam(manager, teamId, playerToAdd);
             List<TeamPlayer> teamPlayers = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId);
 
             //then
@@ -284,7 +292,7 @@ public class TeamServiceTest extends ServiceTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> teamService.addPlayersToTeam(teamId, playerToAdd))
+            assertThatThrownBy(() -> teamService.addPlayersToTeam(manager, teamId, playerToAdd))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(PlayerErrorMessages.PLAYER_NOT_EXIST_EXCEPTION);
         }
@@ -300,7 +308,7 @@ public class TeamServiceTest extends ServiceTest {
             Long teamPlayerIdToDelete = 1L;
 
             // when
-            teamService.deleteTeamPlayer(teamPlayerIdToDelete);
+            teamService.deleteTeamPlayer(manager, teamPlayerIdToDelete);
 
             //then
             Optional<TeamPlayer> result = teamPlayerRepository.findById(teamPlayerIdToDelete);
@@ -313,7 +321,7 @@ public class TeamServiceTest extends ServiceTest {
             Long nonExistentTeamPlayerId = 999L;
 
             // when & then
-            assertThatThrownBy(() -> teamService.deleteTeamPlayer(nonExistentTeamPlayerId))
+            assertThatThrownBy(() -> teamService.deleteTeamPlayer(manager, nonExistentTeamPlayerId))
                     .isInstanceOf(NotFoundException.class);
         }
     }
@@ -324,7 +332,7 @@ public class TeamServiceTest extends ServiceTest {
         Long teamId = 1L;
 
         // when
-        teamService.deleteLogoImage(teamId);
+        teamService.deleteLogoImage(manager, teamId);
 
         // then
         Team team = entityUtils.getEntity(teamId, Team.class);

@@ -299,7 +299,7 @@ class NlServiceTest {
                     List.of(new NlRegisterTeamRequest.PlayerData("홍길동", "202600001", 10))
             );
 
-            given(teamService.registerAndReturnId(any())).willReturn(99L);
+            given(teamService.registerAndReturnId(any(), any())).willReturn(99L);
 
             Team createdTeam = mock(Team.class);
             given(createdTeam.getId()).willReturn(99L);
@@ -308,17 +308,17 @@ class NlServiceTest {
 
             given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
-            given(playerService.register(any())).willReturn(100L);
+            given(playerService.register(any(), any())).willReturn(100L);
 
             // when
-            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request);
+            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request, mockMember);
 
             // then
             assertThat(response.teamId()).isEqualTo(99L);
             assertThat(response.result().created()).isEqualTo(1);
             assertThat(response.result().assigned()).isEqualTo(1);
-            verify(teamService).registerAndReturnId(any());
-            verify(teamService).addPlayersToTeam(eq(99L), anyList());
+            verify(teamService).registerAndReturnId(any(), any());
+            verify(teamService).addPlayersToTeam(any(), eq(99L), anyList());
         }
 
         @Test
@@ -330,7 +330,7 @@ class NlServiceTest {
                     List.of(new NlRegisterTeamRequest.PlayerData("김철수", "202600002", 7))
             );
 
-            given(teamService.registerAndReturnId(any())).willReturn(99L);
+            given(teamService.registerAndReturnId(any(), any())).willReturn(99L);
 
             Team createdTeam = mock(Team.class);
             given(createdTeam.getId()).willReturn(99L);
@@ -345,12 +345,12 @@ class NlServiceTest {
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
 
             // when
-            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request);
+            NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request, mockMember);
 
             // then
             assertThat(response.result().created()).isEqualTo(0);
             assertThat(response.result().assigned()).isEqualTo(1);
-            verify(playerService, never()).register(any());
+            verify(playerService, never()).register(any(), any());
         }
     }
 
@@ -369,7 +369,7 @@ class NlServiceTest {
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
-            given(playerService.register(any())).willReturn(100L);
+            given(playerService.register(any(), any())).willReturn(100L);
 
             // when
             NlExecuteResponse response = nlService.execute(request, mockMember);
@@ -377,8 +377,8 @@ class NlServiceTest {
             // then
             assertThat(response.result().created()).isEqualTo(1);
             assertThat(response.result().assigned()).isEqualTo(1);
-            verify(playerService).register(any());
-            verify(teamService).addPlayersToTeam(eq(1L), anyList());
+            verify(playerService).register(any(), any());
+            verify(teamService).addPlayersToTeam(any(), eq(1L), anyList());
         }
 
         @Test
@@ -403,8 +403,8 @@ class NlServiceTest {
             // then
             assertThat(response.result().created()).isEqualTo(0);
             assertThat(response.result().assigned()).isEqualTo(1);
-            verify(playerService, never()).register(any());
-            verify(teamService).addPlayersToTeam(eq(1L), anyList());
+            verify(playerService, never()).register(any(), any());
+            verify(teamService).addPlayersToTeam(any(), eq(1L), anyList());
         }
 
         @Test
@@ -430,7 +430,7 @@ class NlServiceTest {
             assertThat(response.result().created()).isEqualTo(0);
             assertThat(response.result().assigned()).isEqualTo(0);
             assertThat(response.result().skipped()).isEqualTo(1);
-            verify(teamService, never()).addPlayersToTeam(anyLong(), anyList());
+            verify(teamService, never()).addPlayersToTeam(any(), anyLong(), anyList());
         }
     }
 
@@ -469,7 +469,7 @@ class NlServiceTest {
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
-            given(playerService.register(any())).willReturn(100L);
+            given(playerService.register(any(), any())).willReturn(100L);
 
             // when
             NlExecuteResponse response = nlService.execute(request, mockMember);
@@ -478,7 +478,7 @@ class NlServiceTest {
             assertThat(response.result().created()).isEqualTo(1);
             assertThat(response.result().assigned()).isEqualTo(1);
             assertThat(response.result().skipped()).isEqualTo(1);
-            verify(playerService, times(1)).register(any());
+            verify(playerService, times(1)).register(any(), any());
         }
     }
 

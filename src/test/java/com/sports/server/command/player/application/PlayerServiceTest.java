@@ -1,5 +1,7 @@
 package com.sports.server.command.player.application;
 
+import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.dto.PlayerRequest;
@@ -8,6 +10,7 @@ import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.support.ServiceTest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,6 +29,17 @@ public class PlayerServiceTest extends ServiceTest {
     @Autowired
     private EntityUtils entityUtils;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
+    private Member manager;
+
+    @BeforeEach
+    void setUp() {
+        manager = memberRepository.findMemberByEmailWithOrganization("john@example.com")
+                .orElseThrow();
+    }
+
     @Test
     void 선수_등록_시_학번이_중복되면_예외가_발생한다() {
         // given
@@ -35,7 +49,7 @@ public class PlayerServiceTest extends ServiceTest {
         // when & then
         PlayerRequest.Register request = new PlayerRequest.Register("박지성", duplicatedStudentNumber);
 
-        assertThatThrownBy(() -> playerService.register(request))
+        assertThatThrownBy(() -> playerService.register(manager, request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 존재하는 학번입니다.");
     }
@@ -47,7 +61,7 @@ public class PlayerServiceTest extends ServiceTest {
         playerRepository.save(player);
 
         // when
-        playerService.delete(player.getId());
+        playerService.delete(manager, player.getId());
 
         // then
         Assertions.assertThatThrownBy(
