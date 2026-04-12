@@ -11,6 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
@@ -26,7 +27,7 @@ public class TimelineControllerTest extends DocumentationTest {
     @Test
     void 득점_타임라인을_생성한다() throws Exception {
         // given
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
                 1L, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 1L,
                 10,
@@ -53,6 +54,42 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
                                 fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional()
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 농구_득점_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterBasketballScore request = new TimelineRequest.RegisterBasketballScore(
+                1L, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                1L, 10, null, 3
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/score", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (BASKETBALL)"),
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_QUARTER, SECOND_QUARTER, THIRD_QUARTER, FOURTH_QUARTER, OVERTIME)"),
+                                fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
+                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional(),
+                                fieldWithPath("score").type(JsonFieldType.NUMBER).description("득점한 점수 (1, 2, 3 중 하나)")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
