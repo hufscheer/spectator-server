@@ -94,7 +94,11 @@ public class Player extends BaseEntity<Player> implements ManagedEntity {
 
     @Override
     public boolean isManagedBy(Member manager) {
-        return manager.getId() == 1 || (this.organization != null && this.organization.equals(manager.getOrganization()));
+        if (manager.isAdministrator()) {
+            return true;
+        }
+        return this.organization != null && manager.getOrganization() != null
+                && this.organization.getId().equals(manager.getOrganization().getId());
     }
 
     public void setOrganization(Organization organization) {
