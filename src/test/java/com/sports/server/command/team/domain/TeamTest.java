@@ -28,8 +28,8 @@ public class TeamTest {
                     .teamColor("color")
                     .build();
 
-            player1 = new Player("손흥민", "202500001");
-            player2 = new Player("이강인", "202500002");
+            player1 = new Player("손흥민", "202500001", 9);
+            player2 = new Player("이강인", "202500002", 9);
         }
 
         @Test
