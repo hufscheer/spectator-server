@@ -25,7 +25,7 @@ public class FoulTimelineTest {
         @Test
         void 생성한다() {
             // given
-            LineupPlayer fouledPlayer = entityBuilder(LineupPlayer.class)
+            LineupPlayer offender = entityBuilder(LineupPlayer.class)
                     .set("gameTeam", gameTeam).sample();
 
             // when
@@ -33,12 +33,12 @@ public class FoulTimelineTest {
                     game,
                     quarter,
                     10,
-                    fouledPlayer
+                    offender
             );
 
             // then
             assertAll(
-                    () -> Assertions.assertThat(timeline.getFouledPlayer()).isEqualTo(fouledPlayer),
+                    () -> Assertions.assertThat(timeline.getOffender()).isEqualTo(offender),
                     () -> Assertions.assertThat(timeline.getType()).isEqualTo(TimelineType.FOUL)
             );
         }

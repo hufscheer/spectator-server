@@ -196,7 +196,7 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (BASKETBALL)"),
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
                                 fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_QUARTER, SECOND_QUARTER, THIRD_QUARTER, FOURTH_QUARTER, OVERTIME)"),
-                                fieldWithPath("fouledLineupPlayerId").type(JsonFieldType.NUMBER).description("파울 선수 Id"),
+                                fieldWithPath("offenderLineupPlayerId").type(JsonFieldType.NUMBER).description("파울 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("파울 시간")
                         ),
                         requestCookies(

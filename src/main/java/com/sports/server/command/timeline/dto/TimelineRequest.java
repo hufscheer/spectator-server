@@ -124,18 +124,18 @@ public abstract class TimelineRequest {
     @Getter
     public static class RegisterFoul extends TimelineRequest {
         private final Long gameTeamId;
-        private final Long fouledLineupPlayerId;
+        private final Long offenderLineupPlayerId;
 
         public RegisterFoul(
                 Integer recordedAt,
                 SportType sportType,
                 String recordedQuarter,
                 Long gameTeamId,
-                Long fouledLineupPlayerId
+                Long offenderLineupPlayerId
         ) {
             super(sportType, recordedQuarter, recordedAt);
             this.gameTeamId = gameTeamId;
-            this.fouledLineupPlayerId = fouledLineupPlayerId;
+            this.offenderLineupPlayerId = offenderLineupPlayerId;
         }
 
         @Override

@@ -141,18 +141,18 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION);
     }
 
-    public void issueFoul(LineupPlayer fouledPlayer) {
+    public void issueFoul(LineupPlayer offender) {
         if (!league.getSportType().equals(SportType.BASKETBALL)) {
             throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
         }
-        findTeamOf(fouledPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION);
+        findTeamOf(offender, GameErrorMessages.PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION);
     }
 
-    public void cancelFoul(LineupPlayer fouledPlayer) {
+    public void cancelFoul(LineupPlayer offender) {
         if (!league.getSportType().equals(SportType.BASKETBALL)) {
             throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
         }
-        findTeamOf(fouledPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION);
+        findTeamOf(offender, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION);
     }
 
     private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {
