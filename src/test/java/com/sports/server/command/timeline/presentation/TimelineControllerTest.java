@@ -10,6 +10,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;
@@ -162,6 +163,41 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("scorerId").type(JsonFieldType.NUMBER).description("승부차기 득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
                                 fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("승부차기 득점 성공 여부")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 파울_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                1L,
+                2L
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/foul", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (BASKETBALL)"),
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_QUARTER, SECOND_QUARTER, THIRD_QUARTER, FOURTH_QUARTER, OVERTIME)"),
+                                fieldWithPath("fouledLineupPlayerId").type(JsonFieldType.NUMBER).description("파울 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("파울 시간")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
