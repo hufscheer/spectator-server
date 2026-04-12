@@ -2,6 +2,7 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.command.league.domain.Quarter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

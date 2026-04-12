@@ -2,11 +2,15 @@ package com.sports.server.command.timeline.application;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
-import com.sports.server.command.game.domain.GameTeamRepository;
+import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.timeline.domain.GameProgressTimeline;
+import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
+import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.command.timeline.mapper.TimelineMapper;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
@@ -15,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
+
+import java.util.Optional;
 
 
 @Service
@@ -24,6 +29,7 @@ import org.springframework.transaction.annotation.Isolation;
 public class TimelineService {
     private final GameRepository gameRepository;
     private final TimelineRepository timelineRepository;
+    private final GameProgressTimelineRepository gameProgressTimelineRepository;
     private final TimelineMapper timelineMapper;
     private final EntityUtils entityUtils;
 
@@ -33,9 +39,56 @@ public class TimelineService {
         game.checkStateForTimeline();
         PermissionValidator.checkPermission(game, manager);
 
+        if (request instanceof TimelineRequest.RegisterProgress progressRequest) {
+            validateProgressTransition(game, progressRequest);
+        }
+
         Timeline timeline = timelineMapper.toEntity(game, request);
         timeline.apply();
         timelineRepository.save(timeline);
+    }
+
+    private void validateProgressTransition(Game game, TimelineRequest.RegisterProgress request) {
+        Quarter requestQuarter = request.resolveQuarter();
+        GameProgressType requestType = request.getGameProgressType();
+        Optional<GameProgressTimeline> lastOpt = gameProgressTimelineRepository.findFirstByGameOrderByIdDesc(game);
+
+        boolean isValid = lastOpt
+                .map(last -> isValidTransitionFrom(last.getRecordedQuarter(), last.getGameProgressType(), requestQuarter, requestType))
+                .orElseGet(() -> isValidFirstTransition(game, requestQuarter, requestType));
+
+        if (!isValid) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, TimelineErrorMessage.INVALID_PROGRESS_TRANSITION);
+        }
+    }
+
+    private boolean isValidFirstTransition(Game game, Quarter requestQuarter, GameProgressType requestType) {
+        return requestType == GameProgressType.QUARTER_START
+                && requestQuarter.equals(game.getLeague().getSportType().firstQuarter());
+    }
+
+    private boolean isValidTransitionFrom(Quarter lastQuarter, GameProgressType lastType, Quarter requestQuarter, GameProgressType requestType) {
+        return switch (lastType) {
+            case QUARTER_START -> isValidFromQuarterStart(lastQuarter, requestQuarter, requestType);
+            case QUARTER_END -> isValidFromQuarterEnd(lastQuarter, requestQuarter, requestType);
+            default -> false;
+        };
+    }
+
+    private boolean isValidFromQuarterStart(Quarter lastQuarter, Quarter requestQuarter, GameProgressType requestType) {
+        return switch (requestType) {
+            case QUARTER_END -> lastQuarter.canHaveQuarterEnd() && requestQuarter.equals(lastQuarter);
+            case GAME_END -> lastQuarter.canEndGame();
+            default -> false;
+        };
+    }
+
+    private boolean isValidFromQuarterEnd(Quarter lastQuarter, Quarter requestQuarter, GameProgressType requestType) {
+        if (requestType == GameProgressType.GAME_END) {
+            return lastQuarter.canEndGame();
+        }
+        return requestType == GameProgressType.QUARTER_START
+                && requestQuarter.getOrder() == lastQuarter.getOrder() + 1;
     }
 
     @Transactional
