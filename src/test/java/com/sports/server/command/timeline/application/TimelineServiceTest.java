@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
@@ -297,6 +298,42 @@ class TimelineServiceTest extends ServiceTest {
             assertAll(() -> Assertions.assertThat(actual).isInstanceOf(WarningCardTimeline.class),
                     () -> Assertions.assertThat(((WarningCardTimeline) actual).getWarningCardType())
                             .isEqualTo(WarningCardType.YELLOW));
+        }
+    }
+
+    @DisplayName("파울 타임라인을")
+    @Nested
+    class FoulTest {
+        private final Long basketballGameId = 5L;
+        private final Long basketballTeamId = 7L;
+        private final Long basketballPlayerId = 17L;
+
+        @Test
+        void 생성한다() {
+            // given
+            TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                    10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    basketballTeamId, basketballPlayerId);
+
+            // when
+            timelineService.register(manager, basketballGameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            assertThat(actual).isInstanceOf(FoulTimeline.class);
+        }
+
+        @Test
+        void 참여하지_않는_선수는_파울을_받을_수_없다() {
+            // given
+            Long otherTeamPlayerId = 22L; // 팀B 선수 (팀A 경기팀에 없음)
+            TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                    10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    basketballTeamId, otherTeamPlayerId);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, basketballGameId, request))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
     }
 
