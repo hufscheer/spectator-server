@@ -7,9 +7,11 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
 import com.sports.server.query.dto.response.QuarterResponse;
 import com.sports.server.support.DocumentationTest;
 import java.util.List;
@@ -138,6 +140,36 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].warningCardRecord.warningCardType").type(
                                                 JsonFieldType.STRING)
                                         .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
+                        )
+                ));
+    }
+
+    @Test
+    void 가능한_경기_진행_액션을_조회한다() throws Exception {
+        // given
+        Long gameId = 1L;
+        BDDMockito.given(timelineQueryService.getAvailableProgress(gameId))
+                .willReturn(new AvailableProgressResponse(List.of(
+                        new ProgressAction(SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_END, "후반전 종료"),
+                        new ProgressAction(SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END, "경기 종료")
+                )));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/available-progress", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("availableActions").type(JsonFieldType.ARRAY).description("가능한 경기 진행 액션 목록"),
+                                fieldWithPath("availableActions[].quarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT 등)"),
+                                fieldWithPath("availableActions[].gameProgressType").type(JsonFieldType.STRING).description("경기 진행 타입 (QUARTER_START, QUARTER_END, GAME_END)"),
+                                fieldWithPath("availableActions[].displayName").type(JsonFieldType.STRING).description("사용자에게 표시할 액션 이름")
                         )
                 ));
     }

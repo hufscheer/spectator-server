@@ -43,7 +43,7 @@ public class TimelineMapper {
 
         return ScoreTimeline.score(
                 game,
-                scoreRequest.getRecordedQuarter(),
+                scoreRequest.resolveQuarter(),
                 scoreRequest.getRecordedAt(),
                 getPlayer(scoreRequest.getScoreLineupPlayerId()),
                 assist
@@ -54,7 +54,7 @@ public class TimelineMapper {
                                                       TimelineRequest.RegisterReplacement replacementRequest) {
         return new ReplacementTimeline(
                 game,
-                replacementRequest.getRecordedQuarter(),
+                replacementRequest.resolveQuarter(),
                 replacementRequest.getRecordedAt(),
                 getPlayer(replacementRequest.getOriginLineupPlayerId()),
                 getPlayer(replacementRequest.getReplacementLineupPlayerId())
@@ -65,7 +65,7 @@ public class TimelineMapper {
                                         TimelineRequest.RegisterProgress progressRequest) {
         return new GameProgressTimeline(
                 game,
-                progressRequest.getRecordedQuarter(),
+                progressRequest.resolveQuarter(),
                 progressRequest.getRecordedAt(),
                 progressRequest.getGameProgressType()
         );
@@ -75,7 +75,7 @@ public class TimelineMapper {
                                     TimelineRequest.RegisterPk pkRequest) {
         return new PKTimeline(
                 game,
-                pkRequest.getRecordedQuarter(),
+                pkRequest.resolveQuarter(),
                 pkRequest.getRecordedAt(),
                 getPlayer(pkRequest.getScorerId()),
                 pkRequest.getIsSuccess()
@@ -86,7 +86,7 @@ public class TimelineMapper {
                                                       TimelineRequest.RegisterWarningCard warningCardRequest) {
         return new WarningCardTimeline(
                 game,
-                warningCardRequest.getRecordedQuarter(),
+                warningCardRequest.resolveQuarter(),
                 warningCardRequest.getRecordedAt(),
                 getPlayer(warningCardRequest.getWarnedLineupPlayerId()),
                 warningCardRequest.getCardType()
