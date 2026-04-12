@@ -11,6 +11,8 @@ public class GameErrorMessages {
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION = "참여하지 않는 선수는 득점을 취소할 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_ISSUE_WARNING_CARD_EXCEPTION = "참여하지 않는 선수는 경고카드를 받을 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION = "참여하지 않는 선수는 경고카드를 취소할 수 없습니다.";
+    public static final String BASKETBALL_REPLACEMENT_NOT_ALLOWED_FOR_NON_BASKETBALL = "농구 교체는 농구 경기에서만 등록할 수 있습니다.";
+    public static final String PLAYER_NOT_PARTICIPANT_REPLACEMENT_EXCEPTION = "참여하지 않는 선수는 교체될 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION = "참여하지 않는 선수는 파울을 받을 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION = "참여하지 않는 선수는 파울을 취소할 수 없습니다.";
     public static final String FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL = "파울은 농구 경기에서만 등록할 수 있습니다.";
