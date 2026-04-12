@@ -44,7 +44,7 @@ public class TeamControllerTest extends DocumentationTest {
                 null
         );
 
-        Mockito.doNothing().when(teamService).register(Mockito.any(TeamRequest.Register.class));
+        Mockito.doNothing().when(teamService).register(any(), Mockito.any(TeamRequest.Register.class));
 
         // when
         ResultActions result = mockMvc.perform(post("/teams", request)
@@ -79,7 +79,7 @@ public class TeamControllerTest extends DocumentationTest {
         Long teamId = 1L;
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
-        doNothing().when(teamService).delete(anyLong());
+        doNothing().when(teamService).delete(any(), anyLong());
 
         // when
         ResultActions result = mockMvc.perform(delete("/teams/{teamId}", teamId)
@@ -114,7 +114,7 @@ public class TeamControllerTest extends DocumentationTest {
                 )
         );
 
-        doNothing().when(teamService).update(any(TeamRequest.Update.class), anyLong());
+        doNothing().when(teamService).update(any(), any(TeamRequest.Update.class), anyLong());
 
         // when
         ResultActions result = mockMvc.perform(patch("/teams/{teamId}", teamId)
@@ -153,7 +153,7 @@ public class TeamControllerTest extends DocumentationTest {
                 new TeamRequest.TeamPlayerRegister(2L, 7)
         );
 
-        doNothing().when(teamService).addPlayersToTeam(anyLong(), any());
+        doNothing().when(teamService).addPlayersToTeam(any(), anyLong(), any());
 
         // when
         ResultActions result = mockMvc.perform(post("/teams/{teamId}/players", teamId)
@@ -183,7 +183,7 @@ public class TeamControllerTest extends DocumentationTest {
         // given
         Long teamPlayerId = 1L;
 
-        doNothing().when(teamService).deleteTeamPlayer(anyLong());
+        doNothing().when(teamService).deleteTeamPlayer(any(), anyLong());
 
         // when
         ResultActions result = mockMvc.perform(delete("/team-players/{teamPlayerId}", teamPlayerId)

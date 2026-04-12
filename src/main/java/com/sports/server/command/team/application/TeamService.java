@@ -1,11 +1,13 @@
 package com.sports.server.command.team.application;
 
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.team.domain.*;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
@@ -36,29 +38,33 @@ public class TeamService {
     private final EntityUtils entityUtils;
     private final S3Service s3Service;
 
-    public void register(final TeamRequest.Register request) {
+    public void register(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
 
         Team team = request.toEntity(imgUrl);
+        team.setOrganization(member.getOrganization());
         teamRepository.save(team);
 
         if (request.teamPlayers() != null && !request.teamPlayers().isEmpty()) {
-            addPlayersToTeam(team.getId(), request.teamPlayers());
+            addPlayersToTeam(member, team.getId(), request.teamPlayers());
         }
     }
 
-    public Long registerAndReturnId(final TeamRequest.Register request) {
+    public Long registerAndReturnId(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
 
         Team team = request.toEntity(imgUrl);
+        team.setOrganization(member.getOrganization());
         teamRepository.save(team);
         return team.getId();
     }
 
-    public void update(final TeamRequest.Update request, final Long teamId) {
+    public void update(final Member member, final TeamRequest.Update request, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
+        PermissionValidator.checkPermission(team, member);
+
         s3Service.doesFileExist(team.getLogoImageUrl());
         Unit unit = Optional.ofNullable(request.unit()).map(Unit::from).orElse(null);
         team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, unit, request.teamColor());
@@ -68,13 +74,16 @@ public class TeamService {
         }
     }
 
-    public void delete(final Long teamId) {
+    public void delete(final Member member, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
+        PermissionValidator.checkPermission(team, member);
         teamRepository.delete(team);
     }
 
-    public void addPlayersToTeam(final Long teamId, final List<TeamRequest.TeamPlayerRegister> request) {
+    public void addPlayersToTeam(final Member member, final Long teamId, final List<TeamRequest.TeamPlayerRegister> request) {
         Team team = entityUtils.getEntity(teamId, Team.class);
+        PermissionValidator.checkPermission(team, member);
+
         List<Player> players = fetchAndValidatePlayers(request);
         Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
 
@@ -85,16 +94,19 @@ public class TeamService {
         teamPlayerRepository.saveAll(newTeamPlayers);
     }
 
-    public void deleteTeamPlayer(final Long teamPlayerId) {
+    public void deleteTeamPlayer(final Member member, final Long teamPlayerId) {
         TeamPlayer teamPlayer = entityUtils.getEntity(teamPlayerId, TeamPlayer.class);
         Team team = teamPlayer.getTeam();
+        PermissionValidator.checkPermission(team, member);
+
         Player player = teamPlayer.getPlayer();
         team.removeTeamPlayer(player);
         teamPlayerRepository.delete(teamPlayer);
     }
 
-    public void deleteLogoImage(Long teamId) {
+    public void deleteLogoImage(final Member member, Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
+        PermissionValidator.checkPermission(team, member);
         team.deleteLogoImageUrl();
     }
 

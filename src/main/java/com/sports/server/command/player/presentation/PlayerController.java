@@ -16,18 +16,18 @@ public class PlayerController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody PlayerRequest.Register request, Member member) {
-        playerService.register(request, member.getOrganization());
+        playerService.register(member, request);
     }
 
     @PatchMapping("/{playerId}")
     @ResponseStatus(HttpStatus.OK)
     public void update(@PathVariable Long playerId, @RequestBody PlayerRequest.Update update, Member member) {
-        playerService.update(playerId, update, member.getOrganization());
+        playerService.update(member, playerId, update);
     }
 
     @DeleteMapping("/{playerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long playerId) {
-        playerService.delete(playerId);
+    public void delete(@PathVariable Long playerId, Member member) {
+        playerService.delete(member, playerId);
     }
 }
