@@ -13,4 +13,6 @@ public interface TeamQueryDynamicRepository {
     List<LeagueTeam> findByLeagueAndRound(League league, Integer roundNumber);
 
     List<Team> findAllByUnitsAndSportType(List<Unit> units, SportType sportType);
+
+    List<Unit> findDistinctUnitsBySportType(SportType sportType);
 }

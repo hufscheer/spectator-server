@@ -67,6 +67,15 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
         );
     }
 
+    @Override
+    public List<Unit> findDistinctUnitsBySportType(final SportType sportType) {
+        return jpaQueryFactory
+                .select(team.unit).distinct()
+                .from(team)
+                .where(teamsWithSportType(sportType))
+                .fetch();
+    }
+
     private BooleanExpression teamsInUnits(final List<Unit> units) {
         if (units == null || units.isEmpty()) {
             return null;
