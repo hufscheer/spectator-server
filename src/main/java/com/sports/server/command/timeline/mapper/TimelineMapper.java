@@ -101,7 +101,7 @@ public class TimelineMapper {
                                                                           TimelineRequest.RegisterReplacement request) {
         LineupPlayer origin = getPlayer(request.getOriginLineupPlayerId());
         LineupPlayer replacement = getPlayer(request.getReplacementLineupPlayerId());
-        game.issueBasketballReplacement(origin, replacement);
+        game.issueBasketballReplacement(origin);
         return new BasketballReplacementTimeline(
                 game,
                 request.resolveQuarter(),
