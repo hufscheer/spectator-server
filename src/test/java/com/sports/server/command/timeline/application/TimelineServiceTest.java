@@ -326,14 +326,29 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 참여하지_않는_선수는_파울을_받을_수_없다() {
             // given
-            Long otherTeamPlayerId = 22L; // 팀B 선수 (팀A 경기팀에 없음)
+            Long otherGamePlayerId = 1L; // 축구 game 1 소속 선수 (농구 game 5에 없음)
             TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
                     10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
-                    basketballTeamId, otherTeamPlayerId);
+                    basketballTeamId, otherGamePlayerId);
 
             // when & then
             assertThatThrownBy(() -> timelineService.register(manager, basketballGameId, request))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 농구_경기가_아니면_파울을_등록할_수_없다() {
+            // given: 축구 경기(game 1)에 파울 등록 시도
+            Long soccerGameId = 1L;
+            Long soccerTeamId = 1L;
+            Long soccerPlayerId = 1L;
+            TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                    10, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                    soccerTeamId, soccerPlayerId);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, soccerGameId, request))
+                    .isInstanceOf(BadRequestException.class);
         }
     }
 

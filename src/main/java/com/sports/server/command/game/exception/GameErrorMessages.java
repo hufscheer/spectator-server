@@ -13,6 +13,7 @@ public class GameErrorMessages {
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION = "참여하지 않는 선수는 경고카드를 취소할 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION = "참여하지 않는 선수는 파울을 받을 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION = "참여하지 않는 선수는 파울을 취소할 수 없습니다.";
+    public static final String FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL = "파울은 농구 경기에서만 등록할 수 있습니다.";
 
     public static final String TEAM_NOT_IN_LEAGUE_TEAM = "해당 리그팀에 속하지 않은 팀입니다.";
     public static final String PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION = "다른 팀의 선수를 라인업에 등록할 수 없습니다.";

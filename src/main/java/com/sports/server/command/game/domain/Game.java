@@ -5,6 +5,7 @@ import static com.sports.server.command.timeline.exception.TimelineErrorMessage.
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.Quarter;
@@ -141,10 +142,16 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void issueFoul(LineupPlayer fouledPlayer) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
         findTeamOf(fouledPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION);
     }
 
     public void cancelFoul(LineupPlayer fouledPlayer) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
         findTeamOf(fouledPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION);
     }
 
