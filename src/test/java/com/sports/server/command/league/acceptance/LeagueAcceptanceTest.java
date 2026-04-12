@@ -27,7 +27,8 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
                 4,
                 LocalDateTime.of(2025, 1, 1, 0, 0),
                 LocalDateTime.of(2025, 1, 15, 0, 0),
-                teamIds
+                teamIds,
+                null
         );
 
         configureMockJwtForEmail("john.doe@example.com");

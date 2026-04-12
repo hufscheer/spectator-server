@@ -3,6 +3,8 @@ package com.sports.server.command.game.application;
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.QuarterResolver;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
@@ -14,6 +16,7 @@ import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import java.time.LocalDateTime;
+import org.springframework.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +90,9 @@ public class GameService {
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
-        game.updateGameQuarter(request.quarter());
+        if (StringUtils.hasText(request.quarter())) {
+            game.updateGameQuarter(QuarterResolver.resolve(request.quarter()));
+        }
         game.updateState(state);
         game.updateRound(Round.from(request.round()));
         game.updateResult();

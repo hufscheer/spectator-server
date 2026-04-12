@@ -2,6 +2,7 @@ package com.sports.server.query.repository;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.query.dto.GameTeamGameInfoDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,8 +12,11 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 public interface GameQueryRepository extends Repository<Game, Long> {
+    Optional<Game> findById(Long id);
+
     @Query(
             "SELECT g FROM Game g "
+                    + "JOIN FETCH g.league "
                     + "JOIN FETCH g.gameTeams "
                     + "WHERE g.league =:league "
                     + "AND g.state = 'PLAYING'"
@@ -21,6 +25,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
 
     @Query(
             "SELECT g FROM Game g "
+                    + "JOIN FETCH g.league "
                     + "JOIN FETCH g.gameTeams "
                     + "WHERE g.league.id in :leagueIds "
                     + "AND g.state = 'PLAYING'"
@@ -29,6 +34,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
 
     @Query(
             "SELECT g FROM Game g "
+                    + "JOIN FETCH g.league "
                     + "JOIN FETCH g.gameTeams "
                     + "WHERE g.league=:league"
     )
@@ -41,6 +47,15 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "WHERE gt.id = :gameTeamId"
     )
     Game findByGameTeamIdWithLeague(@Param("gameTeamId") Long gameTeamId);
+
+    @Query(
+            "SELECT new com.sports.server.query.dto.GameTeamGameInfoDto(gt.id, g.id, g.name, l.id, l.name) "
+                    + "FROM Game g "
+                    + "JOIN g.league l "
+                    + "JOIN g.gameTeams gt "
+                    + "WHERE gt.id IN :gameTeamIds"
+    )
+    List<GameTeamGameInfoDto> findGameInfoByGameTeamIds(@Param("gameTeamIds") List<Long> gameTeamIds);
 
     @Query(
             "SELECT g FROM Game g "
@@ -61,9 +76,9 @@ public interface GameQueryRepository extends Repository<Game, Long> {
     List<Game> findAllByLeagueIds(@Param("leagueIds") List<Long> leagueIds);
 
     @Query(value = """
-            SELECT g.*
+            SELECT g.id
             FROM (
-                SELECT g_inner.*,
+                SELECT g_inner.id,
                        gt.team_id,
                        ROW_NUMBER() OVER (
                            PARTITION BY gt.team_id
@@ -76,5 +91,8 @@ public interface GameQueryRepository extends Repository<Game, Long> {
             ) g
             WHERE g.rn <= :limit
             """, nativeQuery = true)
-    List<Game> findRecentGamesByTeamIds(@Param("teamIds") List<Long> teamIds, @Param("limit") int limit);
+    List<Long> findRecentGameIdsByTeamIds(@Param("teamIds") List<Long> teamIds, @Param("limit") int limit);
+
+    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE g.id IN :gameIds")
+    List<Game> findAllByIdsWithLeague(@Param("gameIds") List<Long> gameIds);
 }

@@ -1,6 +1,7 @@
 package com.sports.server.query.repository;
 
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 
 import java.time.LocalDateTime;
@@ -51,14 +52,25 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
             Pageable pageable
     );
 
-    @Query("SELECT l FROM League l WHERE l.startAt <= :now AND l.endAt >= :now")
-    List<League> findInProgressLeagues(@Param("now") LocalDateTime now);
+    @Query("SELECT l FROM League l WHERE l.startAt <= :now AND l.endAt >= :now"
+            + " AND (:organizationId IS NULL OR l.organization.id = :organizationId)"
+            + " AND (:sportType IS NULL OR l.sportType = :sportType)")
+    List<League> findInProgressLeagues(@Param("now") LocalDateTime now,
+                                       @Param("organizationId") Long organizationId,
+                                       @Param("sportType") SportType sportType);
 
-    @Query("SELECT l FROM League l WHERE l.endAt = (SELECT MAX(l2.endAt) FROM League l2 WHERE l2.endAt < :now)")
-    List<League> findLeaguesByLatestEndAt(@Param("now") LocalDateTime now);
+    @Query("SELECT l FROM League l WHERE l.endAt = ("
+            + "SELECT MAX(l2.endAt) FROM League l2 WHERE l2.endAt < :now"
+            + " AND (:organizationId IS NULL OR l2.organization.id = :organizationId)"
+            + " AND (:sportType IS NULL OR l2.sportType = :sportType))"
+            + " AND (:organizationId IS NULL OR l.organization.id = :organizationId)"
+            + " AND (:sportType IS NULL OR l.sportType = :sportType)")
+    List<League> findLeaguesByLatestEndAt(@Param("now") LocalDateTime now,
+                                          @Param("organizationId") Long organizationId,
+                                          @Param("sportType") SportType sportType);
 
     @Query(
-            "SELECT new com.sports.server.query.repository.LeagueRecentRecordResult(l.id, l.name, ls.firstWinnerTeam.name) "
+            "SELECT new com.sports.server.query.repository.LeagueRecentRecordResult(l.id, l.name, ls.firstWinnerTeam.name, CAST(l.sportType AS string)) "
                     + "FROM League l "
                     + "JOIN LeagueStatistics ls ON ls.league = l "
                     + "WHERE l.startAt >= :yearStart "

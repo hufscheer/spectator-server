@@ -10,11 +10,10 @@ public class ExceptionMessages {
 
     // Quarter 관련
     public static final String QUARTER_NOT_FOUND_BY_NAME = "해당 쿼터 이름이 존재하지 않습니다: %s";
-    public static final String QUARTER_ID_NULL = "쿼터 아이디는 null이 될 수 없습니다.";
-    public static final String QUARTER_NOT_FOUND_BY_ID = "해당 아이디의 쿼터가 존재하지 않습니다: %d";
 
     // Player 관련
     public static final String INVALID_PLAYER_SUBSTITUTION = "다른 팀의 선수끼리 교체할 수 없습니다.";
+    public static final String INVALID_ASSIST_PLAYER = "어시스트 선수는 득점 선수와 같은 팀이어야 하며, 본인일 수 없습니다.";
 
     // CheerTalk 관련
     public static final String CHEERTALK_SERIALIZATION_FAILED = "CheerTalk을 JSON으로 변환하는데 실패했습니다.";

@@ -48,7 +48,9 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     null,
                                     1L,
                                     LocalDateTime.of(2023, 1, 2, 16, 0, 0),
-                                    true
+                                    true,
+                                    "축구 대전",
+                                    "삼건물 대회"
                             )),
                     () -> assertThat(actual)
                             .map(CheerTalkResponse.ForSpectator::cheerTalkId)
@@ -286,5 +288,161 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                         .map(CheerTalkResponse.ForManager::isBlocked)
                         .containsOnly(true)
         );
+    }
+
+    @DisplayName("경기별 응원톡을 조회할 때")
+    @Nested
+    class GetCheerTalksByGameTest {
+
+        @Test
+        void 경기별_신고된_응원톡을_조회한다() {
+            // given
+            configureMockJwtForEmail(MOCK_EMAIL);
+            Long gameId = 1L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .cookie(COOKIE_NAME, mockToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/games/{gameId}/cheer-talks/reported", gameId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::cheerTalkId)
+                            .containsExactly(18L, 1L),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::content)
+                            .containsExactly("응원톡18", "응원톡1")
+            );
+        }
+
+        @Test
+        void 경기별_차단된_응원톡을_조회한다() {
+            // given
+            configureMockJwtForEmail(MOCK_EMAIL);
+            Long gameId = 1L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .cookie(COOKIE_NAME, mockToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/games/{gameId}/cheer-talks/blocked", gameId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::cheerTalkId)
+                            .containsExactly(23L, 14L),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::content)
+                            .containsExactly("응원톡23", "블락된 응원톡"),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::isBlocked)
+                            .containsOnly(true)
+            );
+        }
+    }
+
+    @DisplayName("리그별 응원톡을 조회할 때")
+    @Nested
+    class GetCheerTalksByLeagueTest {
+
+        @Test
+        void 리그별_신고된_응원톡을_조회한다() {
+            // given
+            configureMockJwtForEmail(MOCK_EMAIL);
+            Long leagueId = 1L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .cookie(COOKIE_NAME, mockToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues/{leagueId}/cheer-talks/reported", leagueId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::cheerTalkId)
+                            .containsExactly(18L, 1L),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::content)
+                            .containsExactly("응원톡18", "응원톡1")
+            );
+        }
+
+        @Test
+        void 리그별_차단되지_않은_응원톡을_조회한다() {
+            // given
+            configureMockJwtForEmail(MOCK_EMAIL);
+            Long leagueId = 2L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .cookie(COOKIE_NAME, mockToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues/{leagueId}/cheer-talks", leagueId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::cheerTalkId)
+                            .containsExactly(25L, 24L),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::isBlocked)
+                            .containsOnly(false)
+            );
+        }
+
+        @Test
+        void 리그별_차단된_응원톡을_조회한다() {
+            // given
+            configureMockJwtForEmail(MOCK_EMAIL);
+            Long leagueId = 1L;
+
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .cookie(COOKIE_NAME, mockToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues/{leagueId}/cheer-talks/blocked", leagueId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::cheerTalkId)
+                            .containsExactly(23L, 14L),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::content)
+                            .containsExactly("응원톡23", "블락된 응원톡"),
+                    () -> assertThat(actual)
+                            .map(CheerTalkResponse.ForManager::isBlocked)
+                            .containsOnly(true)
+            );
+        }
     }
 }

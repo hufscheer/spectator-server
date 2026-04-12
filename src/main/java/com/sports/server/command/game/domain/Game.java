@@ -6,7 +6,9 @@ import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.timeline.domain.Quarter;
+import com.sports.server.command.league.domain.CommonQuarter;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.BadRequestException;
@@ -40,8 +42,6 @@ import org.springframework.util.StringUtils;
 public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public static final int MINIMUM_TEAMS = 2;
-    private static final String NAME_OF_PK_QUARTER = "승부차기";
-    private static final String NAME_OF_FIRST_HALF_QUARTER = "전반전";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "administrator_id")
@@ -163,9 +163,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
-    public void updateGameQuarter(String gameQuarter) {
-        if (StringUtils.hasText(gameQuarter)) {
-            this.gameQuarter = gameQuarter;
+    public void updateGameQuarter(Quarter quarter) {
+        if (quarter != null) {
+            this.gameQuarter = quarter.name();
         }
     }
 
@@ -211,12 +211,12 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void play() {
         this.state = GameState.PLAYING;
-        updateQuarter(Quarter.FIRST_HALF);
+        updateQuarter(league.getSportType().firstQuarter());
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        updateQuarter(Quarter.POST_GAME);
+        updateQuarter(league.getSportType().postGameQuarter());
     }
 
     public void determineResult() {
@@ -268,13 +268,13 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
 
     public void updateQuarter(Quarter quarter) {
-        this.gameQuarter = quarter.getName();
+        this.gameQuarter = quarter.name();
 
-        if (gameQuarter.equals(NAME_OF_FIRST_HALF_QUARTER)) {
+        if (quarter == league.getSportType().firstQuarter()) {
             this.state = GameState.PLAYING;
         }
 
-        if (gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+        if (quarter == SoccerQuarter.PENALTY_SHOOTOUT) {
             startPk();
         }
 
@@ -282,15 +282,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
-        if (this.gameQuarter.equals(NAME_OF_PK_QUARTER)) {
+        if (getQuarter() == SoccerQuarter.PENALTY_SHOOTOUT) {
             cancelPk();
         }
 
-        if (quarter == null) {
-            this.gameQuarter = null;
-        } else {
-            this.gameQuarter = quarter.getName();
-        }
+        this.gameQuarter = (quarter == null) ? CommonQuarter.PRE_GAME.name() : quarter.name();
         this.quarterChangedAt = changedAt;
     }
 
@@ -303,7 +299,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return Quarter.fromName(gameQuarter);
+        return league.getSportType().resolveQuarter(gameQuarter);
     }
 
     public void checkStateForTimeline() {

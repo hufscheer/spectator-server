@@ -1,16 +1,17 @@
 package com.sports.server.query.dto.response;
 
+import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.timeline.domain.Timeline;
 
 import java.util.List;
 
 public record TimelineResponse(
-        String gameQuarter,
+        QuarterResponse gameQuarter,
         List<RecordResponse> records
 ) {
-    public static TimelineResponse of(String quarter, List<Timeline> timelines) {
+    public static TimelineResponse of(Quarter quarter, List<Timeline> timelines) {
         return new TimelineResponse(
-                quarter,
+                QuarterResponse.from(quarter),
                 timelines.stream()
                         .map(RecordResponse::from)
                         .toList()

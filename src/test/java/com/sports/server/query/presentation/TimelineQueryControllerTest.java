@@ -7,9 +7,12 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.query.dto.response.*;
+import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
+import com.sports.server.query.dto.response.QuarterResponse;
 import com.sports.server.support.DocumentationTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class TimelineQueryControllerTest extends DocumentationTest {
 
-    private static final String QUARTER2 = "2쿼터";
+    private static final String QUARTER2 = "SECOND_HALF";
+    private static final String QUARTER2_DISPLAY = "후반전";
 
     private static final String TEAM_A = "팀A";
     public static final String TEAM_A_IMAGE_URL = "http://example.com/logo_a.png";
@@ -38,7 +42,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
         BDDMockito.given(timelineQueryService.getTimelines(gameId))
                 .willReturn(List.of(
                         new TimelineResponse(
-                                QUARTER2, List.of(
+                                new QuarterResponse(QUARTER2, QUARTER2_DISPLAY), List.of(
                                 new RecordResponse(
                                         null, 1L, SCORE_TYPE,
                                         13,
@@ -51,7 +55,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
-                                        )),
+                                        ), null),
                                         new ReplacementRecordResponse(1L, "선수3"),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_START),
                                         new PkRecordResponse(1L, true),
@@ -69,7 +73,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         TEAM_A, TEAM_A_IMAGE_URL, 2),
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
-                                        )),
+                                        ), null),
                                         new ReplacementRecordResponse(1L, "선수3"),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                         new PkRecordResponse(4L, false),
@@ -90,7 +94,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 parameterWithName("gameId").description("게임의 ID")
                         ),
                         responseFields(
-                                fieldWithPath("[].gameQuarter").type(JsonFieldType.STRING).description("쿼터의 이름"),
+                                fieldWithPath("[].gameQuarter").type(JsonFieldType.OBJECT).description("쿼터 정보"),
+                                fieldWithPath("[].gameQuarter.key").type(JsonFieldType.STRING).description("쿼터의 키"),
+                                fieldWithPath("[].gameQuarter.label").type(JsonFieldType.STRING).description("쿼터 표시명"),
                                 fieldWithPath("[].records[].recordId").type(JsonFieldType.NUMBER).description("기록의 ID"),
                                 fieldWithPath("[].records[].type").type(JsonFieldType.STRING).description("기록의 타입"),
                                 fieldWithPath("[].records[].recordedAt").type(JsonFieldType.NUMBER)
@@ -114,6 +120,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이미지"),
                                 fieldWithPath("[].records[].scoreRecord.snapshot[].score").type(JsonFieldType.NUMBER)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 점수"),
+                                fieldWithPath("[].records[].scoreRecord.assistPlayerName").type(JsonFieldType.NULL)
+                                        .description("SCORE 타입일 때 어시스트 선수 이름 (없으면 null)").optional(),
                                 fieldWithPath("[].records[].replacementRecord.replacementRecordId").type(
                                                 JsonFieldType.NUMBER)
                                         .description("REPLACEMENT 타입 기록의  ID"),
@@ -132,6 +140,36 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].warningCardRecord.warningCardType").type(
                                                 JsonFieldType.STRING)
                                         .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
+                        )
+                ));
+    }
+
+    @Test
+    void 가능한_경기_진행_액션을_조회한다() throws Exception {
+        // given
+        Long gameId = 1L;
+        BDDMockito.given(timelineQueryService.getAvailableProgress(gameId))
+                .willReturn(new AvailableProgressResponse(List.of(
+                        new ProgressAction(SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_END, "후반전 종료"),
+                        new ProgressAction(SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END, "경기 종료")
+                )));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/available-progress", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("availableActions").type(JsonFieldType.ARRAY).description("가능한 경기 진행 액션 목록"),
+                                fieldWithPath("availableActions[].quarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT 등)"),
+                                fieldWithPath("availableActions[].gameProgressType").type(JsonFieldType.STRING).description("경기 진행 타입 (QUARTER_START, QUARTER_END, GAME_END)"),
+                                fieldWithPath("availableActions[].displayName").type(JsonFieldType.STRING).description("사용자에게 표시할 액션 이름")
                         )
                 ));
     }

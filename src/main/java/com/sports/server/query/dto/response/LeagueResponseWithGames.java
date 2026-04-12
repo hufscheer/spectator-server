@@ -13,6 +13,7 @@ public record LeagueResponseWithGames(
         int maxRound,
         LocalDateTime startAt,
         LocalDateTime endAt,
+        String sportType,
         List<GameDetail> playingGames,
         List<GameDetail> scheduledGames,
         List<GameDetail> finishedGames
@@ -30,8 +31,9 @@ public record LeagueResponseWithGames(
 
         return new LeagueResponseWithGames(
                 league.getId(), league.getName(), league.getLeagueTeams().size(),
-                league.getMaxRound().getNumber(), league.getStartAt(), league.getEndAt(), playingGames,
-                scheduledGames, finishedGames
+                league.getMaxRound().getNumber(), league.getStartAt(), league.getEndAt(),
+                league.getSportType().name(),
+                playingGames, scheduledGames, finishedGames
         );
     }
 

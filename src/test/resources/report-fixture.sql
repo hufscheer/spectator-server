@@ -12,7 +12,7 @@ VALUES (1, 1, 1, '삼건물 대회', '2023-11-09 00:00:00', '2023-11-20 00:00:00
 
 INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter,
                    state, round)
-VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', '1st Quarter', 'SCHEDULED', '16강');
+VALUES (1, 1, 1, '농구 대전', '2023-11-12T10:00:00', 'abc123', '2023-11-12T10:15:00', 'PRE_GAME', 'SCHEDULED', '16강');
 
 INSERT INTO game_teams (game_id, team_id, cheer_count, score)
 VALUES (1, 1, 1, 0);

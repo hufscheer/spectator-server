@@ -183,7 +183,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
 
         GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, List.of());
 
-        GameRequest.Register request = new GameRequest.Register("경기 이름", 16, "전반전", "SCHEDULED",
+        GameRequest.Register request = new GameRequest.Register("경기 이름", 16, "FIRST_HALF", "SCHEDULED",
                 LocalDateTime.now(), null, team1, team2);
 
         configureMockJwtForEmail(MOCK_EMAIL);
@@ -210,7 +210,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         String name = "경기 이름";
         int round = 16;
-        String quarter = "후반전";
+        String quarter = "SECOND_HALF";
         String state = "PLAYING";
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         String videoId = "videoId";
@@ -239,7 +239,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         GameDetailResponse updatedGame = toResponse(getResponse, GameDetailResponse.class);
         assertAll(
                 () -> assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(updatedGame.gameQuarter()).isEqualTo(quarter),
+                () -> assertThat(updatedGame.gameQuarter().key()).isEqualTo(quarter),
                 () -> assertThat(updatedGame.round()).isEqualTo(round),
                 () -> assertThat(updatedGame.gameName()).isEqualTo(name),
                 () -> assertThat(updatedGame.startTime()).isEqualTo(fixedLocalDateTime),

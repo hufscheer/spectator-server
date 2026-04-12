@@ -14,6 +14,7 @@ public interface GameRepository extends Repository<Game, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(
             "SELECT g FROM Game g " +
+                    "JOIN FETCH g.league " +
                     "WHERE g.id = :id"
     )
     Optional<Game> findByIdForUpdate(long id);

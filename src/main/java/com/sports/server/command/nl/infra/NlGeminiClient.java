@@ -104,9 +104,14 @@ public class NlGeminiClient implements NlClient {
                         .bodyValue(body)
                         .retrieve()
                         .bodyToMono(GeminiFunctionCallResponse.class)
-                        .block(Duration.ofSeconds(30));
+                        .block(Duration.ofSeconds(60));
             } catch (WebClientResponseException.TooManyRequests e) {
                 log.warn("Gemini API rate limit (429). attempt={}/{}, keyIndex={}", attempt + 1, MAX_RETRY + 1, currentKeyIndex);
+                if (attempt < MAX_RETRY) {
+                    sleep(RETRY_DELAY);
+                }
+            } catch (IllegalStateException e) {
+                log.warn("Gemini API timeout. attempt={}/{}, keyIndex={}", attempt + 1, MAX_RETRY + 1, currentKeyIndex);
                 if (attempt < MAX_RETRY) {
                     sleep(RETRY_DELAY);
                 }

@@ -2,6 +2,8 @@ package com.sports.server.command.team.domain;
 
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.LeagueTeam;
+import com.sports.server.command.league.domain.SportType;
+import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.CustomException;
@@ -37,6 +39,14 @@ public class Team extends BaseEntity<Team> {
     @Column(name = "team_color", nullable = false)
     private String teamColor;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sport_type", nullable = false)
+    private SportType sportType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
@@ -50,11 +60,12 @@ public class Team extends BaseEntity<Team> {
     private List<GameTeam> gameTeams = new ArrayList<>();
 
     @Builder
-    public Team(@NonNull String name, String logoImageUrl, @NonNull Unit unit, @NonNull String teamColor) {
+    public Team(@NonNull String name, String logoImageUrl, @NonNull Unit unit, @NonNull String teamColor, SportType sportType) {
         this.name = name;
         this.logoImageUrl = logoImageUrl;
         this.unit = unit;
         this.teamColor = teamColor;
+        this.sportType = sportType != null ? sportType : SportType.SOCCER;
     }
 
     public void update(String name, String logoImageUrl, String originPrefix, String replacePrefix, Unit unit, String teamColor) {

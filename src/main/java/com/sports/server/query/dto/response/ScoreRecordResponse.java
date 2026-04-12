@@ -1,6 +1,7 @@
 package com.sports.server.query.dto.response;
 
 import com.sports.server.command.game.domain.GameTeam;
+import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 
 import java.util.List;
@@ -8,17 +9,20 @@ import java.util.List;
 public record ScoreRecordResponse(
         Long scoreRecordId,
         Integer score,
-        List<Snapshot> snapshot
+        List<Snapshot> snapshot,
+        String assistPlayerName
 ) {
 
     public static ScoreRecordResponse from(ScoreTimeline scoreTimeline) {
+        LineupPlayer assist = scoreTimeline.getAssistLineupPlayer();
         return new ScoreRecordResponse(
                 scoreTimeline.getId(),
                 scoreTimeline.getScore(),
                 List.of(
                         Snapshot.of(scoreTimeline.getGameTeam1(), scoreTimeline.getSnapshotScore1()),
                         Snapshot.of(scoreTimeline.getGameTeam2(), scoreTimeline.getSnapshotScore2())
-                )
+                ),
+                assist != null ? assist.getPlayer().getName() : null
         );
     }
 

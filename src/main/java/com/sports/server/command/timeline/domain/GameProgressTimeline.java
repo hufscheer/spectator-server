@@ -2,8 +2,11 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.QuarterConverter;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,13 +23,11 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameProgressTimeline extends Timeline {
 
-    private static final String NAME_OF_BEFORE_GAME_QUARTER = "경기전";
-
     @Enumerated(EnumType.STRING)
     @Column(name = "game_progress_type")
     private GameProgressType gameProgressType;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = QuarterConverter.class)
     @Column(name = "previous_quarter")
     private Quarter previousQuarter;
 
@@ -76,7 +77,7 @@ public class GameProgressTimeline extends Timeline {
 
         if (gameProgressType == GameProgressType.QUARTER_START &&
                 previousQuarter != null &&
-                previousQuarter.getName().equals(NAME_OF_BEFORE_GAME_QUARTER)) {
+                previousQuarter.getOrder() == 0) {
             game.updateState(GameState.SCHEDULED);
         }
 

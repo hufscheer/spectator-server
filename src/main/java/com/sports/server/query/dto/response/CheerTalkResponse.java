@@ -10,7 +10,9 @@ public class CheerTalkResponse {
             String content,
             Long gameTeamId,
             LocalDateTime createdAt,
-            Boolean isBlocked
+            Boolean isBlocked,
+            String gameName,
+            String leagueName
     ) {
         public ForSpectator(CheerTalk cheerTalk) {
             this(
@@ -18,7 +20,9 @@ public class CheerTalkResponse {
                     checkCheerTalkIsBlocked(cheerTalk),
                     cheerTalk.getGameTeamId(),
                     cheerTalk.getCreatedAt(),
-                    cheerTalk.isBlocked()
+                    cheerTalk.isBlocked(),
+                    null,
+                    null
             );
         }
 
@@ -28,7 +32,21 @@ public class CheerTalkResponse {
                     maskedContent,
                     cheerTalk.getGameTeamId(),
                     cheerTalk.getCreatedAt(),
-                    cheerTalk.isBlocked()
+                    cheerTalk.isBlocked(),
+                    null,
+                    null
+            );
+        }
+
+        public ForSpectator(CheerTalk cheerTalk, Game game) {
+            this(
+                    cheerTalk.getId(),
+                    checkCheerTalkIsBlocked(cheerTalk),
+                    cheerTalk.getGameTeamId(),
+                    cheerTalk.getCreatedAt(),
+                    cheerTalk.isBlocked(),
+                    game.getName(),
+                    game.getLeague().getName()
             );
         }
 
