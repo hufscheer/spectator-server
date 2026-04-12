@@ -71,7 +71,7 @@ public abstract class TimelineRequest {
 
         @Override
         public TimelineType getType() {
-            return TimelineType.REPLACEMENT;
+            return TimelineType.SOCCER_REPLACEMENT;
         }
     }
 

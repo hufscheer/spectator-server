@@ -128,7 +128,7 @@ VALUES ('SCORE', 1, 'FIRST_HALF', 25, 1, 1, 1, 2, 2, 0);
 
 -- B팀 6선수 OUT 7선수 IN (전반전)
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, origin_lineup_player_id, replaced_lineup_player_id)
-VALUES ('REPLACEMENT', 1, 'FIRST_HALF', 24, 6, 7);
+VALUES ('SOCCER_REPLACEMENT', 1, 'FIRST_HALF', 24, 6, 7);
 
 -- 후반전 시작
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, game_team1_id, game_team2_id, snapshot_score1, snapshot_score2, previous_quarter, previous_quarter_changed_at)
@@ -136,7 +136,7 @@ VALUES ('GAME_PROGRESS', 1, 'SECOND_HALF', 30, 'QUARTER_START', 1, 2, 2, 0, 'FIR
 
 -- A팀 2선수 OUT 3선수 IN (후반전)
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, origin_lineup_player_id, replaced_lineup_player_id)
-VALUES ('REPLACEMENT', 1, 'SECOND_HALF', 10, 2, 3);
+VALUES ('SOCCER_REPLACEMENT', 1, 'SECOND_HALF', 10, 2, 3);
 
 -- B팀 선수 10의 1득점 (후반전)
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, scorer_id, score, game_team1_id, snapshot_score1, game_team2_id, snapshot_score2)

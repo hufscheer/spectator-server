@@ -2,7 +2,7 @@ package com.sports.server.command.timeline.domain;
 
 public enum TimelineType {
     SCORE,
-    REPLACEMENT,
+    SOCCER_REPLACEMENT,
     GAME_PROGRESS,
     PK,
     WARNING_CARD,

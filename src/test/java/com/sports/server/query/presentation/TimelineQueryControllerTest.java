@@ -32,7 +32,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
     public static final String TEAM_B_IMAGE_URL = "http://example.com/logo_b.png";
 
     private static final String SCORE_TYPE = "SCORE";
-    private static final String REPLACEMENT_TYPE = "REPLACEMENT";
+    private static final String REPLACEMENT_TYPE = "SOCCER_REPLACEMENT";
 
 
     @Test
