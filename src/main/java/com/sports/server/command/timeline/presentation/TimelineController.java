@@ -41,6 +41,13 @@ public class TimelineController {
         timelineService.register(member, gameId, request);
     }
 
+    @PostMapping("/foul")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createFoulTimeline(@PathVariable Long gameId,
+                                   @RequestBody TimelineRequest.RegisterFoul request, Member member) {
+        timelineService.register(member, gameId, request);
+    }
+
     @PostMapping("/warning-card")
     @ResponseStatus(HttpStatus.CREATED)
     public void createWarningCardTimeline(@PathVariable Long gameId,
