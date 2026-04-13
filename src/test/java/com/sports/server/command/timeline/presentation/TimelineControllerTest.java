@@ -11,6 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.league.domain.BasketballQuarter;
+import com.sports.server.command.timeline.domain.BasketballScore;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;

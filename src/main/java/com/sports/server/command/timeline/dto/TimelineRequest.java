@@ -6,12 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sports.server.command.league.domain.SportType;
+import com.sports.server.command.timeline.domain.BasketballScore;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.timeline.domain.TimelineType;
 import com.sports.server.command.timeline.domain.WarningCardType;
-import com.sports.server.command.timeline.exception.TimelineErrorMessage;
-import com.sports.server.common.exception.BadRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -85,7 +84,7 @@ public abstract class TimelineRequest {
 
     @Getter
     public static class RegisterBasketballScore extends RegisterScore {
-        private final int score;
+        private final BasketballScore score;
 
         @JsonCreator
         public RegisterBasketballScore(
@@ -98,15 +97,12 @@ public abstract class TimelineRequest {
                 @JsonProperty("score") int score
         ) {
             super(gameTeamId, sportType, recordedQuarter, scoreLineupPlayerId, recordedAt, assistLineupPlayerId);
-            if (score != 1 && score != 2 && score != 3) {
-                throw new BadRequestException(TimelineErrorMessage.INVALID_BASKETBALL_SCORE);
-            }
-            this.score = score;
+            this.score = BasketballScore.fromValue(score);
         }
 
         @Override
         public int getScoreValue() {
-            return score;
+            return score.getValue();
         }
     }
 

@@ -3,6 +3,7 @@ package com.sports.server.command.timeline.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sports.server.command.league.domain.BasketballQuarter;
+import com.sports.server.command.timeline.domain.BasketballScore;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;
