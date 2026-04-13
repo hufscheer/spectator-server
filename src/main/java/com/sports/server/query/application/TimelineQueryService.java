@@ -4,7 +4,6 @@ import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
 
 import com.sports.server.command.game.domain.Game;
-import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.SportType;
@@ -15,9 +14,11 @@ import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
+import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.query.dto.response.GameTimelineResponse;
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.query.dto.response.WinnerResponse;
+import com.sports.server.query.repository.GameTeamQueryRepository;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +35,10 @@ public class TimelineQueryService {
 
     private final TimelineQueryRepository timelineQueryRepository;
     private final GameProgressTimelineRepository gameProgressTimelineRepository;
+    private final GameTeamQueryRepository gameTeamQueryRepository;
     private final EntityUtils entityUtils;
 
     public GameTimelineResponse getTimelines(final Long gameId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
-
         Map<Quarter, List<Timeline>> timelines = timelineQueryRepository.findByGameId(gameId)
                 .stream()
                 .collect(groupingBy(Timeline::getRecordedQuarter));
@@ -51,9 +51,8 @@ public class TimelineQueryService {
                         timelines.get(quarter)
                 )).toList();
 
-        WinnerResponse winner = game.getGameTeams().stream()
-                .filter(gt -> gt.getResult() == GameResult.WIN)
-                .findFirst()
+        WinnerResponse winner = gameTeamQueryRepository
+                .findByGameIdAndResult(gameId, GameResult.WIN)
                 .map(WinnerResponse::from)
                 .orElse(null);
 
