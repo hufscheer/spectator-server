@@ -41,64 +41,67 @@ public class TimelineQueryControllerTest extends DocumentationTest {
         // given
         Long gameId = 1L;
         BDDMockito.given(timelineQueryService.getTimelines(gameId))
-                .willReturn(List.of(
-                        new TimelineResponse(
-                                new QuarterResponse(QUARTER2, QUARTER2_DISPLAY), List.of(
-                                new RecordResponse(
-                                        null, 1L, SCORE_TYPE,
-                                        13,
-                                        "선수10",
-                                        1L,
-                                        TEAM_B,
-                                        TEAM_B_IMAGE_URL,
-                                        new ScoreRecordResponse(1L, 3, List.of(
-                                                new ScoreRecordResponse.Snapshot(
-                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
-                                                new ScoreRecordResponse.Snapshot(
-                                                        TEAM_B, TEAM_B_IMAGE_URL, 3)
-                                        ), null),
-                                        new ReplacementRecordResponse(1L, "선수3", null),
-                                        new ProgressRecordResponse(GameProgressType.QUARTER_START),
-                                        new PkRecordResponse(1L, true),
-                                        new WarningCardRecordResponse(WarningCardType.YELLOW)
-                                ),
-                                new RecordResponse(
-                                        null, 1L, SOCCER_REPLACEMENT_TYPE,
-                                        10,
-                                        "선수2",
-                                        1L,
-                                        TEAM_A,
-                                        TEAM_A_IMAGE_URL,
-                                        new ScoreRecordResponse(1L, 2, List.of(
-                                                new ScoreRecordResponse.Snapshot(
-                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
-                                                new ScoreRecordResponse.Snapshot(
-                                                        TEAM_B, TEAM_B_IMAGE_URL, 0)
-                                        ), null),
-                                        new ReplacementRecordResponse(1L, "선수3", null),
-                                        new ProgressRecordResponse(GameProgressType.QUARTER_END),
-                                        new PkRecordResponse(4L, false),
-                                        new WarningCardRecordResponse(WarningCardType.RED)
-                                ),
-                                new RecordResponse(
-                                        null, 1L, BASKETBALL_REPLACEMENT_TYPE,
-                                        5,
-                                        "선수4",
-                                        1L,
-                                        TEAM_A,
-                                        TEAM_A_IMAGE_URL,
-                                        new ScoreRecordResponse(1L, 2, List.of(
-                                                new ScoreRecordResponse.Snapshot(
-                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
-                                                new ScoreRecordResponse.Snapshot(
-                                                        TEAM_B, TEAM_B_IMAGE_URL, 0)
-                                        ), null),
-                                        new ReplacementRecordResponse(2L, "선수5", true),
-                                        new ProgressRecordResponse(GameProgressType.QUARTER_END),
-                                        new PkRecordResponse(4L, false),
-                                        new WarningCardRecordResponse(WarningCardType.RED)
-                                )
-                        ))
+                .willReturn(new GameTimelineResponse(
+                        new WinnerResponse(1L, TEAM_B, TEAM_B_IMAGE_URL),
+                        List.of(
+                                new TimelineResponse(
+                                        new QuarterResponse(QUARTER2, QUARTER2_DISPLAY), List.of(
+                                        new RecordResponse(
+                                                null, 1L, SCORE_TYPE,
+                                                13,
+                                                "선수10",
+                                                1L,
+                                                TEAM_B,
+                                                TEAM_B_IMAGE_URL,
+                                                new ScoreRecordResponse(1L, 3, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 3)
+                                                ), null),
+                                                new ReplacementRecordResponse(1L, "선수3", null),
+                                                new ProgressRecordResponse(GameProgressType.QUARTER_START),
+                                                new PkRecordResponse(1L, true),
+                                                new WarningCardRecordResponse(WarningCardType.YELLOW)
+                                        ),
+                                        new RecordResponse(
+                                                null, 1L, SOCCER_REPLACEMENT_TYPE,
+                                                10,
+                                                "선수2",
+                                                1L,
+                                                TEAM_A,
+                                                TEAM_A_IMAGE_URL,
+                                                new ScoreRecordResponse(1L, 2, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                                ), null),
+                                                new ReplacementRecordResponse(1L, "선수3", null),
+                                                new ProgressRecordResponse(GameProgressType.QUARTER_END),
+                                                new PkRecordResponse(4L, false),
+                                                new WarningCardRecordResponse(WarningCardType.RED)
+                                        ),
+                                        new RecordResponse(
+                                                null, 1L, BASKETBALL_REPLACEMENT_TYPE,
+                                                5,
+                                                "선수4",
+                                                1L,
+                                                TEAM_A,
+                                                TEAM_A_IMAGE_URL,
+                                                new ScoreRecordResponse(1L, 2, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                                ), null),
+                                                new ReplacementRecordResponse(2L, "선수5", true),
+                                                new ProgressRecordResponse(GameProgressType.QUARTER_END),
+                                                new PkRecordResponse(4L, false),
+                                                new WarningCardRecordResponse(WarningCardType.RED)
+                                        )
+                                ))
+                        )
                 ));
 
         // when
@@ -113,52 +116,57 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 parameterWithName("gameId").description("게임의 ID")
                         ),
                         responseFields(
-                                fieldWithPath("[].gameQuarter").type(JsonFieldType.OBJECT).description("쿼터 정보"),
-                                fieldWithPath("[].gameQuarter.key").type(JsonFieldType.STRING).description("쿼터의 키"),
-                                fieldWithPath("[].gameQuarter.label").type(JsonFieldType.STRING).description("쿼터 표시명"),
-                                fieldWithPath("[].records[].recordId").type(JsonFieldType.NUMBER).description("기록의 ID"),
-                                fieldWithPath("[].records[].type").type(JsonFieldType.STRING).description("기록의 타입"),
-                                fieldWithPath("[].records[].recordedAt").type(JsonFieldType.NUMBER)
+                                fieldWithPath("winner").type(JsonFieldType.OBJECT).description("승리 팀 정보 (미확정 시 null)").optional(),
+                                fieldWithPath("winner.gameTeamId").type(JsonFieldType.NUMBER).description("승리 팀의 게임 팀 ID"),
+                                fieldWithPath("winner.teamName").type(JsonFieldType.STRING).description("승리 팀 이름"),
+                                fieldWithPath("winner.teamImageUrl").type(JsonFieldType.STRING).description("승리 팀 이미지 URL"),
+                                fieldWithPath("timelines").type(JsonFieldType.ARRAY).description("쿼터별 타임라인 목록"),
+                                fieldWithPath("timelines[].gameQuarter").type(JsonFieldType.OBJECT).description("쿼터 정보"),
+                                fieldWithPath("timelines[].gameQuarter.key").type(JsonFieldType.STRING).description("쿼터의 키"),
+                                fieldWithPath("timelines[].gameQuarter.label").type(JsonFieldType.STRING).description("쿼터 표시명"),
+                                fieldWithPath("timelines[].records[].recordId").type(JsonFieldType.NUMBER).description("기록의 ID"),
+                                fieldWithPath("timelines[].records[].type").type(JsonFieldType.STRING).description("기록의 타입"),
+                                fieldWithPath("timelines[].records[].recordedAt").type(JsonFieldType.NUMBER)
                                         .description("기록된 시간"),
-                                fieldWithPath("[].records[].playerName").type(JsonFieldType.STRING)
+                                fieldWithPath("timelines[].records[].playerName").type(JsonFieldType.STRING)
                                         .description("기록의 대상 선수 이름"),
-                                fieldWithPath("[].records[].gameTeamId").type(JsonFieldType.NUMBER)
+                                fieldWithPath("timelines[].records[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("기록의 대상 게임 팀 ID"),
-                                fieldWithPath("[].records[].teamName").type(JsonFieldType.STRING)
+                                fieldWithPath("timelines[].records[].teamName").type(JsonFieldType.STRING)
                                         .description("기록의 대상 팀 이름"),
-                                fieldWithPath("[].records[].teamImageUrl").type(JsonFieldType.STRING)
+                                fieldWithPath("timelines[].records[].teamImageUrl").type(JsonFieldType.STRING)
                                         .description("기록의 대상 팀 이미지"),
-                                fieldWithPath("[].records[].scoreRecord.score").type(JsonFieldType.NUMBER)
+                                fieldWithPath("timelines[].records[].scoreRecord.score").type(JsonFieldType.NUMBER)
                                         .description("SCORE 타입일 때 득점한 점수"),
-                                fieldWithPath("[].records[].scoreRecord.scoreRecordId").type(JsonFieldType.NUMBER)
+                                fieldWithPath("timelines[].records[].scoreRecord.scoreRecordId").type(JsonFieldType.NUMBER)
                                         .description("SCORE 타입 기록의 ID"),
-                                fieldWithPath("[].records[].scoreRecord.snapshot[].teamName").type(JsonFieldType.STRING)
+                                fieldWithPath("timelines[].records[].scoreRecord.snapshot[].teamName").type(JsonFieldType.STRING)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이름"),
-                                fieldWithPath("[].records[].scoreRecord.snapshot[].teamImageUrl").type(
+                                fieldWithPath("timelines[].records[].scoreRecord.snapshot[].teamImageUrl").type(
                                                 JsonFieldType.STRING)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 팀 이미지"),
-                                fieldWithPath("[].records[].scoreRecord.snapshot[].score").type(JsonFieldType.NUMBER)
+                                fieldWithPath("timelines[].records[].scoreRecord.snapshot[].score").type(JsonFieldType.NUMBER)
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 점수"),
-                                fieldWithPath("[].records[].scoreRecord.assistPlayerName").type(JsonFieldType.NULL)
+                                fieldWithPath("timelines[].records[].scoreRecord.assistPlayerName").type(JsonFieldType.NULL)
                                         .description("SCORE 타입일 때 어시스트 선수 이름 (없으면 null)").optional(),
-                                fieldWithPath("[].records[].replacementRecord.replacementRecordId").type(
+                                fieldWithPath("timelines[].records[].replacementRecord.replacementRecordId").type(
                                                 JsonFieldType.NUMBER)
                                         .description("REPLACEMENT 타입 기록의  ID"),
-                                fieldWithPath("[].records[].replacementRecord.replacedPlayerName").type(
+                                fieldWithPath("timelines[].records[].replacementRecord.replacedPlayerName").type(
                                                 JsonFieldType.STRING)
                                         .description("REPLACEMENT 타입일 때 교체되어 IN 되는 선수"),
-                                fieldWithPath("[].records[].replacementRecord.isFoulOut").type(JsonFieldType.VARIES)
+                                fieldWithPath("timelines[].records[].replacementRecord.isFoulOut").type(JsonFieldType.VARIES)
                                         .description("BASKETBALL_REPLACEMENT 타입일 때 파울 아웃 여부 (true: 파울 아웃, false: 일반 교체, 축구 교체는 null)").optional(),
-                                fieldWithPath("[].records[].progressRecord.gameProgressType").type(JsonFieldType.STRING)
+                                fieldWithPath("timelines[].records[].progressRecord.gameProgressType").type(JsonFieldType.STRING)
                                         .description(
                                                 "PROGRESS 타입일 때 게임 진행 상태 타입 (GAME_START, QUARTER_START, QUARTER_END, GAME_END)"),
-                                fieldWithPath("[].records[].pkRecord.pkRecordId").type(
+                                fieldWithPath("timelines[].records[].pkRecord.pkRecordId").type(
                                                 JsonFieldType.NUMBER)
                                         .description("PK 타입 기록의  ID"),
-                                fieldWithPath("[].records[].pkRecord.isSuccess").type(
+                                fieldWithPath("timelines[].records[].pkRecord.isSuccess").type(
                                                 JsonFieldType.BOOLEAN)
                                         .description("승부차기 득점 성공 여부"),
-                                fieldWithPath("[].records[].warningCardRecord.warningCardType").type(
+                                fieldWithPath("timelines[].records[].warningCardRecord.warningCardType").type(
                                                 JsonFieldType.STRING)
                                         .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
                         )
