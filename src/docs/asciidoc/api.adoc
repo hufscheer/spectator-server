@@ -225,9 +225,10 @@ operation::timeline-controller-test/득점_타임라인을_생성한다[snippets
 
 operation::timeline-controller-test/농구_득점_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
-=== 교체 타임라인 생성
 
-operation::timeline-controller-test/교체_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+=== 축구 교체 타임라인 생성
+
+operation::timeline-controller-test/축구_교체_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 === 게임 진행 타임라인 생성
 
@@ -240,6 +241,14 @@ operation::timeline-controller-test/게임_승부차기_타임라인을_생성�
 === 경고 타임라인 생성
 
 operation::timeline-controller-test/경고_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+=== 농구 교체 타임라인 생성
+
+operation::timeline-controller-test/농구_교체_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+=== 파울 타임라인 생성
+
+operation::timeline-controller-test/파울_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 === 게임의 타임라인 조회
 

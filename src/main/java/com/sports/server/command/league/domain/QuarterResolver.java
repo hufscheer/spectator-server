@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 public class QuarterResolver {
 
     public static Quarter resolve(String value) {
-        return SoccerQuarter.tryResolve(value)
+        return CommonQuarter.tryResolve(value)
                 .<Quarter>map(q -> q)
+                .or(() -> SoccerQuarter.tryResolve(value).map(q -> q))
                 .or(() -> BasketballQuarter.tryResolve(value).map(q -> q))
-                .or(() -> CommonQuarter.tryResolve(value).map(q -> q))
                 .orElseThrow(() -> new BadRequestException(
                         String.format(ExceptionMessages.QUARTER_NOT_FOUND_BY_NAME, value)));
     }

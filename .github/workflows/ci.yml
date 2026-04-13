@@ -53,3 +53,7 @@ jobs:
               exit "$second_result"
             fi
           fi
+
+      - name: API 문서 누락 검사
+        if: success()
+        run: bash scripts/check-api-docs.sh

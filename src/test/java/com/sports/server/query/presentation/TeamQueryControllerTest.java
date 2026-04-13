@@ -2,6 +2,7 @@ package com.sports.server.query.presentation;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.QuarterResponse;
 import com.sports.server.support.DocumentationTest;
@@ -23,6 +24,48 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TeamQueryControllerTest extends DocumentationTest {
+
+    @Test
+    void 단과대별_팀_유무를_조회한다() throws Exception {
+        // given
+        List<UnitResponse> response = List.of(
+                new UnitResponse("ENGLISH", "영어대학", true),
+                new UnitResponse("OCCIDENTAL_LANGUAGES", "서양어대학", false),
+                new UnitResponse("ASIAN_LANGUAGES_AND_CULTURE", "아시아언어문화대학", false),
+                new UnitResponse("CHINESE_STUDIES", "중국학대학", false),
+                new UnitResponse("JAPANESE_STUDIES", "일본어대학", false),
+                new UnitResponse("SOCIAL_SCIENCES", "사회과학대학", true),
+                new UnitResponse("BUSINESS_AND_ECONOMICS", "상경대학", false),
+                new UnitResponse("BUSINESS", "경영대학", true),
+                new UnitResponse("EDUCATION", "사범대학", false),
+                new UnitResponse("AI_CONVERGENCE", "AI융합대학", false),
+                new UnitResponse("INTERNATIONAL_STUDIES", "국제학부", false),
+                new UnitResponse("LD_AND_LT", "LD/LT학부", false),
+                new UnitResponse("KOREAN_AS_A_FOREIGN_LANGUAGE", "KFL학부", false),
+                new UnitResponse("LIBERAL_ARTS", "자유전공학부", false),
+                new UnitResponse("ETC", "기타", false)
+        );
+
+        given(teamQueryService.getUnitsWithTeams(SportType.SOCCER)).willReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/teams/units")
+                .param("sportType", "SOCCER")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional()
+                        ),
+                        responseFields(
+                                fieldWithPath("[].unit").type(JsonFieldType.STRING).description("단과대 코드"),
+                                fieldWithPath("[].unitName").type(JsonFieldType.STRING).description("단과대 이름"),
+                                fieldWithPath("[].hasTeam").type(JsonFieldType.BOOLEAN).description("해당 단과대에 팀 존재 여부")
+                        )
+                ));
+    }
 
     @Test
     void 모든_팀을_조회한다() throws Exception {

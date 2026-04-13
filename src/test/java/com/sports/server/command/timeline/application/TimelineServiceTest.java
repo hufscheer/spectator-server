@@ -187,7 +187,7 @@ class TimelineServiceTest extends ServiceTest {
         void 팀1에서_생성한다() {
             // given
 
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1OriginPlayerId, team1ReplacedPlayerId, 3);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1OriginPlayerId, team1ReplacedPlayerId, 3, null);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -207,7 +207,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 팀2에서_생성한다() {
             // given
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team2OriginPlayerId, team2ReplacedPlayerId, 3);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team2OriginPlayerId, team2ReplacedPlayerId, 3, null);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -227,7 +227,7 @@ class TimelineServiceTest extends ServiceTest {
         @Test
         void 다른_팀끼리_생성할_수_없다() {
             // given
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1OriginPlayerId, team2ReplacedPlayerId, 3);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1OriginPlayerId, team2ReplacedPlayerId, 3, null);
 
             // when then
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request)).isInstanceOf(
@@ -342,6 +342,113 @@ class TimelineServiceTest extends ServiceTest {
         }
     }
 
+    @DisplayName("농구 교체 타임라인을")
+    @Nested
+    class BasketballReplacementTest {
+        private final Long basketballGameId = 5L;
+        private final Long basketballTeamId = 7L;
+        private final Long originPlayerId = 17L;
+        private final Long replacementPlayerId = 21L; // CANDIDATE 선수
+
+        @Test
+        void 파울_아웃으로_생성한다() {
+            // given
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
+                    basketballTeamId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    originPlayerId, replacementPlayerId, 10, true);
+
+            // when
+            timelineService.register(manager, basketballGameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            assertAll(
+                    () -> assertThat(actual).isInstanceOf(BasketballReplacementTimeline.class),
+                    () -> assertThat(((BasketballReplacementTimeline) actual).isFoulOut()).isTrue()
+            );
+        }
+
+        @Test
+        void 일반_교체로_생성한다() {
+            // given
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
+                    basketballTeamId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    originPlayerId, replacementPlayerId, 10, false);
+
+            // when
+            timelineService.register(manager, basketballGameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            assertThat(((BasketballReplacementTimeline) actual).isFoulOut()).isFalse();
+        }
+
+        @Test
+        void 농구_경기가_아니면_등록할_수_없다() {
+            // given: 축구 경기(game 1)에 BASKETBALL sportType으로 교체 등록 시도
+            Long soccerGameId = 1L;
+            Long soccerTeamId = 1L;
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
+                    soccerTeamId, SportType.BASKETBALL, SoccerQuarter.SECOND_HALF.name(),
+                    1L, 2L, 10, false);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, soccerGameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @DisplayName("파울 타임라인을")
+    @Nested
+    class FoulTest {
+        private final Long basketballGameId = 5L;
+        private final Long basketballTeamId = 7L;
+        private final Long basketballPlayerId = 17L;
+
+        @Test
+        void 생성한다() {
+            // given
+            TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                    10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    basketballTeamId, basketballPlayerId);
+
+            // when
+            timelineService.register(manager, basketballGameId, request);
+
+            // then
+            Timeline actual = timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            assertThat(actual).isInstanceOf(FoulTimeline.class);
+        }
+
+        @Test
+        void 참여하지_않는_선수는_파울을_받을_수_없다() {
+            // given
+            Long otherGamePlayerId = 1L; // 축구 game 1 소속 선수 (농구 game 5에 없음)
+            TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                    10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    basketballTeamId, otherGamePlayerId);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, basketballGameId, request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 농구_경기가_아니면_파울을_등록할_수_없다() {
+            // given: 축구 경기(game 1)에 파울 등록 시도
+            Long soccerGameId = 1L;
+            Long soccerTeamId = 1L;
+            Long soccerPlayerId = 1L;
+            TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                    10, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                    soccerTeamId, soccerPlayerId);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, soccerGameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+    }
+
     @DisplayName("타임라인을 삭제할 때")
     @Nested
     class DeleteTest {
@@ -448,7 +555,7 @@ class TimelineServiceTest extends ServiceTest {
             Long originPlayerId = 1L;
             Long replacedPlayerId = 2L;
 
-            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), originPlayerId, replacedPlayerId, 1);
+            TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), originPlayerId, replacedPlayerId, 1, null);
 
             // when
             List<CompletableFuture<Void>> futures = IntStream.range(0, numberOfAttempts)

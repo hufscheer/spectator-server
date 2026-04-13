@@ -41,7 +41,7 @@ class ReplacementTimelineTest {
                     .sample();
 
             // when
-            ReplacementTimeline actual = new ReplacementTimeline(
+            SoccerReplacementTimeline actual = new SoccerReplacementTimeline(
                     game,
                     quarter,
                     10,
@@ -71,7 +71,7 @@ class ReplacementTimelineTest {
                     .sample();
 
             // when then
-            assertThatThrownBy(() -> new ReplacementTimeline(
+            assertThatThrownBy(() -> new SoccerReplacementTimeline(
                     game,
                     quarter,
                     10,
