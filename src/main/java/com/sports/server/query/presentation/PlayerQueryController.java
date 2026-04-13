@@ -1,5 +1,6 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.application.PlayerQueryService;
 import com.sports.server.query.dto.response.PlayerResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class PlayerQueryController {
     private final PlayerQueryService playerQueryService;
 
     @GetMapping
-    public ResponseEntity<List<PlayerResponse>> getAllPlayers(){
-        return ResponseEntity.ok(playerQueryService.getAllPlayers());
+    public ResponseEntity<List<PlayerResponse>> getAllPlayers(Member member){
+        return ResponseEntity.ok(playerQueryService.getAllPlayers(member));
     }
 
     @GetMapping("/{playerId}")

@@ -322,6 +322,7 @@ public class NlService {
             if (context.teamPlayerIdSet.contains(existingPlayer.getId())) {
                 return null;
             }
+            PermissionValidator.checkPermission(existingPlayer, member);
             return existingPlayer.getId();
         }
 

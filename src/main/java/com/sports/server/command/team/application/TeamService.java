@@ -70,7 +70,7 @@ public class TeamService {
         team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, unit, request.teamColor());
 
         if (request.teamPlayers() != null) {
-            upsertPlayersToTeam(team, request.teamPlayers());
+            upsertPlayersToTeam(member, team, request.teamPlayers());
         }
     }
 
@@ -85,6 +85,7 @@ public class TeamService {
         PermissionValidator.checkPermission(team, member);
 
         List<Player> players = fetchAndValidatePlayers(request);
+        validatePlayersOrganization(players, member);
         Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
 
         List<TeamPlayer> newTeamPlayers = players.stream()
@@ -110,8 +111,9 @@ public class TeamService {
         team.deleteLogoImageUrl();
     }
 
-    private void upsertPlayersToTeam(Team team, List<TeamRequest.TeamPlayerRegister> request) {
+    private void upsertPlayersToTeam(Member member, Team team, List<TeamRequest.TeamPlayerRegister> request) {
         List<Player> players = fetchAndValidatePlayers(request);
+        validatePlayersOrganization(players, member);
         Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
         Map<Long, TeamPlayer> existingTeamPlayersMap = buildExistingTeamPlayerMap(team.getId());
 
@@ -157,6 +159,10 @@ public class TeamService {
         if (players.size() != new HashSet<>(playerIds).size()) {
             throw new NotFoundException(PlayerErrorMessages.PLAYER_NOT_EXIST_EXCEPTION);
         }
+    }
+
+    private void validatePlayersOrganization(List<Player> players, Member member) {
+        players.forEach(player -> PermissionValidator.checkPermission(player, member));
     }
 
     private static Map<Long, Integer> buildJerseyNumberMap(List<TeamRequest.TeamPlayerRegister> request) {

@@ -1,5 +1,6 @@
 package com.sports.server.query.application;
 
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
@@ -29,8 +30,8 @@ public class PlayerQueryService {
     private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerInfoProvider playerInfoProvider;
 
-    public List<PlayerResponse> getAllPlayers(){
-        List<Player> players = playerQueryRepository.findAll();
+    public List<PlayerResponse> getAllPlayers(Member member){
+        List<Player> players = playerQueryRepository.findAllByOrganizationId(member.getOrganization().getId());
         if (players.isEmpty()) {
             return Collections.emptyList();
         }
