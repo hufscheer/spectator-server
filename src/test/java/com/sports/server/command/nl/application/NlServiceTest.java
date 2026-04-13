@@ -344,6 +344,7 @@ class NlServiceTest {
             Player existingPlayer = mock(Player.class);
             given(existingPlayer.getId()).willReturn(42L);
             given(existingPlayer.getStudentNumber()).willReturn("202600002");
+            given(existingPlayer.isManagedBy(mockMember)).willReturn(true);
 
             given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
             given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
@@ -396,6 +397,7 @@ class NlServiceTest {
             Player existingPlayer = mock(Player.class);
             given(existingPlayer.getId()).willReturn(42L);
             given(existingPlayer.getStudentNumber()).willReturn("202600002");
+            given(existingPlayer.isManagedBy(mockMember)).willReturn(true);
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
