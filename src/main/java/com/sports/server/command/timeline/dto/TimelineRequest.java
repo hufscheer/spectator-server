@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.BasketballScore;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.SoccerScore;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.timeline.domain.TimelineType;
 import com.sports.server.command.timeline.domain.WarningCardType;
@@ -78,7 +79,7 @@ public abstract class TimelineRequest {
 
         @Override
         public int getScoreValue() {
-            return 1;
+            return SoccerScore.GOAL.getValue();
         }
     }
 
