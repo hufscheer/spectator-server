@@ -7,6 +7,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.WarningCardType;
@@ -161,6 +162,42 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].warningCardRecord.warningCardType").type(
                                                 JsonFieldType.STRING)
                                         .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
+                        )
+                ));
+    }
+
+    @Test
+    void 쿼터별_득점을_조회한다() throws Exception {
+        // given
+        Long gameId = 5L;
+        BDDMockito.given(timelineQueryService.getQuarterScores(gameId))
+                .willReturn(List.of(
+                        new QuarterScoreResponse(
+                                BasketballQuarter.FIRST_QUARTER.name(),
+                                BasketballQuarter.FIRST_QUARTER.getDisplayName(),
+                                List.of(
+                                        new QuarterScoreResponse.TeamScore(7L, 3),
+                                        new QuarterScoreResponse.TeamScore(8L, 2)
+                                )
+                        )
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/quarter-scores", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].quarter").type(JsonFieldType.STRING).description("쿼터 키 (FIRST_QUARTER, SECOND_QUARTER 등)"),
+                                fieldWithPath("[].displayName").type(JsonFieldType.STRING).description("쿼터 표시명 (1쿼터, 2쿼터 등)"),
+                                fieldWithPath("[].scores[].gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 ID"),
+                                fieldWithPath("[].scores[].score").type(JsonFieldType.NUMBER).description("해당 쿼터에서 득점한 점수")
                         )
                 ));
     }

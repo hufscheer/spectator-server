@@ -2,6 +2,7 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.query.application.TimelineQueryService;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
+import com.sports.server.query.dto.response.QuarterScoreResponse;
 import com.sports.server.query.dto.response.TimelineResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +26,10 @@ public class TimelineQueryController {
     @GetMapping("/games/{gameId}/available-progress")
     public ResponseEntity<AvailableProgressResponse> getAvailableProgress(@PathVariable final Long gameId) {
         return ResponseEntity.ok(timelineQueryService.getAvailableProgress(gameId));
+    }
+
+    @GetMapping("/games/{gameId}/quarter-scores")
+    public ResponseEntity<List<QuarterScoreResponse>> getQuarterScores(@PathVariable final Long gameId) {
+        return ResponseEntity.ok(timelineQueryService.getQuarterScores(gameId));
     }
 }
