@@ -20,13 +20,17 @@ public class TimelineMapper {
     private final Map<TimelineType, TimelineSupplier> suppliers = Map.of(
             TimelineType.SCORE,
             (game, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
-            TimelineType.REPLACEMENT,
+            TimelineType.SOCCER_REPLACEMENT,
             (game, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
+            TimelineType.BASKETBALL_REPLACEMENT,
+            (game, request) -> toBasketballReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
             TimelineType.GAME_PROGRESS,
             (game, request) -> toProgressTimeline(game, (TimelineRequest.RegisterProgress) request),
             TimelineType.PK, (game, request) -> toPkTimeline(game, (TimelineRequest.RegisterPk) request),
             TimelineType.WARNING_CARD,
-            (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request)
+            (game, request) -> toWarningCardTimeline(game, (TimelineRequest.RegisterWarningCard) request),
+            TimelineType.FOUL,
+            (game, request) -> toFoulTimeline(game, (TimelineRequest.RegisterFoul) request)
     );
 
     public Timeline toEntity(Game game, TimelineRequest request) {
@@ -43,18 +47,18 @@ public class TimelineMapper {
 
         return ScoreTimeline.score(
                 game,
-                scoreRequest.getRecordedQuarter(),
+                scoreRequest.resolveQuarter(),
                 scoreRequest.getRecordedAt(),
                 getPlayer(scoreRequest.getScoreLineupPlayerId()),
                 assist
         );
     }
 
-    private ReplacementTimeline toReplacementTimeline(Game game,
-                                                      TimelineRequest.RegisterReplacement replacementRequest) {
-        return new ReplacementTimeline(
+    private SoccerReplacementTimeline toReplacementTimeline(Game game,
+                                                            TimelineRequest.RegisterReplacement replacementRequest) {
+        return new SoccerReplacementTimeline(
                 game,
-                replacementRequest.getRecordedQuarter(),
+                replacementRequest.resolveQuarter(),
                 replacementRequest.getRecordedAt(),
                 getPlayer(replacementRequest.getOriginLineupPlayerId()),
                 getPlayer(replacementRequest.getReplacementLineupPlayerId())
@@ -65,7 +69,7 @@ public class TimelineMapper {
                                         TimelineRequest.RegisterProgress progressRequest) {
         return new GameProgressTimeline(
                 game,
-                progressRequest.getRecordedQuarter(),
+                progressRequest.resolveQuarter(),
                 progressRequest.getRecordedAt(),
                 progressRequest.getGameProgressType()
         );
@@ -75,7 +79,7 @@ public class TimelineMapper {
                                     TimelineRequest.RegisterPk pkRequest) {
         return new PKTimeline(
                 game,
-                pkRequest.getRecordedQuarter(),
+                pkRequest.resolveQuarter(),
                 pkRequest.getRecordedAt(),
                 getPlayer(pkRequest.getScorerId()),
                 pkRequest.getIsSuccess()
@@ -86,10 +90,34 @@ public class TimelineMapper {
                                                       TimelineRequest.RegisterWarningCard warningCardRequest) {
         return new WarningCardTimeline(
                 game,
-                warningCardRequest.getRecordedQuarter(),
+                warningCardRequest.resolveQuarter(),
                 warningCardRequest.getRecordedAt(),
                 getPlayer(warningCardRequest.getWarnedLineupPlayerId()),
                 warningCardRequest.getCardType()
+        );
+    }
+
+    private BasketballReplacementTimeline toBasketballReplacementTimeline(Game game,
+                                                                          TimelineRequest.RegisterReplacement request) {
+        LineupPlayer origin = getPlayer(request.getOriginLineupPlayerId());
+        LineupPlayer replacement = getPlayer(request.getReplacementLineupPlayerId());
+        game.issueBasketballReplacement(origin);
+        return new BasketballReplacementTimeline(
+                game,
+                request.resolveQuarter(),
+                request.getRecordedAt(),
+                origin,
+                replacement,
+                Boolean.TRUE.equals(request.getIsFoulOut())
+        );
+    }
+
+    private FoulTimeline toFoulTimeline(Game game, TimelineRequest.RegisterFoul foulRequest) {
+        return new FoulTimeline(
+                game,
+                foulRequest.resolveQuarter(),
+                foulRequest.getRecordedAt(),
+                getPlayer(foulRequest.getOffenderLineupPlayerId())
         );
     }
 

@@ -2,6 +2,7 @@ package com.sports.server.command.player.domain;
 
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTopScorer;
+import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.util.StudentNumber;
@@ -23,7 +24,11 @@ public class Player extends BaseEntity<Player> {
 
     @Column(name = "student_number", nullable = true, unique = true)
     private String studentNumber;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamPlayer> teamPlayers = new ArrayList<>();
 

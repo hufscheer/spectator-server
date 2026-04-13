@@ -65,7 +65,8 @@ VALUES (1, 1, 1, 10, 5, 1),
 INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
 VALUES (1, 1, 1, '농구 대전', '2023-11-12 10:00:00', 'abc123', '2023-11-12 10:15:00', 'SECOND_HALF', 'PLAYING', '4강', FALSE),
        (2, 1, 1, '농구 대전 2', '2023-11-12 14:00:00', 'def456', '2023-11-12 14:15:00', 'SECOND_HALF', 'FINISHED', '4강', FALSE),
-       (3, 1, 2, '다른 리그 경기', '2023-12-10 10:00:00', 'ghi789', '2023-12-10 10:15:00', 'FIRST_HALF', 'FINISHED', '준결승', FALSE);
+       (3, 1, 2, '다른 리그 경기', '2023-12-10 10:00:00', 'ghi789', '2023-12-10 10:15:00', 'FIRST_HALF', 'FINISHED', '준결승', FALSE),
+       (4, 1, 1, '경기_시작_전_테스트용', '2023-11-12 10:00:00', null, null, 'PRE_GAME', 'SCHEDULED', '4강', FALSE);
 
 -- 경기 팀 연결
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
@@ -127,7 +128,7 @@ VALUES ('SCORE', 1, 'FIRST_HALF', 25, 1, 1, 1, 2, 2, 0);
 
 -- B팀 6선수 OUT 7선수 IN (전반전)
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, origin_lineup_player_id, replaced_lineup_player_id)
-VALUES ('REPLACEMENT', 1, 'FIRST_HALF', 24, 6, 7);
+VALUES ('SOCCER_REPLACEMENT', 1, 'FIRST_HALF', 24, 6, 7);
 
 -- 후반전 시작
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, game_team1_id, game_team2_id, snapshot_score1, snapshot_score2, previous_quarter, previous_quarter_changed_at)
@@ -135,7 +136,7 @@ VALUES ('GAME_PROGRESS', 1, 'SECOND_HALF', 30, 'QUARTER_START', 1, 2, 2, 0, 'FIR
 
 -- A팀 2선수 OUT 3선수 IN (후반전)
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, origin_lineup_player_id, replaced_lineup_player_id)
-VALUES ('REPLACEMENT', 1, 'SECOND_HALF', 10, 2, 3);
+VALUES ('SOCCER_REPLACEMENT', 1, 'SECOND_HALF', 10, 2, 3);
 
 -- B팀 선수 10의 1득점 (후반전)
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, scorer_id, score, game_team1_id, snapshot_score1, game_team2_id, snapshot_score2)
@@ -188,6 +189,40 @@ INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, scorer_id, 
 VALUES ('SCORE', 3, 'SECOND_HALF', 5, 14, 1, 5, 6, 6, 0),
        ('SCORE', 3, 'SECOND_HALF', 10, 14, 1, 5, 7, 6, 0),
        ('SCORE', 3, 'SECOND_HALF', 15, 14, 1, 5, 8, 6, 0);
+
+-- 농구 리그 생성
+INSERT INTO leagues (id, organization_id, administrator_id, name, start_at, end_at, is_deleted, max_round, in_progress_round, sport_type)
+VALUES (3, 1, 1, '농구 리그', '2023-11-01 00:00:00', '2023-11-30 23:59:59', FALSE, '결승', '4강', 'BASKETBALL');
+
+-- 농구 리그 팀 연결
+INSERT INTO league_teams (id, league_id, team_id, total_cheer_count, total_talk_count, ranking)
+VALUES (5, 3, 1, 0, 0, 1),
+       (6, 3, 2, 0, 0, 2);
+
+-- 농구 경기 생성
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
+VALUES (5, 1, 3, '농구 경기', '2023-11-13 10:00:00', 'bsk001', '2023-11-13 10:10:00', 'FIRST_QUARTER', 'PLAYING', '4강', FALSE);
+
+-- 농구 경기 팀 연결
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (7, 5, 1, 0, 20, 0, null),
+       (8, 5, 2, 0, 18, 0, null);
+
+-- 라인업 선수 (5번 경기 - 팀A)
+INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
+VALUES (17, 7, 1, 1, TRUE, 'STARTER', TRUE, null),
+       (18, 7, 2, 2, FALSE, 'STARTER', TRUE, null),
+       (19, 7, 3, 3, FALSE, 'STARTER', TRUE, null),
+       (20, 7, 4, 4, FALSE, 'STARTER', TRUE, null),
+       (21, 7, 5, 5, FALSE, 'CANDIDATE', FALSE, null);
+
+-- 라인업 선수 (5번 경기 - 팀B)
+INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
+VALUES (22, 8, 6, 6, TRUE, 'STARTER', TRUE, null),
+       (23, 8, 7, 7, FALSE, 'STARTER', TRUE, null),
+       (24, 8, 8, 8, FALSE, 'STARTER', TRUE, null),
+       (25, 8, 9, 9, FALSE, 'STARTER', TRUE, null),
+       (26, 8, 10, 10, FALSE, 'CANDIDATE', FALSE, null);
 
 -- 응원톡 생성
 INSERT INTO cheer_talks (id, game_team_id, content, created_at, block_status)

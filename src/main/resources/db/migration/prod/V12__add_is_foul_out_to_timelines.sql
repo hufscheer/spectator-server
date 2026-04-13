@@ -1,0 +1,1 @@
+ALTER TABLE timelines ADD COLUMN is_foul_out TINYINT(1) NOT NULL DEFAULT 0;

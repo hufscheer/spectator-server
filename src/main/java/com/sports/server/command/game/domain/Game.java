@@ -5,8 +5,11 @@ import static com.sports.server.command.timeline.exception.TimelineErrorMessage.
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.command.timeline.domain.Quarter;
+import com.sports.server.command.league.domain.CommonQuarter;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.BadRequestException;
@@ -138,6 +141,27 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION);
     }
 
+    public void issueBasketballReplacement(LineupPlayer originPlayer) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.BASKETBALL_REPLACEMENT_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
+        findTeamOf(originPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_REPLACEMENT_EXCEPTION);
+    }
+
+    public void issueFoul(LineupPlayer offender) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
+        findTeamOf(offender, GameErrorMessages.PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION);
+    }
+
+    public void cancelFoul(LineupPlayer offender) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
+        findTeamOf(offender, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION);
+    }
+
     private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {
         return gameTeams.stream()
                 .filter(scorer::isInTeam)
@@ -209,12 +233,12 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void play() {
         this.state = GameState.PLAYING;
-        updateQuarter(Quarter.FIRST_HALF);
+        updateQuarter(league.getSportType().firstQuarter());
     }
 
     public void end() {
         this.state = GameState.FINISHED;
-        updateQuarter(Quarter.POST_GAME);
+        updateQuarter(league.getSportType().postGameQuarter());
     }
 
     public void determineResult() {
@@ -268,11 +292,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     public void updateQuarter(Quarter quarter) {
         this.gameQuarter = quarter.name();
 
-        if (quarter == Quarter.FIRST_HALF) {
+        if (quarter == league.getSportType().firstQuarter()) {
             this.state = GameState.PLAYING;
         }
 
-        if (quarter == Quarter.PENALTY_SHOOTOUT) {
+        if (quarter == SoccerQuarter.PENALTY_SHOOTOUT) {
             startPk();
         }
 
@@ -280,11 +304,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public void updateQuarter(Quarter quarter, LocalDateTime changedAt) {
-        if (getQuarter() == Quarter.PENALTY_SHOOTOUT) {
+        if (getQuarter() == SoccerQuarter.PENALTY_SHOOTOUT) {
             cancelPk();
         }
 
-        this.gameQuarter = (quarter == null) ? Quarter.PRE_GAME.name() : quarter.name();
+        this.gameQuarter = (quarter == null) ? CommonQuarter.PRE_GAME.name() : quarter.name();
         this.quarterChangedAt = changedAt;
     }
 
@@ -297,7 +321,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     public Quarter getQuarter() {
-        return Quarter.resolve(gameQuarter);
+        return league.getSportType().resolveQuarter(gameQuarter);
     }
 
     public void checkStateForTimeline() {

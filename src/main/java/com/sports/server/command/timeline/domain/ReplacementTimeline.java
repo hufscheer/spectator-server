@@ -2,9 +2,9 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -16,27 +16,21 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@DiscriminatorValue("REPLACEMENT")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReplacementTimeline extends Timeline {
+public abstract class ReplacementTimeline extends Timeline {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "origin_lineup_player_id")
-    private LineupPlayer originLineupPlayer;
+    protected LineupPlayer originLineupPlayer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "replaced_lineup_player_id")
-    private LineupPlayer replacedLineupPlayer;
+    protected LineupPlayer replacedLineupPlayer;
 
-    @Override
-    public TimelineType getType() {
-        return TimelineType.REPLACEMENT;
-    }
-
-    public ReplacementTimeline(
+    protected ReplacementTimeline(
             Game game,
             Quarter recordedQuarter,
             Integer recordedAt,
@@ -44,9 +38,7 @@ public class ReplacementTimeline extends Timeline {
             LineupPlayer replacedLineupPlayer
     ) {
         super(game, recordedQuarter, recordedAt);
-
         validatePlayers(originLineupPlayer, replacedLineupPlayer);
-
         this.originLineupPlayer = originLineupPlayer;
         this.replacedLineupPlayer = replacedLineupPlayer;
     }

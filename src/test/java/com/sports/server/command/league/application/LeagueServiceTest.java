@@ -100,6 +100,20 @@ public class LeagueServiceTest extends ServiceTest {
         }
 
         @Test
+        void 리그와_종목이_다른_팀은_추가할_수_없다() {
+            // given
+            Long leagueId = 1L; // SOCCER 리그
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            LeagueRequest.Teams teamsRequest = new LeagueRequest.Teams(List.of(6L)); // BASKETBALL 팀
+
+            // when & then
+            assertThatThrownBy(
+                    () -> leagueService.addTeams(manager, leagueId, teamsRequest))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(LeagueErrorMessages.SPORT_TYPE_MISMATCH_EXCEPTION);
+        }
+
+        @Test
         void 존재하지_않는_팀은_추가할_수_없다(){
             // given
             Long leagueId = 1L;

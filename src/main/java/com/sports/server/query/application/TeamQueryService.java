@@ -45,6 +45,14 @@ public class TeamQueryService {
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
+    public List<UnitResponse> getUnitsWithTeams(final SportType sportType) {
+        List<Unit> distinctUnits = teamQueryDynamicRepository.findDistinctUnitsBySportType(sportType);
+        Set<Unit> unitsWithTeam = distinctUnits.isEmpty() ? EnumSet.noneOf(Unit.class) : EnumSet.copyOf(distinctUnits);
+        return Arrays.stream(Unit.values())
+                .map(unit -> UnitResponse.of(unit, unitsWithTeam.contains(unit)))
+                .toList();
+    }
+
     public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType) {
         List<Team> teams = findTeamsByUnits(units, sportType);
         return teams.stream()
@@ -168,8 +176,9 @@ public class TeamQueryService {
     }
 
     private Map<Long, List<GameDetailResponse>> getRecentGames(List<Long> teamIds) {
-        List<Game> recentGames = gameQueryRepository.findRecentGamesByTeamIds(teamIds, RECENT_GAMES_LIMIT);
-        if (recentGames.isEmpty()) return Collections.emptyMap();
+        List<Long> recentGameIds = gameQueryRepository.findRecentGameIdsByTeamIds(teamIds, RECENT_GAMES_LIMIT);
+        if (recentGameIds.isEmpty()) return Collections.emptyMap();
+        List<Game> recentGames = gameQueryRepository.findAllByIdsWithLeague(recentGameIds);
 
         List<Long> gameIds = recentGames.stream().map(Game::getId).toList();
         List<GameTeam> allGameTeams = gameTeamRepository.findAllByGameIds(gameIds);

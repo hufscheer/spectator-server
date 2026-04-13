@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.team.domain.Unit;
 import java.time.LocalDateTime;
 
 @Sql(scripts = "/team-query-fixture.sql")
@@ -29,6 +30,38 @@ public class TeamQueryServiceTest extends ServiceTest {
 
     @Autowired
     private LeagueStatisticsService leagueStatisticsService;
+
+    @Nested
+    @DisplayName("단과대별 팀 유무 조회 시")
+    class GetUnitsWithTeamsTest {
+
+        @Test
+        void 모든_단과대가_반환되고_팀이_있는_단과대는_hasTeam이_true이다() {
+            // when
+            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null);
+
+            // then
+            assertAll(
+                    () -> assertThat(responses).hasSize(Unit.values().length),
+                    () -> assertThat(responses)
+                            .filteredOn(UnitResponse::hasTeam)
+                            .extracting(UnitResponse::unit)
+                            .contains("SOCIAL_SCIENCES", "ETC", "ENGLISH")
+            );
+        }
+
+        @Test
+        void 팀이_없는_단과대는_hasTeam이_false이다() {
+            // when
+            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null);
+
+            // then
+            assertThat(responses)
+                    .filteredOn(r -> !r.hasTeam())
+                    .isNotEmpty()
+                    .allSatisfy(r -> assertThat(r.hasTeam()).isFalse());
+        }
+    }
 
     @Nested
     @DisplayName("단위별 팀 목록 조회 시")
