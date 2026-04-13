@@ -36,14 +36,14 @@ public class Player extends BaseEntity<Player> {
     private List<LeagueTopScorer> leagueTopScorers = new ArrayList<>();
 
     @Builder
-    public Player(@NonNull String name, @NonNull String studentNumber) {
-        StudentNumber.validate(studentNumber);
+    public Player(@NonNull String name, @NonNull String studentNumber, int studentNumberDigits) {
+        StudentNumber.validate(studentNumber, studentNumberDigits);
         this.name = name;
         this.studentNumber = studentNumber;
     }
 
-    public void update(String name, String studentNumber) {
-        StudentNumber.validate(studentNumber);
+    public void update(String name, String studentNumber, int studentNumberDigits) {
+        StudentNumber.validate(studentNumber, studentNumberDigits);
         this.name = name;
         this.studentNumber = studentNumber;
     }

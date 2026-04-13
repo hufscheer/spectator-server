@@ -16,4 +16,7 @@ public class Organization extends BaseEntity<Organization> {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "student_number_digits", nullable = false)
+    private int studentNumberDigits = 9;
 }

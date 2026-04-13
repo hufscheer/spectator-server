@@ -1,7 +1,7 @@
 SET foreign_key_checks = 0;
 
-INSERT INTO organizations (id, name)
-VALUES (1, '테스트 조직');
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (1, '테스트 조직', 9);
 
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (1, 1, 'test@test.com', 'password', TRUE, '2025-01-01 00:00:00');

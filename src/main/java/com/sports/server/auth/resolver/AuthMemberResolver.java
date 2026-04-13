@@ -31,7 +31,7 @@ public class AuthMemberResolver implements HandlerMethodArgumentResolver {
             throw new UnauthorizedException(AuthorizationErrorMessages.INVALID_COOKIE_EXCEPTION);
         }
 
-        return memberRepository.findMemberByEmail(auth.getName())
+        return memberRepository.findMemberByEmailWithOrganization(auth.getName())
                 .orElseThrow(() -> new UnauthorizedException(AuthorizationErrorMessages.MEMBER_NOT_FOUND_EXCEPTION));
     }
 }

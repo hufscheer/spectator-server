@@ -150,7 +150,7 @@ public class NlControllerTest extends DocumentationTest {
                 new NlRegisterTeamResponse.Result(2, 2, 0)
         );
 
-        given(nlService.registerTeamWithPlayers(any())).willReturn(response);
+        given(nlService.registerTeamWithPlayers(any(), any())).willReturn(response);
 
         Map<String, Object> request = Map.of(
                 "team", Map.of(

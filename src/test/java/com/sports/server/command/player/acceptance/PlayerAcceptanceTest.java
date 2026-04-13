@@ -27,7 +27,7 @@ public class PlayerAcceptanceTest extends AcceptanceTest {
         // given
         PlayerRequest.Register request = new PlayerRequest.Register("손흥민", "202500002");
 
-        configureMockJwtForEmail("admin@example.com");
+        configureMockJwtForEmail("john@example.com");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -45,11 +45,11 @@ public class PlayerAcceptanceTest extends AcceptanceTest {
     @Test
     void 선수_정보를_수정한다() {
         // given
-        Player savedPlayer = new Player("박지성", "202500001");
+        Player savedPlayer = new Player("박지성", "202500001", 9);
         playerRepository.save(savedPlayer);
 
         PlayerRequest.Update request = new PlayerRequest.Update("손흥민", "202500002");
-        configureMockJwtForEmail("admin@example.com");
+        configureMockJwtForEmail("john@example.com");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -67,10 +67,10 @@ public class PlayerAcceptanceTest extends AcceptanceTest {
     @Test
     void 선수를_삭제한다() {
         // given
-        Player player = new Player("손흥민", "202500001");
+        Player player = new Player("손흥민", "202500001", 9);
         playerRepository.save(player);
 
-        configureMockJwtForEmail("admin@example.com");
+        configureMockJwtForEmail("john@example.com");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
