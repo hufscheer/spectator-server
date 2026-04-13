@@ -1,5 +1,6 @@
 package com.sports.server.command.timeline.domain;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.common.exception.BadRequestException;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ public enum BasketballScore {
         this.value = value;
     }
 
+    @JsonValue
     public int getValue() {
         return value;
     }
