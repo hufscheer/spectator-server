@@ -310,6 +310,10 @@ operation::team-controller-test/팀에_선수들을_추가한다[snippets='http-
 
 operation::team-controller-test/팀에서_선수를_제거한다[snippets='http-request,request-cookies,path-parameters']
 
+=== 단과대별 팀 유무 조회
+
+operation::team-query-controller-test/단과대별_팀_유무를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
+
 === 전체 팀 조회
 
 operation::team-query-controller-test/모든_팀을_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
