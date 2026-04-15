@@ -63,7 +63,7 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
 
         // then
         List<PlayerResponse> actual = toResponses(response, PlayerResponse.class);
-        List<PlayerResponse> expected = List.of(new PlayerResponse(player1, null), new PlayerResponse(player2, null));
+        List<PlayerResponse> expected = List.of(new PlayerResponse(player2, null), new PlayerResponse(player1, null));
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
