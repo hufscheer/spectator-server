@@ -5,9 +5,10 @@ import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamResponse;
-import com.sports.server.query.repository.PlayerQueryRepository;
+import com.sports.server.query.repository.PlayerDynamicRepository;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import com.sports.server.query.support.PlayerInfoProvider;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +25,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PlayerQueryService {
 
-    private final PlayerQueryRepository playerQueryRepository;
+    private final PlayerDynamicRepository playerDynamicRepository;
     private final EntityUtils entityUtils;
     private final TimelineQueryRepository timelineQueryRepository;
     private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerInfoProvider playerInfoProvider;
 
-    public List<PlayerResponse> getAllPlayers(Member member){
-        List<Player> players = playerQueryRepository.findAllByOrganizationId(member.getOrganization().getId());
+    public List<PlayerResponse> getAllPlayers(Member member, PageRequestDto pageRequest){
+        List<Player> players = playerDynamicRepository.findAllByOrganizationId(
+                member.getOrganization().getId(), pageRequest.cursor(), pageRequest.size()
+        );
         if (players.isEmpty()) {
             return Collections.emptyList();
         }
