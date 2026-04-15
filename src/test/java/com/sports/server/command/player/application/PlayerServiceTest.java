@@ -1,6 +1,7 @@
 package com.sports.server.command.player.application;
 
-import com.sports.server.command.organization.domain.Organization;
+import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.dto.PlayerRequest;
@@ -10,6 +11,7 @@ import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.support.ServiceTest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -31,18 +33,28 @@ public class PlayerServiceTest extends ServiceTest {
     @Autowired
     private EntityUtils entityUtils;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
+    private Member manager;
+
+    @BeforeEach
+    void setUp() {
+        manager = memberRepository.findMemberByEmailWithOrganization("john@example.com")
+                .orElseThrow();
+    }
+
     @Nested
     @DisplayName("Organization별 학번 자릿수 검증")
     class StudentNumberDigitsValidation {
 
         @Test
         void 학번_9자리_organization에서_9자리_학번으로_등록_성공() {
-            // given
-            Organization org = entityUtils.getEntity(1L, Organization.class); // student_number_digits = 9
+            // given — manager의 organization은 student_number_digits = 9
             PlayerRequest.Register request = new PlayerRequest.Register("손흥민", "202500001");
 
             // when
-            Long playerId = playerService.register(request, org);
+            Long playerId = playerService.register(manager, request);
 
             // then
             assertThat(playerId).isNotNull();
@@ -51,23 +63,23 @@ public class PlayerServiceTest extends ServiceTest {
         @Test
         void 학번_9자리_organization에서_10자리_학번으로_등록_시_예외가_발생한다() {
             // given
-            Organization org = entityUtils.getEntity(1L, Organization.class); // student_number_digits = 9
             PlayerRequest.Register request = new PlayerRequest.Register("손흥민", "2025000001");
 
             // when & then
-            assertThatThrownBy(() -> playerService.register(request, org))
+            assertThatThrownBy(() -> playerService.register(manager, request))
                     .isInstanceOf(CustomException.class)
                     .hasMessage(String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, 9));
         }
 
         @Test
         void 학번_10자리_organization에서_10자리_학번으로_등록_성공() {
-            // given
-            Organization org = entityUtils.getEntity(4L, Organization.class); // student_number_digits = 10
+            // given — organization id=4는 student_number_digits = 10
+            Member manager10 = memberRepository.findMemberByEmailWithOrganization("user4@example.com")
+                    .orElseThrow();
             PlayerRequest.Register request = new PlayerRequest.Register("손흥민", "2025000001");
 
             // when
-            Long playerId = playerService.register(request, org);
+            Long playerId = playerService.register(manager10, request);
 
             // then
             assertThat(playerId).isNotNull();
@@ -76,11 +88,12 @@ public class PlayerServiceTest extends ServiceTest {
         @Test
         void 학번_10자리_organization에서_9자리_학번으로_등록_시_예외가_발생한다() {
             // given
-            Organization org = entityUtils.getEntity(4L, Organization.class); // student_number_digits = 10
+            Member manager10 = memberRepository.findMemberByEmailWithOrganization("user4@example.com")
+                    .orElseThrow();
             PlayerRequest.Register request = new PlayerRequest.Register("손흥민", "202500001");
 
             // when & then
-            assertThatThrownBy(() -> playerService.register(request, org))
+            assertThatThrownBy(() -> playerService.register(manager10, request))
                     .isInstanceOf(CustomException.class)
                     .hasMessage(String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, 10));
         }
@@ -90,13 +103,12 @@ public class PlayerServiceTest extends ServiceTest {
     void 선수_등록_시_학번이_중복되면_예외가_발생한다() {
         // given
         String duplicatedStudentNumber = "202500001";
-        Organization organization = entityUtils.getEntity(1L, Organization.class);
-        playerRepository.save(new Player("손흥민", duplicatedStudentNumber, organization.getStudentNumberDigits()));
+        playerService.register(manager, new PlayerRequest.Register("손흥민", duplicatedStudentNumber));
 
         // when & then
         PlayerRequest.Register request = new PlayerRequest.Register("박지성", duplicatedStudentNumber);
 
-        assertThatThrownBy(() -> playerService.register(request, organization))
+        assertThatThrownBy(() -> playerService.register(manager, request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 존재하는 학번입니다.");
     }
@@ -104,16 +116,14 @@ public class PlayerServiceTest extends ServiceTest {
     @Test
     void 삭제한_이후에는_해당_객체를_찾을_수_없다() {
         // given
-        Organization organization = entityUtils.getEntity(1L, Organization.class);
-        Player player = new Player("손흥민", "202500001", organization.getStudentNumberDigits());
-        playerRepository.save(player);
+        Long playerId = playerService.register(manager, new PlayerRequest.Register("손흥민", "202500001"));
 
         // when
-        playerService.delete(player.getId());
+        playerService.delete(manager, playerId);
 
         // then
         Assertions.assertThatThrownBy(
-                        () -> entityUtils.getEntity(player.getId(), Player.class))
+                        () -> entityUtils.getEntity(playerId, Player.class))
                 .isInstanceOf(NotFoundException.class);
     }
 }

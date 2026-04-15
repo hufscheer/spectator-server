@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PlayerQueryRepository extends Repository<Player, Long> {
     List<Player> findAll();
+
+    List<Player> findAllByOrganizationId(Long organizationId);
 }

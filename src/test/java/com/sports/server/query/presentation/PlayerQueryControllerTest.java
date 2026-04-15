@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -38,7 +39,7 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                 new PlayerResponse(3L, null, "선수3", "202500003", null, 10, Collections.emptyList())
         );
 
-        given(playerQueryService.getAllPlayers())
+        given(playerQueryService.getAllPlayers(any(), any()))
                 .willReturn(responses);
 
         // when
