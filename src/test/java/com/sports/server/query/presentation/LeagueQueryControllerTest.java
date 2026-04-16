@@ -35,7 +35,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // given
         List<LeagueResponse> responses = List.of(
                 new LeagueResponse(1L, "2025 외대 월드컵", 16, 2, "종료", "정치외교학과 DPS", "SOCCER"),
-                new LeagueResponse(2L, "2025 트로이카", 32, 32, "진행 중", null, "SOCCER"),
+                new LeagueResponse(2L, "2025 트로이카", 100, 100, "진행 중", null, "SOCCER"),
                 new LeagueResponse(3L, "2025 삼건물대회", 16, 2, "종료", "경영대학 야생마", "SOCCER"),
                 new LeagueResponse(4L, "2100 화성 월드컵", 8, 8, "시작전", null, "BASKETBALL")
         );
