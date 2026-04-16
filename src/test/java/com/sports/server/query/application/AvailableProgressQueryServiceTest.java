@@ -7,8 +7,11 @@ import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
+import com.sports.server.query.dto.response.QuarterScoreResponse;
 import com.sports.server.support.ServiceTest;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -335,6 +338,54 @@ class AvailableProgressQueryServiceTest extends ServiceTest {
             List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_FINISHED).availableActions();
 
             assertThat(actions).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("쿼터별 득점 조회")
+    @Sql(scripts = "/timeline-fixture.sql")
+    class 쿼터별_득점_조회 {
+
+        private static final long BASKETBALL_GAME_ID = 5L;
+        private static final long TEAM_A_GAME_TEAM_ID = 7L;
+        private static final long TEAM_B_GAME_TEAM_ID = 8L;
+
+        @Test
+        void 완료된_쿼터별_득점을_조회한다() {
+            List<QuarterScoreResponse> responses = timelineQueryService.getQuarterScores(BASKETBALL_GAME_ID);
+
+            assertThat(responses).hasSize(1);
+
+            QuarterScoreResponse firstQuarterScore = responses.get(0);
+            assertAll(
+                    () -> assertThat(firstQuarterScore.quarter()).isEqualTo(BasketballQuarter.FIRST_QUARTER.name()),
+                    () -> assertThat(firstQuarterScore.displayName()).isEqualTo("1쿼터"),
+                    () -> assertThat(firstQuarterScore.scores()).hasSize(2)
+            );
+
+            Map<Long, Integer> scoreMap = firstQuarterScore.scores().stream()
+                    .collect(Collectors.toMap(QuarterScoreResponse.TeamScore::gameTeamId, QuarterScoreResponse.TeamScore::score));
+
+            assertAll(
+                    () -> assertThat(scoreMap.get(TEAM_A_GAME_TEAM_ID)).isEqualTo(3),
+                    () -> assertThat(scoreMap.get(TEAM_B_GAME_TEAM_ID)).isEqualTo(2)
+            );
+        }
+
+        @Test
+        void 진행_중인_쿼터는_포함하지_않는다() {
+            List<QuarterScoreResponse> responses = timelineQueryService.getQuarterScores(BASKETBALL_GAME_ID);
+
+            assertThat(responses).hasSize(1);
+            assertThat(responses.get(0).quarter()).isEqualTo(BasketballQuarter.FIRST_QUARTER.name());
+        }
+
+        @Test
+        void QUARTER_END가_없으면_빈_리스트를_반환한다() {
+            long soccerGameId = 1L;
+            List<QuarterScoreResponse> responses = timelineQueryService.getQuarterScores(soccerGameId);
+
+            assertThat(responses).isEmpty();
         }
     }
 }

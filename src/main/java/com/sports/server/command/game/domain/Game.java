@@ -5,6 +5,7 @@ import static com.sports.server.command.timeline.exception.TimelineErrorMessage.
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.Quarter;
@@ -116,16 +117,16 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
-    public void score(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_SCORE_EXCEPTION).score();
+    public void score(LineupPlayer scorer, int scoreValue) {
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_SCORE_EXCEPTION).score(scoreValue);
     }
 
     public void scoreInPk(LineupPlayer scorer) {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_PK_SCORE_EXCEPTION).scoreInPk();
     }
 
-    public void cancelScore(LineupPlayer scorer) {
-        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelScore();
+    public void cancelScore(LineupPlayer scorer, int scoreValue) {
+        findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelScore(scoreValue);
     }
 
     public void cancelPkScore(LineupPlayer scorer) {
@@ -138,6 +139,27 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void cancelWarningCard(LineupPlayer scorer){
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION);
+    }
+
+    public void issueBasketballReplacement(LineupPlayer originPlayer) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.BASKETBALL_REPLACEMENT_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
+        findTeamOf(originPlayer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_REPLACEMENT_EXCEPTION);
+    }
+
+    public void issueFoul(LineupPlayer offender) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
+        findTeamOf(offender, GameErrorMessages.PLAYER_NOT_PARTICIPANT_ISSUE_FOUL_EXCEPTION);
+    }
+
+    public void cancelFoul(LineupPlayer offender) {
+        if (!league.getSportType().equals(SportType.BASKETBALL)) {
+            throw new BadRequestException(GameErrorMessages.FOUL_NOT_ALLOWED_FOR_NON_BASKETBALL);
+        }
+        findTeamOf(offender, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_FOUL_EXCEPTION);
     }
 
     private GameTeam findTeamOf(LineupPlayer scorer, String errorMessage) {

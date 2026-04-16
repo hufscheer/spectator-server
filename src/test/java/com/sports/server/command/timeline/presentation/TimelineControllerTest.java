@@ -10,6 +10,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
+import com.sports.server.command.timeline.domain.BasketballScore;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;
@@ -26,7 +28,7 @@ public class TimelineControllerTest extends DocumentationTest {
     @Test
     void 득점_타임라인을_생성한다() throws Exception {
         // given
-        TimelineRequest.RegisterScore request = new TimelineRequest.RegisterScore(
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
                 1L, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 1L,
                 10,
@@ -61,13 +63,47 @@ public class TimelineControllerTest extends DocumentationTest {
     }
 
     @Test
-    void 교체_타임라인을_생성한다() throws Exception {
+    void 농구_득점_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterBasketballScore request = new TimelineRequest.RegisterBasketballScore(
+                1L, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                1L, 10, null, 3
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/score", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (BASKETBALL)"),
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_QUARTER, SECOND_QUARTER, THIRD_QUARTER, FOURTH_QUARTER, OVERTIME)"),
+                                fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
+                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional(),
+                                fieldWithPath("score").type(JsonFieldType.NUMBER).description("득점한 점수 (1, 2, 3 중 하나)")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 축구_교체_타임라인을_생성한다() throws Exception {
         // given
         TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
                 1L, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
-                2L,
-                3L,
-                5
+                2L, 3L, 5, null
         );
 
         // when
@@ -84,14 +120,49 @@ public class TimelineControllerTest extends DocumentationTest {
                                 parameterWithName("gameId").description("경기의 ID")
                         ),
                         requestFields(
-                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (SOCCER, BASKETBALL)"),
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (SOCCER)"),
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
-                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
-                                fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER)
-                                        .description("기존 선수 Id"),
-                                fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER)
-                                        .description("교체 선수 Id"),
-                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("교체 시간")
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT)"),
+                                fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER).description("교체 아웃 선수 Id"),
+                                fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER).description("교체 인 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("교체 시간"),
+                                fieldWithPath("isFoulOut").type(JsonFieldType.NULL).description("파울 아웃 여부 (축구는 null)").optional()
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 농구_교체_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(
+                1L, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                2L, 3L, 5, true
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/replacement", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (BASKETBALL)"),
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_QUARTER, SECOND_QUARTER, THIRD_QUARTER, FOURTH_QUARTER, OVERTIME)"),
+                                fieldWithPath("originLineupPlayerId").type(JsonFieldType.NUMBER).description("교체 아웃 선수 Id"),
+                                fieldWithPath("replacementLineupPlayerId").type(JsonFieldType.NUMBER).description("교체 인 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("교체 시간"),
+                                fieldWithPath("isFoulOut").type(JsonFieldType.BOOLEAN).description("파울 아웃 여부 (true: 파울 아웃, false: 일반 교체)")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -162,6 +233,41 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("scorerId").type(JsonFieldType.NUMBER).description("승부차기 득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
                                 fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("승부차기 득점 성공 여부")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 파울_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterFoul request = new TimelineRequest.RegisterFoul(
+                10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                1L,
+                2L
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/foul", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (BASKETBALL)"),
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_QUARTER, SECOND_QUARTER, THIRD_QUARTER, FOURTH_QUARTER, OVERTIME)"),
+                                fieldWithPath("offenderLineupPlayerId").type(JsonFieldType.NUMBER).description("파울 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("파울 시간")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

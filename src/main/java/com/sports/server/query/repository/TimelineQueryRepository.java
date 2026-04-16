@@ -2,6 +2,7 @@ package com.sports.server.query.repository;
 
 import com.sports.server.command.team.domain.PlayerGoalCount;
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
+import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.query.dto.TeamTopScorerResult;
 import java.util.List;
@@ -18,6 +19,9 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
             "where t.game.id = :gameId " +
             "order by t.recordedAt desc, t.id desc")
     List<Timeline> findByGameId(Long gameId);
+
+    @Query("SELECT st FROM ScoreTimeline st JOIN FETCH st.scorer sc JOIN FETCH sc.gameTeam WHERE st.game.id = :gameId")
+    List<ScoreTimeline> findScoreTimelinesByGameId(@Param("gameId") Long gameId);
 
     @Query("SELECT count(st) FROM ScoreTimeline st WHERE st.scorer.id = :playerId")
     int countTotalGoalsByPlayerId(@Param("playerId") Long playerId);

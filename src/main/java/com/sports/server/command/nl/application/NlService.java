@@ -1,9 +1,9 @@
 package com.sports.server.command.nl.application;
 
 import com.sports.server.command.league.domain.League;
-import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.LeagueTeamRepository;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.dto.*;
 import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
@@ -20,6 +20,7 @@ import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.BadRequestException;
+import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.util.StudentNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class NlService {
     private final PlayerService playerService;
     private final TeamService teamService;
 
-    private static final Pattern NINE_DIGIT_PATTERN = Pattern.compile("(?<!\\d)\\d{9}(?!\\d)");
+    private static final Pattern STUDENT_NUMBER_PATTERN = Pattern.compile("(?<!\\d)\\d{9,10}(?!\\d)");
     private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[가-힣a-zA-Z\\s]{1,50}$");
 
     // --- public API ---
@@ -67,7 +68,7 @@ public class NlService {
             return new NlProcessResponse(NlErrorMessages.NO_PLAYER_INFO, null);
         }
 
-        return buildProcessPreview(request, team, parseResult.players());
+        return buildProcessPreview(request, team, parseResult.players(), member.getOrganization());
     }
 
     public NlParseResponse parse(NlParseRequest request) {
@@ -88,15 +89,16 @@ public class NlService {
     }
 
     @Transactional
-    public NlRegisterTeamResponse registerTeamWithPlayers(NlRegisterTeamRequest request) {
-        Team team = createTeam(request);
+    public NlRegisterTeamResponse registerTeamWithPlayers(NlRegisterTeamRequest request, Member member) {
+        Organization organization = member.getOrganization();
+        Team team = createTeam(request, member);
 
         List<NlExecuteRequest.PlayerData> playerDataList = toExecutePlayerData(request.players());
-        ExecuteContext context = buildExecuteContext(team.getId(), playerDataList);
-        processPlayersForExecution(playerDataList, context);
+        ExecuteContext context = buildExecuteContext(team.getId(), playerDataList, organization);
+        processPlayersForExecution(playerDataList, context, member);
 
         if (!context.teamPlayerRegisters.isEmpty()) {
-            teamService.addPlayersToTeam(team.getId(), context.teamPlayerRegisters);
+            teamService.addPlayersToTeam(member, team.getId(), context.teamPlayerRegisters);
         }
 
         String displayMessage = String.format("%s에 %d명의 선수가 등록되었습니다.", team.getName(), context.assigned);
@@ -113,11 +115,12 @@ public class NlService {
         Team team = entityUtils.getEntity(request.teamId(), Team.class);
         validateTeamBelongsToLeague(league, team);
 
-        ExecuteContext context = buildExecuteContext(request.teamId(), request.players());
-        processPlayersForExecution(request.players(), context);
+        Organization organization = member.getOrganization();
+        ExecuteContext context = buildExecuteContext(request.teamId(), request.players(), organization);
+        processPlayersForExecution(request.players(), context, member);
 
         if (!context.teamPlayerRegisters.isEmpty()) {
-            teamService.addPlayersToTeam(request.teamId(), context.teamPlayerRegisters);
+            teamService.addPlayersToTeam(member, request.teamId(), context.teamPlayerRegisters);
         }
 
         String displayMessage = String.format("%s에 %d명의 선수가 등록되었습니다.", team.getName(), context.assigned);
@@ -126,8 +129,8 @@ public class NlService {
 
     // --- process 전용 (팀 컨텍스트 포함) ---
 
-    private NlProcessResponse buildProcessPreview(NlProcessRequest request, Team team, List<ParsedPlayer> parsedPlayers) {
-        Set<String> originalNineDigits = extractNineDigitNumbers(request.message());
+    private NlProcessResponse buildProcessPreview(NlProcessRequest request, Team team, List<ParsedPlayer> parsedPlayers, Organization organization) {
+        Set<String> originalStudentNumbers = extractStudentNumbers(request.message());
         Set<Long> teamPlayerIdSet = new HashSet<>(teamPlayerRepository.findPlayerIdsByTeamId(request.teamId()));
         Map<String, Player> existingPlayerMap = findExistingPlayerMap(
                 parsedPlayers.stream().map(ParsedPlayer::studentNumber).filter(Objects::nonNull).toList()
@@ -135,7 +138,7 @@ public class NlService {
 
         List<PlayerPreview> playerPreviews = new ArrayList<>();
         List<NlFailedLine> failedLines = new ArrayList<>();
-        classifyWithTeamContext(parsedPlayers, originalNineDigits, teamPlayerIdSet, existingPlayerMap, playerPreviews, failedLines);
+        classifyWithTeamContext(parsedPlayers, originalStudentNumbers, teamPlayerIdSet, existingPlayerMap, playerPreviews, failedLines, organization.getStudentNumberDigits());
 
         Summary summary = buildSummary(playerPreviews);
         int registrableCount = summary.newPlayers() + summary.existingPlayers();
@@ -148,15 +151,16 @@ public class NlService {
         return new NlProcessResponse(displayMessage, preview);
     }
 
-    private void classifyWithTeamContext(List<ParsedPlayer> parsedPlayers, Set<String> originalNineDigits,
+    private void classifyWithTeamContext(List<ParsedPlayer> parsedPlayers, Set<String> originalStudentNumbers,
                                          Set<Long> teamPlayerIdSet, Map<String, Player> existingPlayerMap,
-                                         List<PlayerPreview> playerPreviews, List<NlFailedLine> failedLines) {
+                                         List<PlayerPreview> playerPreviews, List<NlFailedLine> failedLines,
+                                         int studentNumberDigits) {
         Set<String> seenStudentNumbers = new HashSet<>();
 
         for (int i = 0; i < parsedPlayers.size(); i++) {
             ParsedPlayer parsed = parsedPlayers.get(i);
 
-            NlFailedLine failedLine = validateParsedPlayer(i, parsed, originalNineDigits);
+            NlFailedLine failedLine = validateParsedPlayer(i, parsed, originalStudentNumbers, studentNumberDigits);
             if (failedLine != null) {
                 failedLines.add(failedLine);
                 continue;
@@ -203,7 +207,7 @@ public class NlService {
     // --- parse 전용 (팀 컨텍스트 없음) ---
 
     private NlParseResponse buildParsePreview(String message, List<ParsedPlayer> parsedPlayers) {
-        Set<String> originalNineDigits = extractNineDigitNumbers(message);
+        Set<String> originalNineDigits = extractStudentNumbers(message);
 
         List<NlParseResponse.ParsedPlayerPreview> playerPreviews = new ArrayList<>();
         List<NlFailedLine> failedLines = new ArrayList<>();
@@ -260,12 +264,12 @@ public class NlService {
 
     // --- registerTeamWithPlayers 전용 ---
 
-    private Team createTeam(NlRegisterTeamRequest request) {
+    private Team createTeam(NlRegisterTeamRequest request, Member member) {
         NlRegisterTeamRequest.TeamInfo teamInfo = request.team();
         TeamRequest.Register teamRegister = new TeamRequest.Register(
                 teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null, null
         );
-        Long teamId = teamService.registerAndReturnId(teamRegister);
+        Long teamId = teamService.registerAndReturnId(member, teamRegister);
         return entityUtils.getEntity(teamId, Team.class);
     }
 
@@ -277,7 +281,7 @@ public class NlService {
 
     // --- execute 공용 ---
 
-    private ExecuteContext buildExecuteContext(Long teamId, List<NlExecuteRequest.PlayerData> players) {
+    private ExecuteContext buildExecuteContext(Long teamId, List<NlExecuteRequest.PlayerData> players, Organization organization) {
         Set<Long> teamPlayerIdSet = new HashSet<>(
                 teamPlayerRepository.findPlayerIdsByTeamId(teamId)
         );
@@ -285,17 +289,17 @@ public class NlService {
                 .map(NlExecuteRequest.PlayerData::studentNumber)
                 .toList();
         Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers);
-        return new ExecuteContext(teamPlayerIdSet, existingPlayerMap);
+        return new ExecuteContext(teamPlayerIdSet, existingPlayerMap, organization);
     }
 
-    private void processPlayersForExecution(List<NlExecuteRequest.PlayerData> players, ExecuteContext context) {
+    private void processPlayersForExecution(List<NlExecuteRequest.PlayerData> players, ExecuteContext context, Member member) {
         for (NlExecuteRequest.PlayerData playerData : players) {
             if (!isValidName(playerData.name()) || !context.seenStudentNumbers.add(playerData.studentNumber())) {
                 context.skipped++;
                 continue;
             }
 
-            Long playerId = getOrCreatePlayerId(playerData, context);
+            Long playerId = getOrCreatePlayerId(playerData, context, member);
             if (playerId == null) {
                 context.skipped++;
                 continue;
@@ -311,18 +315,19 @@ public class NlService {
         }
     }
 
-    private Long getOrCreatePlayerId(NlExecuteRequest.PlayerData playerData, ExecuteContext context) {
+    private Long getOrCreatePlayerId(NlExecuteRequest.PlayerData playerData, ExecuteContext context, Member member) {
         Player existingPlayer = context.existingPlayerMap.get(playerData.studentNumber());
 
         if (existingPlayer != null) {
             if (context.teamPlayerIdSet.contains(existingPlayer.getId())) {
                 return null;
             }
+            PermissionValidator.checkPermission(existingPlayer, member);
             return existingPlayer.getId();
         }
 
         Long playerId = playerService.register(
-                new PlayerRequest.Register(playerData.name(), playerData.studentNumber())
+                member, new PlayerRequest.Register(playerData.name(), playerData.studentNumber())
         );
         context.created++;
         return playerId;
@@ -331,6 +336,7 @@ public class NlService {
     private static class ExecuteContext {
         final Set<Long> teamPlayerIdSet;
         final Map<String, Player> existingPlayerMap;
+        final Organization organization;
         final Set<String> seenStudentNumbers = new HashSet<>();
         final Set<Long> assignedPlayerIds = new HashSet<>();
         final List<TeamRequest.TeamPlayerRegister> teamPlayerRegisters = new ArrayList<>();
@@ -338,32 +344,40 @@ public class NlService {
         int assigned = 0;
         int skipped = 0;
 
-        ExecuteContext(Set<Long> teamPlayerIdSet, Map<String, Player> existingPlayerMap) {
+        ExecuteContext(Set<Long> teamPlayerIdSet, Map<String, Player> existingPlayerMap, Organization organization) {
             this.teamPlayerIdSet = teamPlayerIdSet;
             this.existingPlayerMap = existingPlayerMap;
+            this.organization = organization;
         }
     }
 
     // --- 공용 유틸 ---
 
-    private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Set<String> originalNineDigits) {
-        if (isInvalidStudentNumber(parsed, originalNineDigits)) {
-            String reason = StudentNumber.isInvalid(parsed.studentNumber())
-                    ? NlErrorMessages.STUDENT_NUMBER_INVALID
-                    : NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL;
-            return new NlFailedLine(index + 1, parsed.studentNumber(), reason);
+    private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Set<String> originalStudentNumbers, int digits) {
+        if (StudentNumber.isInvalid(parsed.studentNumber(), digits)) {
+            return new NlFailedLine(index + 1, parsed.studentNumber(),
+                    String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits));
         }
-
+        if (!originalStudentNumbers.contains(parsed.studentNumber())) {
+            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
+        }
         if (!isValidName(parsed.name())) {
             return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME);
         }
-
         return null;
     }
 
-    private boolean isInvalidStudentNumber(ParsedPlayer parsed, Set<String> originalNineDigits) {
-        return StudentNumber.isInvalid(parsed.studentNumber())
-                || !originalNineDigits.contains(parsed.studentNumber());
+    private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Set<String> originalStudentNumbers) {
+        if (StudentNumber.isInvalid(parsed.studentNumber())) {
+            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.STUDENT_NUMBER_INVALID);
+        }
+        if (!originalStudentNumbers.contains(parsed.studentNumber())) {
+            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
+        }
+        if (!isValidName(parsed.name())) {
+            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME);
+        }
+        return null;
     }
 
     private Map<String, Player> findExistingPlayerMap(List<String> studentNumbers) {
@@ -381,9 +395,9 @@ public class NlService {
                 .orElseThrow(() -> new BadRequestException(NlErrorMessages.TEAM_NOT_IN_LEAGUE));
     }
 
-    private Set<String> extractNineDigitNumbers(String text) {
+    private Set<String> extractStudentNumbers(String text) {
         Set<String> numbers = new HashSet<>();
-        Matcher matcher = NINE_DIGIT_PATTERN.matcher(text);
+        Matcher matcher = STUDENT_NUMBER_PATTERN.matcher(text);
         while (matcher.find()) {
             numbers.add(matcher.group());
         }

@@ -1,0 +1,47 @@
+package com.sports.server.command.timeline.domain;
+
+import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.command.league.domain.Quarter;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+@Entity
+@DiscriminatorValue("FOUL")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class FoulTimeline extends Timeline {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "scorer_id")
+    private LineupPlayer offender;
+
+    public FoulTimeline(Game game,
+                        Quarter recordedQuarter,
+                        Integer recordedAt,
+                        LineupPlayer offender
+    ) {
+        super(game, recordedQuarter, recordedAt);
+        this.offender = offender;
+    }
+
+    @Override
+    public TimelineType getType() {
+        return TimelineType.FOUL;
+    }
+
+    @Override
+    public void apply() {
+        game.issueFoul(offender);
+    }
+
+    @Override
+    public void rollback() {
+        game.cancelFoul(offender);
+    }
+}

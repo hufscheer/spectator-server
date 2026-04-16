@@ -150,7 +150,7 @@ public class NlControllerTest extends DocumentationTest {
                 new NlRegisterTeamResponse.Result(2, 2, 0)
         );
 
-        given(nlService.registerTeamWithPlayers(any())).willReturn(response);
+        given(nlService.registerTeamWithPlayers(any(), any())).willReturn(response);
 
         Map<String, Object> request = Map.of(
                 "team", Map.of(
@@ -169,6 +169,7 @@ public class NlControllerTest extends DocumentationTest {
         ResultActions result = mockMvc.perform(post("/nl/register-team")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         // then

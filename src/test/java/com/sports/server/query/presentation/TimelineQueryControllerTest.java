@@ -7,6 +7,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.WarningCardType;
@@ -32,7 +33,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
     public static final String TEAM_B_IMAGE_URL = "http://example.com/logo_b.png";
 
     private static final String SCORE_TYPE = "SCORE";
-    private static final String REPLACEMENT_TYPE = "REPLACEMENT";
+    private static final String SOCCER_REPLACEMENT_TYPE = "SOCCER_REPLACEMENT";
+    private static final String BASKETBALL_REPLACEMENT_TYPE = "BASKETBALL_REPLACEMENT";
 
 
     @Test
@@ -56,13 +58,13 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 3)
                                         ), null),
-                                        new ReplacementRecordResponse(1L, "선수3"),
+                                        new ReplacementRecordResponse(1L, "선수3", null),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_START),
                                         new PkRecordResponse(1L, true),
                                         new WarningCardRecordResponse(WarningCardType.YELLOW)
                                 ),
                                 new RecordResponse(
-                                        null, 1L, REPLACEMENT_TYPE,
+                                        null, 1L, SOCCER_REPLACEMENT_TYPE,
                                         10,
                                         "선수2",
                                         1L,
@@ -74,7 +76,25 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new ScoreRecordResponse.Snapshot(
                                                         TEAM_B, TEAM_B_IMAGE_URL, 0)
                                         ), null),
-                                        new ReplacementRecordResponse(1L, "선수3"),
+                                        new ReplacementRecordResponse(1L, "선수3", null),
+                                        new ProgressRecordResponse(GameProgressType.QUARTER_END),
+                                        new PkRecordResponse(4L, false),
+                                        new WarningCardRecordResponse(WarningCardType.RED)
+                                ),
+                                new RecordResponse(
+                                        null, 1L, BASKETBALL_REPLACEMENT_TYPE,
+                                        5,
+                                        "선수4",
+                                        1L,
+                                        TEAM_A,
+                                        TEAM_A_IMAGE_URL,
+                                        new ScoreRecordResponse(1L, 2, List.of(
+                                                new ScoreRecordResponse.Snapshot(
+                                                        TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                new ScoreRecordResponse.Snapshot(
+                                                        TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                        ), null),
+                                        new ReplacementRecordResponse(2L, "선수5", true),
                                         new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                         new PkRecordResponse(4L, false),
                                         new WarningCardRecordResponse(WarningCardType.RED)
@@ -128,6 +148,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].replacementRecord.replacedPlayerName").type(
                                                 JsonFieldType.STRING)
                                         .description("REPLACEMENT 타입일 때 교체되어 IN 되는 선수"),
+                                fieldWithPath("[].records[].replacementRecord.isFoulOut").type(JsonFieldType.VARIES)
+                                        .description("BASKETBALL_REPLACEMENT 타입일 때 파울 아웃 여부 (true: 파울 아웃, false: 일반 교체, 축구 교체는 null)").optional(),
                                 fieldWithPath("[].records[].progressRecord.gameProgressType").type(JsonFieldType.STRING)
                                         .description(
                                                 "PROGRESS 타입일 때 게임 진행 상태 타입 (GAME_START, QUARTER_START, QUARTER_END, GAME_END)"),
@@ -140,6 +162,42 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].records[].warningCardRecord.warningCardType").type(
                                                 JsonFieldType.STRING)
                                         .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
+                        )
+                ));
+    }
+
+    @Test
+    void 쿼터별_득점을_조회한다() throws Exception {
+        // given
+        Long gameId = 5L;
+        BDDMockito.given(timelineQueryService.getQuarterScores(gameId))
+                .willReturn(List.of(
+                        new QuarterScoreResponse(
+                                BasketballQuarter.FIRST_QUARTER.name(),
+                                BasketballQuarter.FIRST_QUARTER.getDisplayName(),
+                                List.of(
+                                        new QuarterScoreResponse.TeamScore(7L, 3),
+                                        new QuarterScoreResponse.TeamScore(8L, 2)
+                                )
+                        )
+                ));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/games/{gameId}/quarter-scores", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].quarter").type(JsonFieldType.STRING).description("쿼터 키 (FIRST_QUARTER, SECOND_QUARTER 등)"),
+                                fieldWithPath("[].displayName").type(JsonFieldType.STRING).description("쿼터 표시명 (1쿼터, 2쿼터 등)"),
+                                fieldWithPath("[].scores[].gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀의 ID"),
+                                fieldWithPath("[].scores[].score").type(JsonFieldType.NUMBER).description("해당 쿼터에서 득점한 점수")
                         )
                 ));
     }

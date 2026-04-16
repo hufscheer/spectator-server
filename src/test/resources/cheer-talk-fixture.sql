@@ -1,5 +1,8 @@
 SET foreign_key_checks = 0;
 
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (1, '한국외국어대학교', 9);
+
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (1, 1, 'john.doe@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-15 10:00:00'),

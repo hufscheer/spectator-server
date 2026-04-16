@@ -18,6 +18,12 @@ public class TeamQueryController {
     private final TeamQueryService teamQueryService;
     private final GameQueryService gameQueryService;
 
+    @GetMapping("/units")
+    public ResponseEntity<List<UnitResponse>> getUnitsWithTeams(
+            @RequestParam(required = false) final SportType sportType) {
+        return ResponseEntity.ok(teamQueryService.getUnitsWithTeams(sportType));
+    }
+
     @GetMapping
     public ResponseEntity<List<TeamResponse>> getAllTeams(
             @RequestParam(required = false) final List<String> units,

@@ -4,7 +4,9 @@ import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.util.StudentNumber;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +19,7 @@ import java.util.Objects;
 @Getter
 @Table(name = "players")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Player extends BaseEntity<Player> {
+public class Player extends BaseEntity<Player> implements ManagedEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -36,14 +38,14 @@ public class Player extends BaseEntity<Player> {
     private List<LeagueTopScorer> leagueTopScorers = new ArrayList<>();
 
     @Builder
-    public Player(@NonNull String name, @NonNull String studentNumber) {
-        StudentNumber.validate(studentNumber);
+    public Player(@NonNull String name, @NonNull String studentNumber, int studentNumberDigits) {
+        StudentNumber.validate(studentNumber, studentNumberDigits);
         this.name = name;
         this.studentNumber = studentNumber;
     }
 
-    public void update(String name, String studentNumber) {
-        StudentNumber.validate(studentNumber);
+    public void update(String name, String studentNumber, int studentNumberDigits) {
+        StudentNumber.validate(studentNumber, studentNumberDigits);
         this.name = name;
         this.studentNumber = studentNumber;
     }
@@ -88,6 +90,19 @@ public class Player extends BaseEntity<Player> {
             leagueTopScorer.updateRanking(ranking);
             leagueTopScorer.updateGoalCount(goalCount);
         }
+    }
+
+    @Override
+    public boolean isManagedBy(Member manager) {
+        if (manager.isAdministrator()) {
+            return true;
+        }
+        return this.organization != null && manager.getOrganization() != null
+                && this.organization.getId().equals(manager.getOrganization().getId());
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     @Override
