@@ -40,10 +40,12 @@ public class TimelineService {
         PermissionValidator.checkPermission(game, manager);
 
         if (request instanceof TimelineRequest.RegisterProgress progressRequest) {
-            validateProgressTransition(game, progressRequest);
+            Optional<GameProgressTimeline> lastProgressOpt =
+                    gameProgressTimelineRepository.findFirstByGameOrderByIdDesc(game);
+            validateProgressTransition(game, progressRequest, lastProgressOpt);
 
             if (progressRequest.getGameProgressType() == GameProgressType.GAME_END) {
-                insertQuarterEndIfNeeded(game, progressRequest.getRecordedAt());
+                insertQuarterEndIfNeeded(game, progressRequest.getRecordedAt(), lastProgressOpt);
             }
         }
 
@@ -52,8 +54,8 @@ public class TimelineService {
         timelineRepository.save(timeline);
     }
 
-    private void insertQuarterEndIfNeeded(Game game, Integer recordedAt) {
-        gameProgressTimelineRepository.findFirstByGameOrderByIdDesc(game)
+    private void insertQuarterEndIfNeeded(Game game, Integer recordedAt, Optional<GameProgressTimeline> lastProgressOpt) {
+        lastProgressOpt
                 .filter(last -> last.getGameProgressType() == GameProgressType.QUARTER_START
                         && last.getRecordedQuarter().canHaveQuarterEnd())
                 .ifPresent(last -> {
@@ -68,10 +70,10 @@ public class TimelineService {
                 });
     }
 
-    private void validateProgressTransition(Game game, TimelineRequest.RegisterProgress request) {
+    private void validateProgressTransition(Game game, TimelineRequest.RegisterProgress request,
+                                            Optional<GameProgressTimeline> lastOpt) {
         Quarter requestQuarter = request.resolveQuarter();
         GameProgressType requestType = request.getGameProgressType();
-        Optional<GameProgressTimeline> lastOpt = gameProgressTimelineRepository.findFirstByGameOrderByIdDesc(game);
 
         boolean isValid = lastOpt
                 .map(last -> isValidTransitionFrom(last.getRecordedQuarter(), last.getGameProgressType(), requestQuarter, requestType))
