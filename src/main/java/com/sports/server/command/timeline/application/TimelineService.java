@@ -41,11 +41,31 @@ public class TimelineService {
 
         if (request instanceof TimelineRequest.RegisterProgress progressRequest) {
             validateProgressTransition(game, progressRequest);
+
+            if (progressRequest.getGameProgressType() == GameProgressType.GAME_END) {
+                insertQuarterEndIfNeeded(game, progressRequest.getRecordedAt());
+            }
         }
 
         Timeline timeline = timelineMapper.toEntity(game, request);
         timeline.apply();
         timelineRepository.save(timeline);
+    }
+
+    private void insertQuarterEndIfNeeded(Game game, Integer recordedAt) {
+        gameProgressTimelineRepository.findFirstByGameOrderByIdDesc(game)
+                .filter(last -> last.getGameProgressType() == GameProgressType.QUARTER_START
+                        && last.getRecordedQuarter().canHaveQuarterEnd())
+                .ifPresent(last -> {
+                    GameProgressTimeline quarterEnd = new GameProgressTimeline(
+                            game,
+                            last.getRecordedQuarter(),
+                            recordedAt,
+                            GameProgressType.QUARTER_END
+                    );
+                    quarterEnd.apply();
+                    timelineRepository.save(quarterEnd);
+                });
     }
 
     private void validateProgressTransition(Game game, TimelineRequest.RegisterProgress request) {
