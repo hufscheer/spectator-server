@@ -222,6 +222,17 @@ VALUES ('SCORE', 5, 'FIRST_QUARTER', 8, 19, 2, 7, 3, 8, 0);
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, game_team1_id, game_team2_id, snapshot_score1, snapshot_score2, previous_quarter, previous_quarter_changed_at)
 VALUES ('GAME_PROGRESS', 5, 'FIRST_QUARTER', 10, 'QUARTER_END', 7, 8, 3, 2, 'FIRST_QUARTER', null);
 
+-- game 6: 경기종료 시 자동 쿼터종료 테스트용 (soccer, SECOND_HALF QUARTER_START 상태)
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
+VALUES (6, 1, 1, '자동_쿼터종료_테스트용', '2023-11-12 10:00:00', null, '2023-11-12 10:15:00', 'SECOND_HALF', 'PLAYING', '4강', FALSE);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (9, 6, 1, 0, 0, 0, null),
+       (10, 6, 2, 0, 0, 0, null);
+
+INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, previous_quarter, previous_quarter_changed_at)
+VALUES ('GAME_PROGRESS', 6, 'SECOND_HALF', 0, 'QUARTER_START', 'FIRST_HALF', null);
+
 -- 응원톡 생성
 INSERT INTO cheer_talks (id, game_team_id, content, created_at, block_status)
 VALUES (1, 1, '화이팅!', '2023-11-12 10:05:00', 'ACTIVE'),
