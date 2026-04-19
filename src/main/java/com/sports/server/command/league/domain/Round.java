@@ -17,7 +17,7 @@ public enum Round {
     SEMI_FINAL("4강", 4),
     QUARTER_FINAL("8강", 8),
     ROUND_16("16강", 16),
-    ROUND_32("32강", 32);
+    PRELIMINARY("예선", 100);
 
     private final String description;
     private final int number;

@@ -1,8 +1,14 @@
 package com.sports.server.command.timeline.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sports.server.command.league.domain.SportType;
+import com.sports.server.command.timeline.domain.BasketballScore;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.SoccerScore;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.timeline.domain.TimelineType;
 import com.sports.server.command.timeline.domain.WarningCardType;
@@ -24,12 +30,17 @@ public abstract class TimelineRequest {
     }
 
     @Getter
-    public static class RegisterScore extends TimelineRequest {
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "sportType", visible = true)
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = TimelineRequest.RegisterSoccerScore.class, name = "SOCCER"),
+            @JsonSubTypes.Type(value = TimelineRequest.RegisterBasketballScore.class, name = "BASKETBALL")
+    })
+    public abstract static class RegisterScore extends TimelineRequest {
         private final Long gameTeamId;
         private final Long scoreLineupPlayerId;
         private final Long assistLineupPlayerId;
 
-        public RegisterScore(
+        protected RegisterScore(
                 Long gameTeamId,
                 SportType sportType,
                 String recordedQuarter,
@@ -43,9 +54,56 @@ public abstract class TimelineRequest {
             this.assistLineupPlayerId = assistLineupPlayerId;
         }
 
+        @JsonIgnore
+        public abstract int getScoreValue();
+
         @Override
         public TimelineType getType() {
             return TimelineType.SCORE;
+        }
+    }
+
+    @Getter
+    public static class RegisterSoccerScore extends RegisterScore {
+        @JsonCreator
+        public RegisterSoccerScore(
+                @JsonProperty("gameTeamId") Long gameTeamId,
+                @JsonProperty("sportType") SportType sportType,
+                @JsonProperty("recordedQuarter") String recordedQuarter,
+                @JsonProperty("scoreLineupPlayerId") Long scoreLineupPlayerId,
+                @JsonProperty("recordedAt") Integer recordedAt,
+                @JsonProperty("assistLineupPlayerId") Long assistLineupPlayerId
+        ) {
+            super(gameTeamId, sportType, recordedQuarter, scoreLineupPlayerId, recordedAt, assistLineupPlayerId);
+        }
+
+        @Override
+        public int getScoreValue() {
+            return SoccerScore.GOAL.getValue();
+        }
+    }
+
+    @Getter
+    public static class RegisterBasketballScore extends RegisterScore {
+        private final BasketballScore score;
+
+        @JsonCreator
+        public RegisterBasketballScore(
+                @JsonProperty("gameTeamId") Long gameTeamId,
+                @JsonProperty("sportType") SportType sportType,
+                @JsonProperty("recordedQuarter") String recordedQuarter,
+                @JsonProperty("scoreLineupPlayerId") Long scoreLineupPlayerId,
+                @JsonProperty("recordedAt") Integer recordedAt,
+                @JsonProperty("assistLineupPlayerId") Long assistLineupPlayerId,
+                @JsonProperty("score") int score
+        ) {
+            super(gameTeamId, sportType, recordedQuarter, scoreLineupPlayerId, recordedAt, assistLineupPlayerId);
+            this.score = BasketballScore.fromValue(score);
+        }
+
+        @Override
+        public int getScoreValue() {
+            return score.getValue();
         }
     }
 

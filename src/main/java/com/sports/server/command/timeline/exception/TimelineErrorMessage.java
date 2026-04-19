@@ -8,5 +8,6 @@ public class TimelineErrorMessage {
 
     public static final String GAME_ALREADY_FINISHED = "종료된 게임에 새로운 타임라인을 등록할 수 없습니다.";
     public static final String INVALID_PROGRESS_TRANSITION = "현재 경기 상태에서 허용되지 않는 진행 요청입니다.";
+    public static final String INVALID_BASKETBALL_SCORE = "농구 점수는 1, 2, 3 중 하나여야 합니다.";
 
 }

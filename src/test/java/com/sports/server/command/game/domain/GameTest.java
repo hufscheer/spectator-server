@@ -59,7 +59,7 @@ class GameTest {
                     .sample();
 
             // when
-            game.score(scorer);
+            game.score(scorer, 1);
 
             // then
             assertAll(
@@ -76,7 +76,7 @@ class GameTest {
                     .sample();
 
             // when
-            game.score(scorer);
+            game.score(scorer, 1);
 
             // then
             assertAll(
@@ -96,7 +96,7 @@ class GameTest {
                     .sample();
 
             // when then
-            assertThatThrownBy(() -> game.score(scorer))
+            assertThatThrownBy(() -> game.score(scorer, 1))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -155,10 +155,10 @@ class GameTest {
         @Test
         void team1의_득점을_취소한다() {
             // given
-            game.score(team1Player);
+            game.score(team1Player, 1);
 
             // when
-            game.cancelScore(team1Player);
+            game.cancelScore(team1Player, 1);
 
             // then
             assertAll(
@@ -200,10 +200,10 @@ class GameTest {
         @Test
         void team2의_득점을_취소한다() {
             // given
-            game.score(team2Player);
+            game.score(team2Player, 1);
 
             // when
-            game.cancelScore(team2Player);
+            game.cancelScore(team2Player, 1);
 
             // then
             assertAll(
@@ -215,11 +215,11 @@ class GameTest {
         @Test
         void 동점_상황에서_한_팀만_점수를_취소한다() {
             // given
-            game.score(team1Player);
-            game.score(team2Player);
+            game.score(team1Player, 1);
+            game.score(team2Player, 1);
 
             // when
-            game.cancelScore(team1Player);
+            game.cancelScore(team1Player, 1);
 
             // then
             assertAll(
@@ -239,7 +239,7 @@ class GameTest {
                     .sample();
 
             // when then
-            assertThatThrownBy(() -> game.cancelScore(scorer))
+            assertThatThrownBy(() -> game.cancelScore(scorer, 1))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -266,7 +266,7 @@ class GameTest {
         @Test
         void 종료된_경기에서만_결과를_계산한다() {
             // given
-            team1.score();
+            team1.score(1);
             game.updateState(GameState.PLAYING);
             GameResult initialTeam1Result = team1.getResult();
             GameResult initialTeam2Result = team2.getResult();

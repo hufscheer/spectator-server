@@ -21,5 +21,8 @@ VALUES (2, 1, 'jane@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iER
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (3, 2, 'smith@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
         '2024-06-14 17:45:00');
+INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
+VALUES (4, 4, 'user4@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
+        '2024-06-14 17:45:00');
 
 SET foreign_key_checks = 1;

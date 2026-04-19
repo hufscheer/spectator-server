@@ -5,7 +5,9 @@ import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.domain.BaseEntity;
+import com.sports.server.common.domain.ManagedEntity;
 import com.sports.server.common.exception.CustomException;
 import jakarta.persistence.*;
 
@@ -24,7 +26,7 @@ import org.springframework.http.HttpStatus;
 @SQLDelete(sql = "UPDATE teams SET is_deleted = 1 WHERE id = ?")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team extends BaseEntity<Team> {
+public class Team extends BaseEntity<Team> implements ManagedEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -68,7 +70,7 @@ public class Team extends BaseEntity<Team> {
         this.sportType = sportType != null ? sportType : SportType.SOCCER;
     }
 
-    public void update(String name, String logoImageUrl, String originPrefix, String replacePrefix, Unit unit, String teamColor) {
+    public void update(String name, String logoImageUrl, Unit unit, String teamColor) {
         if (name != null) {
             this.name = name;
         }
@@ -78,8 +80,8 @@ public class Team extends BaseEntity<Team> {
         if (teamColor != null) {
             this.teamColor = teamColor;
         }
-        if (logoImageUrl != null && !logoImageUrl.equals(this.logoImageUrl)) {
-            this.logoImageUrl = changeLogoImageUrlToBeSaved(logoImageUrl, originPrefix, replacePrefix);
+        if (logoImageUrl != null) {
+            this.logoImageUrl = logoImageUrl;
         }
     }
 
@@ -107,13 +109,6 @@ public class Team extends BaseEntity<Team> {
                 });
     }
 
-    private String changeLogoImageUrlToBeSaved(String logoImageUrl, String originPrefix, String replacePrefix) {
-        if (!logoImageUrl.contains(originPrefix)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 이미지 url 입니다.");
-        }
-        return logoImageUrl.replace(originPrefix, replacePrefix);
-    }
-
     public void deleteLogoImageUrl() {
         this.logoImageUrl = "";
         registerEvent(new LogoImageDeletedEvent(logoImageUrl));
@@ -135,6 +130,19 @@ public class Team extends BaseEntity<Team> {
 
     public void removeGameTeam(GameTeam gameTeam) {
         this.gameTeams.remove(gameTeam);
+    }
+
+    @Override
+    public boolean isManagedBy(Member manager) {
+        if (manager.isAdministrator()) {
+            return true;
+        }
+        return this.organization != null && manager.getOrganization() != null
+                && this.organization.getId().equals(manager.getOrganization().getId());
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
 }
