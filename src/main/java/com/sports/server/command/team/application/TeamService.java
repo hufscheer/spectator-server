@@ -65,9 +65,14 @@ public class TeamService {
         Team team = entityUtils.getEntity(teamId, Team.class);
         PermissionValidator.checkPermission(team, member);
 
-        s3Service.doesFileExist(team.getLogoImageUrl());
+        String logoImageUrl = null;
+        if (request.logoImageUrl() != null) {
+            logoImageUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
+            s3Service.doesFileExist(logoImageUrl);
+        }
+
         Unit unit = Optional.ofNullable(request.unit()).map(Unit::from).orElse(null);
-        team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, unit, request.teamColor());
+        team.update(request.name(), logoImageUrl, unit, request.teamColor());
 
         if (request.teamPlayers() != null) {
             upsertPlayersToTeam(member, team, request.teamPlayers());
