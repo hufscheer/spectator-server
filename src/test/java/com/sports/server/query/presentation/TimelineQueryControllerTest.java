@@ -185,7 +185,15 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                 BasketballQuarter.FIRST_QUARTER.getDisplayName(),
                                 List.of(
                                         new QuarterScoreResponse.TeamScore(7L, 3),
-                                        new QuarterScoreResponse.TeamScore(8L, 2)
+                                        new QuarterScoreResponse.TeamScore(8L, 0)
+                                )
+                        ),
+                        new QuarterScoreResponse(
+                                BasketballQuarter.SECOND_QUARTER.name(),
+                                BasketballQuarter.SECOND_QUARTER.getDisplayName(),
+                                List.of(
+                                        new QuarterScoreResponse.TeamScore(7L, 2),
+                                        new QuarterScoreResponse.TeamScore(8L, 5)
                                 )
                         )
                 ));

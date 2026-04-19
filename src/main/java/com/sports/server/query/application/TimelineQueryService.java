@@ -1,11 +1,13 @@
 package com.sports.server.query.application;
 
 import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
@@ -100,6 +102,14 @@ public class TimelineQueryService {
     }
 
     public List<QuarterScoreResponse> getQuarterScores(Long gameId) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+
+        List<Long> gameTeamIds = gameTeamQueryRepository.findAllByGame(game)
+                .stream()
+                .sorted(comparingLong(GameTeam::getId))
+                .map(GameTeam::getId)
+                .toList();
+
         List<Quarter> completedQuarters = gameProgressTimelineRepository
                 .findByGameIdAndType(gameId, GameProgressType.QUARTER_END)
                 .stream()
@@ -121,6 +131,7 @@ public class TimelineQueryService {
         return completedQuarters.stream()
                 .map(quarter -> QuarterScoreResponse.of(
                         quarter,
+                        gameTeamIds,
                         scoreByQuarterAndTeam.getOrDefault(quarter, Map.of())
                 ))
                 .toList();
