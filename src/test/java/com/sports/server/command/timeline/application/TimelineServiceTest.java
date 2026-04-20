@@ -252,6 +252,32 @@ class TimelineServiceTest extends ServiceTest {
             Timeline actual = timelineFixtureRepository.findAllLatest(freshGameId).get(0);
             assertThat(actual).isInstanceOf(GameProgressTimeline.class);
         }
+
+        @Test
+        void 쿼터가_진행_중일_때_경기종료를_등록하면_쿼터종료가_자동으로_삽입된다() {
+            // given - game 6: SECOND_HALF QUARTER_START 상태 (쿼터 진행 중)
+            Long testGameId = 6L;
+            TimelineRequest.RegisterProgress request = new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END);
+
+            int beforeCount = timelineFixtureRepository.findAllLatest(testGameId).size();
+
+            // when
+            timelineService.register(manager, testGameId, request);
+
+            // then: QUARTER_END + GAME_END 2개가 추가되어야 함
+            List<Timeline> timelines = timelineFixtureRepository.findAllLatest(testGameId);
+            assertThat(timelines).hasSize(beforeCount + 2);
+
+            GameProgressTimeline gameEnd = (GameProgressTimeline) timelines.get(0);
+            GameProgressTimeline quarterEnd = (GameProgressTimeline) timelines.get(1);
+
+            assertAll(
+                    () -> assertThat(gameEnd.getGameProgressType()).isEqualTo(GameProgressType.GAME_END),
+                    () -> assertThat(quarterEnd.getGameProgressType()).isEqualTo(GameProgressType.QUARTER_END),
+                    () -> assertThat(quarterEnd.getRecordedQuarter()).isEqualTo(SoccerQuarter.SECOND_HALF)
+            );
+        }
     }
 
     @DisplayName("승부차기 타임라인을")
