@@ -74,7 +74,7 @@ public class NlGeminiClient implements NlClient {
                                             "type", "OBJECT",
                                             "properties", Map.of(
                                                     "name", Map.of("type", "STRING", "description", "선수 이름"),
-                                                    "studentNumber", Map.of("type", "STRING", "description", "9자리 학번"),
+                                                    "studentNumber", Map.of("type", "STRING", "description", "9자리 또는 10자리 학번"),
                                                     "jerseyNumber", Map.of("type", "INTEGER", "description", "등번호 (1~99)")
                                             ),
                                             "required", List.of("name", "studentNumber")
@@ -86,14 +86,14 @@ public class NlGeminiClient implements NlClient {
     );
 
     @Override
-    public NlParseResult parsePlayers(String message, List<Map<String, String>> history) {
-        GeminiFunctionCallResponse response = callGeminiApiWithRetry(message, history);
+    public NlParseResult parsePlayers(String message, List<Map<String, String>> history, int studentNumberDigits) {
+        GeminiFunctionCallResponse response = callGeminiApiWithRetry(message, history, studentNumberDigits);
         return toParseResult(response);
     }
 
-    private GeminiFunctionCallResponse callGeminiApiWithRetry(String message, List<Map<String, String>> history) {
+    private GeminiFunctionCallResponse callGeminiApiWithRetry(String message, List<Map<String, String>> history, int studentNumberDigits) {
         List<Map<String, Object>> contents = buildContents(message, history);
-        Map<String, Object> body = buildRequestBody(contents);
+        Map<String, Object> body = buildRequestBody(contents, studentNumberDigits);
 
         for (int attempt = 0; attempt <= MAX_RETRY; attempt++) {
             int currentKeyIndex = keyIndex.getAndUpdate(i -> (i + 1) % apiKeys.size());
@@ -120,10 +120,17 @@ public class NlGeminiClient implements NlClient {
         throw new CustomException(HttpStatus.TOO_MANY_REQUESTS, "AI 서비스가 일시적으로 사용량이 많습니다. 잠시 후 다시 시도해주세요.");
     }
 
-    private Map<String, Object> buildRequestBody(List<Map<String, Object>> contents) {
+    private Map<String, Object> buildRequestBody(List<Map<String, Object>> contents, int studentNumberDigits) {
+        String perCallInstruction = String.format(
+                "이 요청의 학번 자릿수는 정확히 %d자리다. %d자리가 아닌 숫자는 학번으로 추출하지 마.",
+                studentNumberDigits, studentNumberDigits
+        );
         return Map.of(
                 "systemInstruction", Map.of(
-                        "parts", List.of(Map.of("text", systemPrompt))
+                        "parts", List.of(
+                                Map.of("text", systemPrompt),
+                                Map.of("text", perCallInstruction)
+                        )
                 ),
                 "contents", contents,
                 "tools", List.of(Map.of(

@@ -55,7 +55,8 @@ public class NlService {
         Team team = entityUtils.getEntity(request.teamId(), Team.class);
         validateTeamBelongsToLeague(league, team);
 
-        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history());
+        int studentNumberDigits = member.getOrganization().getStudentNumberDigits();
+        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history(), studentNumberDigits);
 
         if (!parseResult.parsed()) {
             return new NlProcessResponse(
@@ -71,8 +72,10 @@ public class NlService {
         return buildProcessPreview(request, team, parseResult.players(), member.getOrganization());
     }
 
-    public NlParseResponse parse(NlParseRequest request) {
-        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history());
+    @Transactional(readOnly = true)
+    public NlParseResponse parse(NlParseRequest request, Member member) {
+        int studentNumberDigits = member.getOrganization().getStudentNumberDigits();
+        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history(), studentNumberDigits);
 
         if (!parseResult.parsed()) {
             return new NlParseResponse(
@@ -85,7 +88,7 @@ public class NlService {
             return new NlParseResponse(NlErrorMessages.NO_PLAYER_INFO, null);
         }
 
-        return buildParsePreview(request.message(), parseResult.players());
+        return buildParsePreview(request.message(), parseResult.players(), studentNumberDigits);
     }
 
     @Transactional
@@ -206,27 +209,27 @@ public class NlService {
 
     // --- parse 전용 (팀 컨텍스트 없음) ---
 
-    private NlParseResponse buildParsePreview(String message, List<ParsedPlayer> parsedPlayers) {
-        Set<String> originalNineDigits = extractStudentNumbers(message);
+    private NlParseResponse buildParsePreview(String message, List<ParsedPlayer> parsedPlayers, int studentNumberDigits) {
+        Set<String> originalStudentNumbers = extractStudentNumbers(message);
 
         List<NlParseResponse.ParsedPlayerPreview> playerPreviews = new ArrayList<>();
         List<NlFailedLine> failedLines = new ArrayList<>();
-        classifyWithoutTeamContext(parsedPlayers, originalNineDigits, playerPreviews, failedLines);
+        classifyWithoutTeamContext(parsedPlayers, originalStudentNumbers, playerPreviews, failedLines, studentNumberDigits);
 
         String displayMessage = String.format("%d명의 선수가 인식되었습니다.", playerPreviews.size());
         NlParseResponse.Preview preview = new NlParseResponse.Preview(playerPreviews, playerPreviews.size(), failedLines);
         return new NlParseResponse(displayMessage, preview);
     }
 
-    private void classifyWithoutTeamContext(List<ParsedPlayer> parsedPlayers, Set<String> originalNineDigits,
+    private void classifyWithoutTeamContext(List<ParsedPlayer> parsedPlayers, Set<String> originalStudentNumbers,
                                              List<NlParseResponse.ParsedPlayerPreview> playerPreviews,
-                                             List<NlFailedLine> failedLines) {
+                                             List<NlFailedLine> failedLines, int studentNumberDigits) {
         Set<String> seenStudentNumbers = new HashSet<>();
 
         for (int i = 0; i < parsedPlayers.size(); i++) {
             ParsedPlayer parsed = parsedPlayers.get(i);
 
-            NlFailedLine failedLine = validateParsedPlayer(i, parsed, originalNineDigits);
+            NlFailedLine failedLine = validateParsedPlayer(i, parsed, originalStudentNumbers, studentNumberDigits);
             if (failedLine != null) {
                 failedLines.add(failedLine);
                 continue;
@@ -357,19 +360,6 @@ public class NlService {
         if (StudentNumber.isInvalid(parsed.studentNumber(), digits)) {
             return new NlFailedLine(index + 1, parsed.studentNumber(),
                     String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits));
-        }
-        if (!originalStudentNumbers.contains(parsed.studentNumber())) {
-            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
-        }
-        if (!isValidName(parsed.name())) {
-            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME);
-        }
-        return null;
-    }
-
-    private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Set<String> originalStudentNumbers) {
-        if (StudentNumber.isInvalid(parsed.studentNumber())) {
-            return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.STUDENT_NUMBER_INVALID);
         }
         if (!originalStudentNumbers.contains(parsed.studentNumber())) {
             return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
