@@ -288,6 +288,29 @@ class NlServiceTest {
             assertThat(response.preview()).isNull();
             assertThat(response.displayMessage()).isEqualTo("선수 정보를 입력해주세요.");
         }
+
+        @Test
+        @DisplayName("계정 자릿수와 다른 학번은 Gemini 결과와 무관하게 failedLines에 포함된다")
+        void 자릿수_불일치_학번_failedLines_포함() {
+            // given: 10자리 계정인데 원문에 9자리 학번이 섞여 있고 Gemini가 이를 누락
+            given(mockMember.getOrganization().getStudentNumberDigits()).willReturn(10);
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "경희일 1234543221 12\n경희이 123456789 2"
+            );
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("경희일", "1234543221", 12)
+                    )));
+
+            // when
+            NlParseResponse response = nlService.parse(request, mockMember);
+
+            // then
+            assertThat(response.preview().players()).hasSize(1);
+            assertThat(response.preview().parseFailedLines())
+                    .extracting(NlFailedLine::studentNumber)
+                    .contains("123456789");
+        }
     }
 
     @Nested

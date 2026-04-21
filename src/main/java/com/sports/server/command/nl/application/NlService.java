@@ -176,6 +176,8 @@ public class NlService {
             Player existingPlayer = existingPlayerMap.get(parsed.studentNumber());
             playerPreviews.add(classifyPlayer(parsed, existingPlayer, teamPlayerIdSet));
         }
+
+        addDigitMismatchFailures(originalStudentNumbers, studentNumberDigits, failedLines);
     }
 
     private PlayerPreview classifyPlayer(ParsedPlayer parsed, Player existingPlayer, Set<Long> teamPlayerIdSet) {
@@ -243,6 +245,8 @@ public class NlService {
                     parsed.name(), parsed.studentNumber(), parsed.jerseyNumber()
             ));
         }
+
+        addDigitMismatchFailures(originalStudentNumbers, studentNumberDigits, failedLines);
     }
 
     @Transactional(readOnly = true)
@@ -368,6 +372,26 @@ public class NlService {
             return new NlFailedLine(index + 1, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME);
         }
         return null;
+    }
+
+    private void addDigitMismatchFailures(Set<String> originalStudentNumbers, int digits, List<NlFailedLine> failedLines) {
+        Set<String> alreadyReported = failedLines.stream()
+                .map(NlFailedLine::studentNumber)
+                .collect(Collectors.toSet());
+
+        for (String studentNumber : originalStudentNumbers) {
+            if (studentNumber.length() == digits) {
+                continue;
+            }
+            if (!alreadyReported.add(studentNumber)) {
+                continue;
+            }
+            failedLines.add(new NlFailedLine(
+                    failedLines.size() + 1,
+                    studentNumber,
+                    String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits)
+            ));
+        }
     }
 
     private Map<String, Player> findExistingPlayerMap(List<String> studentNumbers) {
