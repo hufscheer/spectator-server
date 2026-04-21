@@ -135,15 +135,9 @@ public class TeamQueryService {
             return null;
         }
         if (organizationId != null) {
-            return unitNames.stream()
-                    .map(name -> unitRepository.findByNameAndOrganizationId(name, organizationId))
-                    .flatMap(Optional::stream)
-                    .toList();
+            return unitRepository.findAllByNameInAndOrganizationId(unitNames, organizationId);
         }
-        return unitNames.stream()
-                .map(unitRepository::findAllByName)
-                .flatMap(List::stream)
-                .toList();
+        return unitRepository.findAllByNameIn(unitNames);
     }
 
     private Map<Long, TeamDetailResponse.TeamGameResult> getTeamGameResults(List<Long> teamIds) {

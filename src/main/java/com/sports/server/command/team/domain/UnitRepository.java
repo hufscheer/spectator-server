@@ -11,5 +11,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
 
     Optional<Unit> findByNameAndOrganizationId(String name, Long organizationId);
 
-    List<Unit> findAllByName(String name);
+    List<Unit> findAllByNameInAndOrganizationId(List<String> names, Long organizationId);
+
+    List<Unit> findAllByNameIn(List<String> names);
 }
