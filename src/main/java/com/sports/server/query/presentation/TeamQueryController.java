@@ -1,6 +1,7 @@
 package com.sports.server.query.presentation;
 
 import com.sports.server.command.league.domain.SportType;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.TeamQueryService;
 import com.sports.server.query.dto.response.*;
@@ -27,8 +28,9 @@ public class TeamQueryController {
     @GetMapping
     public ResponseEntity<List<TeamResponse>> getAllTeams(
             @RequestParam(required = false) final List<String> units,
-            @RequestParam(required = false) final SportType sportType) {
-        return ResponseEntity.ok(teamQueryService.getAllTeamsByUnits(units, sportType));
+            @RequestParam(required = false) final SportType sportType,
+            final Member member) {
+        return ResponseEntity.ok(teamQueryService.getAllTeamsByUnits(units, sportType, member));
     }
 
     @GetMapping("/{teamId}")

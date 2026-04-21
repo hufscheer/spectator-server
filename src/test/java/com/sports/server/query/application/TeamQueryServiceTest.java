@@ -1,7 +1,9 @@
 package com.sports.server.query.application;
 
 import com.sports.server.command.league.application.LeagueStatisticsService;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.exception.TeamErrorMessages;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.support.ServiceTest;
@@ -30,6 +32,9 @@ public class TeamQueryServiceTest extends ServiceTest {
 
     @Autowired
     private LeagueStatisticsService leagueStatisticsService;
+
+    @Autowired
+    private EntityUtils entityUtils;
 
     @Nested
     @DisplayName("단과대별 팀 유무 조회 시")
@@ -67,10 +72,19 @@ public class TeamQueryServiceTest extends ServiceTest {
     @DisplayName("단위별 팀 목록 조회 시")
     class GetAllTeamsByUnitsTest {
 
+        private Member org1Member;
+        private Member org2Member;
+
+        @BeforeEach
+        void setUp() {
+            org1Member = entityUtils.getEntity(1L, Member.class);
+            org2Member = entityUtils.getEntity(2L, Member.class);
+        }
+
         @Test
-        void 필터링할_단위가_없으면_모든_팀을_조회한다() {
+        void 필터링할_단위가_없으면_해당_조직의_모든_팀을_조회한다() {
             // when
-            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null);
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null, org1Member);
 
             // then
             assertThat(responses).hasSize(7);
@@ -82,7 +96,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("사회과학대학");
 
             // when
-            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null);
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null, org1Member);
 
             // then
             assertAll(
@@ -98,7 +112,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("사회과학대학", "기타");
 
             // when
-            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null);
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null, org1Member);
 
             // then
             assertAll(
@@ -112,9 +126,21 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("INVALID UNIT");
 
             // when & then
-            assertThatThrownBy(() -> teamQueryService.getAllTeamsByUnits(units, null))
+            assertThatThrownBy(() -> teamQueryService.getAllTeamsByUnits(units, null, org1Member))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
+        }
+
+        @Test
+        void 다른_조직의_멤버는_해당_조직의_팀만_조회한다() {
+            // when
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null, org2Member);
+
+            // then
+            assertAll(
+                    () -> assertThat(responses).hasSize(1),
+                    () -> assertThat(responses.get(0).name()).isEqualTo("다른조직팀")
+            );
         }
     }
 

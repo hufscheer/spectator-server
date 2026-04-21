@@ -1,5 +1,6 @@
 package com.sports.server.query.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
 import com.sports.server.command.league.domain.SportType;
@@ -77,7 +78,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new TeamResponse(3L, "영어영문학과", "s3:logoImageUrl2", "영어대학", "#92A8D1", "SOCCER")
         );
 
-        given(teamQueryService.getAllTeamsByUnits(units, null)).willReturn(response);
+        given(teamQueryService.getAllTeamsByUnits(any(), any(), any())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams")
