@@ -23,9 +23,7 @@ import com.sports.server.command.player.presentation.PlayerController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.command.team.application.TeamService;
-import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.presentation.TeamController;
-import com.sports.server.command.team.presentation.TeamControllerTest;
 import com.sports.server.command.timeline.application.TimelineService;
 import com.sports.server.command.timeline.presentation.TimelineController;
 import com.sports.server.common.log.TimeLogTemplate;
@@ -59,6 +57,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 LeagueQueryController.class,
                 TeamController.class,
                 TeamQueryController.class,
+                TeamManagerQueryController.class,
                 TimelineQueryController.class,
                 AuthController.class,
                 LeagueController.class,
