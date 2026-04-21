@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 @Sql(scripts = "/game-fixture.sql")
 public class LineupPlayerQueryServiceTest extends ServiceTest {
@@ -65,6 +66,7 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
     }
 
     @Test
+    @Transactional
     void 교체된_선수는_isPlaying_기준으로_starterPlayers와_candidatePlayers에_반영된다() {
 
         // given
