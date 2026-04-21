@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -308,8 +309,8 @@ class NlServiceTest {
             // then
             assertThat(response.preview().players()).hasSize(1);
             assertThat(response.preview().parseFailedLines())
-                    .extracting(NlFailedLine::studentNumber)
-                    .contains("123456789");
+                    .extracting(NlFailedLine::studentNumber, NlFailedLine::index)
+                    .contains(tuple("123456789", 2));
         }
     }
 
