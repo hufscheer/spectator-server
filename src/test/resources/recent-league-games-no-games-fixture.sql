@@ -6,9 +6,12 @@ VALUES (1, '테스트 조직', 9);
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (1, 1, 'test@test.com', 'password', TRUE, '2025-01-01 00:00:00');
 
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'BUSINESS', '팀 A', 'http://logo.com/a.png', '#FF0000'),
-       (2, 'BUSINESS', '팀 B', 'http://logo.com/b.png', '#0000FF');
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '경영대학', 1);
+
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '팀 A', 'http://logo.com/a.png', '#FF0000'),
+       (2, 1, '팀 B', 'http://logo.com/b.png', '#0000FF');
 
 -- 진행 중인 리그이지만 경기가 없음
 INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round, in_progress_round)

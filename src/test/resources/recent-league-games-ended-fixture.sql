@@ -6,9 +6,12 @@ VALUES (1, '테스트 조직', 9);
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (1, 1, 'test@test.com', 'password', TRUE, '2025-01-01 00:00:00');
 
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'BUSINESS', '팀 A', 'http://logo.com/a.png', '#FF0000'),
-       (2, 'BUSINESS', '팀 B', 'http://logo.com/b.png', '#0000FF');
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '경영대학', 1);
+
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '팀 A', 'http://logo.com/a.png', '#FF0000'),
+       (2, 1, '팀 B', 'http://logo.com/b.png', '#0000FF');
 
 -- 진행 중인 리그는 없음
 -- 리그 1, 2는 동일한 종료일(2025-12-31)로 가장 최근 종료

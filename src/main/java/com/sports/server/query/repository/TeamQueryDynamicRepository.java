@@ -14,5 +14,5 @@ public interface TeamQueryDynamicRepository {
 
     List<Team> findAllByUnitsAndSportType(List<Unit> units, SportType sportType, Long organizationId);
 
-    List<Unit> findDistinctUnitsBySportType(SportType sportType);
+    List<Unit> findDistinctUnitsBySportTypeAndOrganizationId(SportType sportType, Long organizationId);
 }
