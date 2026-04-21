@@ -34,8 +34,8 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
     @Column(name = "logo_image_url")
     private String logoImageUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "unit", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_id")
     private Unit unit;
 
     @Column(name = "team_color", nullable = false)
