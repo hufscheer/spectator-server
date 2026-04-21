@@ -23,8 +23,7 @@ public class TeamQueryController {
     public ResponseEntity<List<UnitResponse>> getUnitsWithTeams(
             @RequestParam(required = false) final SportType sportType,
             final Member member) {
-        Long organizationId = member.getOrganization().getId();
-        return ResponseEntity.ok(teamQueryService.getUnitsWithTeams(sportType, organizationId));
+        return ResponseEntity.ok(teamQueryService.getUnitsWithTeams(sportType, member));
     }
 
     @GetMapping

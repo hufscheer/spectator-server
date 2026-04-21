@@ -47,7 +47,8 @@ public class TeamQueryService {
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
-    public List<UnitResponse> getUnitsWithTeams(final SportType sportType, final Long organizationId) {
+    public List<UnitResponse> getUnitsWithTeams(final SportType sportType, final Member member) {
+        Long organizationId = member.getOrganization().getId();
         List<Unit> allUnits = unitRepository.findAllByOrganizationId(organizationId);
         Set<Unit> unitsWithTeam = new HashSet<>(
                 teamQueryDynamicRepository.findDistinctUnitsBySportTypeAndOrganizationId(sportType, organizationId)
@@ -123,6 +124,9 @@ public class TeamQueryService {
     private List<Team> findTeamsByUnits(final List<String> units, final SportType sportType,
                                          final Long organizationId) {
         List<Unit> targetUnits = resolveUnits(units, organizationId);
+        if (targetUnits != null && targetUnits.isEmpty()) {
+            return Collections.emptyList();
+        }
         return teamQueryDynamicRepository.findAllByUnitsAndSportType(targetUnits, sportType, organizationId);
     }
 
