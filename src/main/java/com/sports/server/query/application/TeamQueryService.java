@@ -69,15 +69,17 @@ public class TeamQueryService {
     }
 
     public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType) {
-        List<Team> teams = findTeamsByUnits(units, sportType);
-        return teams.stream()
-                .map(TeamResponse::new)
-                .toList();
+        return getAllTeamsByUnitsByOrganization(units, sportType, null);
     }
 
     public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType,
                                                     final Member member) {
         Long organizationId = member.getOrganization().getId();
+        return getAllTeamsByUnitsByOrganization(units, sportType, organizationId);
+    }
+
+    private List<TeamResponse> getAllTeamsByUnitsByOrganization(final List<String> units, final SportType sportType,
+                                                                   final Long organizationId) {
         List<Team> teams = findTeamsByUnits(units, sportType, organizationId);
         return teams.stream()
                 .map(TeamResponse::new)
