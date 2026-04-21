@@ -10,12 +10,18 @@ INSERT INTO members (id, organization_id, email, password, is_administrator, las
 VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'),
        (2, 2, 'non.manager@example.com', 'password123', FALSE, '2024-07-01 10:00:00');
 
+-- 단과대 생성
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '사회과학대학', 1),
+       (2, '기타', 1),
+       (3, '영어대학', 1);
+
 -- 팀 생성
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'SOCIAL_SCIENCES', '팀A', 'http://example.com/logo_a.png', '#FF0000'),
-       (2, 'ETC', '팀B', 'http://example.com/logo_b.png', '#0000FF'),
-       (3, 'ENGLISH', '팀C', 'http://example.com/logo_c.png', '#0000FF'),
-       (4, 'SOCIAL_SCIENCES', '팀D', 'http://example.com/logo_d.png', '#0000FF');
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '팀A', 'http://example.com/logo_a.png', '#FF0000'),
+       (2, 2, '팀B', 'http://example.com/logo_b.png', '#0000FF'),
+       (3, 3, '팀C', 'http://example.com/logo_c.png', '#0000FF'),
+       (4, 1, '팀D', 'http://example.com/logo_d.png', '#0000FF');
 
 -- 선수 생성
 INSERT INTO players (id, name, student_number)
