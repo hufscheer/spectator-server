@@ -96,7 +96,7 @@ class NlServiceTest {
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600002", 7)
@@ -128,7 +128,7 @@ class NlServiceTest {
             given(existingPlayer.getId()).willReturn(42L);
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
@@ -157,7 +157,7 @@ class NlServiceTest {
             given(existingPlayer.getId()).willReturn(42L);
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
@@ -181,7 +181,7 @@ class NlServiceTest {
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600001", 7)
@@ -211,7 +211,7 @@ class NlServiceTest {
                     List.of(), "홍길동 202600001 10\n김철수 202600002 7"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600002", 7)
@@ -235,7 +235,7 @@ class NlServiceTest {
                     List.of(), "홍길동 202600001 10\n김철수 202600001 7"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600001", 7)
@@ -257,7 +257,7 @@ class NlServiceTest {
                     List.of(), "홍길동 20260001 10"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
@@ -278,7 +278,7 @@ class NlServiceTest {
                     List.of(), "안녕하세요"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofText("선수 정보를 입력해주세요."));
 
             // when

@@ -55,7 +55,8 @@ public class NlService {
         Team team = entityUtils.getEntity(request.teamId(), Team.class);
         validateTeamBelongsToLeague(league, team);
 
-        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history());
+        int studentNumberDigits = member.getOrganization().getStudentNumberDigits();
+        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history(), studentNumberDigits);
 
         if (!parseResult.parsed()) {
             return new NlProcessResponse(
@@ -71,9 +72,10 @@ public class NlService {
         return buildProcessPreview(request, team, parseResult.players(), member.getOrganization());
     }
 
+    @Transactional(readOnly = true)
     public NlParseResponse parse(NlParseRequest request, Member member) {
         int studentNumberDigits = member.getOrganization().getStudentNumberDigits();
-        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history());
+        NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history(), studentNumberDigits);
 
         if (!parseResult.parsed()) {
             return new NlParseResponse(

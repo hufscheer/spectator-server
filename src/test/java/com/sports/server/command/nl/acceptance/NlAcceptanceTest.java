@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -37,7 +38,7 @@ public class NlAcceptanceTest extends AcceptanceTest {
     @Test
     void 선수_정보를_파싱하여_프리뷰를_반환한다() {
         // given
-        given(nlClient.parsePlayers(anyString(), anyList()))
+        given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                 .willReturn(NlParseResult.ofPlayers(List.of(
                         new ParsedPlayer("홍길동", "202600001", 10),
                         new ParsedPlayer("김철수", "202600002", 7)
@@ -70,7 +71,7 @@ public class NlAcceptanceTest extends AcceptanceTest {
     @Test
     void 팀_컨텍스트_없이_선수_정보를_파싱한다() {
         // given
-        given(nlClient.parsePlayers(anyString(), anyList()))
+        given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                 .willReturn(NlParseResult.ofPlayers(List.of(
                         new ParsedPlayer("홍길동", "202600001", 10),
                         new ParsedPlayer("김철수", "202600002", 7)
@@ -177,7 +178,7 @@ public class NlAcceptanceTest extends AcceptanceTest {
     @Test
     void 기존_선수를_다른_팀에_배정한다() {
         // given: player 1(진승희, 202101001)은 team 3에 소속, team 1에는 미소속
-        given(nlClient.parsePlayers(anyString(), anyList()))
+        given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                 .willReturn(NlParseResult.ofPlayers(List.of(
                         new ParsedPlayer("진승희", "202101001", 5)
                 )));
