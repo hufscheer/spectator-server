@@ -11,11 +11,12 @@ VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'
        (2, 2, 'non.manager@example.com', 'password123', FALSE, '2024-07-01 10:00:00');
 
 
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'SOCIAL_SCIENCES', '팀A', 'http://example.com/logo_a.png', '#FF0000'),
-       (2, 'ETC', '팀B', 'http://example.com/logo_b.png', '#0000FF'),
-       (3, 'ENGLISH', '팀C', 'http://example.com/logo_c.png', '#0000FF'),
-       (4, 'SOCIAL_SCIENCES', '팀D', 'http://example.com/logo_d.png', '#0000FF');
+INSERT INTO teams (id, unit, name, logo_image_url, team_color, organization_id)
+VALUES (1, 'SOCIAL_SCIENCES', '팀A', 'http://example.com/logo_a.png', '#FF0000', 1),
+       (2, 'ETC', '팀B', 'http://example.com/logo_b.png', '#0000FF', 1),
+       (3, 'ENGLISH', '팀C', 'http://example.com/logo_c.png', '#0000FF', 1),
+       (4, 'SOCIAL_SCIENCES', '팀D', 'http://example.com/logo_d.png', '#0000FF', 1),
+       (20, 'BUSINESS', '다른조직팀', 'http://example.com/logo_other.png', '#00FF00', 2);
 
 
 INSERT INTO players (id, name, student_number)
@@ -159,10 +160,10 @@ VALUES ('GAME_PROGRESS', 1, 'POST_GAME', 20, 'GAME_END', 1, 2, 2, 3, 'PENALTY_SH
 
 -- === 최근 경기 조회 위한 데이터 ===
 
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (10, 'ETC', '게임없는팀', 'image', '#000000'),
-       (11, 'ETC', '게임2개팀', 'image', '#00FF00'),
-       (12, 'ETC', '게임많은팀', 'image', '#FF00FF');
+INSERT INTO teams (id, unit, name, logo_image_url, team_color, organization_id)
+VALUES (10, 'ETC', '게임없는팀', 'image', '#000000', 1),
+       (11, 'ETC', '게임2개팀', 'image', '#00FF00', 1),
+       (12, 'ETC', '게임많은팀', 'image', '#FF00FF', 1);
 
 INSERT INTO players (id, name, student_number)
 VALUES (20, '선수20', '202400001'),
