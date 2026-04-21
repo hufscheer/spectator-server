@@ -30,24 +30,14 @@ public class TeamQueryControllerTest extends DocumentationTest {
     void 단과대별_팀_유무를_조회한다() throws Exception {
         // given
         List<UnitResponse> response = List.of(
-                new UnitResponse("ENGLISH", "영어대학", true),
-                new UnitResponse("OCCIDENTAL_LANGUAGES", "서양어대학", false),
-                new UnitResponse("ASIAN_LANGUAGES_AND_CULTURE", "아시아언어문화대학", false),
-                new UnitResponse("CHINESE_STUDIES", "중국학대학", false),
-                new UnitResponse("JAPANESE_STUDIES", "일본어대학", false),
-                new UnitResponse("SOCIAL_SCIENCES", "사회과학대학", true),
-                new UnitResponse("BUSINESS_AND_ECONOMICS", "상경대학", false),
-                new UnitResponse("BUSINESS", "경영대학", true),
-                new UnitResponse("EDUCATION", "사범대학", false),
-                new UnitResponse("AI_CONVERGENCE", "AI융합대학", false),
-                new UnitResponse("INTERNATIONAL_STUDIES", "국제학부", false),
-                new UnitResponse("LD_AND_LT", "LD/LT학부", false),
-                new UnitResponse("KOREAN_AS_A_FOREIGN_LANGUAGE", "KFL학부", false),
-                new UnitResponse("LIBERAL_ARTS", "자유전공학부", false),
-                new UnitResponse("ETC", "기타", false)
+                new UnitResponse(1L, "영어대학", true),
+                new UnitResponse(2L, "서양어대학", false),
+                new UnitResponse(3L, "사회과학대학", true),
+                new UnitResponse(4L, "경영대학", true),
+                new UnitResponse(5L, "기타", false)
         );
 
-        given(teamQueryService.getUnitsWithTeams(SportType.SOCCER)).willReturn(response);
+        given(teamQueryService.getUnitsWithTeams(any(), any())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/units")
@@ -61,7 +51,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                                 parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional()
                         ),
                         responseFields(
-                                fieldWithPath("[].unit").type(JsonFieldType.STRING).description("단과대 코드"),
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("단과대 ID"),
                                 fieldWithPath("[].unitName").type(JsonFieldType.STRING).description("단과대 이름"),
                                 fieldWithPath("[].hasTeam").type(JsonFieldType.BOOLEAN).description("해당 단과대에 팀 존재 여부")
                         )

@@ -1,5 +1,6 @@
 package com.sports.server.command.team.domain;
 
+import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.common.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,9 +22,10 @@ public class TeamTest {
 
         @BeforeEach
         void setUp() {
+            Unit unit = new Unit("사회과학대학", null);
             team = Team.builder()
                     .name("팀1")
-                    .unit(Unit.SOCIAL_SCIENCES)
+                    .unit(unit)
                     .logoImageUrl("image-url")
                     .teamColor("color")
                     .build();

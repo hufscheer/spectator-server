@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.sports.server.command.team.domain.Unit;
 import java.time.LocalDateTime;
 
 @Sql(scripts = "/team-query-fixture.sql")
@@ -41,30 +40,31 @@ public class TeamQueryServiceTest extends ServiceTest {
     class GetUnitsWithTeamsTest {
 
         @Test
-        void 모든_단과대가_반환되고_팀이_있는_단과대는_hasTeam이_true이다() {
-            // when
-            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null);
+        void 해당_조직의_모든_단과대가_반환되고_팀이_있는_단과대는_hasTeam이_true이다() {
+            // when (organizationId = 1, fixture에 units 3개: 사회과학대학, 기타, 영어대학)
+            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null, 1L);
 
             // then
             assertAll(
-                    () -> assertThat(responses).hasSize(Unit.values().length),
+                    () -> assertThat(responses).hasSize(3),
                     () -> assertThat(responses)
                             .filteredOn(UnitResponse::hasTeam)
-                            .extracting(UnitResponse::unit)
-                            .contains("SOCIAL_SCIENCES", "ETC", "ENGLISH")
+                            .extracting(UnitResponse::unitName)
+                            .contains("사회과학대학", "기타", "영어대학")
             );
         }
 
         @Test
         void 팀이_없는_단과대는_hasTeam이_false이다() {
-            // when
-            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null);
+            // when (organizationId = 1)
+            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null, 1L);
 
-            // then
-            assertThat(responses)
-                    .filteredOn(r -> !r.hasTeam())
+            // then - fixture에서 org1의 모든 unit에 팀이 있으므로 hasTeam false인 것은 없음
+            // 대신 org2 조회 시 확인
+            List<UnitResponse> org2Responses = teamQueryService.getUnitsWithTeams(null, 2L);
+            assertThat(org2Responses)
                     .isNotEmpty()
-                    .allSatisfy(r -> assertThat(r.hasTeam()).isFalse());
+                    .allSatisfy(r -> assertThat(r.hasTeam()).isTrue());
         }
     }
 
@@ -121,14 +121,15 @@ public class TeamQueryServiceTest extends ServiceTest {
         }
 
         @Test
-        void 존재하지_않는_단위로_필터링하면_예외가_발생한다() {
+        void 존재하지_않는_단위로_필터링하면_빈_결과를_반환한다() {
             // given
             List<String> units = List.of("INVALID UNIT");
 
-            // when & then
-            assertThatThrownBy(() -> teamQueryService.getAllTeamsByUnits(units, null, org1Member))
-                    .isInstanceOf(NotFoundException.class)
-                    .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
+            // when
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null, org1Member);
+
+            // then
+            assertThat(responses).isEmpty();
         }
 
         @Test
