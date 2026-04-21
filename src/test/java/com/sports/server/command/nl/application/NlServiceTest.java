@@ -218,7 +218,7 @@ class NlServiceTest {
                     )));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview()).isNotNull();
@@ -242,7 +242,7 @@ class NlServiceTest {
                     )));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview().players()).hasSize(1);
@@ -263,7 +263,7 @@ class NlServiceTest {
                     )));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview().players()).isEmpty();
@@ -282,7 +282,7 @@ class NlServiceTest {
                     .willReturn(NlParseResult.ofText("선수 정보를 입력해주세요."));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview()).isNull();

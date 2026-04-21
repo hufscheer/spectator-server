@@ -74,7 +74,7 @@ public class NlGeminiClient implements NlClient {
                                             "type", "OBJECT",
                                             "properties", Map.of(
                                                     "name", Map.of("type", "STRING", "description", "선수 이름"),
-                                                    "studentNumber", Map.of("type", "STRING", "description", "9자리 학번"),
+                                                    "studentNumber", Map.of("type", "STRING", "description", "9자리 또는 10자리 학번"),
                                                     "jerseyNumber", Map.of("type", "INTEGER", "description", "등번호 (1~99)")
                                             ),
                                             "required", List.of("name", "studentNumber")
