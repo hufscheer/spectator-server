@@ -21,8 +21,10 @@ public class TeamQueryController {
 
     @GetMapping("/units")
     public ResponseEntity<List<UnitResponse>> getUnitsWithTeams(
-            @RequestParam(required = false) final SportType sportType) {
-        return ResponseEntity.ok(teamQueryService.getUnitsWithTeams(sportType));
+            @RequestParam(required = false) final SportType sportType,
+            final Member member) {
+        Long organizationId = member.getOrganization().getId();
+        return ResponseEntity.ok(teamQueryService.getUnitsWithTeams(sportType, organizationId));
     }
 
     @GetMapping

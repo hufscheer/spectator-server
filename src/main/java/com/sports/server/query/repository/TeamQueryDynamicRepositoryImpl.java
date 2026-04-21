@@ -70,11 +70,14 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
     }
 
     @Override
-    public List<Unit> findDistinctUnitsBySportType(final SportType sportType) {
+    public List<Unit> findDistinctUnitsBySportTypeAndOrganizationId(final SportType sportType, final Long organizationId) {
         return jpaQueryFactory
                 .select(team.unit).distinct()
                 .from(team)
-                .where(teamsWithSportType(sportType))
+                .where(
+                        teamsWithSportType(sportType),
+                        teamsInOrganization(organizationId)
+                )
                 .fetch();
     }
 

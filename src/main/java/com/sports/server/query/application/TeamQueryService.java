@@ -42,14 +42,17 @@ public class TeamQueryService {
     private final TeamQueryRepository teamQueryRepository;
     private final TeamQueryDynamicRepository teamQueryDynamicRepository;
     private final TeamPlayerRepository teamPlayerRepository;
+    private final UnitRepository unitRepository;
     private final GameTeamRepository gameTeamRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
-    public List<UnitResponse> getUnitsWithTeams(final SportType sportType) {
-        List<Unit> distinctUnits = teamQueryDynamicRepository.findDistinctUnitsBySportType(sportType);
-        Set<Unit> unitsWithTeam = distinctUnits.isEmpty() ? EnumSet.noneOf(Unit.class) : EnumSet.copyOf(distinctUnits);
-        return Arrays.stream(Unit.values())
+    public List<UnitResponse> getUnitsWithTeams(final SportType sportType, final Long organizationId) {
+        List<Unit> allUnits = unitRepository.findAllByOrganizationId(organizationId);
+        Set<Unit> unitsWithTeam = new HashSet<>(
+                teamQueryDynamicRepository.findDistinctUnitsBySportTypeAndOrganizationId(sportType, organizationId)
+        );
+        return allUnits.stream()
                 .map(unit -> UnitResponse.of(unit, unitsWithTeam.contains(unit)))
                 .toList();
     }
@@ -119,8 +122,24 @@ public class TeamQueryService {
 
     private List<Team> findTeamsByUnits(final List<String> units, final SportType sportType,
                                          final Long organizationId) {
-        List<Unit> targetUnits = (units == null || units.isEmpty()) ? null : Unit.fromNames(units);
+        List<Unit> targetUnits = resolveUnits(units, organizationId);
         return teamQueryDynamicRepository.findAllByUnitsAndSportType(targetUnits, sportType, organizationId);
+    }
+
+    private List<Unit> resolveUnits(final List<String> unitNames, final Long organizationId) {
+        if (unitNames == null || unitNames.isEmpty()) {
+            return null;
+        }
+        if (organizationId != null) {
+            return unitNames.stream()
+                    .map(name -> unitRepository.findByNameAndOrganizationId(name, organizationId))
+                    .flatMap(Optional::stream)
+                    .toList();
+        }
+        return unitNames.stream()
+                .map(unitRepository::findAllByName)
+                .flatMap(List::stream)
+                .toList();
     }
 
     private Map<Long, TeamDetailResponse.TeamGameResult> getTeamGameResults(List<Long> teamIds) {
