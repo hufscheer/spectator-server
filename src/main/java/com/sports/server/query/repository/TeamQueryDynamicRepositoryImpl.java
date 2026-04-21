@@ -30,6 +30,7 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
         return jpaQueryFactory
                 .selectFrom(leagueTeam)
                 .join(leagueTeam.team, team).fetchJoin()
+                .join(team.unit).fetchJoin()
                 .where(
                         leagueTeam.league.eq(league),
                         teamsPlayedInRound(league, roundNumber)
@@ -43,6 +44,7 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
                                                   final Long organizationId) {
         return jpaQueryFactory
                 .selectFrom(team)
+                .join(team.unit).fetchJoin()
                 .where(
                         teamsInUnits(units),
                         teamsWithSportType(sportType),
