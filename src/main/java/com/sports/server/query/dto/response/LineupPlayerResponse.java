@@ -38,11 +38,11 @@ public class LineupPlayerResponse {
 					gameTeam.getId(),
 					gameTeam.getTeam().getName(),
 					lineupPlayers.stream()
-							.filter(lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.STARTER))
+							.filter(LineupPlayer::isPlaying)
 							.map(LineupPlayerResponse.PlayerResponse::new)
 							.toList(),
 					lineupPlayers.stream()
-							.filter(lineupPlayer -> lineupPlayer.getState().equals(LineupPlayerState.CANDIDATE))
+							.filter(lineupPlayer -> !lineupPlayer.isPlaying())
 							.map(LineupPlayerResponse.PlayerResponse::new)
 							.toList()
 			);

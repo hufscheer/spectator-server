@@ -3,7 +3,6 @@ package com.sports.server.query.application;
 import static org.junit.Assert.assertEquals;
 
 import com.sports.server.command.game.domain.LineupPlayer;
-import com.sports.server.command.timeline.application.TimelineService;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
 import com.sports.server.support.ServiceTest;
@@ -20,9 +19,6 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
 
     @Autowired
     private LineupPlayerQueryService lineupPlayerQueryService;
-
-    @Autowired
-    private TimelineService timelineService;
 
     @Autowired
     private EntityUtils entityUtils;
@@ -68,28 +64,35 @@ public class LineupPlayerQueryServiceTest extends ServiceTest {
                 .containsOnly(true);
     }
 
-//    @Test
-//    void 교체_타임라인이_등록되면_교체선수_정보가_등록된다() {
-//
-//        // given
-//        Long gameId = 1L;
-//        Long originLineupPlayerId = 2L;
-//        Long replaceLineupPlayerId = 1L;
-//        Member manager = entityUtils.getEntity(1L, Member.class);
-//        TimelineRequest timelineRequest = new TimelineRequest.RegisterReplacement(1L, 1L,
-//                originLineupPlayerId, replaceLineupPlayerId, 2);
-//        timelineService.register(manager, gameId, timelineRequest);
-//
-//        // when
-//        List<LineupPlayerResponse.All> responses = lineupPlayerQueryService.getLineup(gameId);
-//
-//        // then
-//        Long replacedPlayerId = responses.get(0).candidatePlayers().stream()
-//                .filter(playerResponse -> playerResponse.id().equals(replaceLineupPlayerId))
-//                .map(player -> player.replacedPlayer().id())
-//                .findFirst()
-//                .orElse(null); // 값이 없으면 null 반환
-//        Assertions.assertThat(originLineupPlayerId).isEqualTo(replacedPlayerId);
-//
-//    }
+    @Test
+    void 교체된_선수는_isPlaying_기준으로_starterPlayers와_candidatePlayers에_반영된다() {
+
+        // given
+        Long gameId = 1L;
+        Long gameTeamId = 1L;
+        Long originLineupPlayerId = 5L;       // STARTER, isPlaying=true
+        Long replacementLineupPlayerId = 1L;  // CANDIDATE, isPlaying=false
+        LineupPlayer origin = entityUtils.getEntity(originLineupPlayerId, LineupPlayer.class);
+        LineupPlayer replacement = entityUtils.getEntity(replacementLineupPlayerId, LineupPlayer.class);
+
+        origin.deactivatePlayerInGame();
+        replacement.activatePlayerInGame();
+
+        // when
+        List<LineupPlayerResponse.All> responses = lineupPlayerQueryService.getLineup(gameId);
+        LineupPlayerResponse.All teamLineup = responses.stream()
+                .filter(r -> r.gameTeamId().equals(gameTeamId))
+                .findFirst()
+                .orElseThrow();
+
+        // then
+        Assertions.assertThat(teamLineup.starterPlayers())
+                .map(LineupPlayerResponse.PlayerResponse::lineupPlayerId)
+                .contains(replacementLineupPlayerId)
+                .doesNotContain(originLineupPlayerId);
+        Assertions.assertThat(teamLineup.candidatePlayers())
+                .map(LineupPlayerResponse.PlayerResponse::lineupPlayerId)
+                .contains(originLineupPlayerId)
+                .doesNotContain(replacementLineupPlayerId);
+    }
 }
