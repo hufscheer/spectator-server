@@ -15,11 +15,11 @@ public class TeamRequest {
             List<TeamPlayerRegister> teamPlayers,
             SportType sportType
     ) {
-        public Team toEntity(String logoImageUrl) {
+        public Team toEntity(String logoImageUrl, Unit unit) {
             return Team.builder()
                     .name(this.name)
                     .logoImageUrl(logoImageUrl)
-                    .unit(Unit.from(this.unit))
+                    .unit(unit)
                     .teamColor(this.teamColor)
                     .sportType(this.sportType)
                     .build();

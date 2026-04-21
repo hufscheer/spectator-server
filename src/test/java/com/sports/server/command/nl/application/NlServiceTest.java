@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -96,7 +97,7 @@ class NlServiceTest {
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600002", 7)
@@ -128,7 +129,7 @@ class NlServiceTest {
             given(existingPlayer.getId()).willReturn(42L);
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
@@ -157,7 +158,7 @@ class NlServiceTest {
             given(existingPlayer.getId()).willReturn(42L);
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
@@ -181,7 +182,7 @@ class NlServiceTest {
             );
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600001", 7)
@@ -211,14 +212,14 @@ class NlServiceTest {
                     List.of(), "홍길동 202600001 10\n김철수 202600002 7"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600002", 7)
                     )));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview()).isNotNull();
@@ -235,14 +236,14 @@ class NlServiceTest {
                     List.of(), "홍길동 202600001 10\n김철수 202600001 7"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600001", 7)
                     )));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview().players()).hasSize(1);
@@ -257,13 +258,13 @@ class NlServiceTest {
                     List.of(), "홍길동 20260001 10"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview().players()).isEmpty();
@@ -278,15 +279,38 @@ class NlServiceTest {
                     List.of(), "안녕하세요"
             );
 
-            given(nlClient.parsePlayers(anyString(), anyList()))
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
                     .willReturn(NlParseResult.ofText("선수 정보를 입력해주세요."));
 
             // when
-            NlParseResponse response = nlService.parse(request);
+            NlParseResponse response = nlService.parse(request, mockMember);
 
             // then
             assertThat(response.preview()).isNull();
             assertThat(response.displayMessage()).isEqualTo("선수 정보를 입력해주세요.");
+        }
+
+        @Test
+        @DisplayName("계정 자릿수와 다른 학번은 Gemini 결과와 무관하게 failedLines에 포함된다")
+        void 자릿수_불일치_학번_failedLines_포함() {
+            // given: 10자리 계정인데 원문에 9자리 학번이 섞여 있고 Gemini가 이를 누락
+            given(mockMember.getOrganization().getStudentNumberDigits()).willReturn(10);
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "경희일 1234543221 12\n경희이 123456789 2"
+            );
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("경희일", "1234543221", 12)
+                    )));
+
+            // when
+            NlParseResponse response = nlService.parse(request, mockMember);
+
+            // then
+            assertThat(response.preview().players()).hasSize(1);
+            assertThat(response.preview().parseFailedLines())
+                    .extracting(NlFailedLine::studentNumber, NlFailedLine::index)
+                    .contains(tuple("123456789", 2));
         }
     }
 

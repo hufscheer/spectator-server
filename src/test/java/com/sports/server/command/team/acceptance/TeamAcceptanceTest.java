@@ -5,6 +5,7 @@ import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.command.team.domain.Unit;
+import com.sports.server.command.team.domain.UnitRepository;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -30,6 +31,9 @@ public class TeamAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private TeamPlayerRepository teamPlayerRepository;
+
+    @Autowired
+    private UnitRepository unitRepository;
 
     @Value("${image.origin-prefix}")
     private String originPrefix;
@@ -69,10 +73,11 @@ public class TeamAcceptanceTest extends AcceptanceTest {
     @Test
     void 팀_정보를_수정한다() {
         // given
+        Unit unit = unitRepository.findByNameAndOrganizationId("사회과학대학", 1L).orElseThrow();
         Team savedTeam = teamRepository.save(Team.builder()
                 .name("정치외교학과 PSD")
                 .teamColor("team color")
-                .unit(Unit.SOCIAL_SCIENCES)
+                .unit(unit)
                 .logoImageUrl(originPrefix + "logo-url").build());
 
         TeamRequest.Update request = new TeamRequest.Update(
@@ -145,10 +150,11 @@ public class TeamAcceptanceTest extends AcceptanceTest {
     @Test
     void 팀을_삭제한다() {
         // given
+        Unit unit = unitRepository.findByNameAndOrganizationId("사회과학대학", 1L).orElseThrow();
         Team savedTeam = teamRepository.save(Team.builder()
                 .name("정치외교학과 PSD")
                 .teamColor("team color")
-                .unit(Unit.SOCIAL_SCIENCES)
+                .unit(unit)
                 .logoImageUrl(originPrefix + "logo-url").build());
 
         configureMockJwtForEmail("john@example.com");

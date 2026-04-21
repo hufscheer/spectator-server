@@ -33,8 +33,8 @@ public class NlController {
     }
 
     @PostMapping("/parse")
-    public ResponseEntity<NlParseResponse> parse(@Valid @RequestBody NlParseRequest request) {
-        return ResponseEntity.ok(nlService.parse(request));
+    public ResponseEntity<NlParseResponse> parse(@Valid @RequestBody NlParseRequest request, Member member) {
+        return ResponseEntity.ok(nlService.parse(request, member));
     }
 
     @PostMapping("/register-team")

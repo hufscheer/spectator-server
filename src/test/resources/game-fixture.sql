@@ -14,14 +14,24 @@ VALUES (1, 1, 'john.doe@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn
        (5, 1, 'carol.white@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', TRUE, '2024-07-05 16:10:00');
 
 
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'OCCIDENTAL_LANGUAGES', '팀 A', 'http://example.com/logo_a.png', '#FF0000'),
-       (2, 'ENGLISH', '팀 B', 'http://example.com/logo_b.png', '#0000FF'),
-       (3, 'JAPANESE_STUDIES', '팀 C', 'http://example.com/logo_c.png', '#00FF00'),
-       (4, 'BUSINESS_AND_ECONOMICS', '팀 D', 'http://example.com/logo_d.png', '#FFFF00'),
-       (5, 'AI_CONVERGENCE', '팀 E', 'http://example.com/logo_e.png', '#800080'),
-       (6, 'LD_AND_LT', '팀 F', 'http://example.com/logo_e.png', '#FF0000'),
-       (7, 'ETC', '팀 G', 'http://example.com/logo_e.png', '#00FF00');
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '서양어대학', 1),
+       (2, '영어대학', 1),
+       (3, '일본어대학', 1),
+       (4, '상경대학', 1),
+       (5, 'AI융합대학', 1),
+       (6, 'LD/LT학부', 1),
+       (7, '기타', 1);
+
+
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '팀 A', 'http://example.com/logo_a.png', '#FF0000'),
+       (2, 2, '팀 B', 'http://example.com/logo_b.png', '#0000FF'),
+       (3, 3, '팀 C', 'http://example.com/logo_c.png', '#00FF00'),
+       (4, 4, '팀 D', 'http://example.com/logo_d.png', '#FFFF00'),
+       (5, 5, '팀 E', 'http://example.com/logo_e.png', '#800080'),
+       (6, 6, '팀 F', 'http://example.com/logo_e.png', '#FF0000'),
+       (7, 7, '팀 G', 'http://example.com/logo_e.png', '#00FF00');
 
 
 INSERT INTO players (id, name, student_number)
