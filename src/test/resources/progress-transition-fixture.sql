@@ -87,7 +87,6 @@ VALUES
     (17, 1, 2, '농구_4Q_진행_중',      '2024-01-01 10:00:00', null, '2024-01-01 11:15:00', 'FOURTH_QUARTER', 'PLAYING',   '4강', FALSE),
     (18, 1, 2, '농구_4Q_종료_후',      '2024-01-01 10:00:00', null, '2024-01-01 11:30:00', 'FOURTH_QUARTER', 'PLAYING',   '4강', FALSE),
     (19, 1, 2, '농구_OT_진행_중',      '2024-01-01 10:00:00', null, '2024-01-01 11:35:00', 'OVERTIME',       'PLAYING',   '4강', FALSE),
-    (20, 1, 2, '농구_OT_종료_후',      '2024-01-01 10:00:00', null, '2024-01-01 11:45:00', 'OVERTIME',       'PLAYING',   '4강', FALSE),
     (21, 1, 2, '농구_경기_종료',       '2024-01-01 10:00:00', null, '2024-01-01 12:00:00', 'POST_GAME',      'FINISHED',  '4강', FALSE);
 
 -- Game 10: 타임라인 없음 (농구 경기 시작 전)
@@ -163,18 +162,5 @@ VALUES ('GAME_PROGRESS', 19, 'FIRST_QUARTER',  0,  'QUARTER_START', 'PRE_GAME', 
        ('GAME_PROGRESS', 19, 'FOURTH_QUARTER', 45, 'QUARTER_START', 'THIRD_QUARTER',  '2024-01-01 11:15:00'),
        ('GAME_PROGRESS', 19, 'FOURTH_QUARTER', 55, 'QUARTER_END',   'FOURTH_QUARTER', '2024-01-01 11:30:00'),
        ('GAME_PROGRESS', 19, 'OVERTIME',       60, 'QUARTER_START', 'FOURTH_QUARTER', '2024-01-01 11:35:00');
-
--- Game 20: ... → OT 종료
-INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, previous_quarter, previous_quarter_changed_at)
-VALUES ('GAME_PROGRESS', 20, 'FIRST_QUARTER',  0,  'QUARTER_START', 'PRE_GAME',       null),
-       ('GAME_PROGRESS', 20, 'FIRST_QUARTER',  10, 'QUARTER_END',   'FIRST_QUARTER',  '2024-01-01 10:00:00'),
-       ('GAME_PROGRESS', 20, 'SECOND_QUARTER', 15, 'QUARTER_START', 'FIRST_QUARTER',  '2024-01-01 10:15:00'),
-       ('GAME_PROGRESS', 20, 'SECOND_QUARTER', 25, 'QUARTER_END',   'SECOND_QUARTER', '2024-01-01 10:30:00'),
-       ('GAME_PROGRESS', 20, 'THIRD_QUARTER',  30, 'QUARTER_START', 'SECOND_QUARTER', '2024-01-01 10:45:00'),
-       ('GAME_PROGRESS', 20, 'THIRD_QUARTER',  40, 'QUARTER_END',   'THIRD_QUARTER',  '2024-01-01 11:00:00'),
-       ('GAME_PROGRESS', 20, 'FOURTH_QUARTER', 45, 'QUARTER_START', 'THIRD_QUARTER',  '2024-01-01 11:15:00'),
-       ('GAME_PROGRESS', 20, 'FOURTH_QUARTER', 55, 'QUARTER_END',   'FOURTH_QUARTER', '2024-01-01 11:30:00'),
-       ('GAME_PROGRESS', 20, 'OVERTIME',       60, 'QUARTER_START', 'FOURTH_QUARTER', '2024-01-01 11:35:00'),
-       ('GAME_PROGRESS', 20, 'OVERTIME',       65, 'QUARTER_END',   'OVERTIME',       '2024-01-01 11:45:00');
 
 SET foreign_key_checks = 1;
