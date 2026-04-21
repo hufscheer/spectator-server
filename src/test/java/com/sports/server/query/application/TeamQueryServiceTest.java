@@ -39,10 +39,19 @@ public class TeamQueryServiceTest extends ServiceTest {
     @DisplayName("단과대별 팀 유무 조회 시")
     class GetUnitsWithTeamsTest {
 
+        private Member org1Member;
+        private Member org2Member;
+
+        @BeforeEach
+        void setUp() {
+            org1Member = entityUtils.getEntity(1L, Member.class);
+            org2Member = entityUtils.getEntity(2L, Member.class);
+        }
+
         @Test
         void 해당_조직의_모든_단과대가_반환되고_팀이_있는_단과대는_hasTeam이_true이다() {
-            // when (organizationId = 1, fixture에 units 3개: 사회과학대학, 기타, 영어대학)
-            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null, 1L);
+            // when (fixture에 org1 units 3개: 사회과학대학, 기타, 영어대학)
+            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null, org1Member);
 
             // then
             assertAll(
@@ -56,12 +65,10 @@ public class TeamQueryServiceTest extends ServiceTest {
 
         @Test
         void 팀이_없는_단과대는_hasTeam이_false이다() {
-            // when (organizationId = 1)
-            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null, 1L);
+            // when
+            List<UnitResponse> org2Responses = teamQueryService.getUnitsWithTeams(null, org2Member);
 
-            // then - fixture에서 org1의 모든 unit에 팀이 있으므로 hasTeam false인 것은 없음
-            // 대신 org2 조회 시 확인
-            List<UnitResponse> org2Responses = teamQueryService.getUnitsWithTeams(null, 2L);
+            // then
             assertThat(org2Responses)
                     .isNotEmpty()
                     .allSatisfy(r -> assertThat(r.hasTeam()).isTrue());

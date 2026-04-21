@@ -37,7 +37,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new UnitResponse(5L, "기타", false)
         );
 
-        given(teamQueryService.getUnitsWithTeams(any(), any())).willReturn(response);
+        given(teamQueryService.getUnitsWithTeams(any(SportType.class), any())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/units")
