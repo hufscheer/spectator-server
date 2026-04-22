@@ -155,16 +155,16 @@ VALUES (1, 1, 1, 1, 1, 0),
 INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing)
 VALUES -- 축구 대전(game_id = 1), A팀(game_team_id = 1) 라인업 선수
        (1, 1, 11, 1, false, 'CANDIDATE', false),
-       (2, 1, 12, 2, false, 'STARTER', false),
-       (3, 1, 13, 3, false, 'STARTER', false),
-       (4, 1, 14, 4, false, 'STARTER', false),
+       (2, 1, 12, 2, false, 'STARTER', true),
+       (3, 1, 13, 3, false, 'STARTER', true),
+       (4, 1, 14, 4, false, 'STARTER', true),
        (5, 1, 15, 5, false, 'STARTER', true),
 
        -- 축구 대전(game_id = 1), B팀(game_team_id = 2) 라인업 선수
-       (6, 2, 16, 1, true, 'STARTER', false),
-       (7, 2, 17, 2, false, 'STARTER', false),
-       (8, 2, 18, 3, false, 'STARTER', false),
-       (9, 2, 19, 4, false, 'STARTER', false),
+       (6, 2, 16, 1, true, 'STARTER', true),
+       (7, 2, 17, 2, false, 'STARTER', true),
+       (8, 2, 18, 3, false, 'STARTER', true),
+       (9, 2, 19, 4, false, 'STARTER', true),
        (10, 2, 20, 5, false, 'STARTER', true);
 
 
