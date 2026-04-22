@@ -6,6 +6,7 @@ import com.sports.server.command.nl.dto.NlParseResult;
 import com.sports.server.common.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "nl.provider", havingValue = "gemini", matchIfMissing = true)
 public class NlGeminiClient implements NlClient {
 
     private final WebClient geminiWebClient;
