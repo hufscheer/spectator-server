@@ -34,7 +34,7 @@ public enum BasketballQuarter implements Quarter {
 
     @Override
     public boolean canHaveQuarterEnd() {
-        return true;
+        return this != OVERTIME;
     }
 
     public static Optional<BasketballQuarter> tryResolve(String value) {
