@@ -361,20 +361,20 @@ public class NlService {
     // --- 공용 유틸 ---
 
     private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Map<String, Integer> originalStudentNumberLineMap, int digits) {
-        int lineIndex = originalStudentNumberLineMap.getOrDefault(parsed.studentNumber(), index + 1);
+        String reason = null;
         if (StudentNumber.isInvalid(parsed.studentNumber(), digits)) {
-            return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(),
-                    String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits));
+            reason = String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits);
+        } else if (!originalStudentNumberLineMap.containsKey(parsed.studentNumber())) {
+            reason = NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL;
+        } else if (!isValidName(parsed.name())) {
+            reason = NlErrorMessages.INVALID_PLAYER_NAME;
         }
-        if (!originalStudentNumberLineMap.containsKey(parsed.studentNumber())) {
-            return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(),
-                    NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
+
+        if (reason == null) {
+            return null;
         }
-        if (!isValidName(parsed.name())) {
-            return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(),
-                    NlErrorMessages.INVALID_PLAYER_NAME);
-        }
-        return null;
+        int lineIndex = originalStudentNumberLineMap.getOrDefault(parsed.studentNumber(), index + 1);
+        return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(), reason);
     }
 
     private void addDigitMismatchFailures(Map<String, Integer> originalStudentNumberLineMap, int digits, List<NlFailedLine> failedLines) {
