@@ -363,14 +363,16 @@ public class NlService {
     private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Map<String, Integer> originalStudentNumberLineMap, int digits) {
         int lineIndex = originalStudentNumberLineMap.getOrDefault(parsed.studentNumber(), index + 1);
         if (StudentNumber.isInvalid(parsed.studentNumber(), digits)) {
-            return new NlFailedLine(lineIndex, parsed.studentNumber(),
+            return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(),
                     String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits));
         }
         if (!originalStudentNumberLineMap.containsKey(parsed.studentNumber())) {
-            return new NlFailedLine(lineIndex, parsed.studentNumber(), NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
+            return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(),
+                    NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL);
         }
         if (!isValidName(parsed.name())) {
-            return new NlFailedLine(lineIndex, parsed.studentNumber(), NlErrorMessages.INVALID_PLAYER_NAME);
+            return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(),
+                    NlErrorMessages.INVALID_PLAYER_NAME);
         }
         return null;
     }
@@ -391,6 +393,8 @@ public class NlService {
             failedLines.add(new NlFailedLine(
                     entry.getValue(),
                     studentNumber,
+                    null,
+                    null,
                     String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits)
             ));
         }
