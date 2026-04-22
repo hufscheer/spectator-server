@@ -150,7 +150,7 @@ public class NlGeminiClient implements NlClient {
             return NlParseResult.ofText(text.isEmpty() ? null : text);
         }
 
-        GeminiFunctionCallArgs args = response.getArgsAs(objectMapper, GeminiFunctionCallArgs.class);
+        NlFunctionCallArgs args = response.getArgsAs(objectMapper, NlFunctionCallArgs.class);
         if (args == null || args.players() == null || args.players().isEmpty()) {
             return NlParseResult.ofPlayers(List.of());
         }

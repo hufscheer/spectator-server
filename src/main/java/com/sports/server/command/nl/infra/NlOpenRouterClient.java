@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class NlOpenRouterClient implements NlClient {
     public NlOpenRouterClient(
             WebClient openRouterWebClient,
             ObjectMapper objectMapper,
-            @Value("${gemini.api.nl-prompt}") String systemPrompt,
+            @Value("${openrouter.api.nl-prompt:${gemini.api.nl-prompt}}") String systemPrompt,
             @Value("${openrouter.api.model:qwen/qwen-2.5-72b-instruct}") String model
     ) {
         this.openRouterWebClient = openRouterWebClient;
@@ -77,31 +78,33 @@ public class NlOpenRouterClient implements NlClient {
     private OpenRouterChatResponse callWithRetry(String message, List<Map<String, String>> history, int studentNumberDigits) {
         Map<String, Object> body = buildRequestBody(message, history, studentNumberDigits);
 
-        for (int attempt = 0; attempt <= MAX_RETRY; attempt++) {
-            try {
-                return openRouterWebClient.post()
-                        .uri("/chat/completions")
-                        .bodyValue(body)
-                        .retrieve()
-                        .bodyToMono(OpenRouterChatResponse.class)
-                        .block(Duration.ofSeconds(60));
-            } catch (WebClientResponseException.TooManyRequests
-                     | WebClientResponseException.ServiceUnavailable
-                     | WebClientResponseException.InternalServerError e) {
-                log.warn("OpenRouter transient error. attempt={}/{}, status={}",
-                        attempt + 1, MAX_RETRY + 1, e.getStatusCode());
-                if (attempt < MAX_RETRY) {
-                    sleep(RETRY_DELAY);
-                }
-            } catch (IllegalStateException e) {
-                log.warn("OpenRouter timeout. attempt={}/{}", attempt + 1, MAX_RETRY + 1);
-                if (attempt < MAX_RETRY) {
-                    sleep(RETRY_DELAY);
-                }
-            }
+        try {
+            return openRouterWebClient.post()
+                    .uri("/chat/completions")
+                    .bodyValue(body)
+                    .retrieve()
+                    .bodyToMono(OpenRouterChatResponse.class)
+                    .retryWhen(Retry.fixedDelay(MAX_RETRY, RETRY_DELAY)
+                            .filter(NlOpenRouterClient::isRetryable)
+                            .doBeforeRetry(signal -> log.warn(
+                                    "OpenRouter retry. attempt={}/{}, cause={}",
+                                    signal.totalRetries() + 1, MAX_RETRY + 1,
+                                    signal.failure().getClass().getSimpleName()))
+                            .onRetryExhaustedThrow((spec, signal) -> signal.failure()))
+                    .block(Duration.ofSeconds(60));
+        } catch (WebClientResponseException | IllegalStateException e) {
+            log.error("OpenRouter call failed after retries: {}", e.getMessage());
+            throw new CustomException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "AI 서비스가 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
         }
-        throw new CustomException(HttpStatus.SERVICE_UNAVAILABLE,
-                "AI 서비스가 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    }
+
+    private static boolean isRetryable(Throwable ex) {
+        if (ex instanceof WebClientResponseException wcre) {
+            int status = wcre.getStatusCode().value();
+            return status == 429 || status == 500 || status == 503;
+        }
+        return false;
     }
 
     private Map<String, Object> buildRequestBody(String message, List<Map<String, String>> history, int studentNumberDigits) {
@@ -139,18 +142,11 @@ public class NlOpenRouterClient implements NlClient {
             return NlParseResult.ofText(text == null || text.isEmpty() ? null : text);
         }
 
-        GeminiFunctionCallArgs args = response.getArgsAs(objectMapper, GeminiFunctionCallArgs.class);
+        NlFunctionCallArgs args = response.getArgsAs(objectMapper, NlFunctionCallArgs.class);
         if (args == null || args.players() == null || args.players().isEmpty()) {
             return NlParseResult.ofPlayers(List.of());
         }
         return NlParseResult.ofPlayers(args.players());
     }
 
-    private void sleep(Duration duration) {
-        try {
-            Thread.sleep(duration.toMillis());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
 }
