@@ -61,7 +61,6 @@ class AvailableProgressQueryServiceTest extends ServiceTest {
     private static final long BASKETBALL_GAME_4Q_STARTED = 17L;
     private static final long BASKETBALL_GAME_4Q_ENDED = 18L;
     private static final long BASKETBALL_GAME_OT_STARTED = 19L;
-    private static final long BASKETBALL_GAME_OT_ENDED = 20L;
     private static final long BASKETBALL_GAME_FINISHED = 21L;
 
     @Nested
@@ -307,25 +306,11 @@ class AvailableProgressQueryServiceTest extends ServiceTest {
     class 농구_OT_진행_중 {
 
         @Test
-        void OT_종료와_경기_종료_액션을_반환한다() {
+        void 경기_종료_액션_하나만_반환한다() {
             List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_OT_STARTED).availableActions();
 
-            assertThat(actions).hasSize(2);
-            assertAction(actions.get(0), BasketballQuarter.OVERTIME, GameProgressType.QUARTER_END, "연장전 종료");
-            assertAction(actions.get(1), BasketballQuarter.OVERTIME, GameProgressType.GAME_END, "경기 종료");
-        }
-    }
-
-    @Nested
-    @DisplayName("[농구] OT 종료 후에는")
-    class 농구_OT_종료_후 {
-
-        @Test
-        void OT_시작_액션_하나만_반환한다() {
-            List<ProgressAction> actions = timelineQueryService.getAvailableProgress(BASKETBALL_GAME_OT_ENDED).availableActions();
-
             assertThat(actions).hasSize(1);
-            assertAction(actions.get(0), BasketballQuarter.OVERTIME, GameProgressType.QUARTER_START, "연장전 시작");
+            assertAction(actions.get(0), BasketballQuarter.OVERTIME, GameProgressType.GAME_END, "경기 종료");
         }
     }
 
