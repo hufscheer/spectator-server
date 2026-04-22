@@ -312,6 +312,51 @@ class NlServiceTest {
                     .extracting(NlFailedLine::studentNumber, NlFailedLine::index)
                     .contains(tuple("123456789", 2));
         }
+
+        @Test
+        @DisplayName("Gemini가 파싱한 9자리 학번은 이름/등번호를 포함해 failedLines에 담긴다")
+        void 자릿수_불일치_Gemini_파싱값_이름_등번호_보존() {
+            // given: 10자리 계정인데 Gemini가 9자리 학번을 이름/등번호와 함께 파싱
+            given(mockMember.getOrganization().getStudentNumberDigits()).willReturn(10);
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "경희이 123456789 2"
+            );
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("경희이", "123456789", 2)
+                    )));
+
+            // when
+            NlParseResponse response = nlService.parse(request, mockMember);
+
+            // then
+            assertThat(response.preview().players()).isEmpty();
+            assertThat(response.preview().parseFailedLines())
+                    .extracting(NlFailedLine::studentNumber, NlFailedLine::name, NlFailedLine::jerseyNumber)
+                    .contains(tuple("123456789", "경희이", 2));
+        }
+
+        @Test
+        @DisplayName("Gemini가 누락한 9자리 학번은 이름/등번호가 null로 담긴다")
+        void 자릿수_불일치_Gemini_누락_이름_등번호_null() {
+            // given: 10자리 계정인데 Gemini가 9자리 학번을 누락
+            given(mockMember.getOrganization().getStudentNumberDigits()).willReturn(10);
+            NlParseRequest request = new NlParseRequest(
+                    List.of(), "경희일 1234543221 12\n경희이 123456789 2"
+            );
+            given(nlClient.parsePlayers(anyString(), anyList(), anyInt()))
+                    .willReturn(NlParseResult.ofPlayers(List.of(
+                            new ParsedPlayer("경희일", "1234543221", 12)
+                    )));
+
+            // when
+            NlParseResponse response = nlService.parse(request, mockMember);
+
+            // then
+            assertThat(response.preview().parseFailedLines())
+                    .extracting(NlFailedLine::studentNumber, NlFailedLine::name, NlFailedLine::jerseyNumber)
+                    .contains(tuple("123456789", null, null));
+        }
     }
 
     @Nested
