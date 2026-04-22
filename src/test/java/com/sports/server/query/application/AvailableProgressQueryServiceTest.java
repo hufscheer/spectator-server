@@ -121,12 +121,11 @@ class AvailableProgressQueryServiceTest extends ServiceTest {
     class 후반전_종료_후 {
 
         @Test
-        void 연장전_시작과_경기_종료_액션을_반환한다() {
+        void 연장전_시작_액션_하나만_반환한다() {
             List<ProgressAction> actions = timelineQueryService.getAvailableProgress(GAME_SECOND_HALF_ENDED).availableActions();
 
-            assertThat(actions).hasSize(2);
+            assertThat(actions).hasSize(1);
             assertAction(actions.get(0), SoccerQuarter.EXTRA_TIME, GameProgressType.QUARTER_START, "연장전 시작");
-            assertAction(actions.get(1), SoccerQuarter.SECOND_HALF, GameProgressType.GAME_END, "경기 종료");
         }
     }
 

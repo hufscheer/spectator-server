@@ -38,7 +38,7 @@ public enum SoccerQuarter implements Quarter {
 
     @Override
     public boolean canEndGameAfterQuarterEnd() {
-        return canEndGame();
+        return this != SECOND_HALF && canEndGame();
     }
 
     public static Optional<SoccerQuarter> tryResolve(String value) {
