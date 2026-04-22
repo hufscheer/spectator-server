@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.query.dto.response.TeamResponse;
+import com.sports.server.query.dto.response.UnitResponse;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -18,14 +19,10 @@ import org.springframework.test.context.jdbc.Sql;
 public class TeamQueryAcceptanceTest extends AcceptanceTest {
 
     @Test
-    void 자신의_조직에_속한_팀만_조회된다() {
-        // given
-        configureMockJwtForEmail("john.doe@example.com");
-
+    void 전체_팀이_조회된다() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .get("/teams")
                 .then().log().all()
@@ -35,33 +32,25 @@ public class TeamQueryAcceptanceTest extends AcceptanceTest {
         List<TeamResponse> actual = toResponses(response, TeamResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual).hasSize(7),
-                () -> assertThat(actual)
-                        .extracting(TeamResponse::name)
-                        .doesNotContain("다른조직팀")
+                () -> assertThat(actual).hasSize(8)
         );
     }
 
     @Test
-    void 다른_조직의_멤버는_자신의_조직_팀만_조회된다() {
-        // given
-        configureMockJwtForEmail("non.manager@example.com");
-
+    void 전체_단과대별_팀_유무가_조회된다() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/teams")
+                .get("/teams/units")
                 .then().log().all()
                 .extract();
 
         // then
-        List<TeamResponse> actual = toResponses(response, TeamResponse.class);
+        List<UnitResponse> actual = toResponses(response, UnitResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual).hasSize(1),
-                () -> assertThat(actual.get(0).name()).isEqualTo("다른조직팀")
+                () -> assertThat(actual).hasSize(4)
         );
     }
 }

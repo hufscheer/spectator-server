@@ -352,6 +352,14 @@ operation::team-query-controller-test/팀별보기_페이지를_조회한다[sni
 
 operation::team-query-controller-test/단과대별_팀_유무를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
 
+=== [매니저] 소속 기준 단과대별 팀 유무 조회
+
+operation::team-manager-query-controller-test/매니저의_소속_기준으로_단과대별_팀_유무를_조회한다[snippets='http-request,request-cookies,query-parameters,http-response,response-fields']
+
+=== [매니저] 소속 기준 전체 팀 조회
+
+operation::team-manager-query-controller-test/매니저의_소속_기준으로_모든_팀을_조회한다[snippets='http-request,request-cookies,query-parameters,http-response,response-fields']
+
 == 자연어 선수 등록 API
 
 === 선수 정보 파싱 (프리뷰)

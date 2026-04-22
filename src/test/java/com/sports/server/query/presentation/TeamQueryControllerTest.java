@@ -37,7 +37,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new UnitResponse(5L, "기타", false)
         );
 
-        given(teamQueryService.getUnitsWithTeams(any(SportType.class), any())).willReturn(response);
+        given(teamQueryService.getUnitsWithTeams(any())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/units")
@@ -68,7 +68,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new TeamResponse(3L, "영어영문학과", "s3:logoImageUrl2", "영어대학", "#92A8D1", "SOCCER")
         );
 
-        given(teamQueryService.getAllTeamsByUnits(any(), any(), any())).willReturn(response);
+        given(teamQueryService.getAllTeamsByUnits(any(), any())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams")
