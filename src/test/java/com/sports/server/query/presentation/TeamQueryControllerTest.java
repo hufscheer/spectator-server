@@ -38,7 +38,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new UnitResponse(5L, "기타", false)
         );
 
-        given(teamQueryService.getUnitsWithTeams(any(SportType.class), nullable(Long.class))).willReturn(response);
+        given(teamQueryService.getUnitsWithTeams(nullable(SportType.class), nullable(Long.class))).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/units")
@@ -49,7 +49,8 @@ public class TeamQueryControllerTest extends DocumentationTest {
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional()
+                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (학교 등)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("단과대 ID"),
@@ -82,7 +83,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
                         queryParameters(
                                 parameterWithName("units").description("필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학," +
                                         " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD/LT학부," +
-                                        " KFL학부, 자유전공학부, 기타)").optional()
+                                        " KFL학부, 자유전공학부, 기타)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (학교 등)").optional()
                         ),
                         responseFields(
                                 combineFields(
@@ -273,7 +276,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
                         queryParameters(
                                 parameterWithName("units").description("필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학," +
                                         " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD/LT학부," +
-                                        " KFL학부, 자유전공학부, 기타)").optional()
+                                        " KFL학부, 자유전공학부, 기타)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (학교 등)").optional()
                         ),
                         responseFields(
                                 combineFields(
