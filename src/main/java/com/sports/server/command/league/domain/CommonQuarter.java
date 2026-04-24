@@ -9,7 +9,7 @@ import java.util.Optional;
 @Getter
 public enum CommonQuarter implements Quarter {
     PRE_GAME("경기전", 0),
-    POST_GAME("경기후", 99);
+    POST_GAME("경기 종료", 99);
 
     private final String displayName;
     private final int order;
