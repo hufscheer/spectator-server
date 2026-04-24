@@ -8,6 +8,8 @@ public interface ReportRepository extends Repository<Report, Long> {
 
     void save(Report report);
 
+    Optional<Report> findById(Long id);
+
     Optional<Report> findByCheerTalk(CheerTalk cheerTalk);
     Report findByCheerTalkId(Long cheerTalkId);
 }

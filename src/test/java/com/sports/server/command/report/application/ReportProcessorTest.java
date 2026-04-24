@@ -3,20 +3,26 @@ package com.sports.server.command.report.application;
 import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
 
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.report.domain.Report;
+import com.sports.server.command.report.domain.ReportRepository;
 import com.sports.server.command.report.domain.ReportState;
 import com.sports.server.support.ServiceTest;
+import java.util.Optional;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 public class ReportProcessorTest extends ServiceTest {
 
     @Autowired
     private ReportProcessor reportProcessor;
+
+    @MockBean
+    private ReportRepository reportRepository;
 
     @ParameterizedTest
     @ValueSource(strings = {"개같아", "뒤질", "ezr"})
@@ -32,8 +38,10 @@ public class ReportProcessorTest extends ServiceTest {
                 .set("state", ReportState.UNCHECKED)
                 .sample();
 
+        given(reportRepository.findById(report.getId())).willReturn(Optional.of(report));
+
         // when
-        reportProcessor.check(cheerTalk, report);
+        reportProcessor.check(report.getId());
 
         // then
         assertAll(
@@ -56,10 +64,35 @@ public class ReportProcessorTest extends ServiceTest {
                 .set("state", ReportState.UNCHECKED)
                 .sample();
 
+        given(reportRepository.findById(report.getId())).willReturn(Optional.of(report));
+
         // when
-        reportProcessor.check(cheerTalk, report);
+        reportProcessor.check(report.getId());
 
         // then
         assertThat(report.getState()).isEqualTo(ReportState.PENDING);
+    }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.EnumSource(value = ReportState.class, names = {"PENDING", "VALID", "INVALID"})
+    void UNCHECKED가_아닌_신고는_상태가_변경되지_않는다(ReportState initialState) {
+
+        // given
+        CheerTalk cheerTalk = entityBuilder(CheerTalk.class)
+                .set("is_blocked", false)
+                .set("content", "개같아").sample();
+
+        Report report = entityBuilder(Report.class)
+                .set("cheerTalk", cheerTalk)
+                .set("state", initialState)
+                .sample();
+
+        given(reportRepository.findById(report.getId())).willReturn(Optional.of(report));
+
+        // when
+        reportProcessor.check(report.getId());
+
+        // then
+        assertThat(report.getState()).isEqualTo(initialState);
     }
 }
