@@ -72,4 +72,27 @@ public class ReportProcessorTest extends ServiceTest {
         // then
         assertThat(report.getState()).isEqualTo(ReportState.PENDING);
     }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.EnumSource(value = ReportState.class, names = {"PENDING", "VALID", "INVALID"})
+    void UNCHECKED가_아닌_신고는_상태가_변경되지_않는다(ReportState initialState) {
+
+        // given
+        CheerTalk cheerTalk = entityBuilder(CheerTalk.class)
+                .set("is_blocked", false)
+                .set("content", "개같아").sample();
+
+        Report report = entityBuilder(Report.class)
+                .set("cheerTalk", cheerTalk)
+                .set("state", initialState)
+                .sample();
+
+        given(reportRepository.findById(report.getId())).willReturn(Optional.of(report));
+
+        // when
+        reportProcessor.check(report.getId());
+
+        // then
+        assertThat(report.getState()).isEqualTo(initialState);
+    }
 }

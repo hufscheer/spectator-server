@@ -24,6 +24,10 @@ public class ReportProcessor {
     public void check(Long reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new IllegalStateException("Report not found: " + reportId));
+
+        if (!report.isUnchecked()) {
+            return;
+        }
         CheerTalk cheerTalk = report.getCheerTalk();
 
         if (cachedBadWords == null) {
