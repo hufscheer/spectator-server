@@ -60,9 +60,7 @@ class ReportEventHandlerTest extends ServiceTest {
             reportEventHandler.handle(reportEvent);
 
             // then
-            verify(reportProcessor).check(
-                    any(), any()
-            );
+            verify(reportProcessor).check(REPORT_ID);
         }
 
         @Test
@@ -75,7 +73,7 @@ class ReportEventHandlerTest extends ServiceTest {
             reportEventHandler.handle(reportEvent);
 
             // then
-            verify(reportProcessor, never()).check(any(CheerTalk.class), any(Report.class));
+            verify(reportProcessor, never()).check(any(Long.class));
         }
 
 
