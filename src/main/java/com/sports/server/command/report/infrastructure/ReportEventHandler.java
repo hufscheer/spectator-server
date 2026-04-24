@@ -1,6 +1,5 @@
 package com.sports.server.command.report.infrastructure;
 
-import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.report.application.ReportProcessor;
 import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportEvent;
@@ -20,13 +19,8 @@ public class ReportEventHandler {
     public void handle(ReportEvent event) {
         Report report = event.report();
         if (report.isUnchecked()) {
-            checkReport(report);
+            reportProcessor.check(report.getId());
         }
-    }
-
-    private void checkReport(Report report) {
-        CheerTalk cheerTalk = report.getCheerTalk();
-        reportProcessor.check(cheerTalk, report);
     }
 
 // 추후 람다로 이전 시 필요한 메서드들
