@@ -66,8 +66,8 @@ public class OpenRouterMaskingClient implements MaskingClient {
             }
             String text = response.getFirstContent();
             return text == null || text.isEmpty() ? content : text;
-        } catch (WebClientResponseException | IllegalStateException e) {
-            log.error("OpenRouter masking failed after retries: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("OpenRouter masking failed: {}", e.getMessage());
             return content;
         }
     }
