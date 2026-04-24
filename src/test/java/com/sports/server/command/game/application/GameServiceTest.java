@@ -211,7 +211,7 @@ public class GameServiceTest extends ServiceTest {
         void 게임을_직접_종료하면_결과가_저장된다() {
             // given
             GameRequest.Update finishRequest = new GameRequest.Update(
-                    nameOfGame, 4, "경기후", "FINISHED", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
+                    nameOfGame, 4, "경기 종료", "FINISHED", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
             );
 
             // when
