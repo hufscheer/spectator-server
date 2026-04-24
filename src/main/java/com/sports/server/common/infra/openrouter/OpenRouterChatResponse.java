@@ -1,4 +1,4 @@
-package com.sports.server.command.nl.infra;
+package com.sports.server.common.infra.openrouter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
