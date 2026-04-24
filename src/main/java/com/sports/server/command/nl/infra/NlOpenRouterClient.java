@@ -4,14 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.server.command.nl.application.NlClient;
 import com.sports.server.command.nl.dto.NlParseResult;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.infra.openrouter.OpenRouterChatCaller;
+import com.sports.server.common.infra.openrouter.OpenRouterChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -23,21 +23,20 @@ import java.util.Map;
 @ConditionalOnProperty(name = "nl.provider", havingValue = "openrouter")
 public class NlOpenRouterClient implements NlClient {
 
-    private final WebClient openRouterWebClient;
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(60);
+
+    private final OpenRouterChatCaller chatCaller;
     private final ObjectMapper objectMapper;
     private final String systemPrompt;
     private final String model;
 
-    private static final int MAX_RETRY = 2;
-    private static final Duration RETRY_DELAY = Duration.ofSeconds(2);
-
     public NlOpenRouterClient(
-            WebClient openRouterWebClient,
+            OpenRouterChatCaller chatCaller,
             ObjectMapper objectMapper,
             @Value("${openrouter.api.nl-prompt:${gemini.api.nl-prompt}}") String systemPrompt,
             @Value("${openrouter.api.model:qwen/qwen-2.5-72b-instruct}") String model
     ) {
-        this.openRouterWebClient = openRouterWebClient;
+        this.chatCaller = chatCaller;
         this.objectMapper = objectMapper;
         this.systemPrompt = systemPrompt;
         this.model = model;
@@ -71,40 +70,19 @@ public class NlOpenRouterClient implements NlClient {
 
     @Override
     public NlParseResult parsePlayers(String message, List<Map<String, String>> history, int studentNumberDigits) {
-        OpenRouterChatResponse response = callWithRetry(message, history, studentNumberDigits);
+        Map<String, Object> body = buildRequestBody(message, history, studentNumberDigits);
+        OpenRouterChatResponse response = callChat(body);
         return toParseResult(response);
     }
 
-    private OpenRouterChatResponse callWithRetry(String message, List<Map<String, String>> history, int studentNumberDigits) {
-        Map<String, Object> body = buildRequestBody(message, history, studentNumberDigits);
-
+    private OpenRouterChatResponse callChat(Map<String, Object> body) {
         try {
-            return openRouterWebClient.post()
-                    .uri("/chat/completions")
-                    .bodyValue(body)
-                    .retrieve()
-                    .bodyToMono(OpenRouterChatResponse.class)
-                    .retryWhen(Retry.fixedDelay(MAX_RETRY, RETRY_DELAY)
-                            .filter(NlOpenRouterClient::isRetryable)
-                            .doBeforeRetry(signal -> log.warn(
-                                    "OpenRouter retry. attempt={}/{}, cause={}",
-                                    signal.totalRetries() + 1, MAX_RETRY + 1,
-                                    signal.failure().getClass().getSimpleName()))
-                            .onRetryExhaustedThrow((spec, signal) -> signal.failure()))
-                    .block(Duration.ofSeconds(60));
+            return chatCaller.call(body, REQUEST_TIMEOUT);
         } catch (WebClientResponseException | IllegalStateException e) {
             log.error("OpenRouter call failed after retries: {}", e.getMessage());
             throw new CustomException(HttpStatus.SERVICE_UNAVAILABLE,
                     "AI 서비스가 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
         }
-    }
-
-    private static boolean isRetryable(Throwable ex) {
-        if (ex instanceof WebClientResponseException wcre) {
-            int status = wcre.getStatusCode().value();
-            return status == 429 || status == 500 || status == 503;
-        }
-        return false;
     }
 
     private Map<String, Object> buildRequestBody(String message, List<Map<String, String>> history, int studentNumberDigits) {
