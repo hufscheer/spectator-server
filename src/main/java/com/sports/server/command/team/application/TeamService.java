@@ -179,7 +179,7 @@ public class TeamService {
     }
 
     private String resolveLogoImageUrl(String requestLogoImageUrl, Team team) {
-        if (requestLogoImageUrl == null) {
+        if (requestLogoImageUrl == null || requestLogoImageUrl.equals(team.getLogoImageUrl())) {
             return null;
         }
         String convertedUrl = changeLogoImageUrlToBeSaved(requestLogoImageUrl);
