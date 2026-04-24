@@ -20,15 +20,17 @@ public class TeamQueryController {
 
     @GetMapping("/units")
     public ResponseEntity<List<UnitResponse>> getUnitsWithTeams(
-            @RequestParam(required = false) final SportType sportType) {
-        return ResponseEntity.ok(teamQueryService.getUnitsWithTeams(sportType));
+            @RequestParam(required = false) final SportType sportType,
+            @RequestParam(required = false) final Long organizationId) {
+        return ResponseEntity.ok(teamQueryService.getUnitsWithTeams(sportType, organizationId));
     }
 
     @GetMapping
     public ResponseEntity<List<TeamResponse>> getAllTeams(
             @RequestParam(required = false) final List<String> units,
-            @RequestParam(required = false) final SportType sportType) {
-        return ResponseEntity.ok(teamQueryService.getAllTeamsByUnits(units, sportType));
+            @RequestParam(required = false) final SportType sportType,
+            @RequestParam(required = false) final Long organizationId) {
+        return ResponseEntity.ok(teamQueryService.getAllTeamsByUnits(units, sportType, organizationId));
     }
 
     @GetMapping("/{teamId}")
@@ -49,7 +51,8 @@ public class TeamQueryController {
     @GetMapping("/summary")
     public ResponseEntity<List<TeamSummaryResponse>> getAllTeamsSummary(
             @RequestParam(required = false) final List<String> units,
-            @RequestParam(required = false) final SportType sportType) {
-        return ResponseEntity.ok(teamQueryService.getAllTeamsSummary(units, sportType));
+            @RequestParam(required = false) final SportType sportType,
+            @RequestParam(required = false) final Long organizationId) {
+        return ResponseEntity.ok(teamQueryService.getAllTeamsSummary(units, sportType, organizationId));
     }
 }

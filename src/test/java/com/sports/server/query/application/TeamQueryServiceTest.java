@@ -73,6 +73,22 @@ public class TeamQueryServiceTest extends ServiceTest {
                     .isNotEmpty()
                     .allSatisfy(r -> assertThat(r.hasTeam()).isTrue());
         }
+
+        @Test
+        void 관객은_organizationId로_해당_조직의_단과대만_조회한다() {
+            // when
+            List<UnitResponse> org1Responses = teamQueryService.getUnitsWithTeams(null, 1L);
+            List<UnitResponse> org2Responses = teamQueryService.getUnitsWithTeams(null, 2L);
+
+            // then
+            assertAll(
+                    () -> assertThat(org1Responses).hasSize(3),
+                    () -> assertThat(org1Responses).extracting(UnitResponse::unitName)
+                            .containsExactlyInAnyOrder("사회과학대학", "기타", "영어대학"),
+                    () -> assertThat(org2Responses).hasSize(1),
+                    () -> assertThat(org2Responses.get(0).unitName()).isEqualTo("경영대학")
+            );
+        }
     }
 
     @Nested
@@ -149,6 +165,29 @@ public class TeamQueryServiceTest extends ServiceTest {
                     () -> assertThat(responses).hasSize(1),
                     () -> assertThat(responses.get(0).name()).isEqualTo("다른조직팀")
             );
+        }
+
+        @Test
+        void 관객은_organizationId로_해당_조직의_팀만_조회한다() {
+            // when
+            List<TeamResponse> org1Responses = teamQueryService.getAllTeamsByUnits(null, null, 1L);
+            List<TeamResponse> org2Responses = teamQueryService.getAllTeamsByUnits(null, null, 2L);
+
+            // then
+            assertAll(
+                    () -> assertThat(org1Responses).hasSize(7),
+                    () -> assertThat(org2Responses).hasSize(1),
+                    () -> assertThat(org2Responses.get(0).name()).isEqualTo("다른조직팀")
+            );
+        }
+
+        @Test
+        void 관객은_organizationId가_null이면_전체_조직의_팀을_조회한다() {
+            // when
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null, (Long) null);
+
+            // then
+            assertThat(responses).hasSize(8);
         }
     }
 
@@ -326,7 +365,7 @@ public class TeamQueryServiceTest extends ServiceTest {
 
                 leagueStatisticsService.updateLeagueStatisticFromFinalGame(finalGameId);
 
-                this.responses = teamQueryService.getAllTeamsSummary(units, null);
+                this.responses = teamQueryService.getAllTeamsSummary(units, null, null);
                 this.teamAResponse = responses.get(3);
                 this.teamBResponse = responses.get(4);
                 this.teamDResponse = responses.get(5);
@@ -403,7 +442,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse noGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임없는팀"))
@@ -423,7 +462,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse fewGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임2개팀"))
@@ -445,7 +484,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse manyGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임많은팀"))
@@ -468,7 +507,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse manyGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임많은팀"))
@@ -489,7 +528,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse noGameTeam = responses.stream()
                     .filter(r -> r.teamDetail().name().equals("게임없는팀"))

@@ -47,8 +47,8 @@ public class TeamQueryService {
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
-    public List<UnitResponse> getUnitsWithTeams(final SportType sportType) {
-        return getUnitsWithTeamsByOrganization(sportType, null);
+    public List<UnitResponse> getUnitsWithTeams(final SportType sportType, final Long organizationId) {
+        return getUnitsWithTeamsByOrganization(sportType, organizationId);
     }
 
     public List<UnitResponse> getUnitsWithTeams(final SportType sportType, final Member member) {
@@ -68,8 +68,9 @@ public class TeamQueryService {
                 .toList();
     }
 
-    public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType) {
-        return getAllTeamsByUnitsByOrganization(units, sportType, null);
+    public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType,
+                                                    final Long organizationId) {
+        return getAllTeamsByUnitsByOrganization(units, sportType, organizationId);
     }
 
     public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType,
@@ -111,8 +112,9 @@ public class TeamQueryService {
         return new TeamDetailResponse(team, teamPlayers, teamGameResult, scorers, trophies);
     }
 
-    public List<TeamSummaryResponse> getAllTeamsSummary(final List<String> units, final SportType sportType) {
-        List<Team> teams = findTeamsByUnits(units, sportType);
+    public List<TeamSummaryResponse> getAllTeamsSummary(final List<String> units, final SportType sportType,
+                                                        final Long organizationId) {
+        List<Team> teams = findTeamsByUnits(units, sportType, organizationId);
         if (teams.isEmpty()) return Collections.emptyList();
 
         List<Long> teamIds = teams.stream().map(Team::getId).toList();
@@ -134,10 +136,6 @@ public class TeamQueryService {
                 getTrophies(teamIds),
                 getRecentGames(teamIds)
         );
-    }
-
-    private List<Team> findTeamsByUnits(final List<String> units, final SportType sportType) {
-        return findTeamsByUnits(units, sportType, null);
     }
 
     private List<Team> findTeamsByUnits(final List<String> units, final SportType sportType,
