@@ -40,7 +40,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                    () -> verify(reportProcessor).check(any(), any())
+                    () -> verify(reportProcessor).check(any())
             );
         }
 
@@ -56,7 +56,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
-                    () -> verify(reportProcessor, never()).check(any(), any())
+                    () -> verify(reportProcessor, never()).check(any())
             );
         }
 
@@ -72,7 +72,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                    () -> verify(reportProcessor, never()).check(any(), any())
+                    () -> verify(reportProcessor, never()).check(any())
             );
         }
 
@@ -89,7 +89,7 @@ class ReportAcceptanceTest extends AcceptanceTest {
             // then
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                    () -> verify(reportProcessor, times(2)).check(any(), any())
+                    () -> verify(reportProcessor, times(2)).check(any())
             );
         }
     }
