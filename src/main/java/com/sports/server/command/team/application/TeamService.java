@@ -6,6 +6,7 @@ import com.sports.server.command.player.domain.PlayerRepository;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.team.domain.*;
 import com.sports.server.command.team.dto.TeamRequest;
+import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.application.S3Service;
@@ -35,6 +36,7 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerRepository playerRepository;
+    private final UnitRepository unitRepository;
     private final EntityUtils entityUtils;
     private final S3Service s3Service;
 
@@ -42,7 +44,8 @@ public class TeamService {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
 
-        Team team = request.toEntity(imgUrl);
+        Unit unit = findUnit(request.unit(), member.getOrganization().getId());
+        Team team = request.toEntity(imgUrl, unit);
         team.setOrganization(member.getOrganization());
         teamRepository.save(team);
 
@@ -55,7 +58,8 @@ public class TeamService {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
 
-        Team team = request.toEntity(imgUrl);
+        Unit unit = findUnit(request.unit(), member.getOrganization().getId());
+        Team team = request.toEntity(imgUrl, unit);
         team.setOrganization(member.getOrganization());
         teamRepository.save(team);
         return team.getId();
@@ -65,9 +69,10 @@ public class TeamService {
         Team team = entityUtils.getEntity(teamId, Team.class);
         PermissionValidator.checkPermission(team, member);
 
-        s3Service.doesFileExist(team.getLogoImageUrl());
-        Unit unit = Optional.ofNullable(request.unit()).map(Unit::from).orElse(null);
-        team.update(request.name(), request.logoImageUrl(), originPrefix, replacePrefix, unit, request.teamColor());
+        Unit unit = Optional.ofNullable(request.unit())
+                .map(unitName -> findUnit(unitName, member.getOrganization().getId()))
+                .orElse(null);
+        team.update(request.name(), resolveLogoImageUrl(request.logoImageUrl(), team), unit, request.teamColor());
 
         if (request.teamPlayers() != null) {
             upsertPlayersToTeam(member, team, request.teamPlayers());
@@ -171,6 +176,22 @@ public class TeamService {
                         TeamRequest.TeamPlayerRegister::playerId,
                         TeamRequest.TeamPlayerRegister::jerseyNumber
                 ));
+    }
+
+    private String resolveLogoImageUrl(String requestLogoImageUrl, Team team) {
+        if (requestLogoImageUrl == null || requestLogoImageUrl.equals(team.getLogoImageUrl())) {
+            return null;
+        }
+        String convertedUrl = changeLogoImageUrlToBeSaved(requestLogoImageUrl);
+        if (convertedUrl.equals(team.getLogoImageUrl())) {
+            return null;
+        }
+        return convertedUrl;
+    }
+
+    private Unit findUnit(String unitName, Long organizationId) {
+        return unitRepository.findByNameAndOrganizationId(unitName, organizationId)
+                .orElseThrow(() -> new NotFoundException(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION));
     }
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl) {

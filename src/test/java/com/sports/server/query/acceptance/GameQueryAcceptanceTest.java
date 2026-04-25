@@ -222,17 +222,17 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teamA.teamName()).isEqualTo("팀 A"),
                 () -> assertThat(teamA.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
-                        .containsExactly("선수15"),
+                        .containsExactly("선수12", "선수13", "선수14", "선수15"),
                 () -> assertThat(teamA.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::jerseyNumber)
-                        .containsExactly(5),
+                        .containsExactly(2, 3, 4, 5),
                 () -> assertThat(teamB.teamName()).isEqualTo("팀 B"),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::playerName)
-                        .containsExactly("선수20"),
+                        .containsExactly("선수16", "선수17", "선수18", "선수19", "선수20"),
                 () -> assertThat(teamB.gameTeamPlayers())
                         .map(LineupPlayerResponse.PlayerResponse::jerseyNumber)
-                        .containsExactly(5)
+                        .containsExactly(1, 2, 3, 4, 5)
         );
     }
 

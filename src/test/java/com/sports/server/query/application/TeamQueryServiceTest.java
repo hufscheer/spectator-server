@@ -1,7 +1,9 @@
 package com.sports.server.query.application;
 
 import com.sports.server.command.league.application.LeagueStatisticsService;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.exception.TeamErrorMessages;
+import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.support.ServiceTest;
@@ -19,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.sports.server.command.team.domain.Unit;
 import java.time.LocalDateTime;
 
 @Sql(scripts = "/team-query-fixture.sql")
@@ -31,35 +32,62 @@ public class TeamQueryServiceTest extends ServiceTest {
     @Autowired
     private LeagueStatisticsService leagueStatisticsService;
 
+    @Autowired
+    private EntityUtils entityUtils;
+
     @Nested
     @DisplayName("단과대별 팀 유무 조회 시")
     class GetUnitsWithTeamsTest {
 
+        private Member org1Member;
+        private Member org2Member;
+
+        @BeforeEach
+        void setUp() {
+            org1Member = entityUtils.getEntity(1L, Member.class);
+            org2Member = entityUtils.getEntity(2L, Member.class);
+        }
+
         @Test
-        void 모든_단과대가_반환되고_팀이_있는_단과대는_hasTeam이_true이다() {
-            // when
-            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null);
+        void 해당_조직의_모든_단과대가_반환되고_팀이_있는_단과대는_hasTeam이_true이다() {
+            // when (fixture에 org1 units 3개: 사회과학대학, 기타, 영어대학)
+            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null, org1Member);
 
             // then
             assertAll(
-                    () -> assertThat(responses).hasSize(Unit.values().length),
+                    () -> assertThat(responses).hasSize(3),
                     () -> assertThat(responses)
                             .filteredOn(UnitResponse::hasTeam)
-                            .extracting(UnitResponse::unit)
-                            .contains("SOCIAL_SCIENCES", "ETC", "ENGLISH")
+                            .extracting(UnitResponse::unitName)
+                            .contains("사회과학대학", "기타", "영어대학")
             );
         }
 
         @Test
         void 팀이_없는_단과대는_hasTeam이_false이다() {
             // when
-            List<UnitResponse> responses = teamQueryService.getUnitsWithTeams(null);
+            List<UnitResponse> org2Responses = teamQueryService.getUnitsWithTeams(null, org2Member);
 
             // then
-            assertThat(responses)
-                    .filteredOn(r -> !r.hasTeam())
+            assertThat(org2Responses)
                     .isNotEmpty()
-                    .allSatisfy(r -> assertThat(r.hasTeam()).isFalse());
+                    .allSatisfy(r -> assertThat(r.hasTeam()).isTrue());
+        }
+
+        @Test
+        void 관객은_organizationId로_해당_조직의_단과대만_조회한다() {
+            // when
+            List<UnitResponse> org1Responses = teamQueryService.getUnitsWithTeams(null, 1L);
+            List<UnitResponse> org2Responses = teamQueryService.getUnitsWithTeams(null, 2L);
+
+            // then
+            assertAll(
+                    () -> assertThat(org1Responses).hasSize(3),
+                    () -> assertThat(org1Responses).extracting(UnitResponse::unitName)
+                            .containsExactlyInAnyOrder("사회과학대학", "기타", "영어대학"),
+                    () -> assertThat(org2Responses).hasSize(1),
+                    () -> assertThat(org2Responses.get(0).unitName()).isEqualTo("경영대학")
+            );
         }
     }
 
@@ -67,10 +95,19 @@ public class TeamQueryServiceTest extends ServiceTest {
     @DisplayName("단위별 팀 목록 조회 시")
     class GetAllTeamsByUnitsTest {
 
+        private Member org1Member;
+        private Member org2Member;
+
+        @BeforeEach
+        void setUp() {
+            org1Member = entityUtils.getEntity(1L, Member.class);
+            org2Member = entityUtils.getEntity(2L, Member.class);
+        }
+
         @Test
-        void 필터링할_단위가_없으면_모든_팀을_조회한다() {
+        void 필터링할_단위가_없으면_해당_조직의_모든_팀을_조회한다() {
             // when
-            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null);
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null, org1Member);
 
             // then
             assertThat(responses).hasSize(7);
@@ -82,7 +119,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("사회과학대학");
 
             // when
-            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null);
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null, org1Member);
 
             // then
             assertAll(
@@ -98,7 +135,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("사회과학대학", "기타");
 
             // when
-            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null);
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null, org1Member);
 
             // then
             assertAll(
@@ -107,14 +144,50 @@ public class TeamQueryServiceTest extends ServiceTest {
         }
 
         @Test
-        void 존재하지_않는_단위로_필터링하면_예외가_발생한다() {
+        void 존재하지_않는_단위로_필터링하면_빈_결과를_반환한다() {
             // given
             List<String> units = List.of("INVALID UNIT");
 
-            // when & then
-            assertThatThrownBy(() -> teamQueryService.getAllTeamsByUnits(units, null))
-                    .isInstanceOf(NotFoundException.class)
-                    .hasMessage(TeamErrorMessages.UNIT_NOT_FOUND_EXCEPTION);
+            // when
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(units, null, org1Member);
+
+            // then
+            assertThat(responses).isEmpty();
+        }
+
+        @Test
+        void 다른_조직의_멤버는_해당_조직의_팀만_조회한다() {
+            // when
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null, org2Member);
+
+            // then
+            assertAll(
+                    () -> assertThat(responses).hasSize(1),
+                    () -> assertThat(responses.get(0).name()).isEqualTo("다른조직팀")
+            );
+        }
+
+        @Test
+        void 관객은_organizationId로_해당_조직의_팀만_조회한다() {
+            // when
+            List<TeamResponse> org1Responses = teamQueryService.getAllTeamsByUnits(null, null, 1L);
+            List<TeamResponse> org2Responses = teamQueryService.getAllTeamsByUnits(null, null, 2L);
+
+            // then
+            assertAll(
+                    () -> assertThat(org1Responses).hasSize(7),
+                    () -> assertThat(org2Responses).hasSize(1),
+                    () -> assertThat(org2Responses.get(0).name()).isEqualTo("다른조직팀")
+            );
+        }
+
+        @Test
+        void 관객은_organizationId가_null이면_전체_조직의_팀을_조회한다() {
+            // when
+            List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null, (Long) null);
+
+            // then
+            assertThat(responses).hasSize(8);
         }
     }
 
@@ -292,7 +365,7 @@ public class TeamQueryServiceTest extends ServiceTest {
 
                 leagueStatisticsService.updateLeagueStatisticFromFinalGame(finalGameId);
 
-                this.responses = teamQueryService.getAllTeamsSummary(units, null);
+                this.responses = teamQueryService.getAllTeamsSummary(units, null, null);
                 this.teamAResponse = responses.get(3);
                 this.teamBResponse = responses.get(4);
                 this.teamDResponse = responses.get(5);
@@ -369,7 +442,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse noGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임없는팀"))
@@ -389,7 +462,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse fewGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임2개팀"))
@@ -411,7 +484,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse manyGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임많은팀"))
@@ -434,7 +507,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse manyGameTeamResponse = responses.stream()
                     .filter(response -> response.teamDetail().name().equals("게임많은팀"))
@@ -455,7 +528,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<String> units = List.of("기타");
 
             // when
-            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null);
+            List<TeamSummaryResponse> responses = teamQueryService.getAllTeamsSummary(units, null, null);
 
             TeamSummaryResponse noGameTeam = responses.stream()
                     .filter(r -> r.teamDetail().name().equals("게임없는팀"))

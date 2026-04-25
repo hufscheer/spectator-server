@@ -7,13 +7,18 @@ INSERT INTO members (id, organization_id, email, password, is_administrator, las
 VALUES (1, 1, 'john@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-15 10:00:00');
 
+-- 단과대
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '경영대학', 1),
+       (2, '사회과학대학', 1);
+
 -- 팀
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'BUSINESS', '경영 야생마', 'https://example.com/logos/wildhorse.png', '#8B0000'),
-       (2, 'BUSINESS', '서어 뻬데뻬', 'https://example.com/logos/pedro.png', '#FF4500'),
-       (3, 'BUSINESS', '미컴 축구생각', 'https://example.com/logos/micom.png', '#1E90FF'),
-       (4, 'BUSINESS', '체교 불사조', 'https://example.com/logos/phoenix.png', '#FFD700'),
-       (5, 'BUSINESS', '컴공 독수리', 'https://example.com/logos/eagle.png', '#4B0082');
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '경영 야생마', 'https://example.com/logos/wildhorse.png', '#8B0000'),
+       (2, 1, '서어 뻬데뻬', 'https://example.com/logos/pedro.png', '#FF4500'),
+       (3, 1, '미컴 축구생각', 'https://example.com/logos/micom.png', '#1E90FF'),
+       (4, 1, '체교 불사조', 'https://example.com/logos/phoenix.png', '#FFD700'),
+       (5, 1, '컴공 독수리', 'https://example.com/logos/eagle.png', '#4B0082');
 
 -- 선수
 INSERT INTO players (id, name, student_number, organization_id)

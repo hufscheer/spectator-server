@@ -30,6 +30,7 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
         return jpaQueryFactory
                 .selectFrom(leagueTeam)
                 .join(leagueTeam.team, team).fetchJoin()
+                .join(team.unit).fetchJoin()
                 .where(
                         leagueTeam.league.eq(league),
                         teamsPlayedInRound(league, roundNumber)
@@ -39,12 +40,15 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
     }
 
     @Override
-    public List<Team> findAllByUnitsAndSportType(final List<Unit> units, final SportType sportType) {
+    public List<Team> findAllByUnitsAndSportType(final List<Unit> units, final SportType sportType,
+                                                  final Long organizationId) {
         return jpaQueryFactory
                 .selectFrom(team)
+                .join(team.unit).fetchJoin()
                 .where(
                         teamsInUnits(units),
-                        teamsWithSportType(sportType)
+                        teamsWithSportType(sportType),
+                        teamsInOrganization(organizationId)
                 )
                 .orderBy(team.name.asc())
                 .fetch();
@@ -68,11 +72,14 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
     }
 
     @Override
-    public List<Unit> findDistinctUnitsBySportType(final SportType sportType) {
+    public List<Unit> findDistinctUnitsBySportTypeAndOrganizationId(final SportType sportType, final Long organizationId) {
         return jpaQueryFactory
                 .select(team.unit).distinct()
                 .from(team)
-                .where(teamsWithSportType(sportType))
+                .where(
+                        teamsWithSportType(sportType),
+                        teamsInOrganization(organizationId)
+                )
                 .fetch();
     }
 
@@ -88,5 +95,12 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
             return null;
         }
         return team.sportType.eq(sportType);
+    }
+
+    private BooleanExpression teamsInOrganization(final Long organizationId) {
+        if (organizationId == null) {
+            return null;
+        }
+        return team.organization.id.eq(organizationId);
     }
 }

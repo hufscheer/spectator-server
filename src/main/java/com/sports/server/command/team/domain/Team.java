@@ -34,8 +34,8 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
     @Column(name = "logo_image_url")
     private String logoImageUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "unit", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_id", nullable = false)
     private Unit unit;
 
     @Column(name = "team_color", nullable = false)
@@ -62,7 +62,8 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
     private List<GameTeam> gameTeams = new ArrayList<>();
 
     @Builder
-    public Team(@NonNull String name, String logoImageUrl, @NonNull Unit unit, @NonNull String teamColor, SportType sportType) {
+    public Team(@NonNull String name, String logoImageUrl, @NonNull Unit unit, @NonNull String teamColor,
+                SportType sportType) {
         this.name = name;
         this.logoImageUrl = logoImageUrl;
         this.unit = unit;
@@ -70,7 +71,7 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
         this.sportType = sportType != null ? sportType : SportType.SOCCER;
     }
 
-    public void update(String name, String logoImageUrl, String originPrefix, String replacePrefix, Unit unit, String teamColor) {
+    public void update(String name, String logoImageUrl, Unit unit, String teamColor) {
         if (name != null) {
             this.name = name;
         }
@@ -80,8 +81,8 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
         if (teamColor != null) {
             this.teamColor = teamColor;
         }
-        if (logoImageUrl != null && !logoImageUrl.equals(this.logoImageUrl)) {
-            this.logoImageUrl = changeLogoImageUrlToBeSaved(logoImageUrl, originPrefix, replacePrefix);
+        if (logoImageUrl != null) {
+            this.logoImageUrl = logoImageUrl;
         }
     }
 
@@ -96,7 +97,7 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
     }
 
     void addTeamPlayer(TeamPlayer teamPlayer) {
-            this.teamPlayers.add(teamPlayer);
+        this.teamPlayers.add(teamPlayer);
     }
 
     public void removeTeamPlayer(Player player) {
@@ -107,13 +108,6 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
                     this.teamPlayers.remove(tp);
                     player.removeTeamPlayer(tp);
                 });
-    }
-
-    private String changeLogoImageUrlToBeSaved(String logoImageUrl, String originPrefix, String replacePrefix) {
-        if (!logoImageUrl.contains(originPrefix)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 이미지 url 입니다.");
-        }
-        return logoImageUrl.replace(originPrefix, replacePrefix);
     }
 
     public void deleteLogoImageUrl() {

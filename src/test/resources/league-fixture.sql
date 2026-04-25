@@ -11,13 +11,17 @@ VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2025-07-01 10:00:00'
        (2, 1, 'user@example.com', 'password456', FALSE, '2025-07-02 12:30:00');
 
 
-INSERT INTO teams (id, unit, name, logo_image_url, team_color, sport_type)
-VALUES (1, 'BUSINESS', '경영 야생마', 'https://example.com/logos/wildhorse.png', '#8B0000', 'SOCCER'),
-       (2, 'BUSINESS', '서어 뻬데뻬', 'https://example.com/logos/pedro.png', '#FF4500', 'SOCCER'),
-       (3, 'BUSINESS', '미컴 축구생각', 'https://example.com/logos/micom.png', '#1E90FF', 'SOCCER'),
-       (4, 'BUSINESS', '체교 불사조', 'https://example.com/logos/phoenix.png', '#FFD700', 'SOCCER'),
-       (5, 'BUSINESS', '컴공 독수리', 'https://example.com/logos/eagle.png', '#4B0082', 'SOCCER'),
-       (6, 'BUSINESS', '경영 슬램덩크', 'https://example.com/logos/slamdunk.png', '#FF6347', 'BASKETBALL');
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '경영대학', 1);
+
+
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color, sport_type)
+VALUES (1, 1, '경영 야생마', 'https://example.com/logos/wildhorse.png', '#8B0000', 'SOCCER'),
+       (2, 1, '서어 뻬데뻬', 'https://example.com/logos/pedro.png', '#FF4500', 'SOCCER'),
+       (3, 1, '미컴 축구생각', 'https://example.com/logos/micom.png', '#1E90FF', 'SOCCER'),
+       (4, 1, '체교 불사조', 'https://example.com/logos/phoenix.png', '#FFD700', 'SOCCER'),
+       (5, 1, '컴공 독수리', 'https://example.com/logos/eagle.png', '#4B0082', 'SOCCER'),
+       (6, 1, '경영 슬램덩크', 'https://example.com/logos/slamdunk.png', '#FF6347', 'BASKETBALL');
 
 
 INSERT INTO players (id, name, student_number)

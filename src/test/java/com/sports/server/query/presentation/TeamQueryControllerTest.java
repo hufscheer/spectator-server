@@ -1,5 +1,7 @@
 package com.sports.server.query.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
 import com.sports.server.command.league.domain.SportType;
@@ -29,24 +31,14 @@ public class TeamQueryControllerTest extends DocumentationTest {
     void 단과대별_팀_유무를_조회한다() throws Exception {
         // given
         List<UnitResponse> response = List.of(
-                new UnitResponse("ENGLISH", "영어대학", true),
-                new UnitResponse("OCCIDENTAL_LANGUAGES", "서양어대학", false),
-                new UnitResponse("ASIAN_LANGUAGES_AND_CULTURE", "아시아언어문화대학", false),
-                new UnitResponse("CHINESE_STUDIES", "중국학대학", false),
-                new UnitResponse("JAPANESE_STUDIES", "일본어대학", false),
-                new UnitResponse("SOCIAL_SCIENCES", "사회과학대학", true),
-                new UnitResponse("BUSINESS_AND_ECONOMICS", "상경대학", false),
-                new UnitResponse("BUSINESS", "경영대학", true),
-                new UnitResponse("EDUCATION", "사범대학", false),
-                new UnitResponse("AI_CONVERGENCE", "AI융합대학", false),
-                new UnitResponse("INTERNATIONAL_STUDIES", "국제학부", false),
-                new UnitResponse("LD_AND_LT", "LD/LT학부", false),
-                new UnitResponse("KOREAN_AS_A_FOREIGN_LANGUAGE", "KFL학부", false),
-                new UnitResponse("LIBERAL_ARTS", "자유전공학부", false),
-                new UnitResponse("ETC", "기타", false)
+                new UnitResponse(1L, "영어대학", true),
+                new UnitResponse(2L, "서양어대학", false),
+                new UnitResponse(3L, "사회과학대학", true),
+                new UnitResponse(4L, "경영대학", true),
+                new UnitResponse(5L, "기타", false)
         );
 
-        given(teamQueryService.getUnitsWithTeams(SportType.SOCCER)).willReturn(response);
+        given(teamQueryService.getUnitsWithTeams(nullable(SportType.class), nullable(Long.class))).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/units")
@@ -57,10 +49,11 @@ public class TeamQueryControllerTest extends DocumentationTest {
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional()
+                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (학교 등)").optional()
                         ),
                         responseFields(
-                                fieldWithPath("[].unit").type(JsonFieldType.STRING).description("단과대 코드"),
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("단과대 ID"),
                                 fieldWithPath("[].unitName").type(JsonFieldType.STRING).description("단과대 이름"),
                                 fieldWithPath("[].hasTeam").type(JsonFieldType.BOOLEAN).description("해당 단과대에 팀 존재 여부")
                         )
@@ -77,7 +70,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 new TeamResponse(3L, "영어영문학과", "s3:logoImageUrl2", "영어대학", "#92A8D1", "SOCCER")
         );
 
-        given(teamQueryService.getAllTeamsByUnits(units, null)).willReturn(response);
+        given(teamQueryService.getAllTeamsByUnits(any(), nullable(SportType.class), nullable(Long.class))).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams")
@@ -90,7 +83,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
                         queryParameters(
                                 parameterWithName("units").description("필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학," +
                                         " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD/LT학부," +
-                                        " KFL학부, 자유전공학부, 기타)").optional()
+                                        " KFL학부, 자유전공학부, 기타)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (학교 등)").optional()
                         ),
                         responseFields(
                                 combineFields(
@@ -268,7 +263,7 @@ public class TeamQueryControllerTest extends DocumentationTest {
 
         List<TeamSummaryResponse> teamSummaryResponses = List.of(new TeamSummaryResponse(teamDetail, recentGames));
 
-        given(teamQueryService.getAllTeamsSummary(units, null)).willReturn(teamSummaryResponses);
+        given(teamQueryService.getAllTeamsSummary(units, null, null)).willReturn(teamSummaryResponses);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/summary")
@@ -281,7 +276,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
                         queryParameters(
                                 parameterWithName("units").description("필터링할 소속 리스트 (영어대학, 서양어대학, 아시아언어문화대학," +
                                         " 중국학대학, 일본어대학, 사회과학대학, 상경대학, 경영대학, 사범대학, AI융합대학, 국제학부, LD/LT학부," +
-                                        " KFL학부, 자유전공학부, 기타)").optional()
+                                        " KFL학부, 자유전공학부, 기타)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (SOCCER, BASKETBALL)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (학교 등)").optional()
                         ),
                         responseFields(
                                 combineFields(

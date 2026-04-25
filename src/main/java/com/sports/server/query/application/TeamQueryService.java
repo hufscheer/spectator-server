@@ -7,6 +7,7 @@ import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueStatistics;
 import com.sports.server.command.league.domain.SportType;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.*;
 import com.sports.server.common.application.EntityUtils;
@@ -41,20 +42,46 @@ public class TeamQueryService {
     private final TeamQueryRepository teamQueryRepository;
     private final TeamQueryDynamicRepository teamQueryDynamicRepository;
     private final TeamPlayerRepository teamPlayerRepository;
+    private final UnitRepository unitRepository;
     private final GameTeamRepository gameTeamRepository;
     private final LeagueStatisticsQueryRepository leagueStatisticsQueryRepository;
     private final GameQueryRepository gameQueryRepository;
 
-    public List<UnitResponse> getUnitsWithTeams(final SportType sportType) {
-        List<Unit> distinctUnits = teamQueryDynamicRepository.findDistinctUnitsBySportType(sportType);
-        Set<Unit> unitsWithTeam = distinctUnits.isEmpty() ? EnumSet.noneOf(Unit.class) : EnumSet.copyOf(distinctUnits);
-        return Arrays.stream(Unit.values())
+    public List<UnitResponse> getUnitsWithTeams(final SportType sportType, final Long organizationId) {
+        return getUnitsWithTeamsByOrganization(sportType, organizationId);
+    }
+
+    public List<UnitResponse> getUnitsWithTeams(final SportType sportType, final Member member) {
+        Long organizationId = member.getOrganization().getId();
+        return getUnitsWithTeamsByOrganization(sportType, organizationId);
+    }
+
+    private List<UnitResponse> getUnitsWithTeamsByOrganization(final SportType sportType, final Long organizationId) {
+        List<Unit> allUnits = organizationId != null
+                ? unitRepository.findAllByOrganizationId(organizationId)
+                : unitRepository.findAll();
+        Set<Unit> unitsWithTeam = new HashSet<>(
+                teamQueryDynamicRepository.findDistinctUnitsBySportTypeAndOrganizationId(sportType, organizationId)
+        );
+        return allUnits.stream()
                 .map(unit -> UnitResponse.of(unit, unitsWithTeam.contains(unit)))
                 .toList();
     }
 
-    public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType) {
-        List<Team> teams = findTeamsByUnits(units, sportType);
+    public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType,
+                                                    final Long organizationId) {
+        return getAllTeamsByUnitsByOrganization(units, sportType, organizationId);
+    }
+
+    public List<TeamResponse> getAllTeamsByUnits(final List<String> units, final SportType sportType,
+                                                    final Member member) {
+        Long organizationId = member.getOrganization().getId();
+        return getAllTeamsByUnitsByOrganization(units, sportType, organizationId);
+    }
+
+    private List<TeamResponse> getAllTeamsByUnitsByOrganization(final List<String> units, final SportType sportType,
+                                                                   final Long organizationId) {
+        List<Team> teams = findTeamsByUnits(units, sportType, organizationId);
         return teams.stream()
                 .map(TeamResponse::new)
                 .toList();
@@ -85,8 +112,9 @@ public class TeamQueryService {
         return new TeamDetailResponse(team, teamPlayers, teamGameResult, scorers, trophies);
     }
 
-    public List<TeamSummaryResponse> getAllTeamsSummary(final List<String> units, final SportType sportType) {
-        List<Team> teams = findTeamsByUnits(units, sportType);
+    public List<TeamSummaryResponse> getAllTeamsSummary(final List<String> units, final SportType sportType,
+                                                        final Long organizationId) {
+        List<Team> teams = findTeamsByUnits(units, sportType, organizationId);
         if (teams.isEmpty()) return Collections.emptyList();
 
         List<Long> teamIds = teams.stream().map(Team::getId).toList();
@@ -110,9 +138,23 @@ public class TeamQueryService {
         );
     }
 
-    private List<Team> findTeamsByUnits(final List<String> units, final SportType sportType) {
-        List<Unit> targetUnits = (units == null || units.isEmpty()) ? null : Unit.fromNames(units);
-        return teamQueryDynamicRepository.findAllByUnitsAndSportType(targetUnits, sportType);
+    private List<Team> findTeamsByUnits(final List<String> units, final SportType sportType,
+                                         final Long organizationId) {
+        List<Unit> targetUnits = resolveUnits(units, organizationId);
+        if (targetUnits != null && targetUnits.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return teamQueryDynamicRepository.findAllByUnitsAndSportType(targetUnits, sportType, organizationId);
+    }
+
+    private List<Unit> resolveUnits(final List<String> unitNames, final Long organizationId) {
+        if (unitNames == null || unitNames.isEmpty()) {
+            return null;
+        }
+        if (organizationId != null) {
+            return unitRepository.findAllByNameInAndOrganizationId(unitNames, organizationId);
+        }
+        return unitRepository.findAllByNameIn(unitNames);
     }
 
     private Map<Long, TeamDetailResponse.TeamGameResult> getTeamGameResults(List<Long> teamIds) {

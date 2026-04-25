@@ -110,7 +110,7 @@ public class NlControllerTest extends DocumentationTest {
                 )
         );
 
-        given(nlService.parse(any())).willReturn(response);
+        given(nlService.parse(any(), any())).willReturn(response);
 
         Map<String, Object> request = Map.of(
                 "history", List.of(),

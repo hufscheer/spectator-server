@@ -10,12 +10,18 @@ INSERT INTO members (id, organization_id, email, password, is_administrator, las
 VALUES (1, 1, 'john.doe@example.com', 'password123', TRUE, '2024-07-01 10:00:00'),
        (2, 2, 'non.manager@example.com', 'password123', FALSE, '2024-07-01 10:00:00');
 
+-- 단과대 생성
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '사회과학대학', 1),
+       (2, '기타', 1),
+       (3, '영어대학', 1);
+
 -- 팀 생성
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'SOCIAL_SCIENCES', '팀A', 'http://example.com/logo_a.png', '#FF0000'),
-       (2, 'ETC', '팀B', 'http://example.com/logo_b.png', '#0000FF'),
-       (3, 'ENGLISH', '팀C', 'http://example.com/logo_c.png', '#0000FF'),
-       (4, 'SOCIAL_SCIENCES', '팀D', 'http://example.com/logo_d.png', '#0000FF');
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '팀A', 'http://example.com/logo_a.png', '#FF0000'),
+       (2, 2, '팀B', 'http://example.com/logo_b.png', '#0000FF'),
+       (3, 3, '팀C', 'http://example.com/logo_c.png', '#0000FF'),
+       (4, 1, '팀D', 'http://example.com/logo_d.png', '#0000FF');
 
 -- 선수 생성
 INSERT INTO players (id, name, student_number)
@@ -221,6 +227,17 @@ VALUES ('SCORE', 5, 'FIRST_QUARTER', 8, 19, 2, 7, 3, 8, 0);
 -- 1쿼터 종료
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, game_team1_id, game_team2_id, snapshot_score1, snapshot_score2, previous_quarter, previous_quarter_changed_at)
 VALUES ('GAME_PROGRESS', 5, 'FIRST_QUARTER', 10, 'QUARTER_END', 7, 8, 3, 2, 'FIRST_QUARTER', null);
+
+-- game 6: 경기종료 시 자동 쿼터종료 테스트용 (soccer, SECOND_HALF QUARTER_START 상태)
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
+VALUES (6, 1, 1, '자동_쿼터종료_테스트용', '2023-11-12 10:00:00', null, '2023-11-12 10:15:00', 'SECOND_HALF', 'PLAYING', '4강', FALSE);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (9, 6, 1, 0, 0, 0, null),
+       (10, 6, 2, 0, 0, 0, null);
+
+INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, previous_quarter, previous_quarter_changed_at)
+VALUES ('GAME_PROGRESS', 6, 'SECOND_HALF', 0, 'QUARTER_START', 'FIRST_HALF', null);
 
 -- 응원톡 생성
 INSERT INTO cheer_talks (id, game_team_id, content, created_at, block_status)

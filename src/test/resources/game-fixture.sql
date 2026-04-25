@@ -14,14 +14,24 @@ VALUES (1, 1, 'john.doe@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn
        (5, 1, 'carol.white@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', TRUE, '2024-07-05 16:10:00');
 
 
-INSERT INTO teams (id, unit, name, logo_image_url, team_color)
-VALUES (1, 'OCCIDENTAL_LANGUAGES', '팀 A', 'http://example.com/logo_a.png', '#FF0000'),
-       (2, 'ENGLISH', '팀 B', 'http://example.com/logo_b.png', '#0000FF'),
-       (3, 'JAPANESE_STUDIES', '팀 C', 'http://example.com/logo_c.png', '#00FF00'),
-       (4, 'BUSINESS_AND_ECONOMICS', '팀 D', 'http://example.com/logo_d.png', '#FFFF00'),
-       (5, 'AI_CONVERGENCE', '팀 E', 'http://example.com/logo_e.png', '#800080'),
-       (6, 'LD_AND_LT', '팀 F', 'http://example.com/logo_e.png', '#FF0000'),
-       (7, 'ETC', '팀 G', 'http://example.com/logo_e.png', '#00FF00');
+INSERT INTO units (id, name, organization_id)
+VALUES (1, '서양어대학', 1),
+       (2, '영어대학', 1),
+       (3, '일본어대학', 1),
+       (4, '상경대학', 1),
+       (5, 'AI융합대학', 1),
+       (6, 'LD/LT학부', 1),
+       (7, '기타', 1);
+
+
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '팀 A', 'http://example.com/logo_a.png', '#FF0000'),
+       (2, 2, '팀 B', 'http://example.com/logo_b.png', '#0000FF'),
+       (3, 3, '팀 C', 'http://example.com/logo_c.png', '#00FF00'),
+       (4, 4, '팀 D', 'http://example.com/logo_d.png', '#FFFF00'),
+       (5, 5, '팀 E', 'http://example.com/logo_e.png', '#800080'),
+       (6, 6, '팀 F', 'http://example.com/logo_e.png', '#FF0000'),
+       (7, 7, '팀 G', 'http://example.com/logo_e.png', '#00FF00');
 
 
 INSERT INTO players (id, name, student_number)
@@ -145,16 +155,16 @@ VALUES (1, 1, 1, 1, 1, 0),
 INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing)
 VALUES -- 축구 대전(game_id = 1), A팀(game_team_id = 1) 라인업 선수
        (1, 1, 11, 1, false, 'CANDIDATE', false),
-       (2, 1, 12, 2, false, 'STARTER', false),
-       (3, 1, 13, 3, false, 'STARTER', false),
-       (4, 1, 14, 4, false, 'STARTER', false),
+       (2, 1, 12, 2, false, 'STARTER', true),
+       (3, 1, 13, 3, false, 'STARTER', true),
+       (4, 1, 14, 4, false, 'STARTER', true),
        (5, 1, 15, 5, false, 'STARTER', true),
 
        -- 축구 대전(game_id = 1), B팀(game_team_id = 2) 라인업 선수
-       (6, 2, 16, 1, true, 'STARTER', false),
-       (7, 2, 17, 2, false, 'STARTER', false),
-       (8, 2, 18, 3, false, 'STARTER', false),
-       (9, 2, 19, 4, false, 'STARTER', false),
+       (6, 2, 16, 1, true, 'STARTER', true),
+       (7, 2, 17, 2, false, 'STARTER', true),
+       (8, 2, 18, 3, false, 'STARTER', true),
+       (9, 2, 19, 4, false, 'STARTER', true),
        (10, 2, 20, 5, false, 'STARTER', true);
 
 

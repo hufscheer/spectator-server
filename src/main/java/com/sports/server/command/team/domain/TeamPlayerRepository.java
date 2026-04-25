@@ -16,9 +16,9 @@ public interface TeamPlayerRepository extends JpaRepository<TeamPlayer, Long> {
     @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player WHERE tp.id IN :ids")
     List<TeamPlayer> findAllByTeamPlayerIds(@Param("ids") List<Long> teamPlayerIds);
 
-    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.team WHERE tp.player.id = :playerId")
+    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.team t JOIN FETCH t.unit WHERE tp.player.id = :playerId")
     List<TeamPlayer> findAllByPlayerId(@Param("playerId") Long playerId);
 
-    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player JOIN FETCH tp.team WHERE tp.player.id IN :playerIds")
+    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player JOIN FETCH tp.team t JOIN FETCH t.unit WHERE tp.player.id IN :playerIds")
     List<TeamPlayer> findAllByPlayerIds(@Param("playerIds") List<Long> playerIds);
 }

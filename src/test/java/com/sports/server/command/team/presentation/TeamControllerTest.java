@@ -1,6 +1,5 @@
 package com.sports.server.command.team.presentation;
 
-import com.sports.server.command.team.domain.Unit;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;

@@ -1,11 +1,13 @@
 package com.sports.server.query.application;
 
 import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
@@ -16,8 +18,12 @@ import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
+import com.sports.server.command.game.domain.GameResult;
+import com.sports.server.query.dto.response.GameTimelineResponse;
 import com.sports.server.query.dto.response.QuarterScoreResponse;
 import com.sports.server.query.dto.response.TimelineResponse;
+import com.sports.server.query.dto.response.WinnerResponse;
+import com.sports.server.query.repository.GameTeamQueryRepository;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,20 +40,28 @@ public class TimelineQueryService {
 
     private final TimelineQueryRepository timelineQueryRepository;
     private final GameProgressTimelineRepository gameProgressTimelineRepository;
+    private final GameTeamQueryRepository gameTeamQueryRepository;
     private final EntityUtils entityUtils;
 
-    public List<TimelineResponse> getTimelines(final Long gameId) {
+    public GameTimelineResponse getTimelines(final Long gameId) {
         Map<Quarter, List<Timeline>> timelines = timelineQueryRepository.findByGameId(gameId)
                 .stream()
                 .collect(groupingBy(Timeline::getRecordedQuarter));
 
-        return timelines.keySet()
+        List<TimelineResponse> timelineResponses = timelines.keySet()
                 .stream()
                 .sorted(comparingInt(Quarter::getOrder).reversed())
                 .map(quarter -> TimelineResponse.of(
                         quarter,
                         timelines.get(quarter)
                 )).toList();
+
+        WinnerResponse winner = gameTeamQueryRepository
+                .findByGameIdAndResult(gameId, GameResult.WIN)
+                .map(WinnerResponse::from)
+                .orElse(null);
+
+        return new GameTimelineResponse(winner, timelineResponses);
     }
 
     public AvailableProgressResponse getAvailableProgress(Long gameId) {
@@ -88,6 +102,14 @@ public class TimelineQueryService {
     }
 
     public List<QuarterScoreResponse> getQuarterScores(Long gameId) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+
+        List<Long> gameTeamIds = gameTeamQueryRepository.findAllByGame(game)
+                .stream()
+                .sorted(comparingLong(GameTeam::getId))
+                .map(GameTeam::getId)
+                .toList();
+
         List<Quarter> completedQuarters = gameProgressTimelineRepository
                 .findByGameIdAndType(gameId, GameProgressType.QUARTER_END)
                 .stream()
@@ -109,6 +131,7 @@ public class TimelineQueryService {
         return completedQuarters.stream()
                 .map(quarter -> QuarterScoreResponse.of(
                         quarter,
+                        gameTeamIds,
                         scoreByQuarterAndTeam.getOrDefault(quarter, Map.of())
                 ))
                 .toList();
