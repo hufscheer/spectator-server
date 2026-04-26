@@ -274,7 +274,7 @@ public class NlService {
     private Team createTeam(NlRegisterTeamRequest request, Member member) {
         NlRegisterTeamRequest.TeamInfo teamInfo = request.team();
         TeamRequest.Register teamRegister = new TeamRequest.Register(
-                teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null, null
+                teamInfo.name(), teamInfo.logoImageUrl(), teamInfo.unit(), teamInfo.teamColor(), null, teamInfo.sportType()
         );
         Long teamId = teamService.registerAndReturnId(member, teamRegister);
         return entityUtils.getEntity(teamId, Team.class);
