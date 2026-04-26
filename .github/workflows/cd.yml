@@ -53,15 +53,15 @@ jobs:
       - name: Docker Hub push
         run: docker push ${{ steps.env.outputs.IMG }}
 
-      - name: scp docker-compose (prod)
+      - name: scp be-config docker (prod)
         if: steps.env.outputs.TARGET == 'prod'
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.WAS_HOST }}
           username: ubuntu
           key: ${{ secrets.KEY }}
-          source: "./src/main/resources/be-config/docker/docker-compose.yml"
-          target: "/home/ubuntu"
+          source: "./src/main/resources/be-config/docker/"
+          target: "/home/ubuntu/staging"
           strip_components: 6
 
       - name: scp monitoring compose (prod)
@@ -86,7 +86,7 @@ jobs:
           target: "/home/ubuntu/monitoring"
           strip_components: 6
 
-      - name: 배포 (prod)
+      - name: 배포 (prod, blue/green)
         if: steps.env.outputs.TARGET == 'prod'
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -94,9 +94,34 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY }}
           script: |
-            docker pull ${{ steps.env.outputs.IMG }}
-            docker compose -f docker-compose.yml up -d --force-recreate --no-deps web
-            docker image prune -f
+            set -e
+            cd /home/ubuntu
+
+            cp /home/ubuntu/staging/docker-compose.yml /home/ubuntu/docker-compose.yml
+            cp /home/ubuntu/staging/deploy.sh /home/ubuntu/deploy.sh
+            chmod +x /home/ubuntu/deploy.sh
+
+            mkdir -p /home/ubuntu/nginx/conf.d
+            cp /home/ubuntu/staging/nginx/blue.conf /home/ubuntu/nginx/conf.d/blue.conf
+            cp /home/ubuntu/staging/nginx/green.conf /home/ubuntu/nginx/conf.d/green.conf
+
+            if [ ! -L /home/ubuntu/nginx/conf.d/default.conf ]; then
+                ln -sfn /home/ubuntu/nginx/conf.d/blue.conf /home/ubuntu/nginx/conf.d/default.conf
+            fi
+
+            if docker ps --format '{{.Names}}' | grep -q '^hufscheer-server$'; then
+                echo "[cutover] removing legacy hufscheer-server"
+                docker stop hufscheer-server || true
+                docker rm hufscheer-server || true
+            fi
+
+            if [ ! -f /home/ubuntu/.active_slot ]; then
+                echo green > /home/ubuntu/.active_slot
+            fi
+
+            docker compose -f docker-compose.yml up -d router
+
+            bash /home/ubuntu/deploy.sh
 
       - name: scp docker-compose (dev)
         if: steps.env.outputs.TARGET == 'dev'
