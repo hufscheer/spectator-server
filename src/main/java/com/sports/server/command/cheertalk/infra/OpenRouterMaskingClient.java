@@ -35,11 +35,11 @@ public class OpenRouterMaskingClient implements MaskingClient {
 
     @Override
     public String mask(String content) {
+        String fullInput = systemPrompt + "\n" + content;
         Map<String, Object> body = Map.of(
                 "model", model,
                 "messages", List.of(
-                        Map.of("role", "system", "content", systemPrompt),
-                        Map.of("role", "user", "content", content)
+                        Map.of("role", "user", "content", fullInput)
                 )
         );
 
