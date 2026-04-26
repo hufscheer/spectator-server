@@ -69,11 +69,13 @@ public class TeamService {
         Team team = entityUtils.getEntity(teamId, Team.class);
         PermissionValidator.checkPermission(team, member);
 
-        Long unitOrgId = team.getOrganization() != null
-                ? team.getOrganization().getId()
-                : member.getOrganization().getId();
         Unit unit = Optional.ofNullable(request.unit())
-                .map(unitName -> findUnit(unitName, unitOrgId))
+                .map(unitName -> {
+                    Long unitOrgId = team.getOrganization() != null
+                            ? team.getOrganization().getId()
+                            : (member.getOrganization() != null ? member.getOrganization().getId() : null);
+                    return findUnit(unitName, unitOrgId);
+                })
                 .orElse(null);
         team.update(request.name(), resolveLogoImageUrl(request.logoImageUrl(), team), unit, request.teamColor());
 
