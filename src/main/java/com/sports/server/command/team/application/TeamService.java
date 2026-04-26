@@ -70,7 +70,12 @@ public class TeamService {
         PermissionValidator.checkPermission(team, member);
 
         Unit unit = Optional.ofNullable(request.unit())
-                .map(unitName -> findUnit(unitName, member.getOrganization().getId()))
+                .map(unitName -> {
+                    Long unitOrgId = team.getOrganization() != null
+                            ? team.getOrganization().getId()
+                            : (member.getOrganization() != null ? member.getOrganization().getId() : null);
+                    return findUnit(unitName, unitOrgId);
+                })
                 .orElse(null);
         team.update(request.name(), resolveLogoImageUrl(request.logoImageUrl(), team), unit, request.teamColor());
 
