@@ -1,5 +1,6 @@
 package com.sports.server.command.nl.dto;
 
+import com.sports.server.command.league.domain.SportType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,7 +16,8 @@ public record NlRegisterTeamRequest(
             @NotBlank String name,
             @NotBlank String logoImageUrl,
             @NotBlank String unit,
-            @NotBlank String teamColor
+            @NotBlank String teamColor,
+            SportType sportType
     ) {
     }
 

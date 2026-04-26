@@ -157,7 +157,8 @@ public class NlControllerTest extends DocumentationTest {
                         "name", "정치외교학과 DPS",
                         "logoImageUrl", "https://images.hufscheer.com/logo.png",
                         "unit", "정치외교학과",
-                        "teamColor", "#FF0000"
+                        "teamColor", "#FF0000",
+                        "sportType", "SOCCER"
                 ),
                 "players", List.of(
                         Map.of("name", "홍길동", "studentNumber", "202600001", "jerseyNumber", 10),
@@ -180,6 +181,7 @@ public class NlControllerTest extends DocumentationTest {
                                 fieldWithPath("team.logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 URL"),
                                 fieldWithPath("team.unit").type(JsonFieldType.STRING).description("팀 소속"),
                                 fieldWithPath("team.teamColor").type(JsonFieldType.STRING).description("팀 색상"),
+                                fieldWithPath("team.sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL 등)").optional(),
                                 fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("players[].studentNumber").type(JsonFieldType.STRING).description("학번"),
                                 fieldWithPath("players[].jerseyNumber").type(JsonFieldType.NUMBER).description("등번호")
