@@ -3,12 +3,12 @@ package com.sports.server.command.nl.application;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.LeagueTeamRepository;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.dto.*;
 import com.sports.server.command.nl.dto.NlParseResult.ParsedPlayer;
-import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.nl.exception.NlErrorMessages;
 import com.sports.server.command.player.application.PlayerService;
 import com.sports.server.command.player.domain.Player;
@@ -368,7 +368,7 @@ class NlServiceTest {
         void 팀_생성_및_선수_등록() {
             // given
             NlRegisterTeamRequest request = new NlRegisterTeamRequest(
-                    new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000"),
+                    new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000", null),
                     List.of(new NlRegisterTeamRequest.PlayerData("홍길동", "202600001", 10))
             );
 
@@ -395,11 +395,40 @@ class NlServiceTest {
         }
 
         @Test
+        @DisplayName("sportType을 지정하면 해당 종목으로 팀이 생성된다")
+        void sportType_지정_팀_생성() {
+            // given
+            NlRegisterTeamRequest request = new NlRegisterTeamRequest(
+                    new NlRegisterTeamRequest.TeamInfo("농구팀", "https://images.hufscheer.com/logo.png", "경영대학", "#FF0000", SportType.BASKETBALL),
+                    List.of(new NlRegisterTeamRequest.PlayerData("홍길동", "202600001", 10))
+            );
+
+            given(teamService.registerAndReturnId(any(), any())).willReturn(99L);
+
+            Team createdTeam = mock(Team.class);
+            given(createdTeam.getId()).willReturn(99L);
+            given(createdTeam.getName()).willReturn("농구팀");
+            given(entityUtils.getEntity(99L, Team.class)).willReturn(createdTeam);
+
+            given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
+            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerService.register(any(), any())).willReturn(100L);
+
+            // when
+            nlService.registerTeamWithPlayers(request, mockMember);
+
+            // then
+            verify(teamService).registerAndReturnId(any(), argThat(register ->
+                    register.sportType() == SportType.BASKETBALL
+            ));
+        }
+
+        @Test
         @DisplayName("기존 선수는 생성하지 않고 팀에 배정한다")
         void 기존_선수_배정() {
             // given
             NlRegisterTeamRequest request = new NlRegisterTeamRequest(
-                    new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000"),
+                    new NlRegisterTeamRequest.TeamInfo("정치외교학과 DPS", "https://images.hufscheer.com/logo.png", "정치외교학과", "#FF0000", null),
                     List.of(new NlRegisterTeamRequest.PlayerData("김철수", "202600002", 7))
             );
 
