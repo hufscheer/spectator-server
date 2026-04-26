@@ -101,12 +101,13 @@ jobs:
             cp /home/ubuntu/staging/deploy.sh /home/ubuntu/deploy.sh
             chmod +x /home/ubuntu/deploy.sh
 
-            mkdir -p /home/ubuntu/nginx/conf.d
-            cp /home/ubuntu/staging/nginx/blue.conf /home/ubuntu/nginx/conf.d/blue.conf
-            cp /home/ubuntu/staging/nginx/green.conf /home/ubuntu/nginx/conf.d/green.conf
+            mkdir -p /home/ubuntu/nginx/conf.d /home/ubuntu/nginx/templates
+            cp /home/ubuntu/staging/nginx/blue.conf /home/ubuntu/nginx/templates/blue.conf
+            cp /home/ubuntu/staging/nginx/green.conf /home/ubuntu/nginx/templates/green.conf
 
-            if [ ! -L /home/ubuntu/nginx/conf.d/default.conf ]; then
-                ln -sfn /home/ubuntu/nginx/conf.d/blue.conf /home/ubuntu/nginx/conf.d/default.conf
+            if [ ! -f /home/ubuntu/nginx/conf.d/default.conf ] || [ -L /home/ubuntu/nginx/conf.d/default.conf ]; then
+                rm -f /home/ubuntu/nginx/conf.d/default.conf
+                cp /home/ubuntu/nginx/templates/blue.conf /home/ubuntu/nginx/conf.d/default.conf
             fi
 
             if docker ps --format '{{.Names}}' | grep -q '^hufscheer-server$'; then
