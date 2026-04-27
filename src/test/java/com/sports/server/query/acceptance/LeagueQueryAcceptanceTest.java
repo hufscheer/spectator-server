@@ -281,7 +281,7 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
 
         @Test
         @Sql(scripts = "/recent-league-games-ended-fixture.sql")
-        void 진행_중인_리그가_없으면_가장_최근_종료된_리그들의_게임을_반환한다() {
+        void 진행_중인_리그가_없으면_시작일이_가장_최신인_리그들의_게임을_반환한다() {
             // when
             ExtractableResponse<Response> response = 최근_리그_게임_조회();
 

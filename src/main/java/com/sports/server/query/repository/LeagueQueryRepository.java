@@ -59,15 +59,14 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
                                        @Param("organizationId") Long organizationId,
                                        @Param("sportType") SportType sportType);
 
-    @Query("SELECT l FROM League l WHERE l.endAt = ("
-            + "SELECT MAX(l2.endAt) FROM League l2 WHERE l2.endAt < :now"
-            + " AND (:organizationId IS NULL OR l2.organization.id = :organizationId)"
+    @Query("SELECT l FROM League l WHERE l.startAt = ("
+            + "SELECT MAX(l2.startAt) FROM League l2"
+            + " WHERE (:organizationId IS NULL OR l2.organization.id = :organizationId)"
             + " AND (:sportType IS NULL OR l2.sportType = :sportType))"
             + " AND (:organizationId IS NULL OR l.organization.id = :organizationId)"
             + " AND (:sportType IS NULL OR l.sportType = :sportType)")
-    List<League> findLeaguesByLatestEndAt(@Param("now") LocalDateTime now,
-                                          @Param("organizationId") Long organizationId,
-                                          @Param("sportType") SportType sportType);
+    List<League> findLeaguesByLatestStartAt(@Param("organizationId") Long organizationId,
+                                            @Param("sportType") SportType sportType);
 
     @Query(
             "SELECT new com.sports.server.query.repository.LeagueRecentRecordResult(l.id, l.name, ls.firstWinnerTeam.name, CAST(l.sportType AS string)) "
