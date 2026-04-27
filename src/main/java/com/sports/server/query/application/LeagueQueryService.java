@@ -281,7 +281,7 @@ public class LeagueQueryService {
         if (!inProgressLeagues.isEmpty()) {
             return inProgressLeagues;
         }
-        return leagueQueryRepository.findLeaguesByLatestEndAt(now, organizationId, sportType);
+        return leagueQueryRepository.findLeaguesByLatestStartAt(organizationId, sportType);
     }
 
     private Map<Long, List<GameTeam>> getTeamsByGameId(List<Game> games) {
