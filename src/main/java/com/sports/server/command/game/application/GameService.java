@@ -72,6 +72,13 @@ public class GameService {
     }
 
     @Transactional
+    public List<Game> determineResultsAndGet(List<Long> gameIds) {
+        List<Game> games = gameRepository.findAllByIdIn(gameIds);
+        games.forEach(Game::updateResult);
+        return games;
+    }
+
+    @Transactional
     public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
