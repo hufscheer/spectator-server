@@ -89,6 +89,8 @@ class GameTest {
         void 참여하지_않는_선수는_득점할_수_없다() {
             // given
             GameTeam otherTeam = entityBuilder(GameTeam.class)
+                    .set("id", 999L)
+                    .set("game", game2)
                     .sample();
 
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)
@@ -232,6 +234,8 @@ class GameTest {
         void 참여하지_않는_선수는_득점을_취소할_수_없다() {
             // given
             GameTeam otherTeam = entityBuilder(GameTeam.class)
+                    .set("id", 999L)
+                    .set("game", game2)
                     .sample();
 
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)
@@ -247,6 +251,8 @@ class GameTest {
         void 참여하지_않는_선수는_승부차기_득점을_취소할_수_없다() {
             // given
             GameTeam otherTeam = entityBuilder(GameTeam.class)
+                    .set("id", 999L)
+                    .set("game", game2)
                     .sample();
 
             LineupPlayer scorer = entityBuilder(LineupPlayer.class)

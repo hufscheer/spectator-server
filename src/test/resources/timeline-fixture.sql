@@ -89,7 +89,7 @@ VALUES (1, 1, 1, 1, 15, 0, null), -- 팀 A
 
 -- 라인업 선수 (1번 경기 - 팀A)
 INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
-VALUES (1, 1, 1, 1, TRUE, 'STARTER', FALSE, null),
+VALUES (1, 1, 1, 1, TRUE, 'STARTER', TRUE, null),
        (2, 1, 2, 2, FALSE, 'STARTER', FALSE, null),
        (3, 1, 3, 3, FALSE, 'STARTER', FALSE, null),
        (4, 1, 4, 4, FALSE, 'STARTER', FALSE, null),
@@ -97,7 +97,7 @@ VALUES (1, 1, 1, 1, TRUE, 'STARTER', FALSE, null),
 
 -- 라인업 선수 (1번 경기 - 팀B)
 INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
-VALUES (6, 2, 6, 6, TRUE, 'STARTER', FALSE, null),
+VALUES (6, 2, 6, 6, TRUE, 'STARTER', TRUE, null),
        (7, 2, 7, 7, FALSE, 'STARTER', FALSE, null),
        (8, 2, 8, 8, FALSE, 'STARTER', FALSE, null),
        (9, 2, 9, 9, FALSE, 'STARTER', FALSE, null),

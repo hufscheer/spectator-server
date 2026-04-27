@@ -47,6 +47,12 @@ public abstract class ReplacementTimeline extends Timeline {
         if (!originLineupPlayer.isSameTeam(replacedLineupPlayer)) {
             throw new BadRequestException(ExceptionMessages.INVALID_PLAYER_SUBSTITUTION);
         }
+        if (!originLineupPlayer.isPlaying()) {
+            throw new BadRequestException(ExceptionMessages.REPLACEMENT_ORIGIN_NOT_IN_GAME);
+        }
+        if (replacedLineupPlayer.isPlaying()) {
+            throw new BadRequestException(ExceptionMessages.REPLACEMENT_TARGET_ALREADY_IN_GAME);
+        }
     }
 
     @Override
