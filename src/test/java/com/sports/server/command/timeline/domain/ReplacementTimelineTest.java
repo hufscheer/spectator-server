@@ -34,10 +34,12 @@ class ReplacementTimelineTest {
             // given
             LineupPlayer originLineupPlayer = entityBuilder(LineupPlayer.class)
                     .set("gameTeam", gameTeam)
+                    .set("isPlaying", true)
                     .sample();
 
             LineupPlayer replacedLineupPlayer = entityBuilder(LineupPlayer.class)
                     .set("gameTeam", gameTeam)
+                    .set("isPlaying", false)
                     .sample();
 
             // when
@@ -64,10 +66,12 @@ class ReplacementTimelineTest {
 
             LineupPlayer originLineupPlayer = entityBuilder(LineupPlayer.class)
                     .set("gameTeam", gameTeam)
+                    .set("isPlaying", true)
                     .sample();
 
             LineupPlayer replacedLineupPlayer = entityBuilder(LineupPlayer.class)
                     .set("gameTeam", otherTeam)
+                    .set("isPlaying", false)
                     .sample();
 
             // when then
@@ -78,6 +82,56 @@ class ReplacementTimelineTest {
                     originLineupPlayer,
                     replacedLineupPlayer
             )).isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 이미_코트에_없는_선수는_OUT_할_수_없다() {
+            // given
+            LineupPlayer originAlreadyOut = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", gameTeam)
+                    .set("isPlaying", false)
+                    .sample();
+
+            LineupPlayer replacedLineupPlayer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", gameTeam)
+                    .set("isPlaying", false)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> new SoccerReplacementTimeline(
+                    game,
+                    quarter,
+                    10,
+                    originAlreadyOut,
+                    replacedLineupPlayer
+            ))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining("이미 코트에 없는 선수");
+        }
+
+        @Test
+        void 이미_코트에_있는_선수는_IN_할_수_없다() {
+            // given
+            LineupPlayer originLineupPlayer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", gameTeam)
+                    .set("isPlaying", true)
+                    .sample();
+
+            LineupPlayer replacedAlreadyIn = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", gameTeam)
+                    .set("isPlaying", true)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> new SoccerReplacementTimeline(
+                    game,
+                    quarter,
+                    10,
+                    originLineupPlayer,
+                    replacedAlreadyIn
+            ))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining("이미 코트에 있는 선수");
         }
     }
 }
