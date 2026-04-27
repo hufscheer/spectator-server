@@ -556,13 +556,13 @@ public class LeagueQueryServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("최근 리그 게임 조회 - 진행 중인 리그가 없을 때")
+    @DisplayName("최근 리그 게임 조회 - 진행 중인 리그가 없을 때 시작일 기준 최신 ���그 반환")
     @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
     @Sql(scripts = "/recent-league-games-ended-fixture.sql")
     class FindRecentLeagueGamesWhenEnded {
 
         @Test
-        void 가장_최근_종료된_리그들의_게임을_반환한다() {
+        void 시작일이_가장_최신인_리그들의_게임을_반환한다() {
             // when
             List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
@@ -578,7 +578,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         }
 
         @Test
-        void 동일한_종료일자를_가진_여러_리그가_모두_반환된다() {
+        void 동일한_시작일자를_가진_여러_리그가_모두_반환된다() {
             // when
             List<RecentLeagueGamesResponse> result = leagueQueryService.findRecentLeaguesGames(null, null);
 
