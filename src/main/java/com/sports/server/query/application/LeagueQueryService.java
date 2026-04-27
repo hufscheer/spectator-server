@@ -3,6 +3,7 @@ package com.sports.server.query.application;
 import static java.util.stream.Collectors.toMap;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
@@ -277,11 +278,36 @@ public class LeagueQueryService {
     }
 
     private List<League> getRecentLeagues(LocalDateTime now, Long organizationId, SportType sportType) {
-        List<League> inProgressLeagues = leagueQueryRepository.findInProgressLeagues(now, organizationId, sportType);
-        if (!inProgressLeagues.isEmpty()) {
-            return inProgressLeagues;
+        List<League> leaguesInDateRange = leagueQueryRepository.findInProgressLeagues(now, organizationId, sportType);
+        if (!leaguesInDateRange.isEmpty()) {
+            List<Long> leagueIds = leaguesInDateRange.stream().map(League::getId).toList();
+            List<Game> games = gameQueryRepository.findAllByLeagueIds(leagueIds);
+            Map<Long, List<Game>> gamesByLeagueId = games.stream()
+                    .collect(Collectors.groupingBy(game -> game.getLeague().getId()));
+
+            List<League> inProgressLeagues = leaguesInDateRange.stream()
+                    .filter(league -> isLeagueInProgress(gamesByLeagueId.getOrDefault(league.getId(), Collections.emptyList())))
+                    .toList();
+
+            if (!inProgressLeagues.isEmpty()) {
+                return inProgressLeagues;
+            }
         }
         return leagueQueryRepository.findLeaguesByLatestStartAt(organizationId, sportType);
+    }
+
+    private boolean isLeagueInProgress(List<Game> games) {
+        boolean hasPlayingGame = games.stream()
+                .anyMatch(game -> game.getState() == GameState.PLAYING);
+        if (hasPlayingGame) {
+            return true;
+        }
+
+        boolean finalFinished = games.stream()
+                .filter(game -> game.getRound() == Round.FINAL)
+                .anyMatch(game -> game.getState() == GameState.FINISHED);
+
+        return !finalFinished;
     }
 
     private Map<Long, List<GameTeam>> getTeamsByGameId(List<Game> games) {
