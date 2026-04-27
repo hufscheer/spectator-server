@@ -14,7 +14,7 @@ public class ExceptionMessages {
     // Player 관련
     public static final String INVALID_PLAYER_SUBSTITUTION = "다른 팀의 선수끼리 교체할 수 없습니다.";
     public static final String REPLACEMENT_ORIGIN_NOT_IN_GAME = "이미 코트에 없는 선수는 교체할 수 없습니다.";
-    public static final String REPLACEMENT_TARGET_ALREADY_IN_GAME = "이미 코트에 있는 선수입니다.";
+    public static final String REPLACEMENT_TARGET_ALREADY_IN_GAME = "이미 코트에 있는 선수는 교체 투입할 수 없습니다.";
     public static final String INVALID_ASSIST_PLAYER = "어시스트 선수는 득점 선수와 같은 팀이어야 하며, 본인일 수 없습니다.";
 
     // CheerTalk 관련
