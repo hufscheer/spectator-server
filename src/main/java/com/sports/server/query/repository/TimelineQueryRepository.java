@@ -23,7 +23,7 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
     @Query("SELECT st FROM ScoreTimeline st JOIN FETCH st.scorer sc JOIN FETCH sc.gameTeam WHERE st.game.id = :gameId")
     List<ScoreTimeline> findScoreTimelinesByGameId(@Param("gameId") Long gameId);
 
-    @Query("SELECT count(st) FROM ScoreTimeline st WHERE st.scorer.id = :playerId")
+    @Query("SELECT count(st) FROM ScoreTimeline st WHERE st.scorer.player.id = :playerId")
     int countTotalGoalsByPlayerId(@Param("playerId") Long playerId);
 
     @Query("SELECT new com.sports.server.command.team.domain.PlayerGoalCount(st.scorer.player.id, COUNT(st.id)) " +
@@ -32,22 +32,29 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
             "GROUP BY st.scorer.player.id")
     List<PlayerGoalCount> countTotalGoalsByPlayerId(@Param("playerIds") List<Long> playerIds);
 
+    @Query("SELECT new com.sports.server.command.team.domain.PlayerGoalCount(st.scorer.player.id, COUNT(st.id)) " +
+            "FROM ScoreTimeline st " +
+            "WHERE st.scorer.player.id IN :playerIds " +
+            "AND st.scorer.gameTeam.team.id = :teamId " +
+            "GROUP BY st.scorer.player.id")
+    List<PlayerGoalCount> countTotalGoalsByPlayerIdInTeam(@Param("playerIds") List<Long> playerIds,
+                                                          @Param("teamId") Long teamId);
+
     @Query("""
             SELECT new com.sports.server.query.dto.TeamTopScorerResult(
-                tp.team.id,
+                sc.gameTeam.team.id,
                 new com.sports.server.command.team.domain.PlayerGoalCountWithRank(
                     p.id, p.studentNumber, p.name, COUNT(st.id),
-                    RANK() OVER (PARTITION BY tp.team.id ORDER BY COUNT(st.id) DESC)
+                    RANK() OVER (PARTITION BY sc.gameTeam.team.id ORDER BY COUNT(st.id) DESC)
                 )
             )
             FROM ScoreTimeline st
             JOIN st.scorer sc
             JOIN sc.player p
-            JOIN p.teamPlayers tp
-            WHERE tp.team.id IN :teamIds
-            GROUP BY tp.team.id, p.id, p.studentNumber, p.name
+            WHERE sc.gameTeam.team.id IN :teamIds
+            GROUP BY sc.gameTeam.team.id, p.id, p.studentNumber, p.name
             HAVING COUNT(st.id) > 0
-            ORDER BY tp.team.id, COUNT(st.id) DESC, p.name ASC
+            ORDER BY sc.gameTeam.team.id, COUNT(st.id) DESC, p.name ASC
             """)
     List<TeamTopScorerResult> findTopScorersByTeamIds(@Param("teamIds") List<Long> teamIds);
 

@@ -215,8 +215,60 @@ VALUES
     (104, 104, 12, 0, 1, 0, 'WIN');
 
 INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
-VALUES 
+VALUES
     (200, 200, 11, 0, 1, 0, 'WIN'),
     (201, 201, 11, 0, 0, 0, 'LOSE');
+
+
+-- === 다중 종목(축구/농구) 동시 등록 선수 데이터 (별도 organization=3로 격리) ===
+-- 선수50은 축구팀(50)과 농구팀(51)에 모두 등록되어 있다.
+-- 축구 게임에서 2득점, 농구 게임에서 5득점.
+-- 각 팀 화면에서는 자기 팀 게임 득점만 보여야 한다.
+
+INSERT INTO organizations (id, name, student_number_digits)
+VALUES (3, '멀티스포츠 학교', 9);
+
+INSERT INTO units (id, name, organization_id)
+VALUES (50, '멀티스포츠과', 3);
+
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color, organization_id, sport_type)
+VALUES (50, 50, '멀티스포츠 축구팀', 'http://example.com/logo_soccer.png', '#111111', 3, 'SOCCER'),
+       (51, 50, '멀티스포츠 농구팀', 'http://example.com/logo_basket.png', '#222222', 3, 'BASKETBALL'),
+       (52, 50, '상대 축구팀', 'http://example.com/logo_op_soccer.png', '#333333', 3, 'SOCCER'),
+       (53, 50, '상대 농구팀', 'http://example.com/logo_op_basket.png', '#444444', 3, 'BASKETBALL');
+
+INSERT INTO players (id, name, student_number)
+VALUES (50, '멀티선수50', '202100050');
+
+INSERT INTO team_players (id, team_id, player_id, jersey_number)
+VALUES (50, 50, 50, 7),
+       (51, 51, 50, 7);
+
+INSERT INTO leagues (id, organization_id, administrator_id, name, start_at, end_at, is_deleted, max_round, in_progress_round, sport_type)
+VALUES (50, 3, 1, '멀티스포츠 축구리그', '2024-03-01 00:00:00', '2024-03-31 23:59:59', FALSE, '결승', '결승', 'SOCCER'),
+       (51, 3, 1, '멀티스포츠 농구리그', '2024-03-01 00:00:00', '2024-03-31 23:59:59', FALSE, '결승', '결승', 'BASKETBALL');
+
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
+VALUES (50, 1, 50, '멀티 축구 경기', '2024-03-10 10:00:00', null, '2024-03-10 10:15:00', 'SECOND_HALF', 'FINISHED', '결승', FALSE),
+       (51, 1, 51, '멀티 농구 경기', '2024-03-15 14:00:00', null, '2024-03-15 14:30:00', 'FOURTH_QUARTER', 'FINISHED', '결승', FALSE);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (50, 50, 50, 0, 2, 0, 'WIN'),   -- 축구: 멀티 축구팀
+       (51, 50, 52, 0, 0, 0, 'LOSE'),  -- 축구: 상대 축구팀
+       (52, 51, 51, 0, 5, 0, 'WIN'),   -- 농구: 멀티 농구팀
+       (53, 51, 53, 0, 3, 0, 'LOSE');  -- 농구: 상대 농구팀
+
+INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
+VALUES (50, 50, 50, 7, TRUE, 'STARTER', TRUE, null),  -- 축구 게임의 멀티선수
+       (51, 52, 50, 7, TRUE, 'STARTER', TRUE, null);  -- 농구 게임의 멀티선수
+
+INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, scorer_id, score, game_team1_id, snapshot_score1, game_team2_id, snapshot_score2)
+VALUES
+    ('SCORE', 50, 'FIRST_HALF', 5, 50, 1, 50, 1, 51, 0),
+    ('SCORE', 50, 'SECOND_HALF', 60, 50, 1, 50, 2, 51, 0),
+    ('SCORE', 51, 'FIRST_QUARTER', 1, 51, 1, 52, 1, 53, 0),
+    ('SCORE', 51, 'FIRST_QUARTER', 5, 51, 2, 52, 3, 53, 0),
+    ('SCORE', 51, 'SECOND_QUARTER', 3, 51, 2, 52, 5, 53, 0);
+
 
 SET foreign_key_checks = 1;
