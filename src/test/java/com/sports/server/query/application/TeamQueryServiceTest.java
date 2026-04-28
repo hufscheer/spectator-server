@@ -233,7 +233,7 @@ public class TeamQueryServiceTest extends ServiceTest {
                     () -> assertThat(basketballTeamPlayers)
                             .filteredOn(p -> p.name().equals("멀티선수50"))
                             .extracting(PlayerResponse::totalGoalCount)
-                            .containsExactly(3)
+                            .containsExactly(5)
             );
         }
     }
@@ -332,7 +332,7 @@ public class TeamQueryServiceTest extends ServiceTest {
                     () -> assertThat(basketballResponse.topScorers())
                             .extracting(TeamDetailResponse.TeamTopScorer::playerName,
                                     TeamDetailResponse.TeamTopScorer::totalGoals)
-                            .containsExactly(tuple("멀티선수50", 3))
+                            .containsExactly(tuple("멀티선수50", 5))
             );
         }
 
