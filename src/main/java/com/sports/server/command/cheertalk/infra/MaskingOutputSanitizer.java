@@ -1,18 +1,17 @@
 package com.sports.server.command.cheertalk.infra;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-/**
- * LLM 응답 텍스트에서 추론/메타 코멘트가 새어 나온 경우를 탐지해 원문으로 폴백한다.
- * "의심스러우면 마스킹하지 않는다"는 기존 정책의 출력단 방어선.
- */
-public final class MaskingOutputSanitizer {
+@Component
+public class MaskingOutputSanitizer {
 
     private static final int LENGTH_BUFFER = 50;
     private static final int LENGTH_MULTIPLIER = 3;
     private static final int NEWLINE_BUFFER = 2;
 
-    private static final List<String> LEAK_MARKERS = List.of(
+    static final List<String> DEFAULT_LEAK_MARKERS = List.of(
             "---",
             "처리하겠습니다",
             "본 답변은",
@@ -26,10 +25,18 @@ public final class MaskingOutputSanitizer {
             "마스킹할 필요"
     );
 
-    private MaskingOutputSanitizer() {
+    private final List<String> leakMarkers;
+
+    public MaskingOutputSanitizer(
+            @Value("${masking.leak-markers:}") List<String> leakMarkers
+    ) {
+        List<String> filtered = leakMarkers.stream()
+                .filter(s -> s != null && !s.isBlank())
+                .toList();
+        this.leakMarkers = filtered.isEmpty() ? DEFAULT_LEAK_MARKERS : filtered;
     }
 
-    public static String sanitize(String original, String modelOutput) {
+    public String sanitize(String original, String modelOutput) {
         if (modelOutput == null) {
             return original;
         }
@@ -52,19 +59,19 @@ public final class MaskingOutputSanitizer {
         return stripped;
     }
 
-    private static boolean isModifiedWithoutMask(String original, String modelOutput) {
+    private boolean isModifiedWithoutMask(String original, String modelOutput) {
         return !modelOutput.equals(original) && !modelOutput.contains("*");
     }
 
-    private static boolean isTooLong(String original, String modelOutput) {
+    private boolean isTooLong(String original, String modelOutput) {
         return modelOutput.length() > original.length() * LENGTH_MULTIPLIER + LENGTH_BUFFER;
     }
 
-    private static boolean hasUnexpectedNewlines(String original, String modelOutput) {
+    private boolean hasUnexpectedNewlines(String original, String modelOutput) {
         return countNewlines(modelOutput) > countNewlines(original) + NEWLINE_BUFFER;
     }
 
-    private static int countNewlines(String s) {
+    private int countNewlines(String s) {
         int count = 0;
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '\n') {
@@ -74,8 +81,8 @@ public final class MaskingOutputSanitizer {
         return count;
     }
 
-    private static boolean containsLeakMarker(String modelOutput) {
-        for (String marker : LEAK_MARKERS) {
+    private boolean containsLeakMarker(String modelOutput) {
+        for (String marker : leakMarkers) {
             if (modelOutput.contains(marker)) {
                 return true;
             }
