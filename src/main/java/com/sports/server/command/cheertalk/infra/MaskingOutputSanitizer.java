@@ -10,19 +10,18 @@ public final class MaskingOutputSanitizer {
 
     private static final int LENGTH_BUFFER = 50;
     private static final int LENGTH_MULTIPLIER = 3;
-    private static final int MAX_NEWLINES_FOR_SINGLE_LINE_INPUT = 2;
+    private static final int NEWLINE_BUFFER = 2;
 
     private static final List<String> LEAK_MARKERS = List.of(
             "---",
             "처리하겠습니다",
             "본 답변은",
-            "다음과 같이",
+            "다음과 같이 처리",
             "필터링 범위",
             "범위를 벗어",
             "응원톡 필터링",
             "포함되어 있지 않아",
-            "보입니다",
-            "출력합니다",
+            "그대로 출력합니다",
             "마스킹하지 않",
             "마스킹할 필요"
     );
@@ -51,10 +50,7 @@ public final class MaskingOutputSanitizer {
     }
 
     private static boolean hasUnexpectedNewlines(String original, String modelOutput) {
-        if (countNewlines(original) > 0) {
-            return false;
-        }
-        return countNewlines(modelOutput) > MAX_NEWLINES_FOR_SINGLE_LINE_INPUT;
+        return countNewlines(modelOutput) > countNewlines(original) + NEWLINE_BUFFER;
     }
 
     private static int countNewlines(String s) {

@@ -64,6 +64,22 @@ class MaskingOutputSanitizerTest {
         }
 
         @Test
+        void 다중라인_입력_대비_개행이_급증하면_원문() {
+            String original = "1줄\n2줄";
+            String leaked = "1줄\n2줄\n\n\n\n추론이 새는 케이스";
+            String result = MaskingOutputSanitizer.sanitize(original, leaked);
+            assertThat(result).isEqualTo(original);
+        }
+
+        @Test
+        void 다중라인_입력에_같은_라인수_응답은_통과() {
+            String original = "1줄\n2줄";
+            String masked = "1줄\n** 마스킹";
+            String result = MaskingOutputSanitizer.sanitize(original, masked);
+            assertThat(result).isEqualTo(masked);
+        }
+
+        @Test
         void 추론_누수_마커_포함시_원문() {
             String original = "벤치라네";
             String leaked = "벤치라네 --- 해당 요청에 다음과 같이 처리하겠습니다: 벤치라네";
