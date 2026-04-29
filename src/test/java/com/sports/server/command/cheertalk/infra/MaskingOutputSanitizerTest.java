@@ -86,6 +86,37 @@ class MaskingOutputSanitizerTest {
             String result = MaskingOutputSanitizer.sanitize(original, leaked);
             assertThat(result).isEqualTo(original);
         }
+
+        @Test
+        void 마스킹_없이_변형된_응답은_원문() {
+            String result = MaskingOutputSanitizer.sanitize("벤치라네", "벤치라네요");
+            assertThat(result).isEqualTo("벤치라네");
+        }
+
+        @Test
+        void 짧은_판단문은_원문() {
+            assertThat(MaskingOutputSanitizer.sanitize("벤치라네", "욕설 없음"))
+                    .isEqualTo("벤치라네");
+            assertThat(MaskingOutputSanitizer.sanitize("벤치라네", "해당 문장은 문제 없습니다."))
+                    .isEqualTo("벤치라네");
+        }
+    }
+
+    @Nested
+    @DisplayName("응답을 정규화한다")
+    class Normalize {
+
+        @Test
+        void 좌우_공백과_개행을_제거한다() {
+            String result = MaskingOutputSanitizer.sanitize("씨발 비속어", "** 비속어\n");
+            assertThat(result).isEqualTo("** 비속어");
+        }
+
+        @Test
+        void 전후_공백도_제거한다() {
+            String result = MaskingOutputSanitizer.sanitize("씨발 비속어", "  ** 비속어  ");
+            assertThat(result).isEqualTo("** 비속어");
+        }
     }
 
     @Nested

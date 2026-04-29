@@ -30,19 +30,30 @@ public final class MaskingOutputSanitizer {
     }
 
     public static String sanitize(String original, String modelOutput) {
-        if (modelOutput == null || modelOutput.isBlank()) {
+        if (modelOutput == null) {
             return original;
         }
-        if (isTooLong(original, modelOutput)) {
+        String stripped = modelOutput.strip();
+        if (stripped.isEmpty()) {
             return original;
         }
-        if (hasUnexpectedNewlines(original, modelOutput)) {
+        if (isTooLong(original, stripped)) {
             return original;
         }
-        if (containsLeakMarker(modelOutput)) {
+        if (hasUnexpectedNewlines(original, stripped)) {
             return original;
         }
-        return modelOutput;
+        if (containsLeakMarker(stripped)) {
+            return original;
+        }
+        if (isModifiedWithoutMask(original, stripped)) {
+            return original;
+        }
+        return stripped;
+    }
+
+    private static boolean isModifiedWithoutMask(String original, String modelOutput) {
+        return !modelOutput.equals(original) && !modelOutput.contains("*");
     }
 
     private static boolean isTooLong(String original, String modelOutput) {
