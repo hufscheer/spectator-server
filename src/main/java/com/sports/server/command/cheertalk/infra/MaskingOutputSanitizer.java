@@ -4,6 +4,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * LLM 응답 텍스트에서 추론/메타 코멘트가 새어 나온 경우를 탐지해 원문으로 폴백한다.
+ * "의심스러우면 마스킹하지 않는다"는 기존 정책의 출력단 방어선.
+ */
 @Component
 public class MaskingOutputSanitizer {
 
@@ -11,7 +15,7 @@ public class MaskingOutputSanitizer {
     private static final int LENGTH_MULTIPLIER = 3;
     private static final int NEWLINE_BUFFER = 2;
 
-    static final List<String> DEFAULT_LEAK_MARKERS = List.of(
+    private static final List<String> DEFAULT_LEAK_MARKERS = List.of(
             "---",
             "처리하겠습니다",
             "본 답변은",
@@ -32,6 +36,7 @@ public class MaskingOutputSanitizer {
     ) {
         List<String> filtered = leakMarkers.stream()
                 .filter(s -> s != null && !s.isBlank())
+                .map(String::strip)
                 .toList();
         this.leakMarkers = filtered.isEmpty() ? DEFAULT_LEAK_MARKERS : filtered;
     }
