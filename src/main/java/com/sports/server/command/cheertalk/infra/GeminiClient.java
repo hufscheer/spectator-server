@@ -37,8 +37,7 @@ public class GeminiClient implements MaskingClient {
             if (response == null) {
                 return content;
             }
-            String text = response.getFirstText();
-            return text == null || text.isEmpty() ? content : text;
+            return MaskingOutputSanitizer.sanitize(content, response.getFirstText());
         } catch (Exception e) {
             log.error("Gemini masking failed: {}", e.getMessage());
             return content;

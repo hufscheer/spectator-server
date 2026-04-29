@@ -91,7 +91,7 @@ public class TeamQueryService {
         List<TeamPlayer> teamPlayers = teamQueryRepository.findTeamPlayersByTeamId(teamId);
         List<Long> playerIds = teamPlayerRepository.findPlayerIdsByTeamId(teamId);
 
-        Map<Long, Integer> playerTotalGoalCountInfo = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
+        Map<Long, Integer> playerTotalGoalCountInfo = playerInfoProvider.getPlayersGoalInfoInTeam(playerIds, teamId);
         return teamPlayers.stream()
                 .map(tp -> {
                     Player player = tp.getPlayer();

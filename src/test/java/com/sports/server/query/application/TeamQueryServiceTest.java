@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDateTime;
@@ -187,7 +188,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             List<TeamResponse> responses = teamQueryService.getAllTeamsByUnits(null, null, (Long) null);
 
             // then
-            assertThat(responses).hasSize(8);
+            assertThat(responses).hasSize(12);
         }
     }
 
@@ -210,6 +211,29 @@ public class TeamQueryServiceTest extends ServiceTest {
                             .containsExactlyInAnyOrder("선수1", "선수2", "선수3", "선수4", "선수5"),
                     () -> assertThat(responses).extracting(PlayerResponse::totalGoalCount)
                             .containsExactlyInAnyOrder(0, 1, 3, 0, 0)
+            );
+        }
+
+        @Test
+        void 다른_종목_팀에서의_득점은_현재_팀의_총득점에_합산되지_않는다() {
+            // given (선수50은 축구팀50에서 2골, 농구팀51에서 5골)
+            Long soccerTeamId = 50L;
+            Long basketballTeamId = 51L;
+
+            // when
+            List<PlayerResponse> soccerTeamPlayers = teamQueryService.getAllTeamPlayers(soccerTeamId);
+            List<PlayerResponse> basketballTeamPlayers = teamQueryService.getAllTeamPlayers(basketballTeamId);
+
+            // then
+            assertAll(
+                    () -> assertThat(soccerTeamPlayers)
+                            .filteredOn(p -> p.name().equals("멀티선수50"))
+                            .extracting(PlayerResponse::totalGoalCount)
+                            .containsExactly(2),
+                    () -> assertThat(basketballTeamPlayers)
+                            .filteredOn(p -> p.name().equals("멀티선수50"))
+                            .extracting(PlayerResponse::totalGoalCount)
+                            .containsExactly(5)
             );
         }
     }
@@ -286,6 +310,29 @@ public class TeamQueryServiceTest extends ServiceTest {
                     () -> assertThat(response.topScorers().get(1).playerName()).isEqualTo("선수2"),
                     () -> assertThat(response.topScorers().get(1).totalGoals()).isEqualTo(1),
                     () -> assertThat(response.topScorers().get(1).admissionYear()).isEqualTo("21")
+            );
+        }
+
+        @Test
+        void 다른_종목_팀에서의_득점은_득점왕에_합산되지_않는다() {
+            // given (선수50은 축구팀50에서 2골, 농구팀51에서 5골)
+            Long soccerTeamId = 50L;
+            Long basketballTeamId = 51L;
+
+            // when
+            TeamDetailResponse soccerResponse = teamQueryService.getTeamDetail(soccerTeamId);
+            TeamDetailResponse basketballResponse = teamQueryService.getTeamDetail(basketballTeamId);
+
+            // then
+            assertAll(
+                    () -> assertThat(soccerResponse.topScorers())
+                            .extracting(TeamDetailResponse.TeamTopScorer::playerName,
+                                    TeamDetailResponse.TeamTopScorer::totalGoals)
+                            .containsExactly(tuple("멀티선수50", 2)),
+                    () -> assertThat(basketballResponse.topScorers())
+                            .extracting(TeamDetailResponse.TeamTopScorer::playerName,
+                                    TeamDetailResponse.TeamTopScorer::totalGoals)
+                            .containsExactly(tuple("멀티선수50", 5))
             );
         }
 

@@ -96,6 +96,19 @@ class OpenRouterMaskingClientTest {
         assertThat(result).isEqualTo("그대로");
     }
 
+    @Test
+    @DisplayName("모델이 추론 텍스트를 함께 뱉어도 원문을 반환한다")
+    void 추론_누수_시_원문() {
+        String leaked = "ベンチラね 문장은 일본어로 보이는데, 스포츠 응원톡 필터링 범위를 벗어납니다."
+                + " --- 해당 요청에 다음과 같이 처리하겠습니다: 벤치라네요";
+        when(chatCaller.call(any(), any(Duration.class)))
+                .thenReturn(responseOf(leaked));
+
+        String result = client.mask("벤치라네");
+
+        assertThat(result).isEqualTo("벤치라네");
+    }
+
     private OpenRouterChatResponse responseOf(String text) {
         return new OpenRouterChatResponse(List.of(
                 new OpenRouterChatResponse.Choice(

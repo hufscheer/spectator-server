@@ -48,8 +48,7 @@ public class OpenRouterMaskingClient implements MaskingClient {
             if (response == null) {
                 return content;
             }
-            String text = response.getText();
-            return text == null || text.isEmpty() ? content : text;
+            return MaskingOutputSanitizer.sanitize(content, response.getText());
         } catch (Exception e) {
             log.error("OpenRouter masking failed: {}", e.getMessage());
             return content;
