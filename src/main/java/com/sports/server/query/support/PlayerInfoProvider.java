@@ -33,6 +33,17 @@ public class PlayerInfoProvider {
                 ));
     }
 
+    public Map<Long, Integer> getPlayersGoalInfoInTeam(List<Long> playerIds, Long teamId) {
+        if (playerIds == null || playerIds.isEmpty()) return Collections.emptyMap();
+
+        List<PlayerGoalCount> results = timelineQueryRepository.countTotalGoalsByPlayerIdInTeam(playerIds, teamId);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        PlayerGoalCount::playerId,
+                        dto -> dto.playerTotalGoalCount().intValue()
+                ));
+    }
+
     public List<PlayerGoalCountWithRank> getLeagueTopScorers(Long leagueId, int size) {
         Pageable sizeRequest = PageRequest.of(0, size);
         return timelineQueryRepository.findTopScorersByLeagueId(leagueId, sizeRequest);

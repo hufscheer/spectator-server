@@ -32,7 +32,7 @@ public class TeamQueryAcceptanceTest extends AcceptanceTest {
         List<TeamResponse> actual = toResponses(response, TeamResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual).hasSize(8)
+                () -> assertThat(actual).hasSize(12)
         );
     }
 
@@ -50,7 +50,7 @@ public class TeamQueryAcceptanceTest extends AcceptanceTest {
         List<UnitResponse> actual = toResponses(response, UnitResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actual).hasSize(4)
+                () -> assertThat(actual).hasSize(5)
         );
     }
 }
