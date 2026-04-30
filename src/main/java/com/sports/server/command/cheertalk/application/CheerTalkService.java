@@ -4,6 +4,7 @@ import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessag
 
 import com.sports.server.command.cheertalk.domain.*;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
+import com.sports.server.command.cheertalk.infra.CheerTalkRateLimiter;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.League;
@@ -31,9 +32,11 @@ public class CheerTalkService {
     private final GameTeamRepository gameTeamRepository;
     private final EntityUtils entityUtils;
     private final ApplicationEventPublisher eventPublisher;
+    private final CheerTalkRateLimiter rateLimiter;
 
     public void register(final CheerTalkRequest cheerTalkRequest) {
         GameTeam gameTeam = getGameTeam(cheerTalkRequest.gameTeamId());
+        rateLimiter.check(gameTeam.getId(), cheerTalkRequest.content());
 
         CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), gameTeam.getId());
         cheerTalkRepository.save(cheerTalk);
