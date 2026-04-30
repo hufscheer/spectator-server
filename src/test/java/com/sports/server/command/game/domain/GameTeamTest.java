@@ -1,6 +1,7 @@
 package com.sports.server.command.game.domain;
 
 import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.sports.server.common.exception.CustomException;
@@ -39,17 +40,31 @@ public class GameTeamTest {
     }
 
     @Test
-    void 주장을_변경할_때_이미_주장이_존재하는_경우_예외를_던진다() {
+    void 새로운_주장을_등록하면_기존_주장은_자동으로_해제된다() {
         // given
         LineupPlayer firstLineupPlayer = gameTeam.getLineupPlayers().get(0);
         LineupPlayer secondLineupPlayer = gameTeam.getLineupPlayers().get(1);
         gameTeam.changePlayerToCaptain(firstLineupPlayer);
 
-        // when & then
-        assertThatThrownBy(() -> gameTeam.changePlayerToCaptain(secondLineupPlayer))
-                .isInstanceOf(CustomException.class)
-                .hasMessage("이미 등록된 주장이 존재합니다.");
+        // when
+        gameTeam.changePlayerToCaptain(secondLineupPlayer);
 
+        // then
+        assertThat(firstLineupPlayer.isCaptain()).isFalse();
+        assertThat(secondLineupPlayer.isCaptain()).isTrue();
+    }
+
+    @Test
+    void 이미_주장인_선수를_다시_주장으로_등록해도_예외가_발생하지_않는다() {
+        // given
+        LineupPlayer lineupPlayer = gameTeam.getLineupPlayers().get(0);
+        gameTeam.changePlayerToCaptain(lineupPlayer);
+
+        // when
+        gameTeam.changePlayerToCaptain(lineupPlayer);
+
+        // then
+        assertThat(lineupPlayer.isCaptain()).isTrue();
     }
 }
 
