@@ -109,7 +109,12 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
         validateLineupPlayer(lineupPlayer);
-        lineupPlayer.changePlayerToCaptain();
+        lineupPlayers.stream()
+                .filter(lp -> lp.isCaptain() && !lp.equals(lineupPlayer))
+                .forEach(LineupPlayer::revokeCaptainFromPlayer);
+        if (!lineupPlayer.isCaptain()) {
+            lineupPlayer.changePlayerToCaptain();
+        }
     }
 
     public void revokeCaptainFromPlayer(final LineupPlayer lineupPlayer) {
