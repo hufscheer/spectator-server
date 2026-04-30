@@ -5,6 +5,7 @@ import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
+import com.sports.server.command.game.infra.CheerCountRateLimiter;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
@@ -21,8 +22,11 @@ public class GameTeamService {
 
     private final GameTeamRepository gameTeamRepository;
     private final EntityUtils entityUtils;
+    private final CheerCountRateLimiter rateLimiter;
 
     public void updateCheerCount(final Long gameId, final CheerCountUpdateRequest cheerCountUpdateRequest) {
+        rateLimiter.check(cheerCountUpdateRequest.gameTeamId());
+
         Game game = entityUtils.getEntity(gameId, Game.class);
         GameTeam gameTeam = entityUtils.getEntity(cheerCountUpdateRequest.gameTeamId(), GameTeam.class);
         gameTeam.validateCheerCountOfGameTeam(cheerCountUpdateRequest.cheerCount());

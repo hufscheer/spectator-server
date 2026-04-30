@@ -45,6 +45,9 @@ dependencies {
     // comment - bad word filter
     implementation 'io.github.vaneproject:badwordfiltering:1.0.0'
 
+    // in-memory cache (rate limit)
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+
     // websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
