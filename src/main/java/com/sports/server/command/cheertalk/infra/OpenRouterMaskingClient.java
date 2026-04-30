@@ -20,15 +20,18 @@ public class OpenRouterMaskingClient implements MaskingClient {
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
 
     private final OpenRouterChatCaller chatCaller;
+    private final MaskingOutputSanitizer sanitizer;
     private final String systemPrompt;
     private final String model;
 
     public OpenRouterMaskingClient(
             OpenRouterChatCaller chatCaller,
+            MaskingOutputSanitizer sanitizer,
             @Value("${openrouter.api.masking-prompt:${gemini.api.prompt}}") String systemPrompt,
             @Value("${openrouter.api.masking-model:${openrouter.api.model:qwen/qwen-2.5-72b-instruct}}") String model
     ) {
         this.chatCaller = chatCaller;
+        this.sanitizer = sanitizer;
         this.systemPrompt = systemPrompt;
         this.model = model;
     }
@@ -48,7 +51,7 @@ public class OpenRouterMaskingClient implements MaskingClient {
             if (response == null) {
                 return content;
             }
-            return MaskingOutputSanitizer.sanitize(content, response.getText());
+            return sanitizer.sanitize(content, response.getText());
         } catch (Exception e) {
             log.error("OpenRouter masking failed: {}", e.getMessage());
             return content;
