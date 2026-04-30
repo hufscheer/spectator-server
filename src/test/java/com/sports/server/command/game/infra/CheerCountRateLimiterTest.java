@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Test;
 
 class CheerCountRateLimiterTest {
 
+    private static final String IP_A = "1.1.1.1";
+    private static final String IP_B = "2.2.2.2";
+
     private FakeTicker ticker;
     private CheerCountRateLimiter rateLimiter;
 
@@ -24,13 +27,13 @@ class CheerCountRateLimiterTest {
     }
 
     @Nested
-    @DisplayName("게임팀당 분당 호출수 제한")
-    class PerGameTeamRate {
+    @DisplayName("(IP, 게임팀)당 분당 호출수 제한")
+    class PerIpGameTeamRate {
 
         @Test
         void 분당_60회까지는_통과한다() {
             for (int i = 0; i < 60; i++) {
-                assertThatCode(() -> rateLimiter.check(1L))
+                assertThatCode(() -> rateLimiter.check(IP_A, 1L))
                         .doesNotThrowAnyException();
             }
         }
@@ -38,31 +41,41 @@ class CheerCountRateLimiterTest {
         @Test
         void 분당_60회_초과는_429() {
             for (int i = 0; i < 60; i++) {
-                rateLimiter.check(1L);
+                rateLimiter.check(IP_A, 1L);
             }
 
-            assertThatThrownBy(() -> rateLimiter.check(1L))
+            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L))
                     .isInstanceOf(CheerCountRateLimitException.class);
         }
 
         @Test
         void 카운터는_1분이_지나면_초기화된다() {
             for (int i = 0; i < 60; i++) {
-                rateLimiter.check(1L);
+                rateLimiter.check(IP_A, 1L);
             }
             ticker.advance(61, TimeUnit.SECONDS);
 
-            assertThatCode(() -> rateLimiter.check(1L))
+            assertThatCode(() -> rateLimiter.check(IP_A, 1L))
                     .doesNotThrowAnyException();
         }
 
         @Test
-        void 게임팀별로_카운터가_분리된다() {
+        void 같은_IP라도_게임팀이_다르면_카운터가_분리된다() {
             for (int i = 0; i < 60; i++) {
-                rateLimiter.check(1L);
+                rateLimiter.check(IP_A, 1L);
             }
 
-            assertThatCode(() -> rateLimiter.check(2L))
+            assertThatCode(() -> rateLimiter.check(IP_A, 2L))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 같은_게임팀이라도_IP가_다르면_카운터가_분리된다() {
+            for (int i = 0; i < 60; i++) {
+                rateLimiter.check(IP_A, 1L);
+            }
+
+            assertThatCode(() -> rateLimiter.check(IP_B, 1L))
                     .doesNotThrowAnyException();
         }
     }
@@ -74,10 +87,10 @@ class CheerCountRateLimiterTest {
         @Test
         void 호출수_초과는_사용자_안내_메시지() {
             for (int i = 0; i < 60; i++) {
-                rateLimiter.check(1L);
+                rateLimiter.check(IP_A, 1L);
             }
 
-            assertThatThrownBy(() -> rateLimiter.check(1L))
+            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L))
                     .hasMessageContaining("초과했습니다");
         }
     }
