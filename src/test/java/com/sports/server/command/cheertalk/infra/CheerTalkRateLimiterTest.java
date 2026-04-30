@@ -150,7 +150,7 @@ class CheerTalkRateLimiterTest {
             }
 
             assertThatThrownBy(() -> rateLimiter.check(1L, "msg-overflow"))
-                    .hasMessageContaining("너무 빠릅니다");
+                    .hasMessageContaining("전송 가능 횟수를 초과했습니다");
         }
     }
 
