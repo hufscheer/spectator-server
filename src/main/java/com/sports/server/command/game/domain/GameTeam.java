@@ -109,8 +109,12 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     public void changePlayerToCaptain(final LineupPlayer lineupPlayer) {
         validateLineupPlayer(lineupPlayer);
-        isCaptainExists(lineupPlayer);
-        lineupPlayer.changePlayerToCaptain();
+        lineupPlayers.stream()
+                .filter(lp -> lp.isCaptain() && !lp.equals(lineupPlayer))
+                .forEach(LineupPlayer::revokeCaptainFromPlayer);
+        if (!lineupPlayer.isCaptain()) {
+            lineupPlayer.changePlayerToCaptain();
+        }
     }
 
     public void revokeCaptainFromPlayer(final LineupPlayer lineupPlayer) {
@@ -124,15 +128,6 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
         if (!exists) {
             throw new BadRequestException(ExceptionMessages.GAME_TEAM_PLAYER_NOT_IN_TEAM);
-        }
-    }
-
-    private void isCaptainExists(final LineupPlayer lineupPlayer) {
-        boolean captainExists = lineupPlayers.stream()
-                .anyMatch(lp -> lp.isCaptain() && !lp.equals(lineupPlayer));
-
-        if (captainExists) {
-            throw new BadRequestException(ExceptionMessages.GAME_TEAM_CAPTAIN_ALREADY_EXISTS);
         }
     }
 

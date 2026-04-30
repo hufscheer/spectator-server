@@ -282,7 +282,7 @@ public class GameControllerTest extends DocumentationTest {
 
         //when
         ResultActions result = mockMvc.perform(
-                patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
+                put("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
                         lineupPlayerId)
                         .contentType(MediaType.APPLICATION_JSON)
         );
