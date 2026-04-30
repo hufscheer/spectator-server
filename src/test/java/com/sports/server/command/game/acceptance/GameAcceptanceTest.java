@@ -282,7 +282,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
+                .put("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
                         lineupPlayerId)
                 .then().log().all()
                 .extract();
