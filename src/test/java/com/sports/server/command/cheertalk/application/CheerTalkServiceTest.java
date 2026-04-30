@@ -45,7 +45,7 @@ public class CheerTalkServiceTest extends ServiceTest {
         CheerTalkRequest cheerTalkRequest = new CheerTalkRequest(content, 1L);
 
         //when & then
-        assertThrows(CustomException.class, () -> cheerTalkService.register(cheerTalkRequest));
+        assertThrows(CustomException.class, () -> cheerTalkService.register("127.0.0.1", cheerTalkRequest));
 
     }
 
@@ -58,7 +58,7 @@ public class CheerTalkServiceTest extends ServiceTest {
         CheerTalkRequest cheerTalkRequest = new CheerTalkRequest(content, 1L);
 
         //when & then
-        assertThatCode(() -> cheerTalkService.register(cheerTalkRequest))
+        assertThatCode(() -> cheerTalkService.register("127.0.0.1", cheerTalkRequest))
                 .doesNotThrowAnyException();
     }
 }

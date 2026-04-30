@@ -34,8 +34,8 @@ public class CheerTalkService {
     private final ApplicationEventPublisher eventPublisher;
     private final CheerTalkRateLimiter rateLimiter;
 
-    public void register(final CheerTalkRequest cheerTalkRequest) {
-        rateLimiter.check(cheerTalkRequest.gameTeamId(), cheerTalkRequest.content());
+    public void register(final String clientIp, final CheerTalkRequest cheerTalkRequest) {
+        rateLimiter.check(clientIp, cheerTalkRequest.gameTeamId(), cheerTalkRequest.content());
 
         GameTeam gameTeam = getGameTeam(cheerTalkRequest.gameTeamId());
 

@@ -12,20 +12,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Component;
 
 /**
- * 게임팀 단위 응원톡 호출 한도와 짧은 시간 동일 본문 중복을 방어한다.
+ * (clientIp, gameTeamId) 단위 응원톡 호출 한도와 짧은 시간 동일 본문 중복을 방어한다.
  * - 분당 한도 초과: 429
- * - 5초 내 같은 (gameTeamId, content) 재전송: 429
+ * - 5초 내 같은 (clientIp, gameTeamId, content) 재전송: 429
  */
 @Component
 public class CheerTalkRateLimiter {
 
-    private static final int MAX_PER_MINUTE_PER_GAME_TEAM = 120;
+    private static final int MAX_PER_MINUTE_PER_IP_GAME_TEAM = 30;
     private static final long COUNTER_TTL_MINUTES = 1L;
     private static final long DEDUP_TTL_SECONDS = 5L;
-    private static final long COUNTER_MAX_SIZE = 10_000L;
-    private static final long DEDUP_MAX_SIZE = 100_000L;
+    private static final long COUNTER_MAX_SIZE = 200_000L;
+    private static final long DEDUP_MAX_SIZE = 500_000L;
 
-    private final Cache<Long, AtomicInteger> perGameTeamCounter;
+    private final Cache<CounterKey, AtomicInteger> perIpGameTeamCounter;
     private final Cache<DedupKey, Boolean> recentContent;
 
     public CheerTalkRateLimiter() {
@@ -33,7 +33,7 @@ public class CheerTalkRateLimiter {
     }
 
     CheerTalkRateLimiter(Ticker ticker) {
-        this.perGameTeamCounter = Caffeine.newBuilder()
+        this.perIpGameTeamCounter = Caffeine.newBuilder()
                 .expireAfterWrite(COUNTER_TTL_MINUTES, TimeUnit.MINUTES)
                 .maximumSize(COUNTER_MAX_SIZE)
                 .ticker(ticker)
@@ -45,18 +45,23 @@ public class CheerTalkRateLimiter {
                 .build();
     }
 
-    public void check(Long gameTeamId, String content) {
-        AtomicInteger counter = perGameTeamCounter.get(gameTeamId, k -> new AtomicInteger(0));
-        if (counter.incrementAndGet() > MAX_PER_MINUTE_PER_GAME_TEAM) {
+    public void check(String clientIp, Long gameTeamId, String content) {
+        String ip = clientIp == null ? "unknown" : clientIp;
+        CounterKey counterKey = new CounterKey(ip, gameTeamId);
+        AtomicInteger counter = perIpGameTeamCounter.get(counterKey, k -> new AtomicInteger(0));
+        if (counter.incrementAndGet() > MAX_PER_MINUTE_PER_IP_GAME_TEAM) {
             throw new CheerTalkRateLimitException(CHEER_TALK_RATE_LIMIT_EXCEEDED);
         }
 
-        DedupKey key = new DedupKey(gameTeamId, content == null ? "" : content.trim());
+        DedupKey key = new DedupKey(ip, gameTeamId, content == null ? "" : content.trim());
         if (recentContent.asMap().putIfAbsent(key, Boolean.TRUE) != null) {
             throw new CheerTalkRateLimitException(CHEER_TALK_DUPLICATE_CONTENT);
         }
     }
 
-    private record DedupKey(Long gameTeamId, String content) {
+    private record CounterKey(String clientIp, Long gameTeamId) {
+    }
+
+    private record DedupKey(String clientIp, Long gameTeamId, String content) {
     }
 }

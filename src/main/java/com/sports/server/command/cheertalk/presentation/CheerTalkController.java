@@ -3,6 +3,8 @@ package com.sports.server.command.cheertalk.presentation;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.common.util.ClientIpResolver;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +19,9 @@ public class CheerTalkController {
     private final CheerTalkService cheerTalkService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@RequestBody @Valid final CheerTalkRequest cheerTalkRequest) {
-        cheerTalkService.register(cheerTalkRequest);
+    public ResponseEntity<Void> register(@RequestBody @Valid final CheerTalkRequest cheerTalkRequest,
+                                         final HttpServletRequest httpRequest) {
+        cheerTalkService.register(ClientIpResolver.resolve(httpRequest), cheerTalkRequest);
         return ResponseEntity.ok(null);
     }
 
