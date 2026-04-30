@@ -7,6 +7,7 @@ import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.game.infra.CheerCountRateLimiter;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
 import jakarta.validation.Valid;
@@ -26,11 +27,13 @@ public class GameController {
     private final LineupPlayerService lineupPlayerService;
     private final GameService gameService;
     private final GameStatusScheduler gameStatusScheduler;
+    private final CheerCountRateLimiter cheerCountRateLimiter;
 
     @PostMapping("/games/{gameId}/cheer")
     @ResponseStatus(HttpStatus.OK)
     public void updateCheerCount(@PathVariable final Long gameId,
                                  @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto) {
+        cheerCountRateLimiter.check(cheerRequestDto.gameTeamId());
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
     }
 

@@ -37,6 +37,9 @@ public class CheerCountRateLimiter {
     }
 
     public void check(Long gameTeamId) {
+        if (gameTeamId == null) {
+            return;
+        }
         AtomicInteger counter = perGameTeamCounter.get(gameTeamId, k -> new AtomicInteger(0));
         if (counter.incrementAndGet() > MAX_PER_MINUTE_PER_GAME_TEAM) {
             throw new CheerCountRateLimitException(CHEER_COUNT_RATE_LIMIT_EXCEEDED);
