@@ -35,7 +35,6 @@ public class ExceptionMessages {
     public static final String GAME_TEAM_INVALID_CHEER_COUNT_RANGE = "잘못된 범위의 응원 요청 횟수입니다.";
     public static final String GAME_TEAM_CHEER_COUNT_LIMIT_EXCEEDED = "총 응원 횟수가 한계에 도달했습니다.";
     public static final String GAME_TEAM_PLAYER_NOT_IN_TEAM = "해당 게임팀에 속하지 않는 선수입니다.";
-    public static final String GAME_TEAM_CAPTAIN_ALREADY_EXISTS = "이미 등록된 주장이 존재합니다.";
 
     // LineupPlayer 관련
     public static final String LINEUP_PLAYER_ALREADY_STARTER = "이미 선발로 등록된 선수입니다.";

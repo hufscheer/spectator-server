@@ -78,7 +78,7 @@ public class GameController {
         gameService.deleteGameTeam(gameTeamId, member);
     }
 
-    @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register")
+    @PutMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register")
     @ResponseStatus(HttpStatus.OK)
     public void changePlayerToCaptain(@PathVariable final Long gameId,
                                       @PathVariable final Long lineupPlayerId) {
