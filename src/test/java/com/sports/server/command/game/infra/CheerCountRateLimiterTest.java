@@ -78,7 +78,7 @@ class CheerCountRateLimiterTest {
             }
 
             assertThatThrownBy(() -> rateLimiter.check(1L))
-                    .hasMessageContaining("너무 빠릅니다");
+                    .hasMessageContaining("초과했습니다");
         }
     }
 
