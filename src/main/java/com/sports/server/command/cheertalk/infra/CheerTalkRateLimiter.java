@@ -46,13 +46,14 @@ public class CheerTalkRateLimiter {
     }
 
     public void check(Long gameTeamId, String content) {
-        DedupKey key = new DedupKey(gameTeamId, content);
-        if (recentContent.asMap().putIfAbsent(key, Boolean.TRUE) != null) {
-            throw new CheerTalkRateLimitException(CHEER_TALK_DUPLICATE_CONTENT);
-        }
         AtomicInteger counter = perGameTeamCounter.get(gameTeamId, k -> new AtomicInteger(0));
         if (counter.incrementAndGet() > MAX_PER_MINUTE_PER_GAME_TEAM) {
             throw new CheerTalkRateLimitException(CHEER_TALK_RATE_LIMIT_EXCEEDED);
+        }
+
+        DedupKey key = new DedupKey(gameTeamId, content);
+        if (recentContent.asMap().putIfAbsent(key, Boolean.TRUE) != null) {
+            throw new CheerTalkRateLimitException(CHEER_TALK_DUPLICATE_CONTENT);
         }
     }
 

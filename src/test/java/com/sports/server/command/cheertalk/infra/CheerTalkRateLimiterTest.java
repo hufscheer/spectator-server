@@ -105,6 +105,21 @@ class CheerTalkRateLimiterTest {
             assertThatCode(() -> rateLimiter.check(2L, "msg-other-team"))
                     .doesNotThrowAnyException();
         }
+
+        @Test
+        void 중복_본문이라도_분당_한도에_누적된다() {
+            rateLimiter.check(1L, "가즈아");
+            for (int i = 0; i < 119; i++) {
+                try {
+                    rateLimiter.check(1L, "가즈아");
+                } catch (CheerTalkRateLimitException ignored) {
+                }
+            }
+
+            assertThatThrownBy(() -> rateLimiter.check(1L, "다른본문"))
+                    .isInstanceOf(CheerTalkRateLimitException.class)
+                    .hasMessageContaining("너무 빠릅니다");
+        }
     }
 
     @Nested
