@@ -28,7 +28,8 @@ class OpenRouterMaskingClientTest {
     @BeforeEach
     void setUp() {
         chatCaller = mock(OpenRouterChatCaller.class);
-        client = new OpenRouterMaskingClient(chatCaller, SYSTEM_PROMPT, MODEL);
+        MaskingOutputSanitizer sanitizer = new MaskingOutputSanitizer(List.of());
+        client = new OpenRouterMaskingClient(chatCaller, sanitizer, SYSTEM_PROMPT, MODEL);
     }
 
     @Test
