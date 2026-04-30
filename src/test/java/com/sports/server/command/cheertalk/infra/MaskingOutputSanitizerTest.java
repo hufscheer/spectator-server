@@ -1,5 +1,6 @@
 package com.sports.server.command.cheertalk.infra;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -8,19 +9,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MaskingOutputSanitizerTest {
 
+    private final MaskingOutputSanitizer sanitizer = new MaskingOutputSanitizer(List.of());
+
     @Nested
     @DisplayName("정상 응답은 그대로 통과한다")
     class PassThrough {
 
         @Test
         void 마스킹된_텍스트_그대로_반환() {
-            String result = MaskingOutputSanitizer.sanitize("씨발 비속어", "** 비속어");
+            String result = sanitizer.sanitize("씨발 비속어", "** 비속어");
             assertThat(result).isEqualTo("** 비속어");
         }
 
         @Test
         void 변경_없는_원문도_그대로_반환() {
-            String result = MaskingOutputSanitizer.sanitize("파이팅", "파이팅");
+            String result = sanitizer.sanitize("파이팅", "파이팅");
             assertThat(result).isEqualTo("파이팅");
         }
     }
@@ -31,19 +34,19 @@ class MaskingOutputSanitizerTest {
 
         @Test
         void null_응답은_원문() {
-            String result = MaskingOutputSanitizer.sanitize("응원톡", null);
+            String result = sanitizer.sanitize("응원톡", null);
             assertThat(result).isEqualTo("응원톡");
         }
 
         @Test
         void 빈_응답은_원문() {
-            String result = MaskingOutputSanitizer.sanitize("응원톡", "");
+            String result = sanitizer.sanitize("응원톡", "");
             assertThat(result).isEqualTo("응원톡");
         }
 
         @Test
         void 공백만_있는_응답은_원문() {
-            String result = MaskingOutputSanitizer.sanitize("응원톡", "   \n  ");
+            String result = sanitizer.sanitize("응원톡", "   \n  ");
             assertThat(result).isEqualTo("응원톡");
         }
 
@@ -51,7 +54,7 @@ class MaskingOutputSanitizerTest {
         void 길이가_원본의_3배_초과면_원문() {
             String original = "벤치라네";
             String leaked = "벤치라네 ".repeat(20);
-            String result = MaskingOutputSanitizer.sanitize(original, leaked);
+            String result = sanitizer.sanitize(original, leaked);
             assertThat(result).isEqualTo(original);
         }
 
@@ -59,7 +62,7 @@ class MaskingOutputSanitizerTest {
         void 단일라인_입력에_여러줄_응답이면_원문() {
             String original = "응원톡 한줄";
             String leaked = "응원톡 한줄\n\n\n추론이 새는 케이스";
-            String result = MaskingOutputSanitizer.sanitize(original, leaked);
+            String result = sanitizer.sanitize(original, leaked);
             assertThat(result).isEqualTo(original);
         }
 
@@ -67,7 +70,7 @@ class MaskingOutputSanitizerTest {
         void 다중라인_입력_대비_개행이_급증하면_원문() {
             String original = "1줄\n2줄";
             String leaked = "1줄\n2줄\n\n\n\n추론이 새는 케이스";
-            String result = MaskingOutputSanitizer.sanitize(original, leaked);
+            String result = sanitizer.sanitize(original, leaked);
             assertThat(result).isEqualTo(original);
         }
 
@@ -75,7 +78,7 @@ class MaskingOutputSanitizerTest {
         void 다중라인_입력에_같은_라인수_응답은_통과() {
             String original = "1줄\n2줄";
             String masked = "1줄\n** 마스킹";
-            String result = MaskingOutputSanitizer.sanitize(original, masked);
+            String result = sanitizer.sanitize(original, masked);
             assertThat(result).isEqualTo(masked);
         }
 
@@ -83,21 +86,21 @@ class MaskingOutputSanitizerTest {
         void 추론_누수_마커_포함시_원문() {
             String original = "벤치라네";
             String leaked = "벤치라네 --- 해당 요청에 다음과 같이 처리하겠습니다: 벤치라네";
-            String result = MaskingOutputSanitizer.sanitize(original, leaked);
+            String result = sanitizer.sanitize(original, leaked);
             assertThat(result).isEqualTo(original);
         }
 
         @Test
         void 마스킹_없이_변형된_응답은_원문() {
-            String result = MaskingOutputSanitizer.sanitize("벤치라네", "벤치라네요");
+            String result = sanitizer.sanitize("벤치라네", "벤치라네요");
             assertThat(result).isEqualTo("벤치라네");
         }
 
         @Test
         void 짧은_판단문은_원문() {
-            assertThat(MaskingOutputSanitizer.sanitize("벤치라네", "욕설 없음"))
+            assertThat(sanitizer.sanitize("벤치라네", "욕설 없음"))
                     .isEqualTo("벤치라네");
-            assertThat(MaskingOutputSanitizer.sanitize("벤치라네", "해당 문장은 문제 없습니다."))
+            assertThat(sanitizer.sanitize("벤치라네", "해당 문장은 문제 없습니다."))
                     .isEqualTo("벤치라네");
         }
     }
@@ -108,13 +111,13 @@ class MaskingOutputSanitizerTest {
 
         @Test
         void 좌우_공백과_개행을_제거한다() {
-            String result = MaskingOutputSanitizer.sanitize("씨발 비속어", "** 비속어\n");
+            String result = sanitizer.sanitize("씨발 비속어", "** 비속어\n");
             assertThat(result).isEqualTo("** 비속어");
         }
 
         @Test
         void 전후_공백도_제거한다() {
-            String result = MaskingOutputSanitizer.sanitize("씨발 비속어", "  ** 비속어  ");
+            String result = sanitizer.sanitize("씨발 비속어", "  ** 비속어  ");
             assertThat(result).isEqualTo("** 비속어");
         }
     }
@@ -132,9 +135,36 @@ class MaskingOutputSanitizerTest {
                     + " (본 답변은 일본어 문장에 대한 처리를 위해 추가되었으며, 일반적인 응원톡 필터링 범위에서는 적용되지 않습니다.)"
                     + " --- 해당 요청에 다음과 같이 처리하겠습니다: 벤치라네요";
 
-            String result = MaskingOutputSanitizer.sanitize(original, leaked);
+            String result = sanitizer.sanitize(original, leaked);
 
             assertThat(result).isEqualTo(original);
+        }
+    }
+
+    @Nested
+    @DisplayName("yml 외부 설정")
+    class ExternalConfig {
+
+        @Test
+        void yml에서_커스텀_마커를_받으면_default를_대체한다() {
+            MaskingOutputSanitizer custom = new MaskingOutputSanitizer(List.of("커스텀마커"));
+
+            assertThat(custom.sanitize("응원 비속어", "** 커스텀마커")).isEqualTo("응원 비속어");
+            assertThat(custom.sanitize("응원 비속어", "** 처리하겠습니다")).isEqualTo("** 처리하겠습니다");
+        }
+
+        @Test
+        void 빈_리스트면_default_마커가_적용된다() {
+            MaskingOutputSanitizer empty = new MaskingOutputSanitizer(List.of());
+
+            assertThat(empty.sanitize("응원 비속어", "** 처리하겠습니다")).isEqualTo("응원 비속어");
+        }
+
+        @Test
+        void 공백_엔트리는_무시되고_default가_적용된다() {
+            MaskingOutputSanitizer blanks = new MaskingOutputSanitizer(List.of("  ", ""));
+
+            assertThat(blanks.sanitize("응원 비속어", "** 처리하겠습니다")).isEqualTo("응원 비속어");
         }
     }
 }
