@@ -60,6 +60,15 @@ class CheerTalkRateLimiterTest {
             assertThatCode(() -> rateLimiter.check(2L, "가즈아"))
                     .doesNotThrowAnyException();
         }
+
+        @Test
+        void 앞뒤_공백만_다른_본문도_중복으로_본다() {
+            rateLimiter.check(1L, "가즈아");
+
+            assertThatThrownBy(() -> rateLimiter.check(1L, "  가즈아  "))
+                    .isInstanceOf(CheerTalkRateLimitException.class)
+                    .hasMessageContaining("동일한 응원톡");
+        }
     }
 
     @Nested

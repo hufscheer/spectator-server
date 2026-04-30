@@ -51,7 +51,7 @@ public class CheerTalkRateLimiter {
             throw new CheerTalkRateLimitException(CHEER_TALK_RATE_LIMIT_EXCEEDED);
         }
 
-        DedupKey key = new DedupKey(gameTeamId, content);
+        DedupKey key = new DedupKey(gameTeamId, content == null ? "" : content.trim());
         if (recentContent.asMap().putIfAbsent(key, Boolean.TRUE) != null) {
             throw new CheerTalkRateLimitException(CHEER_TALK_DUPLICATE_CONTENT);
         }

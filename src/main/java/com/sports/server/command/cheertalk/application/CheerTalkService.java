@@ -35,8 +35,9 @@ public class CheerTalkService {
     private final CheerTalkRateLimiter rateLimiter;
 
     public void register(final CheerTalkRequest cheerTalkRequest) {
+        rateLimiter.check(cheerTalkRequest.gameTeamId(), cheerTalkRequest.content());
+
         GameTeam gameTeam = getGameTeam(cheerTalkRequest.gameTeamId());
-        rateLimiter.check(gameTeam.getId(), cheerTalkRequest.content());
 
         CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), gameTeam.getId());
         cheerTalkRepository.save(cheerTalk);
