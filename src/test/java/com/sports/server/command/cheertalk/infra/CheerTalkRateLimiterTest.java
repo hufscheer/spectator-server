@@ -127,7 +127,7 @@ class CheerTalkRateLimiterTest {
 
             assertThatThrownBy(() -> rateLimiter.check(1L, "다른본문"))
                     .isInstanceOf(CheerTalkRateLimitException.class)
-                    .hasMessageContaining("너무 빠릅니다");
+                    .hasMessageContaining("전송 가능 횟수를 초과했습니다");
         }
     }
 
