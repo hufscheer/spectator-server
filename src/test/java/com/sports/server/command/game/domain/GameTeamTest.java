@@ -40,7 +40,7 @@ public class GameTeamTest {
     }
 
     @Test
-    void 이미_주장이_존재해도_새로운_선수를_주장으로_등록할_수_있다() {
+    void 새로운_주장을_등록하면_기존_주장은_자동으로_해제된다() {
         // given
         LineupPlayer firstLineupPlayer = gameTeam.getLineupPlayers().get(0);
         LineupPlayer secondLineupPlayer = gameTeam.getLineupPlayers().get(1);
@@ -50,7 +50,21 @@ public class GameTeamTest {
         gameTeam.changePlayerToCaptain(secondLineupPlayer);
 
         // then
+        assertThat(firstLineupPlayer.isCaptain()).isFalse();
         assertThat(secondLineupPlayer.isCaptain()).isTrue();
+    }
+
+    @Test
+    void 이미_주장인_선수를_다시_주장으로_등록해도_예외가_발생하지_않는다() {
+        // given
+        LineupPlayer lineupPlayer = gameTeam.getLineupPlayers().get(0);
+        gameTeam.changePlayerToCaptain(lineupPlayer);
+
+        // when
+        gameTeam.changePlayerToCaptain(lineupPlayer);
+
+        // then
+        assertThat(lineupPlayer.isCaptain()).isTrue();
     }
 }
 
