@@ -16,15 +16,18 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class GeminiClient implements MaskingClient {
 
     private final WebClient geminiWebClient;
+    private final MaskingOutputSanitizer sanitizer;
     private final String apiKey;
     private final String prompt;
 
     public GeminiClient(
             WebClient geminiWebClient,
+            MaskingOutputSanitizer sanitizer,
             @Value("${gemini.api.key}") String apiKey,
             @Value("${gemini.api.prompt}") String prompt
     ) {
         this.geminiWebClient = geminiWebClient;
+        this.sanitizer = sanitizer;
         this.apiKey = apiKey;
         this.prompt = prompt;
     }
@@ -37,7 +40,7 @@ public class GeminiClient implements MaskingClient {
             if (response == null) {
                 return content;
             }
-            return MaskingOutputSanitizer.sanitize(content, response.getFirstText());
+            return sanitizer.sanitize(content, response.getFirstText());
         } catch (Exception e) {
             log.error("Gemini masking failed: {}", e.getMessage());
             return content;
