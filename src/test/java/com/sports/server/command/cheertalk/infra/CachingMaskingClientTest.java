@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -20,7 +22,11 @@ class CachingMaskingClientTest {
     @BeforeEach
     void setUp() {
         delegate = mock(OpenRouterMaskingClient.class);
-        client = new CachingMaskingClient(delegate, new MaskingPreFilter(), 5L, 100L);
+        MaskingPreFilter preFilter = new MaskingPreFilter(
+                List.of("가즈아🔥", "나이스👍", "까비😭️"),
+                List.of("ㅍㅇㅌ", "ㅎㅇㅌ", "ㅎㅇ", "ㄱㄱ", "ㄱㅅ", "ㅊㅋ", "ㄷㄷ", "ㄹㅇ", "ㅇㅈ", "ㄴㄴ", "ㅇㅇ")
+        );
+        client = new CachingMaskingClient(delegate, preFilter, 5L, 100L);
     }
 
     @Test

@@ -5,11 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MaskingPreFilterTest {
 
-    private final MaskingPreFilter filter = new MaskingPreFilter();
+    private final MaskingPreFilter filter = new MaskingPreFilter(
+            List.of("가즈아🔥", "나이스👍", "까비😭️"),
+            List.of("ㅍㅇㅌ", "ㅎㅇㅌ", "ㅎㅇ", "ㄱㄱ", "ㄱㅅ", "ㅊㅋ", "ㄷㄷ", "ㄹㅇ", "ㅇㅈ", "ㄴㄴ", "ㅇㅇ")
+    );
 
     @Test
     @DisplayName("null이거나 공백만 있으면 LLM을 스킵한다")
