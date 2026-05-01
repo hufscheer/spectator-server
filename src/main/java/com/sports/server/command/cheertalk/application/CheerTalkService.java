@@ -4,7 +4,6 @@ import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessag
 
 import com.sports.server.command.cheertalk.domain.*;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
-import com.sports.server.command.cheertalk.infra.CheerTalkRateLimiter;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.League;

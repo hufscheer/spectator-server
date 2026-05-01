@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.github.benmanes.caffeine.cache.Ticker;
+import com.sports.server.command.cheertalk.application.CheerTalkRateLimiter;
 import com.sports.server.command.cheertalk.exception.CheerTalkRateLimitException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class CheerTalkRateLimiterTest {
+class CaffeineCheerTalkRateLimiterTest {
 
     private static final String IP_A = "1.1.1.1";
     private static final String IP_B = "2.2.2.2";
@@ -23,7 +24,7 @@ class CheerTalkRateLimiterTest {
     @BeforeEach
     void setUp() {
         ticker = new FakeTicker();
-        rateLimiter = new CheerTalkRateLimiter(ticker);
+        rateLimiter = new CaffeineCheerTalkRateLimiter(ticker);
     }
 
     @Nested

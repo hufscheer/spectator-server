@@ -6,18 +6,19 @@ import static com.sports.server.command.cheertalk.exception.CheerTalkErrorMessag
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
+import com.sports.server.command.cheertalk.application.CheerTalkRateLimiter;
 import com.sports.server.command.cheertalk.exception.CheerTalkRateLimitException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Component;
 
 /**
- * (clientIp, gameTeamId) 단위 응원톡 호출 한도와 짧은 시간 동일 본문 중복을 방어한다.
- * - 분당 한도 초과: 429
+ * Caffeine 인메모리 캐시 기반 응원톡 RateLimiter 구현체.
+ * - (clientIp, gameTeamId) 단위 분당 한도 초과: 429
  * - 5초 내 같은 (clientIp, gameTeamId, content) 재전송: 429
  */
 @Component
-public class CheerTalkRateLimiter {
+public class CaffeineCheerTalkRateLimiter implements CheerTalkRateLimiter {
 
     private static final int MAX_PER_MINUTE_PER_IP_GAME_TEAM = 30;
     private static final long COUNTER_TTL_MINUTES = 1L;
@@ -28,11 +29,11 @@ public class CheerTalkRateLimiter {
     private final Cache<CounterKey, AtomicInteger> perIpGameTeamCounter;
     private final Cache<DedupKey, Boolean> recentContent;
 
-    public CheerTalkRateLimiter() {
+    public CaffeineCheerTalkRateLimiter() {
         this(Ticker.systemTicker());
     }
 
-    CheerTalkRateLimiter(Ticker ticker) {
+    CaffeineCheerTalkRateLimiter(Ticker ticker) {
         this.perIpGameTeamCounter = Caffeine.newBuilder()
                 .expireAfterWrite(COUNTER_TTL_MINUTES, TimeUnit.MINUTES)
                 .maximumSize(COUNTER_MAX_SIZE)
@@ -45,6 +46,7 @@ public class CheerTalkRateLimiter {
                 .build();
     }
 
+    @Override
     public void check(String clientIp, Long gameTeamId, String content) {
         String ip = clientIp == null ? "unknown" : clientIp;
         CounterKey counterKey = new CounterKey(ip, gameTeamId);
