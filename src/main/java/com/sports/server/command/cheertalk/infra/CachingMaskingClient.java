@@ -51,10 +51,11 @@ public class CachingMaskingClient implements MaskingClient {
         if (cached != null) {
             return cached;
         }
-        String masked = delegate.mask(content);
-        if (masked != null) {
-            cache.put(key, masked);
+        String masked = delegate.mask(key);
+        if (masked == null) {
+            return content;
         }
+        cache.put(key, masked);
         return masked;
     }
 }

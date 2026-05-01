@@ -49,12 +49,12 @@ public class OpenRouterMaskingClient implements MaskingClient {
         try {
             OpenRouterChatResponse response = chatCaller.call(body, REQUEST_TIMEOUT);
             if (response == null) {
-                return content;
+                return null;
             }
             return sanitizer.sanitize(content, response.getText());
         } catch (Exception e) {
             log.error("OpenRouter masking failed: {}", e.getMessage());
-            return content;
+            return null;
         }
     }
 }

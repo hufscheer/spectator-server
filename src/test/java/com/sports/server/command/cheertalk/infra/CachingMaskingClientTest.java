@@ -57,15 +57,15 @@ class CachingMaskingClientTest {
     }
 
     @Test
-    @DisplayName("delegate가 null을 반환하면 캐시에 저장하지 않아 다음 호출도 delegate로 위임한다")
-    void null_결과는_캐시_미저장() {
+    @DisplayName("delegate가 null(=일시 오류)을 반환하면 원문을 그대로 반환하되 캐시에는 저장하지 않는다")
+    void null_결과는_원문_반환_및_캐시_미저장() {
         when(delegate.mask("일시오류")).thenReturn(null);
 
         String first = client.mask("일시오류");
         String second = client.mask("일시오류");
 
-        assertThat(first).isNull();
-        assertThat(second).isNull();
+        assertThat(first).isEqualTo("일시오류");
+        assertThat(second).isEqualTo("일시오류");
         verify(delegate, times(2)).mask("일시오류");
     }
 

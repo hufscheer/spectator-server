@@ -2,7 +2,9 @@ package com.sports.server.command.cheertalk.infra;
 
 import org.springframework.stereotype.Component;
 
+import java.text.Normalizer;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * LLM 마스킹 호출 전에 명백히 정상인 메시지를 걸러낸다.
@@ -22,7 +24,7 @@ public class MaskingPreFilter {
             "가즈아🔥",   // 가즈아🔥
             "나이스👍",   // 나이스👍
             "까비😭️" // 까비😭️
-    );
+    ).stream().map(MaskingPreFilter::nfc).collect(Collectors.toUnmodifiableSet());
 
     /**
      * 응원/긍정 초성 — yml `[절대 마스킹 금지]` 항목 기반 정확 매치.
@@ -32,13 +34,13 @@ public class MaskingPreFilter {
             "ㄱㄱ", "ㄱㅅ",
             "ㅊㅋ", "ㄷㄷ", "ㄹㅇ", "ㅇㅈ",
             "ㄴㄴ", "ㅇㅇ"
-    );
+    ).stream().map(MaskingPreFilter::nfc).collect(Collectors.toUnmodifiableSet());
 
     public boolean canSkip(String content) {
         if (content == null) {
             return true;
         }
-        String trimmed = content.strip();
+        String trimmed = nfc(content).strip();
         if (trimmed.isEmpty()) {
             return true;
         }
@@ -49,6 +51,10 @@ public class MaskingPreFilter {
             return true;
         }
         return !containsAnyHangul(trimmed);
+    }
+
+    private static String nfc(String s) {
+        return Normalizer.normalize(s, Normalizer.Form.NFC);
     }
 
     private boolean containsAnyHangul(String s) {
