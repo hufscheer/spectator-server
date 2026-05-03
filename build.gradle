@@ -45,7 +45,7 @@ dependencies {
     // comment - bad word filter
     implementation 'io.github.vaneproject:badwordfiltering:1.0.0'
 
-    // in-memory rate limit / dedup cache
+    // in-memory cache (rate limit, dedup, masking response)
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
     // websocket

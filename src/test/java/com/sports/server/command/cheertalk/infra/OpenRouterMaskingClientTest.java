@@ -66,13 +66,13 @@ class OpenRouterMaskingClientTest {
     }
 
     @Test
-    @DisplayName("응답이 null이면 원문을 반환한다")
-    void 응답_null이면_원문() {
+    @DisplayName("응답이 null이면 null을 반환한다(상위 레이어가 fallback 결정)")
+    void 응답_null이면_null() {
         when(chatCaller.call(any(), any(Duration.class))).thenReturn(null);
 
         String result = client.mask("그대로");
 
-        assertThat(result).isEqualTo("그대로");
+        assertThat(result).isNull();
     }
 
     @Test
@@ -87,14 +87,14 @@ class OpenRouterMaskingClientTest {
     }
 
     @Test
-    @DisplayName("호출이 예외를 던지면 원문을 반환한다")
-    void 예외_발생시_원문() {
+    @DisplayName("호출이 예외를 던지면 null을 반환한다(상위 레이어가 fallback 결정)")
+    void 예외_발생시_null() {
         when(chatCaller.call(any(), any(Duration.class)))
                 .thenThrow(new RuntimeException("network error"));
 
         String result = client.mask("그대로");
 
-        assertThat(result).isEqualTo("그대로");
+        assertThat(result).isNull();
     }
 
     @Test
