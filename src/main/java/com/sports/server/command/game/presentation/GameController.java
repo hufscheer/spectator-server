@@ -1,5 +1,6 @@
 package com.sports.server.command.game.presentation;
 
+import com.sports.server.command.game.application.CheerCountRateLimiter;
 import com.sports.server.command.game.application.GameService;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.application.GameTeamService;
@@ -7,11 +8,11 @@ import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequest;
-import com.sports.server.command.game.infra.CheerCountRateLimiter;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
-import com.sports.server.common.util.ClientIpResolver;
+import com.sports.server.common.util.VisitorIdResolver;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -35,8 +36,10 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     public void updateCheerCount(@PathVariable final Long gameId,
                                  @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto,
-                                 final HttpServletRequest httpRequest) {
-        cheerCountRateLimiter.check(ClientIpResolver.resolve(httpRequest), cheerRequestDto.gameTeamId());
+                                 final HttpServletRequest httpRequest,
+                                 final HttpServletResponse httpResponse) {
+        String visitorId = VisitorIdResolver.resolveOrIssue(httpRequest, httpResponse);
+        cheerCountRateLimiter.check(visitorId);
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
     }
 
