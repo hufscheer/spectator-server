@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 
 class CaffeineCheerTalkRateLimiterTest {
 
-    private static final String IP_A = "1.1.1.1";
-    private static final String IP_B = "2.2.2.2";
+    private static final String VISITOR_A = "visitor-a";
+    private static final String VISITOR_B = "visitor-b";
 
     private FakeTicker ticker;
     private CheerTalkRateLimiter rateLimiter;
@@ -28,127 +28,151 @@ class CaffeineCheerTalkRateLimiterTest {
     }
 
     @Nested
-    @DisplayName("동일 본문 중복 차단")
-    class Dedup {
+    @DisplayName("R1 양적 도배 — 개인당 60초 sliding window 120건")
+    class RatePerVisitor {
 
         @Test
-        void 같은_IP_같은_게임팀_같은_본문이_5초_이내_재전송되면_예외() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
-
-            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L, "가즈아"))
-                    .isInstanceOf(CheerTalkRateLimitException.class);
-        }
-
-        @Test
-        void 같은_본문이라도_5초가_지나면_허용() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
-            ticker.advance(6, TimeUnit.SECONDS);
-
-            assertThatCode(() -> rateLimiter.check(IP_A, 1L, "가즈아"))
-                    .doesNotThrowAnyException();
-        }
-
-        @Test
-        void 같은_게임팀이라도_본문이_다르면_통과() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
-
-            assertThatCode(() -> rateLimiter.check(IP_A, 1L, "파이팅"))
-                    .doesNotThrowAnyException();
-        }
-
-        @Test
-        void 같은_본문이라도_게임팀이_다르면_통과() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
-
-            assertThatCode(() -> rateLimiter.check(IP_A, 2L, "가즈아"))
-                    .doesNotThrowAnyException();
-        }
-
-        @Test
-        void 같은_본문이라도_IP가_다르면_통과() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
-
-            assertThatCode(() -> rateLimiter.check(IP_B, 1L, "가즈아"))
-                    .doesNotThrowAnyException();
-        }
-
-        @Test
-        void 앞뒤_공백만_다른_본문도_중복으로_본다() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
-
-            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L, "  가즈아  "))
-                    .isInstanceOf(CheerTalkRateLimitException.class)
-                    .hasMessageContaining("동일한 응원톡");
-        }
-    }
-
-    @Nested
-    @DisplayName("(IP, 게임팀)당 분당 호출수 제한")
-    class PerIpGameTeamRate {
-
-        @Test
-        void 분당_30회까지는_통과한다() {
-            for (int i = 0; i < 30; i++) {
+        void 분당_120회까지는_통과한다() {
+            for (int i = 0; i < 120; i++) {
                 int idx = i;
-                assertThatCode(() -> rateLimiter.check(IP_A, 1L, "msg-" + idx))
+                assertThatCode(() -> rateLimiter.check(VISITOR_A, "msg-" + idx))
                         .doesNotThrowAnyException();
             }
         }
 
         @Test
-        void 분당_30회_초과는_429() {
-            for (int i = 0; i < 30; i++) {
-                rateLimiter.check(IP_A, 1L, "msg-" + i);
+        void 분당_120회_초과는_429() {
+            for (int i = 0; i < 120; i++) {
+                rateLimiter.check(VISITOR_A, "msg-" + i);
             }
 
-            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L, "msg-31"))
+            assertThatThrownBy(() -> rateLimiter.check(VISITOR_A, "msg-overflow"))
                     .isInstanceOf(CheerTalkRateLimitException.class);
         }
 
         @Test
-        void 카운터는_1분이_지나면_초기화된다() {
-            for (int i = 0; i < 30; i++) {
-                rateLimiter.check(IP_A, 1L, "msg-" + i);
+        void 윈도우_바깥의_요청은_카운트에서_빠진다() {
+            for (int i = 0; i < 120; i++) {
+                rateLimiter.check(VISITOR_A, "msg-" + i);
             }
             ticker.advance(61, TimeUnit.SECONDS);
 
-            assertThatCode(() -> rateLimiter.check(IP_A, 1L, "msg-after"))
+            assertThatCode(() -> rateLimiter.check(VISITOR_A, "msg-after"))
                     .doesNotThrowAnyException();
         }
 
         @Test
-        void 같은_IP라도_게임팀이_다르면_카운터가_분리된다() {
-            for (int i = 0; i < 30; i++) {
-                rateLimiter.check(IP_A, 1L, "msg-" + i);
+        void 윈도우는_고정이_아니라_미끄러진다() {
+            for (int i = 0; i < 60; i++) {
+                rateLimiter.check(VISITOR_A, "early-" + i);
+            }
+            ticker.advance(30, TimeUnit.SECONDS);
+            for (int i = 0; i < 60; i++) {
+                rateLimiter.check(VISITOR_A, "mid-" + i);
+            }
+            ticker.advance(31, TimeUnit.SECONDS);
+
+            assertThatCode(() -> rateLimiter.check(VISITOR_A, "late"))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 다른_방문자의_카운터는_분리된다() {
+            for (int i = 0; i < 120; i++) {
+                rateLimiter.check(VISITOR_A, "msg-" + i);
             }
 
-            assertThatCode(() -> rateLimiter.check(IP_A, 2L, "msg-other-team"))
+            assertThatCode(() -> rateLimiter.check(VISITOR_B, "msg-other"))
                     .doesNotThrowAnyException();
         }
 
         @Test
-        void 같은_게임팀이라도_IP가_다르면_카운터가_분리된다() {
-            for (int i = 0; i < 30; i++) {
-                rateLimiter.check(IP_A, 1L, "msg-" + i);
+        void 차단된_시도는_카운트에_누적되지_않는다() {
+            for (int i = 0; i < 120; i++) {
+                rateLimiter.check(VISITOR_A, "msg-" + i);
             }
-
-            assertThatCode(() -> rateLimiter.check(IP_B, 1L, "msg-other-ip"))
-                    .doesNotThrowAnyException();
-        }
-
-        @Test
-        void 중복_본문이라도_분당_한도에_누적된다() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
-            for (int i = 0; i < 29; i++) {
+            for (int i = 0; i < 5; i++) {
                 try {
-                    rateLimiter.check(IP_A, 1L, "가즈아");
+                    rateLimiter.check(VISITOR_A, "blocked-" + i);
                 } catch (CheerTalkRateLimitException ignored) {
                 }
             }
+            ticker.advance(61, TimeUnit.SECONDS);
 
-            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L, "다른본문"))
+            for (int i = 0; i < 120; i++) {
+                int idx = i;
+                assertThatCode(() -> rateLimiter.check(VISITOR_A, "next-" + idx))
+                        .doesNotThrowAnyException();
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("R2 반복 도배 — 개인당 3초 sliding window 동일 본문 3건까지")
+    class DedupPerVisitor {
+
+        @Test
+        void 같은_본문이라도_3초_안에_3건까지는_통과한다() {
+            for (int i = 0; i < 3; i++) {
+                assertThatCode(() -> rateLimiter.check(VISITOR_A, "가즈아"))
+                        .doesNotThrowAnyException();
+                ticker.advance(500, TimeUnit.MILLISECONDS);
+            }
+        }
+
+        @Test
+        void 같은_본문_4번째는_차단된다() {
+            for (int i = 0; i < 3; i++) {
+                rateLimiter.check(VISITOR_A, "가즈아");
+            }
+
+            assertThatThrownBy(() -> rateLimiter.check(VISITOR_A, "가즈아"))
                     .isInstanceOf(CheerTalkRateLimitException.class)
-                    .hasMessageContaining("전송 가능 횟수를 초과했습니다");
+                    .hasMessageContaining("방금 같은 메시지");
+        }
+
+        @Test
+        void 첫_요청이_3초를_벗어나면_다시_통과한다() {
+            rateLimiter.check(VISITOR_A, "가즈아");
+            ticker.advance(1, TimeUnit.SECONDS);
+            rateLimiter.check(VISITOR_A, "가즈아");
+            ticker.advance(1, TimeUnit.SECONDS);
+            rateLimiter.check(VISITOR_A, "가즈아");
+            ticker.advance(1100, TimeUnit.MILLISECONDS);
+
+            assertThatCode(() -> rateLimiter.check(VISITOR_A, "가즈아"))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 본문이_다르면_별도_카운트된다() {
+            for (int i = 0; i < 3; i++) {
+                rateLimiter.check(VISITOR_A, "가즈아");
+            }
+
+            assertThatCode(() -> rateLimiter.check(VISITOR_A, "파이팅"))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 다른_방문자의_본문은_별도_카운트된다() {
+            for (int i = 0; i < 3; i++) {
+                rateLimiter.check(VISITOR_A, "가즈아");
+            }
+
+            assertThatCode(() -> rateLimiter.check(VISITOR_B, "가즈아"))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 앞뒤_공백만_다른_본문은_동일하게_본다() {
+            for (int i = 0; i < 3; i++) {
+                rateLimiter.check(VISITOR_A, "가즈아");
+            }
+
+            assertThatThrownBy(() -> rateLimiter.check(VISITOR_A, "  가즈아  "))
+                    .isInstanceOf(CheerTalkRateLimitException.class)
+                    .hasMessageContaining("방금 같은 메시지");
         }
     }
 
@@ -157,21 +181,23 @@ class CaffeineCheerTalkRateLimiterTest {
     class Messages {
 
         @Test
-        void 중복_본문은_사용자_안내_메시지() {
-            rateLimiter.check(IP_A, 1L, "가즈아");
+        void 호출수_초과_안내_메시지() {
+            for (int i = 0; i < 120; i++) {
+                rateLimiter.check(VISITOR_A, "msg-" + i);
+            }
 
-            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L, "가즈아"))
-                    .hasMessageContaining("동일한 응원톡");
+            assertThatThrownBy(() -> rateLimiter.check(VISITOR_A, "msg-overflow"))
+                    .hasMessageContaining("응원톡을 너무 많이");
         }
 
         @Test
-        void 호출수_초과는_사용자_안내_메시지() {
-            for (int i = 0; i < 30; i++) {
-                rateLimiter.check(IP_A, 1L, "msg-" + i);
+        void 동일_본문_차단_안내_메시지() {
+            for (int i = 0; i < 3; i++) {
+                rateLimiter.check(VISITOR_A, "가즈아");
             }
 
-            assertThatThrownBy(() -> rateLimiter.check(IP_A, 1L, "msg-overflow"))
-                    .hasMessageContaining("전송 가능 횟수를 초과했습니다");
+            assertThatThrownBy(() -> rateLimiter.check(VISITOR_A, "가즈아"))
+                    .hasMessageContaining("방금 같은 메시지");
         }
     }
 
