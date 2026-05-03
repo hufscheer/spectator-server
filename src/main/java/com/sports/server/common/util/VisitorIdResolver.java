@@ -46,10 +46,10 @@ public final class VisitorIdResolver {
         return value != null && !value.isBlank();
     }
 
-    private static String buildCookie(String value, boolean secure) {
+    private static String buildCookie(String value, boolean isSecure) {
         return ResponseCookie.from(COOKIE_NAME, value)
                 .httpOnly(true)
-                .secure(secure)
+                .secure(isSecure)
                 .sameSite(SAME_SITE)
                 .path(COOKIE_PATH)
                 .maxAge(COOKIE_MAX_AGE)

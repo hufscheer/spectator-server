@@ -8,8 +8,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.sports.server.command.cheertalk.application.CheerTalkRateLimiter;
 import com.sports.server.command.cheertalk.exception.CheerTalkRateLimitException;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import com.sports.server.common.util.SlidingWindow;
 import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +17,13 @@ public class CaffeineCheerTalkRateLimiter implements CheerTalkRateLimiter {
 
     private static final int RATE_LIMIT = 120;
     private static final long RATE_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(60);
+    // window의 1.5배 — 경계 구간 안전 버퍼
     private static final long RATE_TTL_SECONDS = 90L;
     private static final long RATE_MAX_SIZE = 50_000L;
 
     private static final int DEDUP_LIMIT = 3;
     private static final long DEDUP_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(3);
+    // window의 2배 — 경계 구간 안전 버퍼
     private static final long DEDUP_TTL_SECONDS = 6L;
     private static final long DEDUP_MAX_SIZE = 100_000L;
 
@@ -79,34 +80,6 @@ public class CaffeineCheerTalkRateLimiter implements CheerTalkRateLimiter {
 
     private static String normalizeContent(String content) {
         return content == null ? "" : content.trim();
-    }
-
-    private static final class SlidingWindow {
-
-        private final Deque<Long> timestamps = new ArrayDeque<>();
-        private final long windowNanos;
-        private final int limit;
-
-        SlidingWindow(long windowNanos, int limit) {
-            this.windowNanos = windowNanos;
-            this.limit = limit;
-        }
-
-        synchronized boolean tryAdmit(long nowNanos) {
-            evictExpired(nowNanos);
-            if (timestamps.size() >= limit) {
-                return false;
-            }
-            timestamps.addLast(nowNanos);
-            return true;
-        }
-
-        private void evictExpired(long nowNanos) {
-            long threshold = nowNanos - windowNanos;
-            while (!timestamps.isEmpty() && timestamps.peekFirst() < threshold) {
-                timestamps.pollFirst();
-            }
-        }
     }
 
     private record DedupKey(String clientId, String content) {
