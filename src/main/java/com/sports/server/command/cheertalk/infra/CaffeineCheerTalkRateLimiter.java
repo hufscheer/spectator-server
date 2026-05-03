@@ -8,38 +8,42 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.sports.server.command.cheertalk.application.CheerTalkRateLimiter;
 import com.sports.server.command.cheertalk.exception.CheerTalkRateLimitException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Component;
 
-/**
- * Caffeine 인메모리 캐시 기반 응원톡 RateLimiter 구현체.
- * - (clientIp, gameTeamId) 단위 분당 한도 초과: 429
- * - 5초 내 같은 (clientIp, gameTeamId, content) 재전송: 429
- */
 @Component
 public class CaffeineCheerTalkRateLimiter implements CheerTalkRateLimiter {
 
-    private static final int MAX_PER_MINUTE_PER_IP_GAME_TEAM = 30;
-    private static final long COUNTER_TTL_MINUTES = 1L;
-    private static final long DEDUP_TTL_SECONDS = 5L;
-    private static final long COUNTER_MAX_SIZE = 200_000L;
-    private static final long DEDUP_MAX_SIZE = 500_000L;
+    private static final int RATE_LIMIT = 120;
+    private static final long RATE_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(60);
+    private static final long RATE_TTL_SECONDS = 90L;
+    private static final long RATE_MAX_SIZE = 50_000L;
 
-    private final Cache<CounterKey, AtomicInteger> perIpGameTeamCounter;
-    private final Cache<DedupKey, Boolean> recentContent;
+    private static final int DEDUP_LIMIT = 3;
+    private static final long DEDUP_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(3);
+    private static final long DEDUP_TTL_SECONDS = 6L;
+    private static final long DEDUP_MAX_SIZE = 100_000L;
+
+    private static final String UNKNOWN_CLIENT = "unknown";
+
+    private final Ticker ticker;
+    private final Cache<String, SlidingWindow> rateWindows;
+    private final Cache<DedupKey, SlidingWindow> dedupWindows;
 
     public CaffeineCheerTalkRateLimiter() {
         this(Ticker.systemTicker());
     }
 
     CaffeineCheerTalkRateLimiter(Ticker ticker) {
-        this.perIpGameTeamCounter = Caffeine.newBuilder()
-                .expireAfterWrite(COUNTER_TTL_MINUTES, TimeUnit.MINUTES)
-                .maximumSize(COUNTER_MAX_SIZE)
+        this.ticker = ticker;
+        this.rateWindows = Caffeine.newBuilder()
+                .expireAfterWrite(RATE_TTL_SECONDS, TimeUnit.SECONDS)
+                .maximumSize(RATE_MAX_SIZE)
                 .ticker(ticker)
                 .build();
-        this.recentContent = Caffeine.newBuilder()
+        this.dedupWindows = Caffeine.newBuilder()
                 .expireAfterWrite(DEDUP_TTL_SECONDS, TimeUnit.SECONDS)
                 .maximumSize(DEDUP_MAX_SIZE)
                 .ticker(ticker)
@@ -47,23 +51,64 @@ public class CaffeineCheerTalkRateLimiter implements CheerTalkRateLimiter {
     }
 
     @Override
-    public void check(String clientIp, Long gameTeamId, String content) {
-        String ip = clientIp == null ? "unknown" : clientIp;
-        CounterKey counterKey = new CounterKey(ip, gameTeamId);
-        AtomicInteger counter = perIpGameTeamCounter.get(counterKey, k -> new AtomicInteger(0));
-        if (counter.incrementAndGet() > MAX_PER_MINUTE_PER_IP_GAME_TEAM) {
+    public void check(String clientId, String content) {
+        long now = ticker.read();
+        String id = normalizeId(clientId);
+        String body = normalizeContent(content);
+
+        if (!rateWindow(id).tryAdmit(now)) {
             throw new CheerTalkRateLimitException(CHEER_TALK_RATE_LIMIT_EXCEEDED);
         }
-
-        DedupKey key = new DedupKey(ip, gameTeamId, content == null ? "" : content.trim());
-        if (recentContent.asMap().putIfAbsent(key, Boolean.TRUE) != null) {
+        if (!dedupWindow(id, body).tryAdmit(now)) {
             throw new CheerTalkRateLimitException(CHEER_TALK_DUPLICATE_CONTENT);
         }
     }
 
-    private record CounterKey(String clientIp, Long gameTeamId) {
+    private SlidingWindow rateWindow(String clientId) {
+        return rateWindows.get(clientId, k -> new SlidingWindow(RATE_WINDOW_NANOS, RATE_LIMIT));
     }
 
-    private record DedupKey(String clientIp, Long gameTeamId, String content) {
+    private SlidingWindow dedupWindow(String clientId, String content) {
+        return dedupWindows.get(new DedupKey(clientId, content),
+                k -> new SlidingWindow(DEDUP_WINDOW_NANOS, DEDUP_LIMIT));
+    }
+
+    private static String normalizeId(String clientId) {
+        return (clientId == null || clientId.isBlank()) ? UNKNOWN_CLIENT : clientId;
+    }
+
+    private static String normalizeContent(String content) {
+        return content == null ? "" : content.trim();
+    }
+
+    private static final class SlidingWindow {
+
+        private final Deque<Long> timestamps = new ArrayDeque<>();
+        private final long windowNanos;
+        private final int limit;
+
+        SlidingWindow(long windowNanos, int limit) {
+            this.windowNanos = windowNanos;
+            this.limit = limit;
+        }
+
+        synchronized boolean tryAdmit(long nowNanos) {
+            evictExpired(nowNanos);
+            if (timestamps.size() >= limit) {
+                return false;
+            }
+            timestamps.addLast(nowNanos);
+            return true;
+        }
+
+        private void evictExpired(long nowNanos) {
+            long threshold = nowNanos - windowNanos;
+            while (!timestamps.isEmpty() && timestamps.peekFirst() < threshold) {
+                timestamps.pollFirst();
+            }
+        }
+    }
+
+    private record DedupKey(String clientId, String content) {
     }
 }
