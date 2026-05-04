@@ -5,6 +5,7 @@ import com.sports.server.common.infra.openrouter.OpenRouterChatCaller;
 import com.sports.server.common.infra.openrouter.OpenRouterChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "ai-seed.provider", havingValue = "openrouter")
 public class AiSeedMessageGenerator {
 
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(15);

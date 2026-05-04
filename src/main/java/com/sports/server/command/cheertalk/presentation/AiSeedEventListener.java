@@ -11,6 +11,7 @@ import com.sports.server.command.timeline.domain.TimelineCreatedEvent;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -21,6 +22,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "ai-seed.provider", havingValue = "openrouter")
 public class AiSeedEventListener {
 
     private static final int GOAL_DELAY_MIN_SECONDS = 20;

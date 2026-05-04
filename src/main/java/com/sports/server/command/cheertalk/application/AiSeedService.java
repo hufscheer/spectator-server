@@ -13,6 +13,7 @@ import com.sports.server.command.league.domain.SportType;
 import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "ai-seed.provider", havingValue = "openrouter")
 public class AiSeedService {
 
     private static final int MAX_SEEDS_PER_GAME = 5;
