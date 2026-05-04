@@ -31,8 +31,11 @@ public class CheerTalkService {
     private final GameTeamRepository gameTeamRepository;
     private final EntityUtils entityUtils;
     private final ApplicationEventPublisher eventPublisher;
+    private final CheerTalkRateLimiter rateLimiter;
 
-    public void register(final CheerTalkRequest cheerTalkRequest) {
+    public void register(final String clientId, final CheerTalkRequest cheerTalkRequest) {
+        rateLimiter.check(clientId, cheerTalkRequest.content());
+
         GameTeam gameTeam = getGameTeam(cheerTalkRequest.gameTeamId());
 
         CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), gameTeam.getId());

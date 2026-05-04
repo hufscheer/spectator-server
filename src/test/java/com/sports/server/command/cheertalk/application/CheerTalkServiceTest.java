@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Sql("/cheer-talk-fixture.sql")
 public class CheerTalkServiceTest extends ServiceTest {
 
+    private static final String VISITOR_ID = "00000000-0000-0000-0000-000000000001";
+
     @Autowired
     private CheerTalkService cheerTalkService;
 
@@ -45,7 +47,7 @@ public class CheerTalkServiceTest extends ServiceTest {
         CheerTalkRequest cheerTalkRequest = new CheerTalkRequest(content, 1L);
 
         //when & then
-        assertThrows(CustomException.class, () -> cheerTalkService.register(cheerTalkRequest));
+        assertThrows(CustomException.class, () -> cheerTalkService.register(VISITOR_ID, cheerTalkRequest));
 
     }
 
@@ -58,7 +60,7 @@ public class CheerTalkServiceTest extends ServiceTest {
         CheerTalkRequest cheerTalkRequest = new CheerTalkRequest(content, 1L);
 
         //when & then
-        assertThatCode(() -> cheerTalkService.register(cheerTalkRequest))
+        assertThatCode(() -> cheerTalkService.register(VISITOR_ID, cheerTalkRequest))
                 .doesNotThrowAnyException();
     }
 }
