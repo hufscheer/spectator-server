@@ -8,6 +8,7 @@ import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.TimelineCreatedEvent;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
@@ -15,6 +16,7 @@ import com.sports.server.command.timeline.mapper.TimelineMapper;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.CustomException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,7 @@ public class TimelineService {
     private final GameProgressTimelineRepository gameProgressTimelineRepository;
     private final TimelineMapper timelineMapper;
     private final EntityUtils entityUtils;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void register(Member manager, Long gameId, TimelineRequest request) {
@@ -52,6 +55,9 @@ public class TimelineService {
         Timeline timeline = timelineMapper.toEntity(game, request);
         timeline.apply();
         timelineRepository.save(timeline);
+
+        eventPublisher.publishEvent(new TimelineCreatedEvent(
+                timeline.getId(), gameId, timeline.getType()));
     }
 
     private void insertQuarterEndIfNeeded(Game game, Integer recordedAt, Optional<GameProgressTimeline> lastProgressOpt) {
