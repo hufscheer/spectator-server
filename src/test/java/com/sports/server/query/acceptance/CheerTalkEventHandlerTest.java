@@ -58,7 +58,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
         stompSession.subscribe("/topic/games/1", new CommentStompFrameHandler());
 
         //when
-        cheerTalkService.register(new CheerTalkRequest("응원톡입니다.", 1L));
+        cheerTalkService.register("127.0.0.1", new CheerTalkRequest("응원톡입니다.", 1L));
 
         //then
         CheerTalkResponse.ForSpectator actual = completableFuture.get(10, SECONDS);
