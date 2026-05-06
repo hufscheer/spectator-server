@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +34,7 @@ class AiSeedServiceTest {
     private EntityUtils entityUtils;
     private AiSeedMessageGenerator messageGenerator;
     private ApplicationEventPublisher eventPublisher;
+    private TransactionTemplate transactionTemplate;
     private AiSeedService aiSeedService;
 
     private Game soccerGame;
@@ -47,10 +49,16 @@ class AiSeedServiceTest {
         entityUtils = mock(EntityUtils.class);
         messageGenerator = mock(AiSeedMessageGenerator.class);
         eventPublisher = mock(ApplicationEventPublisher.class);
+        transactionTemplate = mock(TransactionTemplate.class);
+        doAnswer(invocation -> {
+            var callback = invocation.getArgument(0, java.util.function.Consumer.class);
+            callback.accept(null);
+            return null;
+        }).when(transactionTemplate).executeWithoutResult(any());
 
         aiSeedService = new AiSeedService(
                 cheerTalkRepository, gameTeamRepository, entityUtils,
-                messageGenerator, eventPublisher
+                messageGenerator, eventPublisher, transactionTemplate
         );
 
         soccerGame = mockGame(GameState.PLAYING, SportType.SOCCER);

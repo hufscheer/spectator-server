@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,8 +38,8 @@ public class AiSeedService {
     private final EntityUtils entityUtils;
     private final AiSeedMessageGenerator messageGenerator;
     private final ApplicationEventPublisher eventPublisher;
+    private final TransactionTemplate transactionTemplate;
 
-    @Transactional
     public void publish(Long gameId, AiSeedTriggerType triggerType,
                         Long scoringGameTeamId, String scorerName) {
         Game game = entityUtils.getEntity(gameId, Game.class);
@@ -59,15 +59,17 @@ public class AiSeedService {
         String teamName = selectedTeam.getTeam().getName();
         String message = messageGenerator.generate(triggerType, teamName, scorerName);
 
-        CheerTalk aiSeed = CheerTalk.createAiSeed(message, selectedTeam.getId());
-        cheerTalkRepository.save(aiSeed);
-        eventPublisher.publishEvent(new CheerTalkCreateEvent(aiSeed, gameId));
+        transactionTemplate.executeWithoutResult(status -> {
+            CheerTalk aiSeed = CheerTalk.createAiSeed(message, selectedTeam.getId());
+            cheerTalkRepository.save(aiSeed);
+            eventPublisher.publishEvent(new CheerTalkCreateEvent(aiSeed, gameId));
+        });
 
         log.info("AI Seed 발화: gameId={}, trigger={}, team={}, message={}",
                 gameId, triggerType, teamName, message);
     }
 
-    private boolean canPublish(Game game) {
+private boolean canPublish(Game game) {
         return isSoccerGame(game) && game.getState() != GameState.FINISHED;
     }
 
