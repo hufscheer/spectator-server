@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.Instant;
@@ -34,6 +35,7 @@ public class AiSeedEventListener {
     private final TimelineRepository timelineRepository;
     private final TaskScheduler taskScheduler;
 
+    @Transactional(readOnly = true)
     @TransactionalEventListener
     public void handle(TimelineCreatedEvent event) {
         switch (event.type()) {
