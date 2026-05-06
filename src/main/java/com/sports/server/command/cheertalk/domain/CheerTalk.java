@@ -30,6 +30,9 @@ public class CheerTalk extends BaseEntity<CheerTalk> {
     @Column(name = "game_team_id")
     private Long gameTeamId;
 
+    @Column(name = "is_ai_seed", nullable = false)
+    private boolean isAiSeed;
+
     public boolean isBlocked() {
         return blockStatus != CheerTalkBlockStatus.ACTIVE;
     }
@@ -51,9 +54,18 @@ public class CheerTalk extends BaseEntity<CheerTalk> {
     }
 
     public CheerTalk(final String content, final Long gameTeamId) {
+        this(content, gameTeamId, false);
+    }
+
+    public static CheerTalk createAiSeed(final String content, final Long gameTeamId) {
+        return new CheerTalk(content, gameTeamId, true);
+    }
+
+    private CheerTalk(final String content, final Long gameTeamId, final boolean isAiSeed) {
         this.createdAt = LocalDateTime.now();
         this.content = content;
         this.blockStatus = CheerTalkBlockStatus.ACTIVE;
         this.gameTeamId = gameTeamId;
+        this.isAiSeed = isAiSeed;
     }
 }

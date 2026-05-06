@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @ConditionalOnExpression(
-        "'${nl.provider:}'.equals('openrouter') or '${masking.provider:}'.equals('openrouter')"
+        "'${nl.provider:}'.equals('openrouter') or '${masking.provider:}'.equals('openrouter') or '${ai-seed.provider:}'.equals('openrouter')"
 )
 public class OpenRouterWebClientConfig {
 
