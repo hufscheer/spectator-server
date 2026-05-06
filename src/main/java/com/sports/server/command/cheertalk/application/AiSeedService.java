@@ -6,11 +6,12 @@ import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
 import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.command.cheertalk.infra.AiSeedMessageGenerator;
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameRepository;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.SportType;
-import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,20 +36,21 @@ public class AiSeedService {
 
     private final CheerTalkRepository cheerTalkRepository;
     private final GameTeamRepository gameTeamRepository;
-    private final EntityUtils entityUtils;
+    private final GameRepository gameRepository;
     private final AiSeedMessageGenerator messageGenerator;
     private final ApplicationEventPublisher eventPublisher;
     private final TransactionTemplate transactionTemplate;
 
     public void publish(Long gameId, AiSeedTriggerType triggerType,
                         Long scoringGameTeamId, String scorerName) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = gameRepository.findByIdWithLeague(gameId)
+                .orElseThrow(() -> new NotFoundException("Game을(를) 찾을 수 없습니다"));
 
         if (!canPublish(game)) {
             return;
         }
 
-        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdForUpdateOrderByAsc(gameId);
+        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdWithTeamOrderByAsc(gameId);
         List<Long> gameTeamIds = gameTeams.stream().map(GameTeam::getId).toList();
 
         if (!isReadyForNextSeed(gameTeamIds, triggerType)) {
