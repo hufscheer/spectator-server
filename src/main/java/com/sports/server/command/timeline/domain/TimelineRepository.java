@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface TimelineRepository extends Repository<Timeline, Long> {
     void save(Timeline timeline);
 
+    Optional<Timeline> findById(Long id);
+
     Optional<Timeline> findFirstByGameOrderByIdDesc(Game game);
 
     void delete(Timeline timeline);

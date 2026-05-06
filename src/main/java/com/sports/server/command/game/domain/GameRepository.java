@@ -31,4 +31,15 @@ public interface GameRepository extends Repository<Game, Long> {
     List<Game> findGamesOlderThanFiveHours(@Param("cutoffTime") LocalDateTime cutoffTime);
 
     List<Game> findAllByIdIn(List<Long> gameIds);
+
+    @Query("SELECT g FROM Game g " +
+           "JOIN FETCH g.league l " +
+           "WHERE g.state = 'SCHEDULED' " +
+           "AND l.sportType = 'SOCCER' " +
+           "AND g.startTime BETWEEN :from AND :to")
+    List<Game> findScheduledSoccerGamesBetween(@Param("from") LocalDateTime from,
+                                               @Param("to") LocalDateTime to);
+
+    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE g.id = :id")
+    Optional<Game> findByIdWithLeague(@Param("id") Long id);
 }

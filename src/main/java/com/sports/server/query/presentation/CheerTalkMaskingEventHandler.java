@@ -24,6 +24,11 @@ public class CheerTalkMaskingEventHandler {
     @Async("asyncThreadPool")
     public void handle(CheerTalkMaskingEvent event) {
         CheerTalk cheerTalk = event.cheerTalk();
+
+        if (cheerTalk.isAiSeed()) {
+            return;
+        }
+
         String destination = DESTINATION + event.gameId();
 
         CheerTalkMaskedResponse cheerTalkMaskedResponse = cheerTalkMaskingService.maskingCheerTalk(

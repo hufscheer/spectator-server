@@ -11,6 +11,7 @@ import com.sports.server.command.game.application.GameService;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
+import com.sports.server.command.game.application.CheerCountRateLimiter;
 import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.league.application.LeagueService;
 import com.sports.server.command.league.presentation.LeagueController;
@@ -102,6 +103,9 @@ public class DocumentationTest {
 
     @MockBean
     protected GameTeamService gameTeamService;
+
+    @MockBean
+    protected CheerCountRateLimiter cheerCountRateLimiter;
 
     @MockBean
     protected ReportService reportService;

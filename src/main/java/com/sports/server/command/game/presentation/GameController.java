@@ -1,5 +1,6 @@
 package com.sports.server.command.game.presentation;
 
+import com.sports.server.command.game.application.CheerCountRateLimiter;
 import com.sports.server.command.game.application.GameService;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.application.GameTeamService;
@@ -9,6 +10,9 @@ import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.common.util.VisitorIdResolver;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -26,11 +30,16 @@ public class GameController {
     private final LineupPlayerService lineupPlayerService;
     private final GameService gameService;
     private final GameStatusScheduler gameStatusScheduler;
+    private final CheerCountRateLimiter cheerCountRateLimiter;
 
     @PostMapping("/games/{gameId}/cheer")
     @ResponseStatus(HttpStatus.OK)
     public void updateCheerCount(@PathVariable final Long gameId,
-                                 @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto) {
+                                 @RequestBody @Valid CheerCountUpdateRequest cheerRequestDto,
+                                 final HttpServletRequest httpRequest,
+                                 final HttpServletResponse httpResponse) {
+        String visitorId = VisitorIdResolver.resolveOrIssue(httpRequest, httpResponse);
+        cheerCountRateLimiter.check(visitorId);
         gameTeamService.updateCheerCount(gameId, cheerRequestDto);
     }
 
