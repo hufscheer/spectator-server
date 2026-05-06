@@ -6,11 +6,12 @@ import com.sports.server.command.cheertalk.domain.CheerTalkCreateEvent;
 import com.sports.server.command.cheertalk.domain.CheerTalkRepository;
 import com.sports.server.command.cheertalk.infra.AiSeedMessageGenerator;
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameRepository;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.SportType;
-import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,47 +36,39 @@ public class AiSeedService {
 
     private final CheerTalkRepository cheerTalkRepository;
     private final GameTeamRepository gameTeamRepository;
-    private final EntityUtils entityUtils;
+    private final GameRepository gameRepository;
     private final AiSeedMessageGenerator messageGenerator;
     private final ApplicationEventPublisher eventPublisher;
     private final TransactionTemplate transactionTemplate;
 
     public void publish(Long gameId, AiSeedTriggerType triggerType,
                         Long scoringGameTeamId, String scorerName) {
-        record SeedContext(Long gameTeamId, String teamName) {}
+        Game game = gameRepository.findByIdWithLeague(gameId)
+                .orElseThrow(() -> new NotFoundException("Game을(를) 찾을 수 없습니다"));
 
-        SeedContext context = transactionTemplate.execute(status -> {
-            Game game = entityUtils.getEntity(gameId, Game.class);
-
-            if (!canPublish(game)) {
-                return null;
-            }
-
-            List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdForUpdateOrderByAsc(gameId);
-            List<Long> gameTeamIds = gameTeams.stream().map(GameTeam::getId).toList();
-
-            if (!isReadyForNextSeed(gameTeamIds, triggerType)) {
-                return null;
-            }
-
-            GameTeam selectedTeam = selectTeam(triggerType, scoringGameTeamId, gameTeams);
-            return new SeedContext(selectedTeam.getId(), selectedTeam.getTeam().getName());
-        });
-
-        if (context == null) {
+        if (!canPublish(game)) {
             return;
         }
 
-        String message = messageGenerator.generate(triggerType, context.teamName(), scorerName);
+        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdWithTeamOrderByAsc(gameId);
+        List<Long> gameTeamIds = gameTeams.stream().map(GameTeam::getId).toList();
+
+        if (!isReadyForNextSeed(gameTeamIds, triggerType)) {
+            return;
+        }
+
+        GameTeam selectedTeam = selectTeam(triggerType, scoringGameTeamId, gameTeams);
+        String teamName = selectedTeam.getTeam().getName();
+        String message = messageGenerator.generate(triggerType, teamName, scorerName);
 
         transactionTemplate.executeWithoutResult(status -> {
-            CheerTalk aiSeed = CheerTalk.createAiSeed(message, context.gameTeamId());
+            CheerTalk aiSeed = CheerTalk.createAiSeed(message, selectedTeam.getId());
             cheerTalkRepository.save(aiSeed);
             eventPublisher.publishEvent(new CheerTalkCreateEvent(aiSeed, gameId));
         });
 
         log.info("AI Seed 발화: gameId={}, trigger={}, team={}, message={}",
-                gameId, triggerType, context.teamName(), message);
+                gameId, triggerType, teamName, message);
     }
 
 private boolean canPublish(Game game) {

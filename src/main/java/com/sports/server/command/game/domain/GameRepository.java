@@ -39,4 +39,7 @@ public interface GameRepository extends Repository<Game, Long> {
            "AND g.startTime BETWEEN :from AND :to")
     List<Game> findScheduledSoccerGamesBetween(@Param("from") LocalDateTime from,
                                                @Param("to") LocalDateTime to);
+
+    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE g.id = :id")
+    Optional<Game> findByIdWithLeague(@Param("id") Long id);
 }
