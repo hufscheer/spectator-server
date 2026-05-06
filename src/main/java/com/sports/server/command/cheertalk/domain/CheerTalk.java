@@ -54,20 +54,18 @@ public class CheerTalk extends BaseEntity<CheerTalk> {
     }
 
     public CheerTalk(final String content, final Long gameTeamId) {
+        this(content, gameTeamId, false);
+    }
+
+    public static CheerTalk createAiSeed(final String content, final Long gameTeamId) {
+        return new CheerTalk(content, gameTeamId, true);
+    }
+
+    private CheerTalk(final String content, final Long gameTeamId, final boolean isAiSeed) {
         this.createdAt = LocalDateTime.now();
         this.content = content;
         this.blockStatus = CheerTalkBlockStatus.ACTIVE;
         this.gameTeamId = gameTeamId;
-        this.isAiSeed = false;
-    }
-
-    public static CheerTalk createAiSeed(final String content, final Long gameTeamId) {
-        CheerTalk cheerTalk = new CheerTalk();
-        cheerTalk.createdAt = LocalDateTime.now();
-        cheerTalk.content = content;
-        cheerTalk.blockStatus = CheerTalkBlockStatus.ACTIVE;
-        cheerTalk.gameTeamId = gameTeamId;
-        cheerTalk.isAiSeed = true;
-        return cheerTalk;
+        this.isAiSeed = isAiSeed;
     }
 }
