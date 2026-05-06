@@ -42,31 +42,40 @@ public class AiSeedService {
 
     public void publish(Long gameId, AiSeedTriggerType triggerType,
                         Long scoringGameTeamId, String scorerName) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        record SeedContext(Long gameTeamId, String teamName) {}
 
-        if (!canPublish(game)) {
+        SeedContext context = transactionTemplate.execute(status -> {
+            Game game = entityUtils.getEntity(gameId, Game.class);
+
+            if (!canPublish(game)) {
+                return null;
+            }
+
+            List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdForUpdateOrderByAsc(gameId);
+            List<Long> gameTeamIds = gameTeams.stream().map(GameTeam::getId).toList();
+
+            if (!isReadyForNextSeed(gameTeamIds, triggerType)) {
+                return null;
+            }
+
+            GameTeam selectedTeam = selectTeam(triggerType, scoringGameTeamId, gameTeams);
+            return new SeedContext(selectedTeam.getId(), selectedTeam.getTeam().getName());
+        });
+
+        if (context == null) {
             return;
         }
 
-        List<GameTeam> gameTeams = gameTeamRepository.findAllByGameIdForUpdateOrderByAsc(gameId);
-        List<Long> gameTeamIds = gameTeams.stream().map(GameTeam::getId).toList();
-
-        if (!isReadyForNextSeed(gameTeamIds, triggerType)) {
-            return;
-        }
-
-        GameTeam selectedTeam = selectTeam(triggerType, scoringGameTeamId, gameTeams);
-        String teamName = selectedTeam.getTeam().getName();
-        String message = messageGenerator.generate(triggerType, teamName, scorerName);
+        String message = messageGenerator.generate(triggerType, context.teamName(), scorerName);
 
         transactionTemplate.executeWithoutResult(status -> {
-            CheerTalk aiSeed = CheerTalk.createAiSeed(message, selectedTeam.getId());
+            CheerTalk aiSeed = CheerTalk.createAiSeed(message, context.gameTeamId());
             cheerTalkRepository.save(aiSeed);
             eventPublisher.publishEvent(new CheerTalkCreateEvent(aiSeed, gameId));
         });
 
         log.info("AI Seed 발화: gameId={}, trigger={}, team={}, message={}",
-                gameId, triggerType, teamName, message);
+                gameId, triggerType, context.teamName(), message);
     }
 
 private boolean canPublish(Game game) {
