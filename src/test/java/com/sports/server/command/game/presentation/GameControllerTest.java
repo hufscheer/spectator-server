@@ -221,6 +221,9 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("leagueId").description("리그의 ID"),
                                 parameterWithName("gameId").description("게임의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }

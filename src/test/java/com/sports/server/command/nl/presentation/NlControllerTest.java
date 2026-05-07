@@ -176,6 +176,9 @@ public class NlControllerTest extends DocumentationTest {
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         requestFields(
                                 fieldWithPath("team.name").type(JsonFieldType.STRING).description("팀 이름"),
                                 fieldWithPath("team.logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 URL"),
