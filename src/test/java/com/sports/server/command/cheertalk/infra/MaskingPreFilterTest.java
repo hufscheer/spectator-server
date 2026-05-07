@@ -39,6 +39,13 @@ class MaskingPreFilterTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"ㅎㅇㅌ!", "ㅎㅇㅌ ㅎㅇㅌ", "ㅎㅇㅌ, ㄱㄱ", "ㅎㅇㅌ!!!", " ㅎㅇㅌ. ㄱㄱ ", "ㄱㄱ ㄱㄱ ㄱㄱ"})
+    @DisplayName("긍정 초성과 공백/구두점만 있는 메시지는 LLM을 스킵한다")
+    void 긍정_초성_조합_스킵(String message) {
+        assertThat(filter.canSkip(message)).isTrue();
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"Yes!!", "GG", "1234", "🔥🔥🔥", "👍", "wow", "!!!"})
     @DisplayName("한글이 전혀 없는 메시지는 LLM을 스킵한다")
     void 한글_없으면_스킵(String message) {
@@ -49,6 +56,13 @@ class MaskingPreFilterTest {
     @ValueSource(strings = {"ㅅㅂ", "ㅂㅅ", "ㄱㅅㄲ", "ㅈㄴ", "ㅄ", "씨발", "개새끼", "응원합니다", "가즈아!", "가즈아"})
     @DisplayName("욕설 의심 자모와 한글 음절을 포함한 메시지는 LLM에 위임한다")
     void 욕설_의심은_LLM_위임(String message) {
+        assertThat(filter.canSkip(message)).isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"스콜피온ㅎㅇㅌ", "ㅎㅇㅌ스콜피온", "ㅎㅇㅌ 왜 검열되나요", "씨발ㅎㅇㅌ", "ㅎㅇㅌ 가자"})
+    @DisplayName("긍정 초성이 단어와 붙어있거나 일반 한글과 함께면 LLM에 위임한다")
+    void 긍정_초성_혼합_LLM_위임(String message) {
         assertThat(filter.canSkip(message)).isFalse();
     }
 

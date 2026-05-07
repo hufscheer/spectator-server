@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 @Component
 public class MaskingPreFilter {
 
+    private static final String POSITIVE_TOKEN_DELIMITERS = "[\\s,.!?~^]+";
+
     private final Set<String> recommendedMessages;
     private final Set<String> positiveConsonants;
 
@@ -40,7 +42,28 @@ public class MaskingPreFilter {
         if (positiveConsonants.contains(trimmed)) {
             return true;
         }
+        if (isOnlyPositiveTokens(trimmed)) {
+            return true;
+        }
         return !containsAnyKorean(trimmed);
+    }
+
+    private boolean isOnlyPositiveTokens(String trimmed) {
+        if (positiveConsonants.isEmpty()) {
+            return false;
+        }
+        String[] tokens = trimmed.split(POSITIVE_TOKEN_DELIMITERS);
+        boolean hasToken = false;
+        for (String token : tokens) {
+            if (token.isEmpty()) {
+                continue;
+            }
+            if (!positiveConsonants.contains(token)) {
+                return false;
+            }
+            hasToken = true;
+        }
+        return hasToken;
     }
 
     private static Set<String> toNormalizedSet(List<String> values) {

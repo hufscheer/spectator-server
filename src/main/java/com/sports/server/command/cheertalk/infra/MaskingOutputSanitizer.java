@@ -1,6 +1,9 @@
 package com.sports.server.command.cheertalk.infra;
 
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,15 +33,22 @@ public class MaskingOutputSanitizer {
     );
 
     private final List<String> leakMarkers;
+    private final Set<String> positiveConsonants;
 
     public MaskingOutputSanitizer(
-            @Value("${masking.leak-markers:}") List<String> leakMarkers
+            @Value("${masking.leak-markers:}") List<String> leakMarkers,
+            @Value("${masking.positive-consonants:}") List<String> positiveConsonants
     ) {
         List<String> filtered = leakMarkers.stream()
                 .filter(s -> s != null && !s.isBlank())
                 .map(String::strip)
                 .toList();
         this.leakMarkers = filtered.isEmpty() ? DEFAULT_LEAK_MARKERS : filtered;
+        this.positiveConsonants = positiveConsonants.stream()
+                .filter(s -> s != null && !s.isBlank())
+                .map(String::strip)
+                .map(s -> Normalizer.normalize(s, Normalizer.Form.NFC))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public String sanitize(String original, String modelOutput) {
@@ -61,7 +71,24 @@ public class MaskingOutputSanitizer {
         if (isModifiedWithoutMask(original, stripped)) {
             return original;
         }
+        if (lostPositiveConsonant(original, stripped)) {
+            return original;
+        }
         return stripped;
+    }
+
+    private boolean lostPositiveConsonant(String original, String modelOutput) {
+        if (positiveConsonants.isEmpty()) {
+            return false;
+        }
+        String originalNFC = Normalizer.normalize(original, Normalizer.Form.NFC);
+        String outputNFC = Normalizer.normalize(modelOutput, Normalizer.Form.NFC);
+        for (String pc : positiveConsonants) {
+            if (originalNFC.contains(pc) && !outputNFC.contains(pc)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isModifiedWithoutMask(String original, String modelOutput) {
