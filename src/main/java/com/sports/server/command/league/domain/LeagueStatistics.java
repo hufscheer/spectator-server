@@ -58,4 +58,11 @@ public class LeagueStatistics extends BaseEntity<LeagueStatistics> {
     public void updateMostCheerTalksTeam(Team mostCheerTalksTeam) {
         this.mostCheerTalksTeam = mostCheerTalksTeam;
     }
+
+    public void clearFinalSnapshot() {
+        this.firstWinnerTeam = null;
+        this.secondWinnerTeam = null;
+        this.mostCheeredTeam = null;
+        this.mostCheerTalksTeam = null;
+    }
 }

@@ -65,4 +65,8 @@ public class LeagueTopScorerService {
 
         leagueTopScorerRepository.saveAll(topScorersToBeSaved);
     }
+
+    public void clearTopScorersForLeague(Long leagueId) {
+        leagueTopScorerRepository.deleteByLeagueId(leagueId);
+    }
 }

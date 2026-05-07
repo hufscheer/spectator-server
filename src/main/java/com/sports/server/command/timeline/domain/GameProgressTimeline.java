@@ -68,6 +68,7 @@ public class GameProgressTimeline extends Timeline {
 
         if (gameProgressType == GameProgressType.GAME_END) {
             game.end();
+            game.updateResult();
         }
     }
 
@@ -83,6 +84,7 @@ public class GameProgressTimeline extends Timeline {
 
         if (gameProgressType == GameProgressType.GAME_END) {
             game.updateState(GameState.PLAYING);
+            game.resetResult();
         }
     }
 }
