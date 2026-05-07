@@ -193,39 +193,38 @@ public class GameServiceTest extends ServiceTest {
         }
 
         @Test
-        void 정상적으로_게임이_수정된다() {
+        void 게임_정보가_수정된다() {
             // when
             gameService.updateGame(leagueId, gameId, updateDto, manager);
 
             // then
             Game game = entityUtils.getEntity(gameId, Game.class);
-            assertAll(() -> assertThat(game.getGameQuarter()).isEqualTo(updateDto.quarter()),
+            assertAll(
                     () -> assertThat(game.getRound()).isEqualTo(Round.from(updateDto.round())),
                     () -> assertThat(game.getName()).isEqualTo(updateDto.name()),
                     () -> assertThat(game.getStartTime()).isEqualTo(updateDto.startTime()),
-                    () -> assertThat(game.getState()).isEqualTo(GameState.from(updateDto.state())),
                     () -> assertThat(game.getVideoId()).isEqualTo(updateDto.videoId()));
         }
 
         @Test
-        void 게임을_직접_종료하면_결과가_저장된다() {
+        void 게임_정보_수정으로_state와_quarter는_변경되지_않는다() {
             // given
-            GameRequest.Update finishRequest = new GameRequest.Update(
+            Game before = entityUtils.getEntity(gameId, Game.class);
+            String quarterBefore = before.getGameQuarter();
+            GameState stateBefore = before.getState();
+
+            GameRequest.Update finishAttempt = new GameRequest.Update(
                     nameOfGame, 4, "경기 종료", "FINISHED", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
             );
 
             // when
-            gameService.updateGame(leagueId, gameId, finishRequest, manager);
+            gameService.updateGame(leagueId, gameId, finishAttempt, manager);
 
-            // then
-            Game game = entityUtils.getEntity(gameId, Game.class);
-            GameTeam firstGameTeam = entityUtils.getEntity(1L, GameTeam.class);
-            GameTeam secondGameTeam = entityUtils.getEntity(2L, GameTeam.class);
-
+            // then: 진행 상태(state/quarter)는 timeline 전용. 정보 수정 API로는 변경 불가.
+            Game after = entityUtils.getEntity(gameId, Game.class);
             assertAll(
-                    () -> assertThat(game.getState()).isEqualTo(GameState.FINISHED),
-                    () -> assertThat(firstGameTeam.getResult()).isEqualTo(GameResult.LOSE),
-                    () -> assertThat(secondGameTeam.getResult()).isEqualTo(GameResult.WIN)
+                    () -> assertThat(after.getState()).isEqualTo(stateBefore),
+                    () -> assertThat(after.getGameQuarter()).isEqualTo(quarterBefore)
             );
         }
 

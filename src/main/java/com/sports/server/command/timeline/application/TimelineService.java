@@ -1,7 +1,9 @@
 package com.sports.server.command.timeline.application;
 
+import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
@@ -35,6 +37,7 @@ public class TimelineService {
     private final TimelineMapper timelineMapper;
     private final EntityUtils entityUtils;
     private final ApplicationEventPublisher eventPublisher;
+    private final GameStatusScheduler gameStatusScheduler;
 
     @Transactional
     public void register(Member manager, Long gameId, TimelineRequest request) {
@@ -55,6 +58,12 @@ public class TimelineService {
         Timeline timeline = timelineMapper.toEntity(game, request);
         timeline.apply();
         timelineRepository.save(timeline);
+
+        if (timeline instanceof GameProgressTimeline progress
+                && progress.getGameProgressType() == GameProgressType.GAME_END) {
+            gameStatusScheduler.updateLeagueStatisticsIfNeeded(
+                    gameId, GameState.FINISHED, game.getRound());
+        }
 
         eventPublisher.publishEvent(new TimelineCreatedEvent(
                 timeline.getId(), gameId, timeline.getType()));

@@ -218,6 +218,17 @@ public class GameAcceptanceTest extends AcceptanceTest {
 
         configureMockJwtForEmail(MOCK_EMAIL);
 
+        // 수정 전 진행 상태(state/quarter) 기록 — PUT으로 변경되지 않아야 함
+        ExtractableResponse<Response> beforeResponse = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/games/{gameId}", gameId)
+                .then().log().all()
+                .extract();
+        GameDetailResponse beforeGame = toResponse(beforeResponse, GameDetailResponse.class);
+        String stateBefore = beforeGame.state();
+        String quarterBefore = beforeGame.gameQuarter().key();
+
         // when
         ExtractableResponse<Response> putResponse = RestAssured.given().log().all()
                 .cookie(COOKIE_NAME, mockToken)
@@ -235,16 +246,16 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        // then
+        // then: 정보(name/round/startTime/videoId)는 수정되고, 진행 상태(state/quarter)는 timeline 전용이라 불변
         GameDetailResponse updatedGame = toResponse(getResponse, GameDetailResponse.class);
         assertAll(
                 () -> assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(updatedGame.gameQuarter().key()).isEqualTo(quarter),
                 () -> assertThat(updatedGame.round()).isEqualTo(round),
                 () -> assertThat(updatedGame.gameName()).isEqualTo(name),
                 () -> assertThat(updatedGame.startTime()).isEqualTo(fixedLocalDateTime),
-                () -> assertThat(updatedGame.state()).isEqualTo(state),
-                () -> assertThat(updatedGame.videoId()).isEqualTo(videoId)
+                () -> assertThat(updatedGame.videoId()).isEqualTo(videoId),
+                () -> assertThat(updatedGame.gameQuarter().key()).isEqualTo(quarterBefore),
+                () -> assertThat(updatedGame.state()).isEqualTo(stateBefore)
         );
     }
 

@@ -85,17 +85,11 @@ public class GameService {
         league.validateRoundWithinLimit(request.round());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
-        GameState state = GameState.from(request.state());
 
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
-        if (StringUtils.hasText(request.quarter())) {
-            game.updateGameQuarter(QuarterResolver.resolve(request.quarter()));
-        }
-        game.updateState(state);
         game.updateRound(Round.from(request.round()));
-        game.updateResult();
     }
 
     @Transactional
