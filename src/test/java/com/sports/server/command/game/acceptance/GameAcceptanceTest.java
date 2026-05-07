@@ -210,11 +210,9 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         String name = "경기 이름";
         int round = 16;
-        String quarter = "SECOND_HALF";
-        String state = "PLAYING";
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         String videoId = "videoId";
-        GameRequest.Update request = new GameRequest.Update(name, round, quarter, state, fixedLocalDateTime, videoId);
+        GameRequest.Update request = new GameRequest.Update(name, round, fixedLocalDateTime, videoId);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

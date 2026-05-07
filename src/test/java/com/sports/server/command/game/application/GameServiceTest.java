@@ -186,7 +186,7 @@ public class GameServiceTest extends ServiceTest {
         @BeforeEach
         void setUp() {
             LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-            updateDto = new GameRequest.Update(nameOfGame, 8, "SECOND_HALF", "PLAYING", fixedLocalDateTime, "videoId");
+            updateDto = new GameRequest.Update(nameOfGame, 8, fixedLocalDateTime, "videoId");
             leagueId = 1L;
             gameId = 1L;
             manager = entityUtils.getEntity(1L, Member.class);
@@ -214,7 +214,7 @@ public class GameServiceTest extends ServiceTest {
             GameState stateBefore = before.getState();
 
             GameRequest.Update finishAttempt = new GameRequest.Update(
-                    nameOfGame, 4, "경기 종료", "FINISHED", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
+                    nameOfGame, 4, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
             );
 
             // when
