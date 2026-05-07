@@ -9,7 +9,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MaskingOutputSanitizerTest {
 
-    private final MaskingOutputSanitizer sanitizer = new MaskingOutputSanitizer(List.of());
+    private static final List<String> POSITIVE_CONSONANTS =
+            List.of("ㅍㅇㅌ", "ㅎㅇㅌ", "ㅎㅇ", "ㄱㄱ", "ㄱㅅ", "ㅊㅋ", "ㄷㄷ", "ㄹㅇ", "ㅇㅈ", "ㄴㄴ", "ㅇㅇ");
+
+    private final MaskingOutputSanitizer sanitizer = new MaskingOutputSanitizer(List.of(), POSITIVE_CONSONANTS);
 
     @Nested
     @DisplayName("정상 응답은 그대로 통과한다")
@@ -142,12 +145,89 @@ class MaskingOutputSanitizerTest {
     }
 
     @Nested
+    @DisplayName("긴 긍정 초성(ㅎㅇㅌ 등)이 사라지면 원문으로 복구한다")
+    class LongPositiveConsonantLoss {
+
+        @Test
+        @DisplayName("단어 뒤에 붙은 긍정 초성이 마스킹된 케이스 — 스콜피온ㅎㅇㅌ 누수")
+        void 단어_뒤_긍정_초성_마스킹은_원문() {
+            String result = sanitizer.sanitize("스콜피온ㅎㅇㅌ", "스콜피온***");
+            assertThat(result).isEqualTo("스콜피온ㅎㅇㅌ");
+        }
+
+        @Test
+        void 긍정_초성_언급_문장이_마스킹되면_원문() {
+            String result = sanitizer.sanitize("ㅎㅇㅌ 왜 검열되나요", "*** 왜 검열되나요");
+            assertThat(result).isEqualTo("ㅎㅇㅌ 왜 검열되나요");
+        }
+
+        @Test
+        void 긍정_초성이_그대로_보존되면_마스킹된_출력은_통과() {
+            String result = sanitizer.sanitize("씨발ㅎㅇㅌ", "**ㅎㅇㅌ");
+            assertThat(result).isEqualTo("**ㅎㅇㅌ");
+        }
+
+        @Test
+        void 원문에_긍정_초성이_없으면_규칙은_관여하지_않는다() {
+            String result = sanitizer.sanitize("씨발 잘한다", "** 잘한다");
+            assertThat(result).isEqualTo("** 잘한다");
+        }
+
+        @Test
+        void 긍정_초성_리스트가_비어있으면_규칙은_관여하지_않는다() {
+            MaskingOutputSanitizer noPositive = new MaskingOutputSanitizer(List.of(), List.of());
+            String result = noPositive.sanitize("스콜피온ㅎㅇㅌ", "스콜피온***");
+            assertThat(result).isEqualTo("스콜피온***");
+        }
+    }
+
+    @Nested
+    @DisplayName("욕설 초성과 충돌하는 케이스는 복구하지 않는다 (ㄱㅅ ⊂ ㄱㅅㄲ 회귀)")
+    class BannedInitialConflict {
+
+        @Test
+        @DisplayName("원문이 욕설 초성 단독이면 마스킹 결과 유지 — ㄱㅅㄲ → ***")
+        void 욕설_초성_단독_마스킹_유지() {
+            String result = sanitizer.sanitize("ㄱㅅㄲ", "***");
+            assertThat(result).isEqualTo("***");
+        }
+
+        @Test
+        @DisplayName("원문 중간에 욕설 초성이 있어도 마스킹 결과 유지 — 이 ㄱㅅㄲ → 이 ***")
+        void 문장_내_욕설_초성_마스킹_유지() {
+            String result = sanitizer.sanitize("이 ㄱㅅㄲ", "이 ***");
+            assertThat(result).isEqualTo("이 ***");
+        }
+
+        @Test
+        @DisplayName("긍정 초성과 욕설 초성이 공존하면 복구하지 않는다 — ㄱㅅ ㄱㅅㄲ → ** ***")
+        void 긍정_욕설_공존시_복구_보류() {
+            String result = sanitizer.sanitize("ㄱㅅ ㄱㅅㄲ", "** ***");
+            assertThat(result).isEqualTo("** ***");
+        }
+
+        @Test
+        @DisplayName("짧은 긍정 초성(ㄱㅅ)이 다른 단어와 결합되어 있으면 보호하지 않는다")
+        void 짧은_긍정_초성_결합_케이스는_복구하지_않는다() {
+            String result = sanitizer.sanitize("씨발ㄱㅅ", "*****");
+            assertThat(result).isEqualTo("*****");
+        }
+
+        @Test
+        @DisplayName("짧은 긍정 초성도 토큰 단독으로 등장하면 복구한다")
+        void 짧은_긍정_초성_토큰_단독은_복구() {
+            String result = sanitizer.sanitize("선수 ㄱㅅ", "선수 **");
+            assertThat(result).isEqualTo("선수 ㄱㅅ");
+        }
+    }
+
+    @Nested
     @DisplayName("yml 외부 설정")
     class ExternalConfig {
 
         @Test
         void yml에서_커스텀_마커를_받으면_default를_대체한다() {
-            MaskingOutputSanitizer custom = new MaskingOutputSanitizer(List.of("커스텀마커"));
+            MaskingOutputSanitizer custom = new MaskingOutputSanitizer(List.of("커스텀마커"), List.of());
 
             assertThat(custom.sanitize("응원 비속어", "** 커스텀마커")).isEqualTo("응원 비속어");
             assertThat(custom.sanitize("응원 비속어", "** 처리하겠습니다")).isEqualTo("** 처리하겠습니다");
@@ -155,14 +235,14 @@ class MaskingOutputSanitizerTest {
 
         @Test
         void 빈_리스트면_default_마커가_적용된다() {
-            MaskingOutputSanitizer empty = new MaskingOutputSanitizer(List.of());
+            MaskingOutputSanitizer empty = new MaskingOutputSanitizer(List.of(), List.of());
 
             assertThat(empty.sanitize("응원 비속어", "** 처리하겠습니다")).isEqualTo("응원 비속어");
         }
 
         @Test
         void 공백_엔트리는_무시되고_default가_적용된다() {
-            MaskingOutputSanitizer blanks = new MaskingOutputSanitizer(List.of("  ", ""));
+            MaskingOutputSanitizer blanks = new MaskingOutputSanitizer(List.of("  ", ""), List.of());
 
             assertThat(blanks.sanitize("응원 비속어", "** 처리하겠습니다")).isEqualTo("응원 비속어");
         }
