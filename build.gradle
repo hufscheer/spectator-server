@@ -84,6 +84,9 @@ dependencies {
     // aws
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
 
+    // image normalization (team logo aspect ratio fix)
+    implementation 'net.coobird:thumbnailator:0.4.20'
+
     // fixture
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.21")
 }

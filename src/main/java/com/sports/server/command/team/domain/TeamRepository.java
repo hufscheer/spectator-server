@@ -10,4 +10,6 @@ public interface TeamRepository extends Repository<Team, Long> {
     void delete(Team team);
 
     List<Team> findAllById(Iterable<Long> ids);
+
+    List<Team> findAll();
 }
