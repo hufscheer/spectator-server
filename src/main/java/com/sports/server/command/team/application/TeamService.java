@@ -12,6 +12,7 @@ import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.util.LogoImageNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,7 @@ public class TeamService {
     public void register(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
+        normalizeLogoFromUrl(request.logoImageUrl());
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
         Team team = request.toEntity(imgUrl, unit);
@@ -57,6 +59,7 @@ public class TeamService {
     public Long registerAndReturnId(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(imgUrl);
+        normalizeLogoFromUrl(request.logoImageUrl());
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
         Team team = request.toEntity(imgUrl, unit);
@@ -77,7 +80,11 @@ public class TeamService {
                     return findUnit(unitName, unitOrgId);
                 })
                 .orElse(null);
-        team.update(request.name(), resolveLogoImageUrl(request.logoImageUrl(), team), unit, request.teamColor());
+        String resolvedLogoUrl = resolveLogoImageUrl(request.logoImageUrl(), team);
+        if (resolvedLogoUrl != null) {
+            normalizeLogoFromUrl(request.logoImageUrl());
+        }
+        team.update(request.name(), resolvedLogoUrl, unit, request.teamColor());
 
         if (request.teamPlayers() != null) {
             upsertPlayersToTeam(member, team, request.teamPlayers());
@@ -204,5 +211,28 @@ public class TeamService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 이미지 url 입니다.");
         }
         return logoImageUrl.replace(originPrefix, replacePrefix);
+    }
+
+    public void normalizeLogoFromUrl(String url) {
+        String key = extractS3Key(url);
+        if (key == null) {
+            return;
+        }
+        byte[] original = s3Service.download(key);
+        byte[] normalized = LogoImageNormalizer.normalize(original);
+        s3Service.upload(key, normalized, LogoImageNormalizer.OUTPUT_CONTENT_TYPE);
+    }
+
+    private String extractS3Key(String url) {
+        if (url == null || url.isBlank()) {
+            return null;
+        }
+        if (url.startsWith(originPrefix)) {
+            return url.substring(originPrefix.length());
+        }
+        if (url.startsWith(replacePrefix)) {
+            return url.substring(replacePrefix.length());
+        }
+        return null;
     }
 }
