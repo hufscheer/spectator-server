@@ -43,7 +43,7 @@ public class TeamService {
 
     public void register(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
-        s3Service.doesFileExist(imgUrl);
+        s3Service.doesFileExist(extractS3Key(request.logoImageUrl()));
         normalizeLogoFromUrl(request.logoImageUrl());
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
@@ -58,7 +58,7 @@ public class TeamService {
 
     public Long registerAndReturnId(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
-        s3Service.doesFileExist(imgUrl);
+        s3Service.doesFileExist(extractS3Key(request.logoImageUrl()));
         normalizeLogoFromUrl(request.logoImageUrl());
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
