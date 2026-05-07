@@ -145,8 +145,8 @@ class MaskingOutputSanitizerTest {
     }
 
     @Nested
-    @DisplayName("긍정 초성이 사라지면 원문으로 복구한다")
-    class PositiveConsonantLoss {
+    @DisplayName("긴 긍정 초성(ㅎㅇㅌ 등)이 사라지면 원문으로 복구한다")
+    class LongPositiveConsonantLoss {
 
         @Test
         @DisplayName("단어 뒤에 붙은 긍정 초성이 마스킹된 케이스 — 스콜피온ㅎㅇㅌ 누수")
@@ -178,6 +178,46 @@ class MaskingOutputSanitizerTest {
             MaskingOutputSanitizer noPositive = new MaskingOutputSanitizer(List.of(), List.of());
             String result = noPositive.sanitize("스콜피온ㅎㅇㅌ", "스콜피온***");
             assertThat(result).isEqualTo("스콜피온***");
+        }
+    }
+
+    @Nested
+    @DisplayName("욕설 초성과 충돌하는 케이스는 복구하지 않는다 (ㄱㅅ ⊂ ㄱㅅㄲ 회귀)")
+    class BannedInitialConflict {
+
+        @Test
+        @DisplayName("원문이 욕설 초성 단독이면 마스킹 결과 유지 — ㄱㅅㄲ → ***")
+        void 욕설_초성_단독_마스킹_유지() {
+            String result = sanitizer.sanitize("ㄱㅅㄲ", "***");
+            assertThat(result).isEqualTo("***");
+        }
+
+        @Test
+        @DisplayName("원문 중간에 욕설 초성이 있어도 마스킹 결과 유지 — 이 ㄱㅅㄲ → 이 ***")
+        void 문장_내_욕설_초성_마스킹_유지() {
+            String result = sanitizer.sanitize("이 ㄱㅅㄲ", "이 ***");
+            assertThat(result).isEqualTo("이 ***");
+        }
+
+        @Test
+        @DisplayName("긍정 초성과 욕설 초성이 공존하면 복구하지 않는다 — ㄱㅅ ㄱㅅㄲ → ** ***")
+        void 긍정_욕설_공존시_복구_보류() {
+            String result = sanitizer.sanitize("ㄱㅅ ㄱㅅㄲ", "** ***");
+            assertThat(result).isEqualTo("** ***");
+        }
+
+        @Test
+        @DisplayName("짧은 긍정 초성(ㄱㅅ)이 다른 단어와 결합되어 있으면 보호하지 않는다")
+        void 짧은_긍정_초성_결합_케이스는_복구하지_않는다() {
+            String result = sanitizer.sanitize("씨발ㄱㅅ", "*****");
+            assertThat(result).isEqualTo("*****");
+        }
+
+        @Test
+        @DisplayName("짧은 긍정 초성도 토큰 단독으로 등장하면 복구한다")
+        void 짧은_긍정_초성_토큰_단독은_복구() {
+            String result = sanitizer.sanitize("선수 ㄱㅅ", "선수 **");
+            assertThat(result).isEqualTo("선수 ㄱㅅ");
         }
     }
 
