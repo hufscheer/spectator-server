@@ -178,6 +178,30 @@ public class TeamControllerTest extends DocumentationTest {
     }
 
     @Test
+    void 팀의_로고_이미지를_삭제한다() throws Exception {
+        // given
+        Long teamId = 1L;
+
+        doNothing().when(teamService).deleteLogoImage(any(), anyLong());
+
+        // when
+        ResultActions result = mockMvc.perform(post("/teams/{teamId}/delete-logo", teamId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("teamId").description("로고 이미지를 삭제할 팀의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
     void 팀에서_선수를_제거한다() throws Exception {
         // given
         Long teamPlayerId = 1L;
