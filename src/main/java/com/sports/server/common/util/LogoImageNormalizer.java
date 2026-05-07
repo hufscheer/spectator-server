@@ -64,9 +64,9 @@ public final class LogoImageNormalizer {
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g.setColor(BACKGROUND);
             g.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-            int x = (CANVAS_SIZE - resized.getWidth()) / 2;
-            int y = (CANVAS_SIZE - resized.getHeight()) / 2;
-            g.drawImage(resized, x, y, null);
+            int offsetX = (CANVAS_SIZE - resized.getWidth()) / 2;
+            int offsetY = (CANVAS_SIZE - resized.getHeight()) / 2;
+            g.drawImage(resized, offsetX, offsetY, null);
         } finally {
             g.dispose();
         }

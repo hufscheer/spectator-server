@@ -1,6 +1,5 @@
 package com.sports.server.command.team.infrastructure;
 
-import com.sports.server.command.team.application.TeamService;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamRepository;
 import java.util.List;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class TeamLogoBackfillRunner implements ApplicationRunner {
 
     private final TeamRepository teamRepository;
-    private final TeamService teamService;
+    private final TeamLogoNormalizer teamLogoNormalizer;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -35,7 +34,7 @@ public class TeamLogoBackfillRunner implements ApplicationRunner {
                 continue;
             }
             try {
-                teamService.normalizeLogoFromUrl(url);
+                teamLogoNormalizer.normalize(url);
                 success++;
                 log.info("[team-logo-backfill] ok teamId={}", team.getId());
             } catch (Exception e) {

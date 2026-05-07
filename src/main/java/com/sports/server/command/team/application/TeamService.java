@@ -12,9 +12,9 @@ import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
-import com.sports.server.common.util.LogoImageNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,16 +40,17 @@ public class TeamService {
     private final UnitRepository unitRepository;
     private final EntityUtils entityUtils;
     private final S3Service s3Service;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void register(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(extractS3Key(request.logoImageUrl()));
-        normalizeLogoFromUrl(request.logoImageUrl());
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
         Team team = request.toEntity(imgUrl, unit);
         team.setOrganization(member.getOrganization());
         teamRepository.save(team);
+        eventPublisher.publishEvent(new LogoImageNormalizationRequestedEvent(request.logoImageUrl()));
 
         if (request.teamPlayers() != null && !request.teamPlayers().isEmpty()) {
             addPlayersToTeam(member, team.getId(), request.teamPlayers());
@@ -59,12 +60,12 @@ public class TeamService {
     public Long registerAndReturnId(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
         s3Service.doesFileExist(extractS3Key(request.logoImageUrl()));
-        normalizeLogoFromUrl(request.logoImageUrl());
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
         Team team = request.toEntity(imgUrl, unit);
         team.setOrganization(member.getOrganization());
         teamRepository.save(team);
+        eventPublisher.publishEvent(new LogoImageNormalizationRequestedEvent(request.logoImageUrl()));
         return team.getId();
     }
 
@@ -81,10 +82,10 @@ public class TeamService {
                 })
                 .orElse(null);
         String resolvedLogoUrl = resolveLogoImageUrl(request.logoImageUrl(), team);
-        if (resolvedLogoUrl != null) {
-            normalizeLogoFromUrl(request.logoImageUrl());
-        }
         team.update(request.name(), resolvedLogoUrl, unit, request.teamColor());
+        if (resolvedLogoUrl != null) {
+            eventPublisher.publishEvent(new LogoImageNormalizationRequestedEvent(request.logoImageUrl()));
+        }
 
         if (request.teamPlayers() != null) {
             upsertPlayersToTeam(member, team, request.teamPlayers());
@@ -211,16 +212,6 @@ public class TeamService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 이미지 url 입니다.");
         }
         return logoImageUrl.replace(originPrefix, replacePrefix);
-    }
-
-    public void normalizeLogoFromUrl(String url) {
-        String key = extractS3Key(url);
-        if (key == null) {
-            return;
-        }
-        byte[] original = s3Service.download(key);
-        byte[] normalized = LogoImageNormalizer.normalize(original);
-        s3Service.upload(key, normalized, LogoImageNormalizer.OUTPUT_CONTENT_TYPE);
     }
 
     private String extractS3Key(String url) {
