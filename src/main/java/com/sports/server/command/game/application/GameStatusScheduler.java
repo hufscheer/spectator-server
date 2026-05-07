@@ -53,6 +53,15 @@ public class GameStatusScheduler {
         updateLeagueStatisticsForFinalGames(List.of(game));
     }
 
+    public void rollbackLeagueStatisticsIfNeeded(Game game) {
+        if (Round.FINAL != game.getRound() || game.getLeague() == null) {
+            return;
+        }
+        leagueStatisticsService.rollbackLeagueStatisticForFinalGame(game.getId());
+        leagueTopScorerService.clearTopScorersForLeague(game.getLeague().getId());
+        leagueService.updateTotalCheerCountsAndTotalTalkCount(game.getLeague().getId());
+    }
+
     public void manualUpdateLeagueStatisticsForFinalGames(List<Long> gameIds) {
         List<Game> games = gameService.determineResultsAndGet(gameIds);
         updateLeagueStatisticsForFinalGames(games);

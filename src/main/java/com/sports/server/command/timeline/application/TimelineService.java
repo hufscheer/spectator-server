@@ -132,8 +132,14 @@ public class TimelineService {
         PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = getLastTimeline(timelineId, game);
+        boolean isGameEnd = timeline instanceof GameProgressTimeline progress
+                && progress.getGameProgressType() == GameProgressType.GAME_END;
         timeline.rollback();
         timelineRepository.delete(timeline);
+
+        if (isGameEnd) {
+            gameStatusScheduler.rollbackLeagueStatisticsIfNeeded(game);
+        }
     }
 
     private Game getGameForUpdate(Long id) {

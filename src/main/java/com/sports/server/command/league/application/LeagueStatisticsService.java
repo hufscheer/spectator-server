@@ -97,4 +97,27 @@ public class LeagueStatisticsService {
         leagueTeamRepository.findByLeagueAndTeam(league, team)
                 .ifPresent(leagueTeam -> leagueTeam.updateRanking(ranking));
     }
+
+    @Transactional
+    public void rollbackLeagueStatisticForFinalGame(Long finalGameId) {
+        Game finalGame = entityUtils.getEntity(finalGameId, Game.class);
+        League league = finalGame.getLeague();
+        LeagueStatistics leagueStatistics = leagueStatisticsRepository.findByLeagueId(league.getId());
+        if (leagueStatistics == null) {
+            return;
+        }
+        Team firstWinner = leagueStatistics.getFirstWinnerTeam();
+        Team secondWinner = leagueStatistics.getSecondWinnerTeam();
+        leagueStatistics.clearFinalSnapshot();
+        resetLeagueTeamRanking(league, firstWinner);
+        resetLeagueTeamRanking(league, secondWinner);
+    }
+
+    private void resetLeagueTeamRanking(League league, Team team) {
+        if (team == null) {
+            return;
+        }
+        leagueTeamRepository.findByLeagueAndTeam(league, team)
+                .ifPresent(leagueTeam -> leagueTeam.updateRanking(0));
+    }
 }
