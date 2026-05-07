@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
  */
 @Component
 public class MaskingPreFilter {
+
+    private static final Pattern POSITIVE_TOKEN_PATTERN = Pattern.compile("[\\s,.!?~^]+");
 
     private final Set<String> recommendedMessages;
     private final Set<String> positiveConsonants;
@@ -40,7 +43,28 @@ public class MaskingPreFilter {
         if (positiveConsonants.contains(trimmed)) {
             return true;
         }
+        if (isOnlyPositiveTokens(trimmed)) {
+            return true;
+        }
         return !containsAnyKorean(trimmed);
+    }
+
+    private boolean isOnlyPositiveTokens(String trimmed) {
+        if (positiveConsonants.isEmpty()) {
+            return false;
+        }
+        String[] tokens = POSITIVE_TOKEN_PATTERN.split(trimmed);
+        boolean hasToken = false;
+        for (String token : tokens) {
+            if (token.isEmpty()) {
+                continue;
+            }
+            if (!positiveConsonants.contains(token)) {
+                return false;
+            }
+            hasToken = true;
+        }
+        return hasToken;
     }
 
     private static Set<String> toNormalizedSet(List<String> values) {
