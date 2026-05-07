@@ -63,9 +63,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         Long gameTeamId = 1L;
         Long lineupPlayerId = 1L;
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/starter", gameId, lineupPlayerId)
@@ -102,9 +104,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         Long gameTeamId = 1L;
         Long lineupPlayerId = 2L;
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate", gameId, lineupPlayerId)
@@ -292,9 +296,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         Long gameTeamId = 1L;
         Long lineupPlayerId = 2L;
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .put("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
@@ -332,9 +338,11 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameId = 1L;
         Long gameTeamId = 2L;
         Long lineupPlayerId = 6L;
+        configureMockJwtForEmail(MOCK_EMAIL);
 
         // when
         RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
