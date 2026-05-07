@@ -122,4 +122,46 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
             assertThat(statistics).isNotNull();
         }
     }
+
+    @Nested
+    @DisplayName("최종 게임으로부터 리그 통계를 롤백할 때")
+    class RollbackLeagueStatisticForFinalGameTest {
+
+        @Test
+        void 우승_준우승_최다_응원_최다_대화팀_정보가_초기화되고_랭킹이_복구된다() {
+            // given
+            Long finalGameId = 1L;
+            Game finalGame = entityUtils.getEntity(finalGameId, Game.class);
+            League league = finalGame.getLeague();
+            leagueStatisticsService.updateLeagueStatisticFromFinalGame(finalGameId);
+
+            LeagueStatistics applied = leagueStatisticsRepository.findByLeagueId(league.getId());
+            Team firstWinnerBefore = applied.getFirstWinnerTeam();
+            Team secondWinnerBefore = applied.getSecondWinnerTeam();
+
+            // when
+            leagueStatisticsService.rollbackLeagueStatisticForFinalGame(finalGameId);
+
+            // then
+            LeagueStatistics rolledBack = leagueStatisticsRepository.findByLeagueId(league.getId());
+            assertThat(rolledBack.getFirstWinnerTeam()).isNull();
+            assertThat(rolledBack.getSecondWinnerTeam()).isNull();
+            assertThat(rolledBack.getMostCheeredTeam()).isNull();
+            assertThat(rolledBack.getMostCheerTalksTeam()).isNull();
+
+            LeagueTeam firstWinnerLeagueTeam = leagueTeamRepository.findByLeagueAndTeam(league, firstWinnerBefore).orElseThrow();
+            LeagueTeam secondWinnerLeagueTeam = leagueTeamRepository.findByLeagueAndTeam(league, secondWinnerBefore).orElseThrow();
+            assertThat(firstWinnerLeagueTeam.getRanking()).isZero();
+            assertThat(secondWinnerLeagueTeam.getRanking()).isZero();
+        }
+
+        @Test
+        void 통계가_없으면_조용히_종료된다() {
+            // given - apply 호출 없이 곧바로 rollback
+            Long finalGameId = 1L;
+
+            // when & then - 예외 없이 실행
+            leagueStatisticsService.rollbackLeagueStatisticForFinalGame(finalGameId);
+        }
+    }
 }

@@ -59,8 +59,6 @@ public class GameRequest {
     public record Update(
             String name,
             int round,
-            String quarter,
-            String state,
             LocalDateTime startTime,
             String videoId
     ) {

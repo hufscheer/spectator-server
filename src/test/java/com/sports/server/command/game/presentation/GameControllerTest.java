@@ -174,7 +174,7 @@ public class GameControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         Long gameId = 1L;
         GameRequest.Update requestDto = new GameRequest.Update(
-                "게임 이름", 16, "FIRST_HALF", "PLAYING", LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
+                "게임 이름", 16, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
         );
 
         // when
@@ -194,8 +194,6 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER)
                                         .description("변경할 경기의 라운드 ex. 16강->16, 결승->2"),
-                                fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
-                                fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태 (SCHEDULED, PLAYING, FINISHED)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING)
                                         .description("경기 영상 링크")

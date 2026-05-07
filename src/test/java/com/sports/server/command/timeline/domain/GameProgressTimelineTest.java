@@ -6,7 +6,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.SoccerQuarter;
@@ -241,6 +243,50 @@ class GameProgressTimelineTest {
             assertAll(
                     () -> assertThat(game.getGameQuarter()).isEqualTo(SoccerQuarter.SECOND_HALF.name()),
                     () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING)
+            );
+        }
+
+        @Test
+        void 경기_종료_롤백_시_GameTeam의_결과가_초기화된다() {
+            // given: 점수 차이가 있는 두 팀이 참여한 경기 — apply 시 WIN/LOSE 결과가 확정됨
+            GameTeam winningTeam = entityBuilder(GameTeam.class)
+                    .set("id", 1L)
+                    .set("game", game)
+                    .set("score", 3)
+                    .set("pkScore", 0)
+                    .set("result", null)
+                    .sample();
+            GameTeam losingTeam = entityBuilder(GameTeam.class)
+                    .set("id", 2L)
+                    .set("game", game)
+                    .set("score", 1)
+                    .set("pkScore", 0)
+                    .set("result", null)
+                    .sample();
+            game.addGameTeam(winningTeam);
+            game.addGameTeam(losingTeam);
+
+            전반전_시작_타임라인_생성(game).apply();
+            전반전_종료_타임라인_생성(game).apply();
+            후반전_시작_타임라인_생성(game).apply();
+            후반전_종료_타임라인_생성(game).apply();
+
+            GameProgressTimeline timeline = 경기_종료_타임라인_생성(game);
+            timeline.apply();
+
+            assertAll(
+                    () -> assertThat(winningTeam.getResult()).isEqualTo(GameResult.WIN),
+                    () -> assertThat(losingTeam.getResult()).isEqualTo(GameResult.LOSE)
+            );
+
+            // when
+            timeline.rollback();
+
+            // then
+            assertAll(
+                    () -> assertThat(game.getState()).isEqualTo(GameState.PLAYING),
+                    () -> assertThat(winningTeam.getResult()).isNull(),
+                    () -> assertThat(losingTeam.getResult()).isNull()
             );
         }
     }
