@@ -229,6 +229,51 @@ public class GameControllerTest extends DocumentationTest {
     }
 
     @Test
+    void 게임팀을_삭제한다() throws Exception {
+        // given
+        Long gameTeamId = 1L;
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/game-teams/{gameTeamId}", gameTeamId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+        // then
+        result.andExpect(status().isNoContent())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameTeamId").description("삭제할 게임팀의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 종료된_게임들의_리그_통계를_업데이트한다() throws Exception {
+        // given
+        List<Long> gameIds = List.of(1L, 2L, 3L);
+
+        // when
+        ResultActions result = mockMvc.perform(post("/admin/games/statistics/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(gameIds))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        requestFields(
+                                fieldWithPath("[]").type(JsonFieldType.ARRAY).description("리그 통계를 갱신할 게임 ID 목록")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
     void 게임팀_라인업에_선수를_추가한다() throws Exception {
         // given
         Long gameTeamId = 1L;
