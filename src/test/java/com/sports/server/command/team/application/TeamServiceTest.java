@@ -25,8 +25,15 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 
 @Sql("/team-fixture.sql")
@@ -54,10 +61,16 @@ public class TeamServiceTest extends ServiceTest {
     private Member manager;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         imageUrl = originPrefix + "image_url.png";
         manager = memberRepository.findMemberByEmailWithOrganization("john@example.com")
                 .orElseThrow();
+
+        BufferedImage stub = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        ByteArrayOutputStream png = new ByteArrayOutputStream();
+        ImageIO.write(stub, "png", png);
+        when(s3Service.download(anyString())).thenReturn(png.toByteArray());
+        doNothing().when(s3Service).upload(anyString(), any(byte[].class), anyString());
     }
 
     @Nested
