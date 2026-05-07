@@ -76,6 +76,16 @@ class LogoImageNormalizerTest {
                 .isInstanceOf(CustomException.class);
     }
 
+    @Test
+    @DisplayName("해상도가 허용 한도를 초과하면 CustomException 이 발생한다")
+    void normalize_oversizedDimension_throws() throws Exception {
+        int overLimit = LogoImageNormalizer.MAX_DIMENSION + 1;
+        byte[] oversized = renderSolidImage(overLimit, overLimit, Color.RED, "png");
+
+        assertThatThrownBy(() -> LogoImageNormalizer.normalize(oversized))
+                .isInstanceOf(CustomException.class);
+    }
+
     private static byte[] renderSolidImage(int width, int height, Color color, String format) throws Exception {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();

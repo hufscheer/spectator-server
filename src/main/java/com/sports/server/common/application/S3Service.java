@@ -29,6 +29,8 @@ public class S3Service {
     @Value("${amazon.aws.bucket}")
     private String bucketName;
 
+    private static final long MAX_DOWNLOAD_BYTES = 10L * 1024 * 1024;
+
     private final String backupPrefix = "backup/";
 
     public String generatePresignedUrl(String extension) {
@@ -66,6 +68,16 @@ public class S3Service {
     }
 
     public byte[] download(String key) {
+        try {
+            ObjectMetadata meta = amazonS3.getObjectMetadata(bucketName, key);
+            if (meta.getContentLength() > MAX_DOWNLOAD_BYTES) {
+                throw new CustomException(HttpStatus.PAYLOAD_TOO_LARGE, "이미지 파일이 허용 용량(10MB)을 초과합니다.");
+            }
+        } catch (CustomException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "S3에서 이미지를 다운로드할 수 없습니다.");
+        }
         try (S3Object object = amazonS3.getObject(bucketName, key);
              InputStream content = object.getObjectContent();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {

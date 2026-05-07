@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 public final class LogoImageNormalizer {
 
     public static final int CANVAS_SIZE = 512;
+    public static final int MAX_DIMENSION = 4096;
     public static final String OUTPUT_FORMAT = "png";
     public static final String OUTPUT_CONTENT_TYPE = "image/png";
 
@@ -25,6 +26,9 @@ public final class LogoImageNormalizer {
 
     public static byte[] normalize(byte[] source) {
         BufferedImage decoded = decode(source);
+        if (decoded.getWidth() > MAX_DIMENSION || decoded.getHeight() > MAX_DIMENSION) {
+            throw new CustomException(HttpStatus.PAYLOAD_TOO_LARGE, "이미지 해상도가 허용 한도(4096×4096)를 초과합니다.");
+        }
         BufferedImage resized = resizeContain(decoded);
         BufferedImage centered = centerOnCanvas(resized);
         return encodePng(centered);
