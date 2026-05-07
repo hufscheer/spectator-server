@@ -103,6 +103,9 @@ class LeagueControllerTest extends DocumentationTest {
 		// then
 		result.andExpect(status().isOk())
 			.andDo(restDocsHandler.document(
+				pathParameters(
+					parameterWithName("leagueId").description("수정할 리그의 ID")
+				),
 				requestFields(
 					fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 대회의 이름"),
 					fieldWithPath("startAt").type(JsonFieldType.STRING).description("변경할 대회 시작시간"),
