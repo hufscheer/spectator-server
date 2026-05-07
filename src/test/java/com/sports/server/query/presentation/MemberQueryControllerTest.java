@@ -2,6 +2,8 @@ package com.sports.server.query.presentation;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -32,6 +34,9 @@ public class MemberQueryControllerTest extends DocumentationTest {
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("멤버의 이메일"),
                                 fieldWithPath("nameOfOrganization").type(JsonFieldType.STRING).description("멤버가 속한 단체명")
