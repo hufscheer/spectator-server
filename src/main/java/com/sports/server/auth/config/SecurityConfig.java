@@ -62,7 +62,12 @@ public class SecurityConfig {
                                 mvc.pattern(HttpMethod.PATCH, "/players/{playerId}"),
                                 mvc.pattern(HttpMethod.DELETE, "/players/{playerId}"),
                                 mvc.pattern(HttpMethod.PATCH, "/cheer-talks/**"),
-                                mvc.pattern(HttpMethod.POST, "/nl/**")
+                                mvc.pattern(HttpMethod.POST, "/nl/**"),
+                                mvc.pattern(HttpMethod.DELETE, "/game-teams/{gameTeamId}"),
+                                mvc.pattern(HttpMethod.POST, "/game-teams/{gameTeamId}/lineup-players"),
+                                mvc.pattern(HttpMethod.DELETE, "/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}"),
+                                mvc.pattern(HttpMethod.POST, "/admin/**"),
+                                mvc.pattern(HttpMethod.PATCH, "/reports/{leagueId}/{cheerTalkId}/cancel")
                         )
                         .authenticated()
                         .anyRequest().permitAll()

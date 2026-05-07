@@ -142,7 +142,10 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 5L, LineupPlayerState.CANDIDATE, false
         );
 
+        configureMockJwtForEmail(MOCK_EMAIL);
+
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
                 .pathParam("gameTeamId", gameTeamId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
@@ -158,7 +161,10 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long gameTeamId = 1L;
         Long lineupPlayerId = 2L;
 
+        configureMockJwtForEmail(MOCK_EMAIL);
+
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
                 .pathParam("gameTeamId", gameTeamId)
                 .pathParam("lineupPlayerId", lineupPlayerId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
