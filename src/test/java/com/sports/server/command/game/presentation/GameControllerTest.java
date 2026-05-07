@@ -258,13 +258,17 @@ public class GameControllerTest extends DocumentationTest {
         // when
         ResultActions result = mockMvc.perform(post("/admin/games/statistics/update")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(gameIds)));
+                .content(objectMapper.writeValueAsString(gameIds))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                         requestFields(
                                 fieldWithPath("[]").type(JsonFieldType.ARRAY).description("리그 통계를 갱신할 게임 ID 목록")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }

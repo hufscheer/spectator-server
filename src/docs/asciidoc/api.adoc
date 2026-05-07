@@ -76,7 +76,7 @@ operation::game-controller-test/게임팀을_삭제한다[snippets='http-request
 
 === [관리자] 종료된 게임의 리그 통계 갱신
 
-operation::game-controller-test/종료된_게임들의_리그_통계를_업데이트한다[snippets='http-request,request-fields,http-response']
+operation::game-controller-test/종료된_게임들의_리그_통계를_업데이트한다[snippets='http-request,request-fields,request-cookies,http-response']
 
 === 게임 상세 조회
 
