@@ -272,6 +272,10 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         determineResult();
     }
 
+    public void resetResult() {
+        gameTeams.forEach(GameTeam::clearResult);
+    }
+
     private static void markAsDraw(GameTeam team1, GameTeam team2) {
         team1.markAsDraw();
         team2.markAsDraw();

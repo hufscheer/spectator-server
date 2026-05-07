@@ -142,4 +142,8 @@ public class GameTeam extends BaseEntity<GameTeam> {
     public void markAsDraw() {
         this.result = GameResult.DRAW;
     }
+
+    public void clearResult() {
+        this.result = null;
+    }
 }

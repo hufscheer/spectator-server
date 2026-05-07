@@ -3,7 +3,6 @@ package com.sports.server.command.timeline.application;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
-import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
@@ -61,8 +60,7 @@ public class TimelineService {
 
         if (timeline instanceof GameProgressTimeline progress
                 && progress.getGameProgressType() == GameProgressType.GAME_END) {
-            gameStatusScheduler.updateLeagueStatisticsIfNeeded(
-                    gameId, GameState.FINISHED, game.getRound());
+            gameStatusScheduler.updateLeagueStatisticsIfNeeded(game);
         }
 
         eventPublisher.publishEvent(new TimelineCreatedEvent(

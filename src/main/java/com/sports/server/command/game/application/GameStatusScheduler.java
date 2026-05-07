@@ -46,6 +46,13 @@ public class GameStatusScheduler {
         manualUpdateLeagueStatisticsForFinalGames(List.of(gameId));
     }
 
+    public void updateLeagueStatisticsIfNeeded(Game game) {
+        if (GameState.FINISHED != game.getState() || Round.FINAL != game.getRound()) {
+            return;
+        }
+        updateLeagueStatisticsForFinalGames(List.of(game));
+    }
+
     public void manualUpdateLeagueStatisticsForFinalGames(List<Long> gameIds) {
         List<Game> games = gameService.determineResultsAndGet(gameIds);
         updateLeagueStatisticsForFinalGames(games);
