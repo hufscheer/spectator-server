@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class MaskingPreFilter {
 
-    private static final String POSITIVE_TOKEN_DELIMITERS = "[\\s,.!?~^]+";
+    private static final Pattern POSITIVE_TOKEN_PATTERN = Pattern.compile("[\\s,.!?~^]+");
 
     private final Set<String> recommendedMessages;
     private final Set<String> positiveConsonants;
@@ -52,7 +53,7 @@ public class MaskingPreFilter {
         if (positiveConsonants.isEmpty()) {
             return false;
         }
-        String[] tokens = trimmed.split(POSITIVE_TOKEN_DELIMITERS);
+        String[] tokens = POSITIVE_TOKEN_PATTERN.split(trimmed);
         boolean hasToken = false;
         for (String token : tokens) {
             if (token.isEmpty()) {

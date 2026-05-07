@@ -3,6 +3,7 @@ package com.sports.server.command.cheertalk.infra;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,7 @@ public class MaskingOutputSanitizer {
     );
 
     private static final int LONG_POSITIVE_THRESHOLD = 3;
-    private static final String POSITIVE_TOKEN_DELIMITERS = "[\\s,.!?~^]+";
+    private static final Pattern POSITIVE_TOKEN_PATTERN = Pattern.compile("[\\s,.!?~^]+");
 
     private final List<String> leakMarkers;
     private final Set<String> positiveConsonants;
@@ -78,6 +79,9 @@ public class MaskingOutputSanitizer {
         }
         if (containsLeakMarker(stripped)) {
             return original;
+        }
+        if (stripped.equals(original)) {
+            return stripped;
         }
         if (isModifiedWithoutMask(original, stripped)) {
             return original;
@@ -131,7 +135,7 @@ public class MaskingOutputSanitizer {
     }
 
     private boolean containsAsToken(String text, String token) {
-        for (String t : text.split(POSITIVE_TOKEN_DELIMITERS)) {
+        for (String t : POSITIVE_TOKEN_PATTERN.split(text)) {
             if (t.equals(token)) {
                 return true;
             }
