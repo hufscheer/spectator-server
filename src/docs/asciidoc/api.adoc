@@ -70,6 +70,14 @@ operation::game-controller-test/게임을_수정한다[snippets='http-request,pa
 
 operation::game-controller-test/게임을_삭제한다[snippets='http-request,path-parameters,request-cookies']
 
+=== 게임팀 삭제
+
+operation::game-controller-test/게임팀을_삭제한다[snippets='http-request,path-parameters,request-cookies']
+
+=== [관리자] 종료된 게임의 리그 통계 갱신
+
+operation::game-controller-test/종료된_게임들의_리그_통계를_업데이트한다[snippets='http-request,request-fields,http-response']
+
 === 게임 상세 조회
 
 operation::game-query-controller-test/게임을_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
@@ -320,6 +328,10 @@ operation::team-controller-test/팀을_삭제한다[snippets='http-request,reque
 
 operation::team-controller-test/팀_정보를_선수목록과_함께_수정한다[snippets='http-request,request-cookies,path-parameters,request-fields,http-response']
 
+=== 팀 로고 이미지 삭제
+
+operation::team-controller-test/팀의_로고_이미지를_삭제한다[snippets='http-request,request-cookies,path-parameters,http-response']
+
 === 팀 선수 추가
 
 operation::team-controller-test/팀에_선수들을_추가한다[snippets='http-request,request-cookies,path-parameters,request-fields,http-response']
@@ -381,3 +393,9 @@ operation::nl-controller-test/학번_중복_여부를_확인한다[snippets='htt
 === 선수 등록 실행
 
 operation::nl-controller-test/선수를_등록한다[snippets='http-request,request-cookies,request-fields,http-response,response-fields']
+
+== 이미지 업로드 API
+
+=== 사전 서명 URL 발급
+
+operation::s3-controller-test/이미지_업로드용_사전_서명_url을_발급한다[snippets='http-request,query-parameters,request-cookies,http-response']

@@ -27,7 +27,9 @@ import com.sports.server.command.team.application.TeamService;
 import com.sports.server.command.team.presentation.TeamController;
 import com.sports.server.command.timeline.application.TimelineService;
 import com.sports.server.command.timeline.presentation.TimelineController;
+import com.sports.server.common.application.S3Service;
 import com.sports.server.common.log.TimeLogTemplate;
+import com.sports.server.common.presentation.S3Controller;
 import com.sports.server.query.application.*;
 import com.sports.server.query.presentation.*;
 
@@ -68,6 +70,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 PlayerQueryController.class,
                 NlController.class,
                 OrganizationQueryController.class,
+                S3Controller.class,
         })
 @Import({
         TimeLogTemplate.class,
@@ -169,6 +172,9 @@ public class DocumentationTest {
 
     @MockBean
     protected OrganizationQueryService organizationQueryService;
+
+    @MockBean
+    protected S3Service s3Service;
 
     @MockBean
     protected com.sports.server.common.application.AlertService alertService;
