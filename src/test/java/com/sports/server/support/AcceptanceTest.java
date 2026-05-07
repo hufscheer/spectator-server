@@ -13,7 +13,11 @@ import com.sports.server.support.isolation.DatabaseIsolation;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+import javax.imageio.ImageIO;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,6 +55,8 @@ public class AcceptanceTest {
 
     protected String mockToken = "mockToken";
 
+    private static final byte[] STUB_PNG = createStubPng();
+
     @BeforeEach
     protected void setUp(
     ) {
@@ -60,6 +66,19 @@ public class AcceptanceTest {
                 .willReturn(ResponseEntity.ok().build());
 
         willDoNothing().given(s3Service).doesFileExist(any());
+        given(s3Service.download(any())).willReturn(STUB_PNG);
+        willDoNothing().given(s3Service).upload(any(), any(), any());
+    }
+
+    private static byte[] createStubPng() {
+        try {
+            BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("test stub PNG 생성 실패", e);
+        }
     }
 
     protected <T> List<T> toResponses(ExtractableResponse<Response> response,
