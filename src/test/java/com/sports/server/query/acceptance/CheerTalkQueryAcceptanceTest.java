@@ -39,7 +39,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
+            List<CheerTalkResponse.ForSpectator> actual = toCursorPageContent(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
                     () -> assertThat(actual.get(0))
@@ -74,7 +74,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
+            List<CheerTalkResponse.ForSpectator> actual = toCursorPageContent(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(10),
 
@@ -100,7 +100,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
+            List<CheerTalkResponse.ForSpectator> actual = toCursorPageContent(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(size),
 
@@ -128,7 +128,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
+            List<CheerTalkResponse.ForSpectator> actual = toCursorPageContent(response, CheerTalkResponse.ForSpectator.class);
             assertAll(
                     () -> assertThat(actual).hasSize(size),
 
@@ -152,7 +152,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForSpectator> actual = toResponses(response, CheerTalkResponse.ForSpectator.class);
+            List<CheerTalkResponse.ForSpectator> actual = toCursorPageContent(response, CheerTalkResponse.ForSpectator.class);
             assertThat(actual)
                     .filteredOn(CheerTalkResponse.ForSpectator::isBlocked)
                     .map(CheerTalkResponse.ForSpectator::content)
@@ -175,7 +175,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+        List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
@@ -202,7 +202,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+        List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
@@ -233,7 +233,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // then
-        List<CheerTalkResponse.ForManager> actual = toResponses(response, CheerTalkResponse.ForManager.class);
+        List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, CheerTalkResponse.ForManager.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(actual).map(CheerTalkResponse.ForManager::cheerTalkId)
@@ -257,7 +257,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+        List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
@@ -281,7 +281,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+        List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actual)
@@ -310,7 +310,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                     () -> assertThat(actual)
@@ -338,7 +338,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                     () -> assertThat(actual)
@@ -374,7 +374,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                     () -> assertThat(actual)
@@ -402,7 +402,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                     () -> assertThat(actual)
@@ -430,7 +430,7 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             // then
-            List<CheerTalkResponse.ForManager> actual = toResponses(response, ForManager.class);
+            List<CheerTalkResponse.ForManager> actual = toCursorPageContent(response, ForManager.class);
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                     () -> assertThat(actual)

@@ -62,7 +62,7 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<PlayerResponse> actual = toResponses(response, PlayerResponse.class);
+        List<PlayerResponse> actual = toCursorPageContent(response, PlayerResponse.class);
         List<PlayerResponse> expected = List.of(new PlayerResponse(player2, null), new PlayerResponse(player1, null));
 
         assertAll(

@@ -1,5 +1,6 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamResponse;
 import com.sports.server.support.DocumentationTest;
@@ -36,14 +37,14 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                 new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER")
         );
 
-        List<PlayerResponse> responses = List.of(
+        CursorPageResponse<PlayerResponse> response = new CursorPageResponse<>(List.of(
                 new PlayerResponse(1L, null, "선수1", "202500001", null, 0, teamResponses1),
                 new PlayerResponse(2L, null, "선수2", "202500002", null, 5, teamResponses2),
                 new PlayerResponse(3L, null, "선수3", "202500003", null, 10, Collections.emptyList())
-        );
+        ), null, false);
 
         given(playerQueryService.getAllPlayers(any(), any()))
-                .willReturn(responses);
+                .willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/players")
@@ -64,17 +65,20 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
-                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("선수의 이름"),
-                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("선수의 학번"),
-                                fieldWithPath("[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 전체 골 개수"),
-                                fieldWithPath("[].teams").type(JsonFieldType.ARRAY).description("선수의 모든 소속팀 목록"),
-                                fieldWithPath("[].teams[].id").type(JsonFieldType.NUMBER).description("소속팀의 ID"),
-                                fieldWithPath("[].teams[].name").type(JsonFieldType.STRING).description("소속팀의 이름"),
-                                fieldWithPath("[].teams[].logoImageUrl").type(JsonFieldType.STRING).description("소속팀의 로고 이미지 url"),
-                                fieldWithPath("[].teams[].unit").type(JsonFieldType.STRING).description("소속팀의 소속 단위"),
-                                fieldWithPath("[].teams[].teamColor").type(JsonFieldType.STRING).description("소속팀의 대표 색상"),
-                                fieldWithPath("[].teams[].sportType").type(JsonFieldType.STRING).description("소속팀의 종목")
+                                fieldWithPath("content").type(JsonFieldType.ARRAY).description("선수 목록"),
+                                fieldWithPath("content[].playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
+                                fieldWithPath("content[].name").type(JsonFieldType.STRING).description("선수의 이름"),
+                                fieldWithPath("content[].studentNumber").type(JsonFieldType.STRING).description("선수의 학번"),
+                                fieldWithPath("content[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 전체 골 개수"),
+                                fieldWithPath("content[].teams").type(JsonFieldType.ARRAY).description("선수의 모든 소속팀 목록"),
+                                fieldWithPath("content[].teams[].id").type(JsonFieldType.NUMBER).description("소속팀의 ID"),
+                                fieldWithPath("content[].teams[].name").type(JsonFieldType.STRING).description("소속팀의 이름"),
+                                fieldWithPath("content[].teams[].logoImageUrl").type(JsonFieldType.STRING).description("소속팀의 로고 이미지 url"),
+                                fieldWithPath("content[].teams[].unit").type(JsonFieldType.STRING).description("소속팀의 소속 단위"),
+                                fieldWithPath("content[].teams[].teamColor").type(JsonFieldType.STRING).description("소속팀의 대표 색상"),
+                                fieldWithPath("content[].teams[].sportType").type(JsonFieldType.STRING).description("소속팀의 종목"),
+                                fieldWithPath("nextCursor").type(JsonFieldType.NUMBER).optional().description("다음 페이지 커서"),
+                                fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
                         )
                 ));
     }
