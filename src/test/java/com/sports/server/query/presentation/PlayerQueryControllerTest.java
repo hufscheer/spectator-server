@@ -3,6 +3,7 @@ package com.sports.server.query.presentation;
 import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamResponse;
 import com.sports.server.support.DocumentationTest;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -13,6 +14,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -44,12 +47,22 @@ public class PlayerQueryControllerTest extends DocumentationTest {
 
         // when
         ResultActions result = mockMvc.perform(get("/players")
+                .queryParam("cursor", "10")
+                .queryParam("size", "10")
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
         // then
         result.andExpect((status().isOk()))
                 .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("cursor").description("마지막으로 조회한 선수의 ID (선택, 미입력 시 최신부터)").optional(),
+                                parameterWithName("size").description("조회할 선수 수 (선택, default 10)").optional()
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("선수의 이름"),

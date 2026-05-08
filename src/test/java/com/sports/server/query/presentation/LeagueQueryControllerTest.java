@@ -55,7 +55,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("year").description("리그의 연도 (선택사항, 미입력시 전체 연도)").optional(),
-                                parameterWithName("leagueProgress").description("리그의 진행 상태 (선택사항, BEFORE_START, IN_PROGRESS, FINISHED)").optional()
+                                parameterWithName("leagueProgress").description("리그의 진행 상태 (선택사항, BEFORE_START, IN_PROGRESS, FINISHED)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (선택사항, SOCCER, BASKETBALL)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (선택사항, 학교 등)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
@@ -254,8 +256,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueTeamId = 1L;
 
         List<PlayerResponse> responses = List.of(
-                new PlayerResponse(1L, null, "봄동나물진승희", "202022222", 10, null, null),
-                new PlayerResponse(2L, null, "가을전어이동규", "202022221", 7, null, null)
+                new PlayerResponse(1L, 11L, "봄동나물진승희", "202022222", 10, 5, null),
+                new PlayerResponse(2L, 12L, "가을전어이동규", "202022221", 7, 3, null)
         );
 
         given(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId))
@@ -273,10 +275,11 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("대회 팀 선수 ID"),
+                                fieldWithPath("[].teamPlayerId").type(JsonFieldType.NUMBER).description("팀선수 ID (라인업 등록 시 사용)"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("대회 팀 선수 이름"),
                                 fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("대회 팀 선수 학번"),
-                                fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("대회 팀 선수 등번호(nullable)")
-                                //TODO: 선수의 리그 내 총 골 개수 추가
+                                fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("대회 팀 선수 등번호(nullable)"),
+                                fieldWithPath("[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 전체 골 개수")
                         )
                 ));
     }
@@ -631,6 +634,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
+                        queryParameters(
+                                parameterWithName("organizationId").description("조직 ID 필터 (선택사항, 학교 등)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (선택사항, SOCCER, BASKETBALL)").optional()
+                        ),
                         responseFields(
                                 fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그의 ID"),
                                 fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("리그의 이름"),
