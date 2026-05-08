@@ -68,7 +68,7 @@ public class GameQueryService {
                 .collect(groupingBy(gameTeam -> gameTeam.getGame().getId()));
 
         Map<League, List<Game>> gamesByLeague = sliced.stream()
-                .collect(Collectors.groupingBy(Game::getLeague));
+                .collect(Collectors.groupingBy(Game::getLeague, LinkedHashMap::new, Collectors.toList()));
 
         List<LeagueWithGamesResponse> content = gamesByLeague.entrySet().stream()
                 .map(entry -> {
