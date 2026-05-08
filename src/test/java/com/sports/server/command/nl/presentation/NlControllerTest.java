@@ -121,11 +121,15 @@ public class NlControllerTest extends DocumentationTest {
         ResultActions result = mockMvc.perform(post("/nl/parse")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         requestFields(
                                 fieldWithPath("history").type(JsonFieldType.ARRAY).description("대화 히스토리"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("선수 정보가 포함된 자연어 텍스트")
@@ -223,11 +227,15 @@ public class NlControllerTest extends DocumentationTest {
         ResultActions result = mockMvc.perform(post("/nl/check-duplicates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         // then
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
                         requestFields(
                                 fieldWithPath("players[].name").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("players[].studentNumber").type(JsonFieldType.STRING).description("학번"),

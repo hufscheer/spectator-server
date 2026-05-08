@@ -62,6 +62,7 @@ public class GameControllerTest extends DocumentationTest {
         ResultActions result = mockMvc.perform(
                 patch("/games/{gameId}/lineup-players/{lineupPlayerId}/starter", gameId, lineupPlayerId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         //then
@@ -70,6 +71,9 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID"),
                                 parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
@@ -85,6 +89,7 @@ public class GameControllerTest extends DocumentationTest {
         ResultActions result = mockMvc.perform(
                 patch("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate", gameId, lineupPlayerId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         //then
@@ -93,6 +98,9 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID"),
                                 parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
@@ -284,7 +292,8 @@ public class GameControllerTest extends DocumentationTest {
         // when
         ResultActions result = mockMvc.perform(post("/game-teams/{gameTeamId}/lineup-players", gameTeamId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
         result.andExpect(status().isCreated())
@@ -296,6 +305,9 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("teamPlayerId").type(JsonFieldType.NUMBER).description("추가할 선수의 팀플레이어 ID"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE)"),
                                 fieldWithPath("isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
@@ -307,7 +319,9 @@ public class GameControllerTest extends DocumentationTest {
         Long lineupPlayerId = 10L;
 
         // when
-        ResultActions result = mockMvc.perform(delete("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}", gameTeamId, lineupPlayerId));
+        ResultActions result = mockMvc.perform(
+                delete("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}", gameTeamId, lineupPlayerId)
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie")));
 
         // then
         result.andExpect(status().isNoContent())
@@ -315,6 +329,9 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("gameTeamId").description("게임팀의 ID"),
                                 parameterWithName("lineupPlayerId").description("게임팀에서 삭제할 라인업 선수의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
@@ -331,6 +348,7 @@ public class GameControllerTest extends DocumentationTest {
                 put("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register", gameId,
                         lineupPlayerId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         //then
@@ -339,6 +357,9 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID"),
                                 parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
@@ -355,6 +376,7 @@ public class GameControllerTest extends DocumentationTest {
                 patch("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke", gameId,
                         lineupPlayerId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
         );
 
         //then
@@ -363,6 +385,9 @@ public class GameControllerTest extends DocumentationTest {
                         pathParameters(
                                 parameterWithName("gameId").description("게임의 ID"),
                                 parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
                         )
                 ));
     }
