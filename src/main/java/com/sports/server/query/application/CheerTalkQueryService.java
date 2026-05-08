@@ -1,5 +1,6 @@
 package com.sports.server.query.application;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.PermissionValidator;
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.GameTeamGameInfoDto;
@@ -33,84 +35,88 @@ public class CheerTalkQueryService {
 	private final GameQueryRepository gameQueryRepository;
 	private final LeagueQueryRepository leagueQueryRepository;
 
-	public List<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
+	public CursorPageResponse<CheerTalkResponse.ForSpectator> getCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest) {
 		Game game = getGame(gameId);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findByGameIdOrderByStartTime(
 			gameId, pageRequest.cursor(), pageRequest.size()
 		);
 
-		List<CheerTalkResponse.ForSpectator> responses = cheerTalks.stream()
-			.map(cheerTalk -> new CheerTalkResponse.ForSpectator(cheerTalk, game))
-			.collect(Collectors.toList());
+		boolean hasNext = cheerTalks.size() > pageRequest.size();
+		List<CheerTalk> sliced = hasNext ? cheerTalks.subList(0, pageRequest.size()) : cheerTalks;
+		Long nextCursor = hasNext ? sliced.get(sliced.size() - 1).getId() : null;
 
+		List<CheerTalkResponse.ForSpectator> responses = new ArrayList<>(sliced.stream()
+			.map(cheerTalk -> new CheerTalkResponse.ForSpectator(cheerTalk, game))
+			.toList());
 		Collections.reverse(responses);
-		return responses;
+
+		return new CursorPageResponse<>(responses, nextCursor, hasNext);
 	}
 
-	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getReportedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByAdminId(
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
-	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getUnblockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByAdminId(
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
-	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getBlockedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByAdminId(
 				admin.getId(), pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
-	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getReportedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
 		League league = getLeague(leagueId);
 		PermissionValidator.checkPermission(league, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByLeagueId(
 				leagueId, pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
-	public List<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getUnblockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
 		League league = getLeague(leagueId);
 		PermissionValidator.checkPermission(league, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findUnblockedCheerTalksByLeagueId(
 				leagueId, pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
-	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getBlockedCheerTalksByLeagueId(final Long leagueId, final PageRequestDto pageRequest, final Member member) {
 		League league = getLeague(leagueId);
 		PermissionValidator.checkPermission(league, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByLeagueId(
 				leagueId, pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
-	public List<CheerTalkResponse.ForManager> getReportedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest, final Member member) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getReportedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest, final Member member) {
 		Game game = getGame(gameId);
 		PermissionValidator.checkPermission(game, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findReportedCheerTalksByGameId(
 				gameId, pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
-	public List<CheerTalkResponse.ForManager> getBlockedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest, final Member member) {
+	public CursorPageResponse<CheerTalkResponse.ForManager> getBlockedCheerTalksByGameId(final Long gameId, final PageRequestDto pageRequest, final Member member) {
 		Game game = getGame(gameId);
 		PermissionValidator.checkPermission(game, member);
 		List<CheerTalk> cheerTalks = cheerTalkDynamicRepository.findBlockedCheerTalksByGameId(
 				gameId, pageRequest.cursor(), pageRequest.size()
 		);
-		return toForManagerResponses(cheerTalks);
+		return toForManagerPageResponse(cheerTalks, pageRequest.size());
 	}
 
 	private League getLeague(Long leagueId) {
@@ -123,12 +129,16 @@ public class CheerTalkQueryService {
 				.orElseThrow(() -> new NotFoundException("존재하지 않는 경기입니다."));
 	}
 
-	private List<CheerTalkResponse.ForManager> toForManagerResponses(List<CheerTalk> cheerTalks) {
-		if (cheerTalks.isEmpty()) {
-			return Collections.emptyList();
+	private CursorPageResponse<CheerTalkResponse.ForManager> toForManagerPageResponse(List<CheerTalk> cheerTalks, int size) {
+		boolean hasNext = cheerTalks.size() > size;
+		List<CheerTalk> sliced = hasNext ? cheerTalks.subList(0, size) : cheerTalks;
+		Long nextCursor = hasNext ? sliced.get(sliced.size() - 1).getId() : null;
+
+		if (sliced.isEmpty()) {
+			return new CursorPageResponse<>(Collections.emptyList(), null, false);
 		}
 
-		List<Long> gameTeamIds = cheerTalks.stream()
+		List<Long> gameTeamIds = sliced.stream()
 				.map(CheerTalk::getGameTeamId)
 				.distinct()
 				.toList();
@@ -137,7 +147,7 @@ public class CheerTalkQueryService {
 				.stream()
 				.collect(Collectors.toMap(GameTeamGameInfoDto::gameTeamId, Function.identity()));
 
-		return cheerTalks.stream()
+		List<CheerTalkResponse.ForManager> content = sliced.stream()
 				.map(ct -> {
 					GameTeamGameInfoDto info = gameInfoMap.get(ct.getGameTeamId());
 					return new CheerTalkResponse.ForManager(
@@ -147,5 +157,7 @@ public class CheerTalkQueryService {
 					);
 				})
 				.toList();
+
+		return new CursorPageResponse<>(content, nextCursor, hasNext);
 	}
 }

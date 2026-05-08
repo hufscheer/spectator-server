@@ -23,7 +23,7 @@ public class PlayerDynamicRepositoryImpl implements PlayerDynamicRepository {
                         getCursorCondition(cursor)
                 )
                 .orderBy(player.id.desc())
-                .limit(size)
+                .limit(size + 1)
                 .fetch();
     }
 

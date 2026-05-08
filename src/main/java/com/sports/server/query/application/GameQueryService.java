@@ -12,6 +12,7 @@ import com.sports.server.query.dto.response.GameResponseDto;
 import com.sports.server.query.dto.response.LeagueWithGamesResponse;
 import com.sports.server.query.dto.response.VideoResponse;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.repository.GameDynamicRepository;
 import com.sports.server.query.repository.GameQueryRepository;
@@ -49,22 +50,27 @@ public class GameQueryService {
         return getGameDetailResponses(games);
     }
 
-    public List<LeagueWithGamesResponse> getAllGames(final GamesQueryRequestDto queryRequestDto,
+    public CursorPageResponse<LeagueWithGamesResponse> getAllGames(final GamesQueryRequestDto queryRequestDto,
                                              final PageRequestDto pageRequest) {
         List<Game> games = gameDynamicRepository.findAllByLeagueAndState(queryRequestDto, pageRequest);
-        if (games.isEmpty()) {
-            return Collections.emptyList();
+
+        boolean hasNext = games.size() > pageRequest.size();
+        List<Game> sliced = hasNext ? games.subList(0, pageRequest.size()) : games;
+        Long nextCursor = hasNext ? sliced.get(sliced.size() - 1).getId() : null;
+
+        if (sliced.isEmpty()) {
+            return new CursorPageResponse<>(Collections.emptyList(), null, false);
         }
 
-        List<Long> gameIds = games.stream().map(Game::getId).toList();
+        List<Long> gameIds = sliced.stream().map(Game::getId).toList();
         List<GameTeam> allGameTeams = gameTeamQueryRepository.findAllByGameIds(gameIds);
         Map<Long, List<GameTeam>> teamsByGameId = allGameTeams.stream()
                 .collect(groupingBy(gameTeam -> gameTeam.getGame().getId()));
 
-        Map<League, List<Game>> gamesByLeague = games.stream()
+        Map<League, List<Game>> gamesByLeague = sliced.stream()
                 .collect(Collectors.groupingBy(Game::getLeague));
 
-        return gamesByLeague.entrySet().stream()
+        List<LeagueWithGamesResponse> content = gamesByLeague.entrySet().stream()
                 .map(entry -> {
                     League league = entry.getKey();
                     List<GameResponseDto> gameResponses = entry.getValue().stream()
@@ -73,6 +79,8 @@ public class GameQueryService {
                     return new LeagueWithGamesResponse(league.getId(), league.getName(), gameResponses);
                 })
                 .toList();
+
+        return new CursorPageResponse<>(content, nextCursor, hasNext);
     }
 
     public VideoResponse getVideo(Long gameId) {
