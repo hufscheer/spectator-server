@@ -58,6 +58,7 @@ public class SecurityConfig {
                                 mvc.pattern(HttpMethod.POST, "/teams/**"),
                                 mvc.pattern(HttpMethod.PUT, "/teams/{teamId}"),
                                 mvc.pattern(HttpMethod.DELETE, "/teams/**"),
+                                mvc.pattern(HttpMethod.GET, "/players"),
                                 mvc.pattern(HttpMethod.POST, "/players"),
                                 mvc.pattern(HttpMethod.PATCH, "/players/{playerId}"),
                                 mvc.pattern(HttpMethod.DELETE, "/players/{playerId}"),
