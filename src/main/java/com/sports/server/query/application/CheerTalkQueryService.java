@@ -41,16 +41,13 @@ public class CheerTalkQueryService {
 			gameId, pageRequest.cursor(), pageRequest.size()
 		);
 
-		boolean hasNext = cheerTalks.size() > pageRequest.size();
-		List<CheerTalk> sliced = hasNext ? cheerTalks.subList(0, pageRequest.size()) : cheerTalks;
-		Long nextCursor = hasNext ? sliced.get(sliced.size() - 1).getId() : null;
-
-		List<CheerTalkResponse.ForSpectator> responses = new ArrayList<>(sliced.stream()
-			.map(cheerTalk -> new CheerTalkResponse.ForSpectator(cheerTalk, game))
-			.toList());
-		Collections.reverse(responses);
-
-		return new CursorPageResponse<>(responses, nextCursor, hasNext);
+		return CursorPageResponse.ofBulk(cheerTalks, pageRequest.size(), sliced -> {
+			List<CheerTalkResponse.ForSpectator> responses = new ArrayList<>(sliced.stream()
+				.map(cheerTalk -> new CheerTalkResponse.ForSpectator(cheerTalk, game))
+				.toList());
+			Collections.reverse(responses);
+			return responses;
+		}, CheerTalk::getId);
 	}
 
 	public CursorPageResponse<CheerTalkResponse.ForManager> getReportedCheerTalksByAdmin(final PageRequestDto pageRequest, final Member admin) {
@@ -130,34 +127,30 @@ public class CheerTalkQueryService {
 	}
 
 	private CursorPageResponse<CheerTalkResponse.ForManager> toForManagerPageResponse(List<CheerTalk> cheerTalks, int size) {
-		boolean hasNext = cheerTalks.size() > size;
-		List<CheerTalk> sliced = hasNext ? cheerTalks.subList(0, size) : cheerTalks;
-		Long nextCursor = hasNext ? sliced.get(sliced.size() - 1).getId() : null;
+		return CursorPageResponse.ofBulk(cheerTalks, size, sliced -> {
+			if (sliced.isEmpty()) {
+				return Collections.emptyList();
+			}
 
-		if (sliced.isEmpty()) {
-			return new CursorPageResponse<>(Collections.emptyList(), null, false);
-		}
+			List<Long> gameTeamIds = sliced.stream()
+					.map(CheerTalk::getGameTeamId)
+					.distinct()
+					.toList();
 
-		List<Long> gameTeamIds = sliced.stream()
-				.map(CheerTalk::getGameTeamId)
-				.distinct()
-				.toList();
+			Map<Long, GameTeamGameInfoDto> gameInfoMap = gameQueryRepository.findGameInfoByGameTeamIds(gameTeamIds)
+					.stream()
+					.collect(Collectors.toMap(GameTeamGameInfoDto::gameTeamId, Function.identity()));
 
-		Map<Long, GameTeamGameInfoDto> gameInfoMap = gameQueryRepository.findGameInfoByGameTeamIds(gameTeamIds)
-				.stream()
-				.collect(Collectors.toMap(GameTeamGameInfoDto::gameTeamId, Function.identity()));
-
-		List<CheerTalkResponse.ForManager> content = sliced.stream()
-				.map(ct -> {
-					GameTeamGameInfoDto info = gameInfoMap.get(ct.getGameTeamId());
-					return new CheerTalkResponse.ForManager(
-							ct.getId(), info.gameId(), info.leagueId(), ct.getContent(),
-							ct.getGameTeamId(), ct.getCreatedAt(), ct.isBlocked(),
-							info.gameName(), info.leagueName()
-					);
-				})
-				.toList();
-
-		return new CursorPageResponse<>(content, nextCursor, hasNext);
+			return sliced.stream()
+					.map(ct -> {
+						GameTeamGameInfoDto info = gameInfoMap.get(ct.getGameTeamId());
+						return new CheerTalkResponse.ForManager(
+								ct.getId(), info.gameId(), info.leagueId(), ct.getContent(),
+								ct.getGameTeamId(), ct.getCreatedAt(), ct.isBlocked(),
+								info.gameName(), info.leagueName()
+						);
+					})
+					.toList();
+		}, CheerTalk::getId);
 	}
 }
