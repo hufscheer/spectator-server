@@ -87,6 +87,12 @@ public class AcceptanceTest {
                 .getList(".", dtoType);
     }
 
+    protected <T> List<T> toCursorPageContent(ExtractableResponse<Response> response,
+                                               Class<T> dtoType) {
+        return response.jsonPath()
+                .getList("content", dtoType);
+    }
+
     protected <T> T toResponse(ExtractableResponse<Response> response,
                                Class<T> dtoType) {
         return response.jsonPath()

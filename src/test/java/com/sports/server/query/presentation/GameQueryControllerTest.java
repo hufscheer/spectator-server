@@ -10,6 +10,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.game.domain.LineupPlayerState;
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.QuarterResponse;
 import com.sports.server.support.DocumentationTest;
@@ -123,7 +124,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 new LeagueWithGamesResponse(1L, "2025 외대월드컵", responses)
         );
 
-        given(gameQueryService.getAllGames(any(), any())).willReturn(finalResponse);
+        CursorPageResponse<LeagueWithGamesResponse> cursorResponse = new CursorPageResponse<>(finalResponse, null, false);
+        given(gameQueryService.getAllGames(any(), any())).willReturn(cursorResponse);
 
         // when
         ResultActions result = mockMvc.perform(get("/games")
@@ -148,30 +150,33 @@ class GameQueryControllerTest extends DocumentationTest {
                                 parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
                         ),
                         responseFields(
-                                fieldWithPath("[]").description("리그 목록"),
-                                fieldWithPath("[].leagueId").type(JsonFieldType.NUMBER).description("리그 ID"),
-                                fieldWithPath("[].leagueName").type(JsonFieldType.STRING).description("리그 이름"),
-                                fieldWithPath("[].games").type(JsonFieldType.ARRAY).description("게임 목록"),
-                                fieldWithPath("[].games[].id").type(JsonFieldType.NUMBER).description("게임의 ID"),
-                                fieldWithPath("[].games[].startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
-                                fieldWithPath("[].games[].gameQuarter").type(JsonFieldType.OBJECT).description("게임 쿼터"),
-                                fieldWithPath("[].games[].gameQuarter.key").type(JsonFieldType.STRING).description("게임 쿼터 키"),
-                                fieldWithPath("[].games[].gameQuarter.label").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
-                                fieldWithPath("[].games[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
-                                fieldWithPath("[].games[].round").type(JsonFieldType.NUMBER)
+                                fieldWithPath("content").type(JsonFieldType.ARRAY).description("리그별 게임 목록"),
+                                fieldWithPath("nextCursor").type(JsonFieldType.NUMBER).optional().description("다음 페이지 커서"),
+                                fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부"),
+                                fieldWithPath("content[]").description("리그 목록"),
+                                fieldWithPath("content[].leagueId").type(JsonFieldType.NUMBER).description("리그 ID"),
+                                fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("리그 이름"),
+                                fieldWithPath("content[].games").type(JsonFieldType.ARRAY).description("게임 목록"),
+                                fieldWithPath("content[].games[].id").type(JsonFieldType.NUMBER).description("게임의 ID"),
+                                fieldWithPath("content[].games[].startTime").type(JsonFieldType.STRING).description("게임 시작 시간"),
+                                fieldWithPath("content[].games[].gameQuarter").type(JsonFieldType.OBJECT).description("게임 쿼터"),
+                                fieldWithPath("content[].games[].gameQuarter.key").type(JsonFieldType.STRING).description("게임 쿼터 키"),
+                                fieldWithPath("content[].games[].gameQuarter.label").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
+                                fieldWithPath("content[].games[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
+                                fieldWithPath("content[].games[].round").type(JsonFieldType.NUMBER)
                                         .description("라운드의 이름 ex. 4강->4, 결승->2"),
-                                fieldWithPath("[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
-                                fieldWithPath("[].games[].isPkTaken").type(JsonFieldType.BOOLEAN)
+                                fieldWithPath("content[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
+                                fieldWithPath("content[].games[].isPkTaken").type(JsonFieldType.BOOLEAN)
                                         .description("승부차기 진출 여부"),
-                                fieldWithPath("[].games[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
+                                fieldWithPath("content[].games[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
-                                fieldWithPath("[].games[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
+                                fieldWithPath("content[].games[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
                                         .description("게임팀의 이름"),
-                                fieldWithPath("[].games[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
+                                fieldWithPath("content[].games[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
                                         .description("게임팀의 이미지 URL"),
-                                fieldWithPath("[].games[].gameTeams[].score").type(JsonFieldType.NUMBER)
+                                fieldWithPath("content[].games[].gameTeams[].score").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 현재 점수"),
-                                fieldWithPath("[].games[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
+                                fieldWithPath("content[].games[].gameTeams[].pkScore").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 승부차기 점수")
                         )
                 ));

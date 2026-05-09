@@ -1,5 +1,6 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.GameQueryService;
 import com.sports.server.query.application.GameTeamQueryService;
@@ -37,7 +38,7 @@ public class GameQueryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LeagueWithGamesResponse>> getAllGames(
+    public ResponseEntity<CursorPageResponse<LeagueWithGamesResponse>> getAllGames(
             @ModelAttribute GamesQueryRequestDto queryRequestDto,
             @ModelAttribute PageRequestDto pageRequest) {
         return ResponseEntity.ok(gameQueryService.getAllGames(queryRequestDto, pageRequest));
