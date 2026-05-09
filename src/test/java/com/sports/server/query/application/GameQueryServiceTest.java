@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.query.dto.request.GamesQueryRequestDto;
@@ -53,7 +54,7 @@ public class GameQueryServiceTest extends ServiceTest {
                 leagueTeamIds, null);
 
         //when
-        List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto);
+        List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content();
 
         // then
         assertAll(
@@ -78,7 +79,7 @@ public class GameQueryServiceTest extends ServiceTest {
                 null);
 
         //when
-        List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto);
+        List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content();
 
         // then
         assertAll(
@@ -103,7 +104,7 @@ public class GameQueryServiceTest extends ServiceTest {
         List<LeagueWithGamesResponse> firstPage = gameQueryService.getAllGames(
                 queryRequestDto,
                 new PageRequestDto(null, size)
-        );
+        ).content();
 
         List<GameResponseDto> allGamesInFirstPage = firstPage.stream()
                 .flatMap(leagueWithGames -> leagueWithGames.games().stream())
@@ -113,7 +114,7 @@ public class GameQueryServiceTest extends ServiceTest {
         List<LeagueWithGamesResponse> secondPage = gameQueryService.getAllGames(
                 queryRequestDto,
                 new PageRequestDto(cursor, size)
-        );
+        ).content();
 
         // then
         List<Long> secondPageGameIds = secondPage.stream()
@@ -135,7 +136,7 @@ public class GameQueryServiceTest extends ServiceTest {
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null);
 
         //when
-        List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto);
+        List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content();
 
         //then
         assertAll(
@@ -154,7 +155,7 @@ public class GameQueryServiceTest extends ServiceTest {
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null);
 
         //when
-        LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).get(0);
+        LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
         List<GameResponseDto> games = response.games();
 
         //then
@@ -177,7 +178,7 @@ public class GameQueryServiceTest extends ServiceTest {
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", leagueTeamIds, null);
 
         //when
-        LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).get(0);
+        LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
         List<GameResponseDto> games = response.games();
 
         // then
@@ -203,7 +204,7 @@ public class GameQueryServiceTest extends ServiceTest {
             PageRequestDto pageRequestDto = new PageRequestDto(1L, 3);
 
             //when
-            LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).get(0);
+            LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
             List<GameResponseDto> games = response.games();
 
             //then
@@ -221,7 +222,7 @@ public class GameQueryServiceTest extends ServiceTest {
             PageRequestDto pageRequestDto = new PageRequestDto(1L, null);
 
             //when
-            LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).get(0);
+            LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
             List<GameResponseDto> games = response.games();
 
             //then
@@ -239,11 +240,11 @@ public class GameQueryServiceTest extends ServiceTest {
             GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(leagueId, stateValue, null, null);
 
             //when
-            LeagueWithGamesResponse response1 = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).get(0);
+            LeagueWithGamesResponse response1 = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
             List<GameResponseDto> firstPage = response1.games();
 
             Long cursor = firstPage.get(size - 1).id();
-            LeagueWithGamesResponse response2 = gameQueryService.getAllGames(queryRequestDto, new PageRequestDto(cursor, size)).get(0);
+            LeagueWithGamesResponse response2 = gameQueryService.getAllGames(queryRequestDto, new PageRequestDto(cursor, size)).content().get(0);
             List<GameResponseDto> secondPage = response2.games();
 
             //then
@@ -266,19 +267,19 @@ public class GameQueryServiceTest extends ServiceTest {
             List<GameResponseDto> after15 = gameQueryService.getAllGames(
                     queryRequestDto,
                     new PageRequestDto(15L, null)
-            ).get(0).games();
+            ).content().get(0).games();
             List<GameResponseDto> after19 = gameQueryService.getAllGames(
                     queryRequestDto,
                     new PageRequestDto(19L, null)
-            ).get(0).games();
+            ).content().get(0).games();
             List<GameResponseDto> after18 = gameQueryService.getAllGames(
                     queryRequestDto,
                     new PageRequestDto(18L, null)
-            ).get(0).games();
+            ).content().get(0).games();
             List<GameResponseDto> after16 = gameQueryService.getAllGames(
                     queryRequestDto,
                     new PageRequestDto(16L, null)
-            ).get(0).games();
+            ).content().get(0).games();
 
             //then
             assertAll(
@@ -306,11 +307,11 @@ public class GameQueryServiceTest extends ServiceTest {
             List<GameResponseDto> firstPage = gameQueryService.getAllGames(
                     queryRequestDto,
                     new PageRequestDto(null, 4)
-            ).get(0).games();
+            ).content().get(0).games();
             List<GameResponseDto> after21 = gameQueryService.getAllGames(
                     queryRequestDto,
                     new PageRequestDto(22L, 3)
-            ).get(0).games();
+            ).content().get(0).games();
 
             //then
             assertAll(
@@ -333,11 +334,11 @@ public class GameQueryServiceTest extends ServiceTest {
         List<GameResponseDto> firstPage = gameQueryService.getAllGames(
                 queryRequestDto,
                 new PageRequestDto(null, 4)
-        ).get(0).games();
+        ).content().get(0).games();
         List<GameResponseDto> secondPage = gameQueryService.getAllGames(
                 queryRequestDto,
                 new PageRequestDto(4L, 4)
-        ).get(0).games();
+        ).content().get(0).games();
 
         //then
         assertAll(
@@ -359,11 +360,11 @@ public class GameQueryServiceTest extends ServiceTest {
         List<GameResponseDto> firstPage = gameQueryService.getAllGames(
                 queryRequestDto,
                 new PageRequestDto(null, 4)
-        ).get(0).games();
+        ).content().get(0).games();
         List<GameResponseDto> secondPage = gameQueryService.getAllGames(
                 queryRequestDto,
                 new PageRequestDto(10L, null)
-        ).get(0).games();
+        ).content().get(0).games();
 
         //then
         assertAll(
@@ -386,7 +387,7 @@ public class GameQueryServiceTest extends ServiceTest {
         List<GameResponseDto> responseDtos = gameQueryService.getAllGames(
                 queryRequestDto,
                 new PageRequestDto(null, 4)
-        ).get(0).games();;
+        ).content().get(0).games();;
 
         // then
         List<Long> gameTeamIds = responseDtos.get(0).gameTeams().stream().map(TeamResponse::gameTeamId).toList();

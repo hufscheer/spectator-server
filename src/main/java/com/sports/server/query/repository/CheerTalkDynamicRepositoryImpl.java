@@ -150,7 +150,7 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
         return query
                 .where(getPaginationConditions(cursor))
                 .orderBy(cheerTalk.createdAt.desc(), cheerTalk.id.desc())
-                .limit(size)
+                .limit(size + 1)
                 .fetch();
     }
 

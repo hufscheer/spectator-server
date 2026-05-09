@@ -5,6 +5,7 @@ import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.response.PlayerResponse;
 import com.sports.server.query.dto.response.TeamResponse;
@@ -31,15 +32,20 @@ public class PlayerQueryService {
     private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerInfoProvider playerInfoProvider;
 
-    public List<PlayerResponse> getAllPlayers(Member member, PageRequestDto pageRequest){
+    public CursorPageResponse<PlayerResponse> getAllPlayers(Member member, PageRequestDto pageRequest){
         List<Player> players = playerDynamicRepository.findAllByOrganizationId(
                 member.getOrganization().getId(), pageRequest.cursor(), pageRequest.size()
         );
-        if (players.isEmpty()) {
-            return Collections.emptyList();
+
+        boolean hasNext = players.size() > pageRequest.size();
+        List<Player> sliced = hasNext ? players.subList(0, pageRequest.size()) : players;
+        Long nextCursor = hasNext ? sliced.get(sliced.size() - 1).getId() : null;
+
+        if (sliced.isEmpty()) {
+            return new CursorPageResponse<>(Collections.emptyList(), null, false);
         }
 
-        List<Long> playerIds = players.stream().map(Player::getId).toList();
+        List<Long> playerIds = sliced.stream().map(Player::getId).toList();
 
         List<TeamPlayer> allTeamPlayers = teamPlayerRepository.findAllByPlayerIds(playerIds);
         Map<Long, List<TeamResponse>> playerTeamsMap = allTeamPlayers.stream()
@@ -52,7 +58,7 @@ public class PlayerQueryService {
                 ));
 
         Map<Long, Integer> playerTotalGoalCountInfo = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
-        return players.stream()
+        List<PlayerResponse> content = sliced.stream()
                 .map(player -> {
                     Long playerId = player.getId();
                     List<TeamResponse> teams = playerTeamsMap.getOrDefault(playerId, Collections.emptyList());
@@ -60,6 +66,8 @@ public class PlayerQueryService {
                     return PlayerResponse.of(player, null, totalGoals, teams);
                 })
                 .toList();
+
+        return new CursorPageResponse<>(content, nextCursor, hasNext);
     }
 
     public PlayerResponse getPlayerDetail(Long playerId){

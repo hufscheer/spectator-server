@@ -83,7 +83,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
-        List<LeagueWithGamesResponse> gamesWithLeague = toResponses(response, LeagueWithGamesResponse.class);
+        List<LeagueWithGamesResponse> gamesWithLeague = toCursorPageContent(response, LeagueWithGamesResponse.class);
         LeagueWithGamesResponse gameWithLeague = gamesWithLeague.get(0);
         List<GameResponseDto> games = gameWithLeague.games();
 

@@ -66,7 +66,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        List<CheerTalkResponse.ForManager> blockedCheerTalks = toResponses(getResponse, CheerTalkResponse.ForManager.class);
+        List<CheerTalkResponse.ForManager> blockedCheerTalks = toCursorPageContent(getResponse, CheerTalkResponse.ForManager.class);
 
         // then
         assertAll(
@@ -105,7 +105,7 @@ public class CheerTalkAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        List<CheerTalkResponse.ForManager> unblockedCheerTalks = toResponses(getResponse, CheerTalkResponse.ForManager.class);
+        List<CheerTalkResponse.ForManager> unblockedCheerTalks = toCursorPageContent(getResponse, CheerTalkResponse.ForManager.class);
 
         assertAll(
                 () -> assertThat(patchResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
