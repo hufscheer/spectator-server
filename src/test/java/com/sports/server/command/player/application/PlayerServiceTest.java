@@ -114,6 +114,28 @@ public class PlayerServiceTest extends ServiceTest {
     }
 
     @Test
+    void 학번_중복_예외에는_기존_선수_정보가_포함된다() {
+        // given
+        String duplicatedStudentNumber = "202500001";
+        Long existingId = playerService.register(manager,
+                new PlayerRequest.Register("손흥민", duplicatedStudentNumber));
+
+        // when & then
+        PlayerRequest.Register request = new PlayerRequest.Register("박지성", duplicatedStudentNumber);
+
+        assertThatThrownBy(() -> playerService.register(manager, request))
+                .isInstanceOfSatisfying(
+                        com.sports.server.command.player.exception.PlayerStudentNumberConflictException.class,
+                        ex -> {
+                            assertThat(ex.getStatus()).isEqualTo(org.springframework.http.HttpStatus.CONFLICT);
+                            assertThat(ex.getExistingPlayer().playerId()).isEqualTo(existingId);
+                            assertThat(ex.getExistingPlayer().name()).isEqualTo("손흥민");
+                            assertThat(ex.getExistingPlayer().studentNumber()).isEqualTo(duplicatedStudentNumber);
+                            assertThat(ex.getExistingPlayer().teams()).isEmpty();
+                        });
+    }
+
+    @Test
     void 삭제한_이후에는_해당_객체를_찾을_수_없다() {
         // given
         Long playerId = playerService.register(manager, new PlayerRequest.Register("손흥민", "202500001"));
