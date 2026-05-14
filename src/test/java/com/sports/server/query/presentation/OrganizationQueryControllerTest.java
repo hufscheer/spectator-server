@@ -21,8 +21,8 @@ public class OrganizationQueryControllerTest extends DocumentationTest {
     void 학교_목록을_조회한다() throws Exception {
         // given
         List<OrganizationResponse> responses = List.of(
-                new OrganizationResponse(1L, "한국외대"),
-                new OrganizationResponse(2L, "경희대")
+                new OrganizationResponse(1L, "한국외대", "https://cdn.hufscheer.com/organizations/hufs.png", true),
+                new OrganizationResponse(2L, "경희대", "https://cdn.hufscheer.com/organizations/khu.png", false)
         );
 
         given(organizationQueryService.findAll())
@@ -38,7 +38,9 @@ public class OrganizationQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("학교의 ID"),
-                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("학교의 이름")
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("학교의 이름"),
+                                fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING).optional().description("학교 로고 이미지 URL (없으면 null)"),
+                                fieldWithPath("[].isLeagueOngoing").type(JsonFieldType.BOOLEAN).description("진행 중인 대회 보유 여부 (true=대회 진행 중, false=대회 진행 예정)")
                         )
                 ));
     }

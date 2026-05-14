@@ -19,4 +19,7 @@ public class Organization extends BaseEntity<Organization> {
 
     @Column(name = "student_number_digits", nullable = false)
     private int studentNumberDigits = 9;
+
+    @Column(name = "logo_image_url")
+    private String logoImageUrl;
 }
