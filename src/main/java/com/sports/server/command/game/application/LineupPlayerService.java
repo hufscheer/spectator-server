@@ -55,6 +55,9 @@ public class LineupPlayerService {
                 .orElseThrow(() -> new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION));
 
         validatePlayerForLineup(gameTeam, teamPlayer);
+        if (request.isCaptain() && gameTeam.hasCaptain()) {
+            throw new BadRequestException(GameErrorMessages.CAPTAIN_ALREADY_EXISTS_IN_GAME_TEAM);
+        }
 
         LineupPlayer lineupPlayer = LineupPlayer.of(
                 gameTeam,
