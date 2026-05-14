@@ -70,7 +70,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
     }
 
     @Test
-    void 주장이_이미_존재하는_팀에_주장으로_선수를_추가하면_예외가_발생한다() {
+    void 이미_주장이_있는_팀에는_주장을_추가할_수_없다() {
         // given
         Long gameTeamId = 2L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
@@ -84,7 +84,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
     }
 
     @Test
-    void 주장이_없는_팀에_주장으로_선수를_추가할_수_있다() {
+    void 주장이_없는_팀에_주장을_추가한다() {
         // given
         Long gameTeamId = 1L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
@@ -100,7 +100,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
     }
 
     @Test
-    void 주장이_이미_존재하는_팀에_주장이_아닌_선수는_추가할_수_있다() {
+    void 주장이_있는_팀에_일반_선수는_추가할_수_있다() {
         // given
         Long gameTeamId = 2L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
