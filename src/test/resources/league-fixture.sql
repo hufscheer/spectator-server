@@ -24,12 +24,12 @@ VALUES (1, 1, '경영 야생마', 'https://example.com/logos/wildhorse.png', '#8
        (6, 1, '경영 슬램덩크', 'https://example.com/logos/slamdunk.png', '#FF6347', 'BASKETBALL');
 
 
-INSERT INTO players (id, name, student_number)
-VALUES (1, '진승희', '202101001'),
-       (2, '이동규', '202101002'),
-       (3, '이현제', '202202001'),
-       (4, '고병룡', '202202002'),
-       (5, '박주장', '202003001');
+INSERT INTO players (id, name, student_number, organization_id)
+VALUES (1, '진승희', '202101001', 1),
+       (2, '이동규', '202101002', 1),
+       (3, '이현제', '202202001', 1),
+       (4, '고병룡', '202202002', 1),
+       (5, '박주장', '202003001', 1);
 
 
 INSERT INTO team_players (id, team_id, player_id, jersey_number)
