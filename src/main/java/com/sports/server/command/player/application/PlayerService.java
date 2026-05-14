@@ -27,8 +27,8 @@ public class PlayerService {
     private final EntityUtils entityUtils;
 
     public Long register(final Member member, final PlayerRequest.Register request) {
-        validateUniqueStudentNumber(request.studentNumber());
         Organization organization = member.getOrganization();
+        validateUniqueStudentNumber(request.studentNumber(), organization.getId());
         Player player = new Player(request.name(), request.studentNumber(), organization.getStudentNumberDigits());
         player.setOrganization(organization);
         playerRepository.save(player);
@@ -41,7 +41,7 @@ public class PlayerService {
 
         String newStudentNumber = request.studentNumber();
         if (newStudentNumber != null && !newStudentNumber.equals(player.getStudentNumber())) {
-            validateUniqueStudentNumber(newStudentNumber);
+            validateUniqueStudentNumber(newStudentNumber, member.getOrganization().getId());
         }
 
         player.update(request.name(), request.studentNumber(), member.getOrganization().getStudentNumberDigits());
@@ -53,11 +53,11 @@ public class PlayerService {
         playerRepository.delete(player);
     }
 
-    private void validateUniqueStudentNumber(String studentNumber) {
+    private void validateUniqueStudentNumber(String studentNumber, Long organizationId) {
         if (studentNumber == null) {
             return;
         }
-        playerRepository.findByStudentNumber(studentNumber)
+        playerRepository.findByStudentNumberAndOrganizationId(studentNumber, organizationId)
                 .ifPresent(existing -> {
                     throw new PlayerStudentNumberConflictException(buildConflictPlayer(existing));
                 });

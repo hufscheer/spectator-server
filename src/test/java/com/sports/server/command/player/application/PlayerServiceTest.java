@@ -136,6 +136,22 @@ public class PlayerServiceTest extends ServiceTest {
     }
 
     @Test
+    void 다른_organization에서는_같은_학번으로_등록할_수_있다() {
+        // given — 학교 A(org=1, manager: john)에 학번 등록
+        String sameStudentNumber = "202500001";
+        playerService.register(manager, new PlayerRequest.Register("손흥민", sameStudentNumber));
+
+        // when — 학교 B(org=2, manager: smith) 가 동일 학번으로 등록
+        Member smithManager = memberRepository.findMemberByEmailWithOrganization("smith@example.com")
+                .orElseThrow();
+        Long otherOrgPlayerId = playerService.register(smithManager,
+                new PlayerRequest.Register("박지성", sameStudentNumber));
+
+        // then — 다른 organization 이므로 학번 충돌 없이 등록 성공 (cross-org leak 차단)
+        assertThat(otherOrgPlayerId).isNotNull();
+    }
+
+    @Test
     void 삭제한_이후에는_해당_객체를_찾을_수_없다() {
         // given
         Long playerId = playerService.register(manager, new PlayerRequest.Register("손흥민", "202500001"));
