@@ -32,9 +32,9 @@ public class PlayerQueryService {
     private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerInfoProvider playerInfoProvider;
 
-    public CursorPageResponse<PlayerResponse> getAllPlayers(Member member, PageRequestDto pageRequest){
+    public CursorPageResponse<PlayerResponse> getAllPlayers(Member member, PageRequestDto pageRequest, String name, String studentNumber){
         List<Player> players = playerDynamicRepository.findAllByOrganizationId(
-                member.getOrganization().getId(), pageRequest.cursor(), pageRequest.size()
+                member.getOrganization().getId(), name, studentNumber, pageRequest.cursor(), pageRequest.size()
         );
 
         boolean hasNext = players.size() > pageRequest.size();

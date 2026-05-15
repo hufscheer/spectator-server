@@ -43,13 +43,15 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                 new PlayerResponse(3L, null, "선수3", "202500003", null, 10, Collections.emptyList())
         ), null, false);
 
-        given(playerQueryService.getAllPlayers(any(), any()))
+        given(playerQueryService.getAllPlayers(any(), any(), any(), any()))
                 .willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/players")
                 .queryParam("cursor", "10")
                 .queryParam("size", "10")
+                .queryParam("name", "선수")
+                .queryParam("studentNumber", "202500001")
                 .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -59,7 +61,9 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("cursor").description("마지막으로 조회한 선수의 ID (선택, 미입력 시 최신부터)").optional(),
-                                parameterWithName("size").description("조회할 선수 수 (선택, default 10)").optional()
+                                parameterWithName("size").description("조회할 선수 수 (선택, default 10)").optional(),
+                                parameterWithName("name").description("선수 이름 부분 일치 검색 (선택, 대소문자 무시)").optional(),
+                                parameterWithName("studentNumber").description("학번 정확 일치 검색 (선택)").optional()
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

@@ -300,6 +300,12 @@ operation::organization-query-controller-test/학교_목록을_조회한다[snip
 
 operation::player-controller-test/선수를_생성한다[snippets='http-request,request-cookies,request-fields,http-response']
 
+=== 선수 생성 - 학번 중복 (409 Conflict)
+
+학번이 이미 존재하는 경우 409를 반환하며, 기존 선수 정보(소속팀 포함)를 함께 제공한다.
+
+operation::player-controller-test/선수_등록_시_학번이_이미_존재하면_409와_기존_선수_정보를_반환한다[snippets='http-request,request-cookies,request-fields,http-response,response-fields']
+
 === 선수 수정
 
 operation::player-controller-test/선수_정보를_수정한다[snippets='http-request,path-parameters,request-cookies,request-fields']

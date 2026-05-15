@@ -45,8 +45,8 @@ public class NlController {
 
     @PostMapping("/check-duplicates")
     public ResponseEntity<NlCheckDuplicatesResponse> checkDuplicates(
-            @Valid @RequestBody NlCheckDuplicatesRequest request) {
-        return ResponseEntity.ok(nlService.checkDuplicates(request));
+            @Valid @RequestBody NlCheckDuplicatesRequest request, Member member) {
+        return ResponseEntity.ok(nlService.checkDuplicates(request, member));
     }
 
     @PostMapping("/execute")

@@ -214,7 +214,7 @@ public class NlControllerTest extends DocumentationTest {
                 new Summary(2, 1, 1, 0)
         );
 
-        given(nlService.checkDuplicates(any())).willReturn(response);
+        given(nlService.checkDuplicates(any(), any())).willReturn(response);
 
         Map<String, Object> request = Map.of(
                 "players", List.of(
