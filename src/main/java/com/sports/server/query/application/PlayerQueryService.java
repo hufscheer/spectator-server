@@ -32,7 +32,7 @@ public class PlayerQueryService {
     private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerInfoProvider playerInfoProvider;
 
-    public CursorPageResponse<PlayerResponse> getAllPlayers(Member member, PageRequestDto pageRequest, String name, String studentNumber){
+    public CursorPageResponse<PlayerResponse> getAllPlayers(Member member, PageRequestDto pageRequest){
         List<Player> players = playerDynamicRepository.findAllByOrganizationId(
                 member.getOrganization().getId(), name, studentNumber, pageRequest.cursor(), pageRequest.size()
         );
