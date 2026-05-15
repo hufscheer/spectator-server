@@ -43,7 +43,7 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                 new PlayerResponse(3L, null, "선수3", "202500003", null, 10, Collections.emptyList())
         ), null, false);
 
-        given(playerQueryService.getAllPlayers(any(), any()))
+        given(playerQueryService.getAllPlayers(any(), any(), any(), any()))
                 .willReturn(response);
 
         // when

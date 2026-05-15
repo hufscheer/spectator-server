@@ -18,8 +18,11 @@ public class PlayerQueryController {
 
     @GetMapping
     public ResponseEntity<CursorPageResponse<PlayerResponse>> getAllPlayers(
-            @ModelAttribute PageRequestDto pageRequest, Member member){
-        return ResponseEntity.ok(playerQueryService.getAllPlayers(member, pageRequest));
+            @ModelAttribute PageRequestDto pageRequest,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String studentNumber,
+            Member member){
+        return ResponseEntity.ok(playerQueryService.getAllPlayers(member, pageRequest, name, studentNumber));
     }
 
     @GetMapping("/{playerId}")
