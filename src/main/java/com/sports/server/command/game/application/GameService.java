@@ -119,6 +119,8 @@ public class GameService {
     }
 
     private void registerGameTeamAndLineup(Game game, GameRequest.TeamLineupRequest teamLineupInfo) {
+        validateSingleCaptain(teamLineupInfo);
+
         Team team = entityUtils.getEntity(teamLineupInfo.teamId(), Team.class);
         GameTeam gameTeam = GameTeam.of(game, team);
         gameTeamRepository.save(gameTeam);
@@ -132,6 +134,15 @@ public class GameService {
         List<TeamPlayer> teamPlayers = teamPlayerRepository.findAllByTeamPlayerIds(teamPlayerIdsRequest);
         validateTeamPlayers(teamPlayerIdsRequest, teamPlayers, team);
         registerLineup(gameTeam, teamPlayers, teamLineupInfo);
+    }
+
+    private void validateSingleCaptain(GameRequest.TeamLineupRequest teamLineupInfo) {
+        long captainCount = teamLineupInfo.lineupPlayers().stream()
+                .filter(GameRequest.LineupPlayerRequest::isCaptain)
+                .count();
+        if (captainCount > 1) {
+            throw new BadRequestException(GameErrorMessages.MULTIPLE_CAPTAINS_IN_REQUEST);
+        }
     }
 
     private void registerLineup(GameTeam gameTeam, List<TeamPlayer> teamPlayers, GameRequest.TeamLineupRequest teamLineupRequest){

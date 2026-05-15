@@ -54,7 +54,7 @@ public class LineupPlayerService {
         TeamPlayer teamPlayer = teamPlayerRepository.findById(request.teamPlayerId())
                 .orElseThrow(() -> new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION));
 
-        validatePlayerForLineup(gameTeam, teamPlayer);
+        validateLineupAddition(gameTeam, teamPlayer, request.isCaptain());
 
         LineupPlayer lineupPlayer = LineupPlayer.of(
                 gameTeam,
@@ -78,13 +78,19 @@ public class LineupPlayerService {
         gameTeam.removeLineupPlayer(lineupPlayer);
     }
 
-    private void validatePlayerForLineup(final GameTeam gameTeam, final TeamPlayer teamPlayer) {
+    private void validateLineupAddition(
+            final GameTeam gameTeam,
+            final TeamPlayer teamPlayer,
+            final boolean isCaptain
+    ) {
         if (!teamPlayer.getTeam().getId().equals(gameTeam.getTeam().getId())) {
             throw new BadRequestException(GameErrorMessages.PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION);
         }
-
         if (lineupPlayerRepository.existsByGameTeamAndPlayer(gameTeam, teamPlayer.getPlayer())) {
             throw new BadRequestException(GameErrorMessages.ALREADY_REGISTERED_IN_LINEUP);
+        }
+        if (isCaptain && gameTeam.hasCaptain()) {
+            throw new BadRequestException(GameErrorMessages.CAPTAIN_ALREADY_EXISTS_IN_GAME_TEAM);
         }
     }
 }

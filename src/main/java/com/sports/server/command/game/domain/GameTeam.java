@@ -103,6 +103,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
         }
     }
 
+    public boolean hasCaptain() {
+        return this.lineupPlayers.stream().anyMatch(LineupPlayer::isCaptain);
+    }
+
     public void removeLineupPlayer(LineupPlayer lineupPlayer) {
         this.lineupPlayers.remove(lineupPlayer);
     }

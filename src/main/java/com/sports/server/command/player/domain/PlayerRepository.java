@@ -17,5 +17,9 @@ public interface PlayerRepository extends Repository<Player, Long> {
 
     Optional<Player> findByStudentNumber(String studentNumber);
 
+    Optional<Player> findByStudentNumberAndOrganizationId(String studentNumber, Long organizationId);
+
     List<Player> findByStudentNumberIn(List<String> studentNumbers);
+
+    List<Player> findByStudentNumberInAndOrganizationId(List<String> studentNumbers, Long organizationId);
 }
