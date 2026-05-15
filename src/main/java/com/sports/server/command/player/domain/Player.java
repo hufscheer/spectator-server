@@ -24,7 +24,7 @@ public class Player extends BaseEntity<Player> implements ManagedEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "student_number", nullable = true, unique = true)
+    @Column(name = "student_number", nullable = true)
     private String studentNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)

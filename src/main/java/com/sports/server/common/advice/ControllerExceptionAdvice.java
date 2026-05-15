@@ -1,5 +1,7 @@
 package com.sports.server.common.advice;
 
+import com.sports.server.command.player.dto.PlayerConflictResponse;
+import com.sports.server.command.player.exception.PlayerStudentNumberConflictException;
 import com.sports.server.common.application.AlertService;
 import com.sports.server.common.dto.ErrorResponse;
 import com.sports.server.common.exception.CustomException;
@@ -25,6 +27,14 @@ import java.util.stream.Collectors;
 public class ControllerExceptionAdvice {
 
     private final AlertService alertService;
+
+    @ExceptionHandler(PlayerStudentNumberConflictException.class)
+    protected ResponseEntity<PlayerConflictResponse> handlePlayerStudentNumberConflict(
+            PlayerStudentNumberConflictException e, HttpServletRequest request) {
+        logClientError(request, e.getStatus(), e.getMessage());
+        return ResponseEntity.status(e.getStatus())
+                .body(new PlayerConflictResponse(e.getMessage(), e.getExistingPlayer()));
+    }
 
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e, HttpServletRequest request) {

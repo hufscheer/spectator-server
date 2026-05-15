@@ -16,15 +16,31 @@ public class PlayerDynamicRepositoryImpl implements PlayerDynamicRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Player> findAllByOrganizationId(Long organizationId, Long cursor, Integer size) {
+    public List<Player> findAllByOrganizationId(Long organizationId, String name, String studentNumber, Long cursor, Integer size) {
         return queryFactory.selectFrom(player)
                 .where(
                         player.organization.id.eq(organizationId),
+                        nameContains(name),
+                        studentNumberEquals(studentNumber),
                         getCursorCondition(cursor)
                 )
                 .orderBy(player.id.desc())
                 .limit(size + 1)
                 .fetch();
+    }
+
+    private BooleanExpression nameContains(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+        return player.name.containsIgnoreCase(name);
+    }
+
+    private BooleanExpression studentNumberEquals(String studentNumber) {
+        if (studentNumber == null || studentNumber.isBlank()) {
+            return null;
+        }
+        return player.studentNumber.eq(studentNumber);
     }
 
     private BooleanExpression getCursorCondition(Long cursor) {

@@ -72,6 +72,49 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 이름으로_부분일치_검색한다() {
+        configureMockJwtForEmail("john@example.com");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .queryParam("name", "흥민")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/players")
+                .then().log().all()
+                .extract();
+
+        List<PlayerResponse> actual = toCursorPageContent(response, PlayerResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual).extracting(PlayerResponse::name).containsExactly("손흥민")
+        );
+    }
+
+    @Test
+    void 학번으로_정확일치_검색한다() {
+        configureMockJwtForEmail("john@example.com");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .queryParam("studentNumber", player2.getStudentNumber())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/players")
+                .then().log().all()
+                .extract();
+
+        List<PlayerResponse> actual = toCursorPageContent(response, PlayerResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actual).extracting(PlayerResponse::studentNumber)
+                        .containsExactly(player2.getStudentNumber())
+        );
+    }
+
+    @Test
     void 선수를_상세_조회한다(){
         // given
         Long playerId = player1.getId();

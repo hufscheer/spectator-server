@@ -136,7 +136,8 @@ public class NlService {
         Map<String, Integer> originalStudentNumberLineMap = extractStudentNumberLineMap(request.message());
         Set<Long> teamPlayerIdSet = new HashSet<>(teamPlayerRepository.findPlayerIdsByTeamId(request.teamId()));
         Map<String, Player> existingPlayerMap = findExistingPlayerMap(
-                parsedPlayers.stream().map(ParsedPlayer::studentNumber).filter(Objects::nonNull).toList()
+                parsedPlayers.stream().map(ParsedPlayer::studentNumber).filter(Objects::nonNull).toList(),
+                organization.getId()
         );
 
         List<PlayerPreview> playerPreviews = new ArrayList<>();
@@ -250,11 +251,11 @@ public class NlService {
     }
 
     @Transactional(readOnly = true)
-    public NlCheckDuplicatesResponse checkDuplicates(NlCheckDuplicatesRequest request) {
+    public NlCheckDuplicatesResponse checkDuplicates(NlCheckDuplicatesRequest request, Member member) {
         List<String> studentNumbers = request.players().stream()
                 .map(NlCheckDuplicatesRequest.PlayerData::studentNumber)
                 .toList();
-        Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers);
+        Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers, member.getOrganization().getId());
 
         Set<String> seenStudentNumbers = new HashSet<>();
         List<PlayerPreview> playerPreviews = request.players().stream()
@@ -295,7 +296,7 @@ public class NlService {
         List<String> studentNumbers = players.stream()
                 .map(NlExecuteRequest.PlayerData::studentNumber)
                 .toList();
-        Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers);
+        Map<String, Player> existingPlayerMap = findExistingPlayerMap(studentNumbers, organization.getId());
         return new ExecuteContext(teamPlayerIdSet, existingPlayerMap, organization);
     }
 
@@ -400,8 +401,8 @@ public class NlService {
         }
     }
 
-    private Map<String, Player> findExistingPlayerMap(List<String> studentNumbers) {
-        return playerRepository.findByStudentNumberIn(studentNumbers)
+    private Map<String, Player> findExistingPlayerMap(List<String> studentNumbers, Long organizationId) {
+        return playerRepository.findByStudentNumberInAndOrganizationId(studentNumbers, organizationId)
                 .stream()
                 .collect(Collectors.toMap(Player::getStudentNumber, p -> p));
     }
