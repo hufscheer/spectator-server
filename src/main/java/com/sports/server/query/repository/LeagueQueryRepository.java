@@ -59,6 +59,10 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
                                        @Param("organizationId") Long organizationId,
                                        @Param("sportType") SportType sportType);
 
+    @Query("SELECT DISTINCT l.organization.id FROM League l"
+            + " WHERE l.startAt <= :now AND l.endAt >= :now")
+    List<Long> findOrganizationIdsWithOngoingLeague(@Param("now") LocalDateTime now);
+
     @Query("SELECT l FROM League l WHERE l.startAt = ("
             + "SELECT MAX(l2.startAt) FROM League l2"
             + " WHERE (:organizationId IS NULL OR l2.organization.id = :organizationId)"
