@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.dto.response.CheerTalkResponse;
 import com.sports.server.support.ServiceTest;
@@ -54,7 +55,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 
             // when
             List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getReportedCheerTalksByAdmin(
-                    pageRequestDto, admin1);
+                    pageRequestDto, admin1).content();
 
             // then
             assertAll(
@@ -69,7 +70,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
         void 관리자2의_신고된_응원톡만_조회된다() {
             // when
             List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getReportedCheerTalksByAdmin(
-                    pageRequestDto, admin2);
+                    pageRequestDto, admin2).content();
 
             // then
             // 관리자2는 신고된 응원톡이 없으므로 빈 리스트가 반환되어야 함
@@ -80,7 +81,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
         void 다른_관리자의_신고된_응원톡은_조회되지_않는다() {
             // when
             List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getReportedCheerTalksByAdmin(
-                    pageRequestDto, admin1);
+                    pageRequestDto, admin1).content();
 
             // then
             // 관리자1의 신고된 응원톡만 조회되어야 하고, 관리자2의 신고된 응원톡은 조회되지 않아야 함
@@ -101,7 +102,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 
 			// when
 			List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getBlockedCheerTalksByAdmin(
-				pageRequestDto, admin1);
+				pageRequestDto, admin1).content();
 
 			// then
 			assertAll(
@@ -122,7 +123,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 
 			// when
 			List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getBlockedCheerTalksByAdmin(
-				pageRequestDto, admin2);
+				pageRequestDto, admin2).content();
 
 			// then
 			assertAll(
@@ -142,7 +143,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 		void 다른_관리자의_응원톡은_조회되지_않는다() {
 			// when
 			List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getBlockedCheerTalksByAdmin(
-				pageRequestDto, admin1);
+				pageRequestDto, admin1).content();
 
 			// then
 			// 관리자1의 응원톡만 조회되어야 하고, 관리자2의 응원톡들(26L, 29L)은 조회되지 않아야 함
@@ -154,7 +155,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 		void 관리자2가_여러_리그를_관리할_때_모든_리그의_블락된_응원톡이_조회된다() {
 			// when
 			List<CheerTalkResponse.ForManager> responses = cheerTalkQueryService.getBlockedCheerTalksByAdmin(
-				pageRequestDto, admin2);
+				pageRequestDto, admin2).content();
 
 			// then
 			assertAll(
@@ -177,7 +178,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
         void 관리자1의_응원톡이_최신순으로_조회된다() {
             // when
             List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getUnblockedCheerTalksByAdmin(
-                    pageRequestDto, admin1);
+                    pageRequestDto, admin1).content();
 
             // then
             assertAll(
@@ -195,7 +196,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
         void 관리자2의_응원톡이_최신순으로_조회된다() {
             // when
             List<CheerTalkResponse.ForManager> results = cheerTalkQueryService.getUnblockedCheerTalksByAdmin(
-                    pageRequestDto, admin2);
+                    pageRequestDto, admin2).content();
 
             // then
             assertAll(
@@ -215,7 +216,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
         void 차단되지_않은_응원톡만_조회된다() {
             // when
             List<CheerTalkResponse.ForManager> results =
-                    cheerTalkQueryService.getUnblockedCheerTalksByAdmin(pageRequestDto, admin1);
+                    cheerTalkQueryService.getUnblockedCheerTalksByAdmin(pageRequestDto, admin1).content();
 
             // then
             assertThat(
@@ -227,7 +228,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
         void 다른_관리자의_응원톡은_조회되지_않는다() {
             // when
             List<CheerTalkResponse.ForManager> responses
-                    = cheerTalkQueryService.getUnblockedCheerTalksByAdmin(pageRequestDto, admin1);
+                    = cheerTalkQueryService.getUnblockedCheerTalksByAdmin(pageRequestDto, admin1).content();
 
             // then
             // 관리자1의 응원톡만 조회되어야 하고, 관리자2의 응원톡들(24L, 25L, 27L, 28L)은 조회되지 않아야 함
@@ -240,7 +241,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
         void 관리자가_여러_리그를_관리할_때_모든_리그의_응원톡이_조회된다() {
             // when
             List<CheerTalkResponse.ForManager> results =
-                    cheerTalkQueryService.getUnblockedCheerTalksByAdmin(pageRequestDto, admin2);
+                    cheerTalkQueryService.getUnblockedCheerTalksByAdmin(pageRequestDto, admin2).content();
 
             // then
             assertAll(
@@ -261,7 +262,7 @@ public class CheerTalkQueryServiceTest extends ServiceTest {
 
             // when
             List<CheerTalkResponse.ForManager> results =
-                    cheerTalkQueryService.getUnblockedCheerTalksByAdmin(request, admin1);
+                    cheerTalkQueryService.getUnblockedCheerTalksByAdmin(request, admin1).content();
 
             // then
             assertAll(
