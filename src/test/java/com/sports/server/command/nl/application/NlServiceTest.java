@@ -102,7 +102,7 @@ class NlServiceTest {
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600002", 7)
                     )));
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of());
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
 
             // when
@@ -133,7 +133,7 @@ class NlServiceTest {
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of(existingPlayer));
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
 
             // when
@@ -162,7 +162,7 @@ class NlServiceTest {
                     .willReturn(NlParseResult.ofPlayers(List.of(
                             new ParsedPlayer("홍길동", "202600001", 10)
                     )));
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of(existingPlayer));
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of(42L));
 
             // when
@@ -187,7 +187,7 @@ class NlServiceTest {
                             new ParsedPlayer("홍길동", "202600001", 10),
                             new ParsedPlayer("김철수", "202600001", 7)
                     )));
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of());
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
 
             // when
@@ -380,7 +380,7 @@ class NlServiceTest {
             given(entityUtils.getEntity(99L, Team.class)).willReturn(createdTeam);
 
             given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of());
             given(playerService.register(any(), any())).willReturn(100L);
 
             // when
@@ -411,7 +411,7 @@ class NlServiceTest {
             given(entityUtils.getEntity(99L, Team.class)).willReturn(createdTeam);
 
             given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of());
             given(playerService.register(any(), any())).willReturn(100L);
 
             // when
@@ -445,7 +445,7 @@ class NlServiceTest {
             given(existingPlayer.isManagedBy(mockMember)).willReturn(true);
 
             given(teamPlayerRepository.findPlayerIdsByTeamId(99L)).willReturn(List.of());
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of(existingPlayer));
 
             // when
             NlRegisterTeamResponse response = nlService.registerTeamWithPlayers(request, mockMember);
@@ -471,7 +471,7 @@ class NlServiceTest {
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of());
             given(playerService.register(any(), any())).willReturn(100L);
 
             // when
@@ -499,7 +499,7 @@ class NlServiceTest {
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of(existingPlayer));
 
             // when
             NlExecuteResponse response = nlService.execute(request, mockMember);
@@ -525,7 +525,7 @@ class NlServiceTest {
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of(42L));
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of(existingPlayer));
 
             // when
             NlExecuteResponse response = nlService.execute(request, mockMember);
@@ -572,7 +572,7 @@ class NlServiceTest {
 
             given(entityUtils.getEntity(1L, Team.class)).willReturn(mockTeam);
             given(teamPlayerRepository.findPlayerIdsByTeamId(1L)).willReturn(List.of());
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of());
             given(playerService.register(any(), any())).willReturn(100L);
 
             // when
@@ -605,10 +605,10 @@ class NlServiceTest {
             given(existingPlayer.getId()).willReturn(42L);
             given(existingPlayer.getStudentNumber()).willReturn("202600001");
 
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of(existingPlayer));
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of(existingPlayer));
 
             // when
-            NlCheckDuplicatesResponse response = nlService.checkDuplicates(request);
+            NlCheckDuplicatesResponse response = nlService.checkDuplicates(request, mockMember);
 
             // then
             assertThat(response.players()).hasSize(2);
@@ -631,10 +631,10 @@ class NlServiceTest {
                     )
             );
 
-            given(playerRepository.findByStudentNumberIn(anyList())).willReturn(List.of());
+            given(playerRepository.findByStudentNumberInAndOrganizationId(anyList(), any())).willReturn(List.of());
 
             // when
-            NlCheckDuplicatesResponse response = nlService.checkDuplicates(request);
+            NlCheckDuplicatesResponse response = nlService.checkDuplicates(request, mockMember);
 
             // then
             assertThat(response.players()).hasSize(1);

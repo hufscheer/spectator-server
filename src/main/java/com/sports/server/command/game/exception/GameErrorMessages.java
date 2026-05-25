@@ -23,4 +23,6 @@ public class GameErrorMessages {
     public static final String PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION = "다른 팀의 선수를 라인업에 등록할 수 없습니다.";
     public static final String LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION = "해당 라인업 선수는 요청한 게임팀에 속해있지 않습니다.";
     public static final String ALREADY_REGISTERED_IN_LINEUP = "이미 라인업에 등록된 선수입니다.";
+    public static final String MULTIPLE_CAPTAINS_IN_REQUEST = "팀 라인업에 주장은 한 명만 지정할 수 있습니다.";
+    public static final String CAPTAIN_ALREADY_EXISTS_IN_GAME_TEAM = "이미 주장이 등록된 팀입니다. 기존 주장을 먼저 해제한 뒤 추가하세요.";
 }

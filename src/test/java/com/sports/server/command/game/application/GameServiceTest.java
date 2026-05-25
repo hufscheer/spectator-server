@@ -172,6 +172,25 @@ public class GameServiceTest extends ServiceTest {
             assertThatThrownBy(() -> gameService.register(leagueId, requestDto, manager)).isInstanceOf(
                     CustomException.class).hasMessage("최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
         }
+
+        @Test
+        void 한_팀에_주장이_두_명_이상이면_예외가_발생한다() {
+            // given
+            Long leagueId = 1L;
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            List<GameRequest.LineupPlayerRequest> twoCaptainsLineup = List.of(
+                    new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
+                    new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, true)
+            );
+            GameRequest.TeamLineupRequest invalidTeam1 = new GameRequest.TeamLineupRequest(1L, twoCaptainsLineup);
+            GameRequest.Register invalidRequest = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED",
+                    LocalDateTime.now(), null, invalidTeam1, team2);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.register(leagueId, invalidRequest, manager))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage("팀 라인업에 주장은 한 명만 지정할 수 있습니다.");
+        }
     }
 
     @Nested
