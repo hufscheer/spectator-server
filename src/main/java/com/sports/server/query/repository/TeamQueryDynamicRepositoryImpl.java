@@ -101,6 +101,6 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
         if (organizationId == null) {
             return null;
         }
-        return team.organization.id.eq(organizationId);
+        return team.unit.organization.id.eq(organizationId);
     }
 }

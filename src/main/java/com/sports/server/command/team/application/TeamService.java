@@ -48,7 +48,6 @@ public class TeamService {
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
         Team team = request.toEntity(imgUrl, unit);
-        team.setOrganization(member.getOrganization());
         teamRepository.save(team);
         eventPublisher.publishEvent(new LogoImageNormalizationRequestedEvent(request.logoImageUrl()));
 
@@ -63,7 +62,6 @@ public class TeamService {
 
         Unit unit = findUnit(request.unit(), member.getOrganization().getId());
         Team team = request.toEntity(imgUrl, unit);
-        team.setOrganization(member.getOrganization());
         teamRepository.save(team);
         eventPublisher.publishEvent(new LogoImageNormalizationRequestedEvent(request.logoImageUrl()));
         return team.getId();
@@ -74,12 +72,7 @@ public class TeamService {
         PermissionValidator.checkPermission(team, member);
 
         Unit unit = Optional.ofNullable(request.unit())
-                .map(unitName -> {
-                    Long unitOrgId = team.getOrganization() != null
-                            ? team.getOrganization().getId()
-                            : (member.getOrganization() != null ? member.getOrganization().getId() : null);
-                    return findUnit(unitName, unitOrgId);
-                })
+                .map(unitName -> findUnit(unitName, team.getUnit().getOrganization().getId()))
                 .orElse(null);
         String resolvedLogoUrl = resolveLogoImageUrl(request.logoImageUrl(), team);
         team.update(request.name(), resolvedLogoUrl, unit, request.teamColor());
