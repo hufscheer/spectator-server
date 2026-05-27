@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum Round {
     FINAL("결승", 2),
-    SEMI_FINAL("4강", 4),
+    SEMI_FINAL("준결승", 4),
     QUARTER_FINAL("8강", 8),
     ROUND_16("16강", 16),
     PRELIMINARY("예선", 100);

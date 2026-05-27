@@ -117,7 +117,7 @@ class GameQueryControllerTest extends DocumentationTest {
                 new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2, 0)
         );
         List<GameResponseDto> responses = List.of(
-                new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "4강", 4, "abc123", gameTeams1, false),
+                new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "준결승", 4, "abc123", gameTeams1, false),
                 new GameResponseDto(2L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "결승전", 2, "abc123", gameTeams2, false)
         );
         List<LeagueWithGamesResponse> finalResponse = List.of(
@@ -422,7 +422,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         
         List<GameDetailResponse> responses = List.of(
-                new GameDetailResponse(1L, startTime1, "video1", new QuarterResponse("FIRST_HALF", "전반전"), "4강", gameTeams1, "FINISHED", 4, false, 1L, "춘계리그"),
+                new GameDetailResponse(1L, startTime1, "video1", new QuarterResponse("FIRST_HALF", "전반전"), "준결승", gameTeams1, "FINISHED", 4, false, 1L, "춘계리그"),
                 new GameDetailResponse(2L, startTime2, "video2", new QuarterResponse("SECOND_HALF", "후반전"), "결승", gameTeams2, "PLAYING", 2, false, 1L, "춘계리그")
         );
 
