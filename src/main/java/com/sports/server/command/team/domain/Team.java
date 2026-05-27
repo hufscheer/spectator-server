@@ -3,7 +3,6 @@ package com.sports.server.command.team.domain;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.LeagueTeam;
 import com.sports.server.command.league.domain.SportType;
-import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.domain.BaseEntity;
@@ -44,10 +43,6 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "sport_type", nullable = false)
     private SportType sportType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
@@ -138,12 +133,8 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
         if (manager.isAdministrator()) {
             return true;
         }
-        return this.organization != null && manager.getOrganization() != null
-                && this.organization.getId().equals(manager.getOrganization().getId());
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+        return manager.getOrganization() != null
+                && this.unit.getOrganization().getId().equals(manager.getOrganization().getId());
     }
 
 }
