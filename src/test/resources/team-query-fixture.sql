@@ -18,12 +18,12 @@ VALUES (1, '사회과학대학', 1),
        (4, '경영대학', 2);
 
 
-INSERT INTO teams (id, unit_id, name, logo_image_url, team_color, organization_id)
-VALUES (1, 1, '팀A', 'http://example.com/logo_a.png', '#FF0000', 1),
-       (2, 2, '팀B', 'http://example.com/logo_b.png', '#0000FF', 1),
-       (3, 3, '팀C', 'http://example.com/logo_c.png', '#0000FF', 1),
-       (4, 1, '팀D', 'http://example.com/logo_d.png', '#0000FF', 1),
-       (20, 4, '다른조직팀', 'http://example.com/logo_other.png', '#00FF00', 2);
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (1, 1, '팀A', 'http://example.com/logo_a.png', '#FF0000'),
+       (2, 2, '팀B', 'http://example.com/logo_b.png', '#0000FF'),
+       (3, 3, '팀C', 'http://example.com/logo_c.png', '#0000FF'),
+       (4, 1, '팀D', 'http://example.com/logo_d.png', '#0000FF'),
+       (20, 4, '다른조직팀', 'http://example.com/logo_other.png', '#00FF00');
 
 
 INSERT INTO players (id, name, student_number)
@@ -167,10 +167,10 @@ VALUES ('GAME_PROGRESS', 1, 'POST_GAME', 20, 'GAME_END', 1, 2, 2, 3, 'PENALTY_SH
 
 -- === 최근 경기 조회 위한 데이터 ===
 
-INSERT INTO teams (id, unit_id, name, logo_image_url, team_color, organization_id)
-VALUES (10, 2, '게임없는팀', 'image', '#000000', 1),
-       (11, 2, '게임2개팀', 'image', '#00FF00', 1),
-       (12, 2, '게임많은팀', 'image', '#FF00FF', 1);
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color)
+VALUES (10, 2, '게임없는팀', 'image', '#000000'),
+       (11, 2, '게임2개팀', 'image', '#00FF00'),
+       (12, 2, '게임많은팀', 'image', '#FF00FF');
 
 INSERT INTO players (id, name, student_number)
 VALUES (20, '선수20', '202400001'),
@@ -231,11 +231,11 @@ VALUES (3, '멀티스포츠 학교', 9);
 INSERT INTO units (id, name, organization_id)
 VALUES (50, '멀티스포츠과', 3);
 
-INSERT INTO teams (id, unit_id, name, logo_image_url, team_color, organization_id, sport_type)
-VALUES (50, 50, '멀티스포츠 축구팀', 'http://example.com/logo_soccer.png', '#111111', 3, 'SOCCER'),
-       (51, 50, '멀티스포츠 농구팀', 'http://example.com/logo_basket.png', '#222222', 3, 'BASKETBALL'),
-       (52, 50, '상대 축구팀', 'http://example.com/logo_op_soccer.png', '#333333', 3, 'SOCCER'),
-       (53, 50, '상대 농구팀', 'http://example.com/logo_op_basket.png', '#444444', 3, 'BASKETBALL');
+INSERT INTO teams (id, unit_id, name, logo_image_url, team_color, sport_type)
+VALUES (50, 50, '멀티스포츠 축구팀', 'http://example.com/logo_soccer.png', '#111111', 'SOCCER'),
+       (51, 50, '멀티스포츠 농구팀', 'http://example.com/logo_basket.png', '#222222', 'BASKETBALL'),
+       (52, 50, '상대 축구팀', 'http://example.com/logo_op_soccer.png', '#333333', 'SOCCER'),
+       (53, 50, '상대 농구팀', 'http://example.com/logo_op_basket.png', '#444444', 'BASKETBALL');
 
 INSERT INTO players (id, name, student_number)
 VALUES (50, '멀티선수50', '202100050');
