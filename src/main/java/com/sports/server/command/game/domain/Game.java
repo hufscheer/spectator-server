@@ -241,7 +241,7 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         updateQuarter(league.getSportType().postGameQuarter());
     }
 
-    public void determineResult() {
+    private void determineResult() {
         if (gameTeams.size() != MINIMUM_TEAMS) {
             throw new BadRequestException(GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
         }

@@ -59,11 +59,17 @@ public class GameService {
     }
 
     @Transactional
-    public List<Game> updateGameStatusToFinish(LocalDateTime now) {
+    public List<Long> finishOverdueGames(LocalDateTime now) {
         LocalDateTime cutoffTime = now.minusHours(5);
-        List<Game> games = gameRepository.findGamesOlderThanFiveHours(cutoffTime);
-        games.forEach(game -> game.updateState(GameState.FINISHED));
-        return games;
+        List<Game> overdueGames = gameRepository.findGamesOlderThanFiveHours(cutoffTime);
+        overdueGames.forEach(game -> {
+            game.end();
+            game.updateResult();
+        });
+        return overdueGames.stream()
+                .filter(game -> Round.FINAL == game.getRound())
+                .map(Game::getId)
+                .toList();
     }
 
     @Transactional(readOnly = true)
