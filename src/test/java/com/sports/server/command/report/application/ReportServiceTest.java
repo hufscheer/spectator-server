@@ -11,6 +11,7 @@ import com.sports.server.command.report.domain.ReportState;
 import com.sports.server.command.report.dto.ReportRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import java.util.Optional;
@@ -120,7 +121,7 @@ class ReportServiceTest extends ServiceTest {
             reportService.cancel(leagueId, cheerTalkId, manager);
 
             // then
-            Report report = reportRepository.findByCheerTalkId(cheerTalkId);
+            Report report = reportRepository.findByCheerTalkId(cheerTalkId).orElseThrow();
             assertThat(report.getState()).isEqualTo(ReportState.INVALID);
         }
 
@@ -133,6 +134,17 @@ class ReportServiceTest extends ServiceTest {
             // when & then
             assertThatThrownBy(() -> reportService.cancel(leagueId, cheerTalkId, manager))
                     .isInstanceOf(UnauthorizedException.class);
+        }
+
+        @Test
+        void 신고가_없는_응원톡을_무효처리하면_예외가_발생한다() {
+            // given
+            cheerTalkId = 1L;
+            manager = entityUtils.getEntity(1L, Member.class);
+
+            // when & then
+            assertThatThrownBy(() -> reportService.cancel(leagueId, cheerTalkId, manager))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }
