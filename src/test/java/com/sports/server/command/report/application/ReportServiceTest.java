@@ -144,7 +144,8 @@ class ReportServiceTest extends ServiceTest {
 
             // when & then
             assertThatThrownBy(() -> reportService.cancel(leagueId, cheerTalkId, manager))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage("해당 응원톡에 대한 신고가 존재하지 않습니다.");
         }
     }
 }
