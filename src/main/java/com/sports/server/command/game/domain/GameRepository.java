@@ -24,7 +24,9 @@ public interface GameRepository extends Repository<Game, Long> {
     void delete(Game game);
 
     @Query(
-            "SELECT g FROM Game g " +
+            "SELECT DISTINCT g FROM Game g " +
+                    "JOIN FETCH g.league " +
+                    "LEFT JOIN FETCH g.gameTeams " +
                     "WHERE g.startTime <= :cutoffTime " +
                     "AND g.state = 'PLAYING'"
     )

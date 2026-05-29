@@ -4,7 +4,6 @@ public class GameErrorMessages {
     public static final String GAME_NOT_FOUND_EXCEPTION = "해당 경기는 존재하지 않습니다.";
     public static final String STATE_NOT_FOUND_EXCEPTION = "해당 경기의 상태는 존재하지 않습니다.";
     public static final String GAME_TEAM_NOT_PARTICIPANT_EXCEPTION = "해당 게임팀은 이 게임에 포함되지 않습니다.";
-    public static final String GAME_REQUIRES_TWO_TEAMS = "게임에는 두 팀이 필요합니다.";
 
     public static final String CHEER_COUNT_RATE_LIMIT_EXCEEDED = "응원을 너무 많이 보내고 있어요. 잠시 후 다시 시도해주세요.";
 

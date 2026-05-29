@@ -242,10 +242,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
     }
 
     private void determineResult() {
-        if (gameTeams.size() != MINIMUM_TEAMS) {
-            throw new BadRequestException(GameErrorMessages.GAME_REQUIRES_TWO_TEAMS);
-        }
-
         GameTeam team1 = getTeam1();
         GameTeam team2 = getTeam2();
 
