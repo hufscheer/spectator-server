@@ -11,5 +11,5 @@ public interface ReportRepository extends Repository<Report, Long> {
     Optional<Report> findById(Long id);
 
     Optional<Report> findByCheerTalk(CheerTalk cheerTalk);
-    Report findByCheerTalkId(Long cheerTalkId);
+    Optional<Report> findByCheerTalkId(Long cheerTalkId);
 }
