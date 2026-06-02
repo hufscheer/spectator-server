@@ -10,12 +10,14 @@ import java.util.Optional;
 
 public interface LeagueStatisticsQueryRepository extends Repository<LeagueStatistics, Long> {
 
-    @Query("SELECT ls FROM LeagueStatistics ls " +
-            "LEFT JOIN FETCH ls.firstWinnerTeam " +
-            "LEFT JOIN FETCH ls.secondWinnerTeam " +
-            "LEFT JOIN FETCH ls.mostCheeredTeam " +
-            "LEFT JOIN FETCH ls.mostCheerTalksTeam " +
-            "WHERE ls.league.id = :leagueId")
+    @Query("""
+            SELECT ls FROM LeagueStatistics ls
+            LEFT JOIN FETCH ls.firstWinnerTeam
+            LEFT JOIN FETCH ls.secondWinnerTeam
+            LEFT JOIN FETCH ls.mostCheeredTeam
+            LEFT JOIN FETCH ls.mostCheerTalksTeam
+            WHERE ls.league.id = :leagueId
+            """)
     Optional<LeagueStatistics> findByLeagueId(@Param("leagueId") Long leagueId);
 
     @Query("SELECT ls FROM LeagueStatistics ls JOIN FETCH ls.league " +
