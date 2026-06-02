@@ -47,7 +47,9 @@ public class GameQueryService {
         entityUtils.getEntity(teamId, Team.class);
 
         List<Game> games = gameQueryRepository.findGamesByTeamId(teamId);
-        return getGameDetailResponses(games);
+        return games.stream()
+                .map(game -> new GameDetailResponse(game, game.getGameTeams()))
+                .toList();
     }
 
     public CursorPageResponse<LeagueWithGamesResponse> getAllGames(final GamesQueryRequestDto queryRequestDto,
