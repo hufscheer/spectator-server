@@ -58,7 +58,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
     List<GameTeamGameInfoDto> findGameInfoByGameTeamIds(@Param("gameTeamIds") List<Long> gameTeamIds);
 
     @Query(
-            "SELECT DISTINCT g FROM Game g "
+            "SELECT g FROM Game g "
                     + "JOIN FETCH g.league l "
                     + "JOIN FETCH g.gameTeams gt "
                     + "JOIN FETCH gt.team "

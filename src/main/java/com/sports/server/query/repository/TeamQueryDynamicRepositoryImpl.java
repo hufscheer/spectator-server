@@ -73,11 +73,12 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
 
     @Override
     public long countByLeague(final League league) {
-        return jpaQueryFactory
+        Long count = jpaQueryFactory
                 .select(leagueTeam.count())
                 .from(leagueTeam)
                 .where(leagueTeam.league.eq(league))
                 .fetchOne();
+        return count != null ? count : 0L;
     }
 
     @Override
