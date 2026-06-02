@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -145,7 +146,7 @@ public class LeagueQueryService {
 
     public LeagueDetailResponse findLeagueDetail(Long leagueId) {
         return leagueQueryRepository.findById(leagueId)
-                .map(league -> LeagueDetailResponse.of(league, teamDynamicRepository.findByLeagueAndRound(league, null).size()))
+                .map(league -> LeagueDetailResponse.of(league, (int) teamDynamicRepository.countByLeague(league)))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
     }
 
@@ -255,19 +256,16 @@ public class LeagueQueryService {
 
     public List<RecentLeagueGamesResponse> findRecentLeaguesGames(Long organizationId, SportType sportType) {
         LocalDateTime now = LocalDateTime.now();
-        List<League> recentLeagues = getRecentLeagues(now, organizationId, sportType);
-        if (recentLeagues.isEmpty()) {
+        LeaguesWithGames result = getRecentLeaguesWithGames(now, organizationId, sportType);
+        if (result.leagues().isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Long> leagueIds = recentLeagues.stream().map(League::getId).toList();
-        List<Game> games = gameQueryRepository.findAllByLeagueIds(leagueIds);
-
-        Map<Long, List<GameTeam>> teamsByGameId = getTeamsByGameId(games);
-        Map<League, List<Game>> gamesByLeague = games.stream()
+        Map<Long, List<GameTeam>> teamsByGameId = getTeamsByGameId(result.games());
+        Map<League, List<Game>> gamesByLeague = result.games().stream()
                 .collect(Collectors.groupingBy(Game::getLeague));
 
-        return recentLeagues.stream()
+        return result.leagues().stream()
                 .map(league -> toRecentLeagueGamesResponse(
                         league,
                         gamesByLeague.getOrDefault(league, Collections.emptyList()),
@@ -277,12 +275,14 @@ public class LeagueQueryService {
                 .toList();
     }
 
-    private List<League> getRecentLeagues(LocalDateTime now, Long organizationId, SportType sportType) {
+    private record LeaguesWithGames(List<League> leagues, List<Game> games) {}
+
+    private LeaguesWithGames getRecentLeaguesWithGames(LocalDateTime now, Long organizationId, SportType sportType) {
         List<League> leaguesInDateRange = leagueQueryRepository.findInProgressLeagues(now, organizationId, sportType);
         if (!leaguesInDateRange.isEmpty()) {
-            List<Long> leagueIds = leaguesInDateRange.stream().map(League::getId).toList();
-            List<Game> games = gameQueryRepository.findAllByLeagueIds(leagueIds);
-            Map<Long, List<Game>> gamesByLeagueId = games.stream()
+            List<Long> candidateLeagueIds = leaguesInDateRange.stream().map(League::getId).toList();
+            List<Game> candidateGames = gameQueryRepository.findAllByLeagueIds(candidateLeagueIds);
+            Map<Long, List<Game>> gamesByLeagueId = candidateGames.stream()
                     .collect(Collectors.groupingBy(game -> game.getLeague().getId()));
 
             List<League> inProgressLeagues = leaguesInDateRange.stream()
@@ -290,10 +290,22 @@ public class LeagueQueryService {
                     .toList();
 
             if (!inProgressLeagues.isEmpty()) {
-                return inProgressLeagues;
+                Set<Long> inProgressLeagueIds = inProgressLeagues.stream()
+                        .map(League::getId)
+                        .collect(Collectors.toSet());
+                List<Game> filteredGames = candidateGames.stream()
+                        .filter(g -> inProgressLeagueIds.contains(g.getLeague().getId()))
+                        .toList();
+                return new LeaguesWithGames(inProgressLeagues, filteredGames);
             }
         }
-        return leagueQueryRepository.findLeaguesByLatestStartAt(organizationId, sportType);
+
+        List<League> latestLeagues = leagueQueryRepository.findLeaguesByLatestStartAt(organizationId, sportType);
+        if (latestLeagues.isEmpty()) {
+            return new LeaguesWithGames(Collections.emptyList(), Collections.emptyList());
+        }
+        List<Long> latestLeagueIds = latestLeagues.stream().map(League::getId).toList();
+        return new LeaguesWithGames(latestLeagues, gameQueryRepository.findAllByLeagueIds(latestLeagueIds));
     }
 
     private boolean isLeagueInProgress(List<Game> games) {
