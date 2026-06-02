@@ -300,7 +300,7 @@ public class GameServiceTest extends ServiceTest {
             gameFixtureRepository.save(oldFinalGame);
 
             // when
-            List<Long> finalGameIds = gameService.finishOverdueGames(now);
+            List<Long> finalGameIds = gameService.updateGameStatusToFinish(now);
 
             // then
             assertAll(

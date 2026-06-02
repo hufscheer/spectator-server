@@ -12,7 +12,6 @@ import com.sports.server.command.league.domain.Round;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -24,9 +23,8 @@ public class GameStatusScheduler {
     private final LeagueService leagueService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    @Transactional
     public void scheduleUpdateGameStatusToFinish() {
-        List<Long> finalGameIds = gameService.finishOverdueGames(LocalDateTime.now());
+        List<Long> finalGameIds = gameService.updateGameStatusToFinish(LocalDateTime.now());
         if (!finalGameIds.isEmpty()) {
             manualUpdateLeagueStatisticsForFinalGames(finalGameIds);
         }

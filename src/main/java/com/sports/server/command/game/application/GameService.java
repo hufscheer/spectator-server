@@ -59,7 +59,7 @@ public class GameService {
     }
 
     @Transactional
-    public List<Long> finishOverdueGames(LocalDateTime now) {
+    public List<Long> updateGameStatusToFinish(LocalDateTime now) {
         LocalDateTime cutoffTime = now.minusHours(5);
         List<Game> overdueGames = gameRepository.findGamesOlderThanFiveHours(cutoffTime);
         overdueGames.forEach(game -> {
@@ -79,7 +79,7 @@ public class GameService {
 
     @Transactional
     public List<Game> determineResultsAndGet(List<Long> gameIds) {
-        List<Game> games = gameRepository.findAllByIdIn(gameIds);
+        List<Game> games = gameRepository.findByIdsWithLeague(gameIds);
         games.forEach(Game::updateResult);
         return games;
     }

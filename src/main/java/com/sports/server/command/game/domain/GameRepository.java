@@ -34,6 +34,9 @@ public interface GameRepository extends Repository<Game, Long> {
 
     List<Game> findAllByIdIn(List<Long> gameIds);
 
+    @Query("SELECT DISTINCT g FROM Game g JOIN FETCH g.league WHERE g.id IN :gameIds")
+    List<Game> findByIdsWithLeague(@Param("gameIds") List<Long> gameIds);
+
     @Query("SELECT g FROM Game g " +
            "JOIN FETCH g.league l " +
            "WHERE g.state = 'SCHEDULED' " +
