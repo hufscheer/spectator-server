@@ -24,13 +24,18 @@ public interface GameRepository extends Repository<Game, Long> {
     void delete(Game game);
 
     @Query(
-            "SELECT g FROM Game g " +
+            "SELECT DISTINCT g FROM Game g " +
+                    "JOIN FETCH g.league " +
+                    "LEFT JOIN FETCH g.gameTeams " +
                     "WHERE g.startTime <= :cutoffTime " +
                     "AND g.state = 'PLAYING'"
     )
     List<Game> findGamesOlderThanFiveHours(@Param("cutoffTime") LocalDateTime cutoffTime);
 
     List<Game> findAllByIdIn(List<Long> gameIds);
+
+    @Query("SELECT DISTINCT g FROM Game g JOIN FETCH g.league WHERE g.id IN :gameIds")
+    List<Game> findByIdsWithLeague(@Param("gameIds") List<Long> gameIds);
 
     @Query("SELECT g FROM Game g " +
            "JOIN FETCH g.league l " +
