@@ -23,6 +23,9 @@ public record LeagueTeamResponse(
     }
 
     public static LeagueTeamResponse ofWithCheerCount(final LeagueTeam leagueTeam) {
+        if (leagueTeam == null) {
+            return null;
+        }
         return new LeagueTeamResponse(
                 leagueTeam.getTeam().getId(),
                 leagueTeam.getId(),
@@ -35,6 +38,9 @@ public record LeagueTeamResponse(
     }
 
     public static LeagueTeamResponse ofWithTotalTalkCount(final LeagueTeam leagueTeam) {
+        if (leagueTeam == null) {
+            return null;
+        }
         return new LeagueTeamResponse(
                 leagueTeam.getTeam().getId(),
                 leagueTeam.getId(),
