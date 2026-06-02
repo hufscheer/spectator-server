@@ -72,6 +72,16 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
     }
 
     @Override
+    public long countByLeague(final League league) {
+        Long count = jpaQueryFactory
+                .select(leagueTeam.count())
+                .from(leagueTeam)
+                .where(leagueTeam.league.eq(league))
+                .fetchOne();
+        return count != null ? count : 0L;
+    }
+
+    @Override
     public List<Unit> findDistinctUnitsBySportTypeAndOrganizationId(final SportType sportType, final Long organizationId) {
         return jpaQueryFactory
                 .select(team.unit).distinct()

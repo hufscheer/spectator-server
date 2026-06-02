@@ -10,6 +10,7 @@ import com.sports.server.command.report.dto.ReportRequest;
 import com.sports.server.command.report.exception.ReportErrorMessage;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,8 @@ public class ReportService {
     public void cancel(final Long leagueId, final Long cheerTalkId, final Member manager) {
         checkPermission(leagueId, manager);
 
-        Report report = reportRepository.findByCheerTalkId(cheerTalkId);
+        Report report = reportRepository.findByCheerTalkId(cheerTalkId)
+                .orElseThrow(() -> new NotFoundException(ReportErrorMessage.REPORT_NOT_EXIST));
         report.cancel();
     }
 

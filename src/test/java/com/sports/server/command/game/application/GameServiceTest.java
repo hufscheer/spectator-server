@@ -276,7 +276,7 @@ public class GameServiceTest extends ServiceTest {
     @DisplayName("게임 상태를 업데이트할 때")
     class UpdateGameStatusToFinishTest {
         @Test
-        @DisplayName("정상적으로 시작한지 5시간이 지난 게임의 상태가 FINISHED로 변경된다")
+        @DisplayName("시작한 지 5시간이 지난 게임은 FINISHED로 변경되고 quarter가 POST_GAME으로 동기화된다")
         void updateGamesOlderThanFiveHoursToFinished() {
             // given
             LocalDateTime now = LocalDateTime.now(clock);
@@ -291,22 +291,30 @@ public class GameServiceTest extends ServiceTest {
                     GameState.PLAYING, round, false);
             Game oldGame2 = new Game(manager, league, "오래된 경기2", now.minusHours(6), "videoId", "FIRST_HALF",
                     GameState.PLAYING, round, false);
+            Game oldFinalGame = new Game(manager, league, "오래된 결승전", now.minusHours(5), "videoId", "FIRST_HALF",
+                    GameState.PLAYING, Round.FINAL, false);
 
             gameFixtureRepository.save(recentGame);
             gameFixtureRepository.save(oldGame1);
             gameFixtureRepository.save(oldGame2);
+            gameFixtureRepository.save(oldFinalGame);
 
             // when
-            gameService.updateGameStatusToFinish(now);
+            List<Long> finalGameIds = gameService.updateGameStatusToFinish(now);
 
             // then
             assertAll(
-                    () -> assertThat(gameFixtureRepository.findByName("종료되면 안되는 경기").orElse(null).getState()).isEqualTo(
-                            GameState.PLAYING),
-                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기1").orElse(null).getState()).isEqualTo(
-                            GameState.FINISHED),
-                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기2").orElse(null).getState()).isEqualTo(
-                            GameState.FINISHED));
+                    () -> assertThat(gameFixtureRepository.findByName("종료되면 안되는 경기").orElseThrow().getState())
+                            .isEqualTo(GameState.PLAYING),
+                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기1").orElseThrow().getState())
+                            .isEqualTo(GameState.FINISHED),
+                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기1").orElseThrow().getGameQuarter())
+                            .isEqualTo("POST_GAME"),
+                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기2").orElseThrow().getState())
+                            .isEqualTo(GameState.FINISHED),
+                    () -> assertThat(gameFixtureRepository.findByName("오래된 경기2").orElseThrow().getGameQuarter())
+                            .isEqualTo("POST_GAME"),
+                    () -> assertThat(finalGameIds).containsExactly(oldFinalGame.getId()));
         }
     }
 
