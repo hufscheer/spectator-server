@@ -60,9 +60,14 @@ public interface GameQueryRepository extends Repository<Game, Long> {
     @Query(
             "SELECT g FROM Game g "
                     + "JOIN FETCH g.league l "
-                    + "WHERE EXISTS (SELECT 1 FROM GameTeam gt WHERE gt.game = g "
-                    + "AND gt.team.id = :teamId)"
-                    + "ORDER BY g.id DESC ")
+                    + "JOIN FETCH g.gameTeams gt "
+                    + "JOIN FETCH gt.team "
+                    + "WHERE g.id IN ("
+                    + "  SELECT g2.id FROM Game g2 "
+                    + "  JOIN g2.gameTeams gt2 "
+                    + "  WHERE gt2.team.id = :teamId"
+                    + ") "
+                    + "ORDER BY g.id DESC")
     List<Game> findGamesByTeamId(@Param("teamId") Long teamId);
 
     @Query("SELECT g FROM Game g " +
