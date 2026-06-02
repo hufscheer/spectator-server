@@ -78,8 +78,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-test'
 
     // jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation 'com.auth0:java-jwt:3.19.1'
+    implementation 'com.auth0:java-jwt:4.4.0'
 
     // aws
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
