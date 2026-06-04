@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.core.AuthenticationException;
@@ -61,6 +62,13 @@ public class ControllerExceptionAdvice {
         alertService.sendErrorAlert(request.getRequestURI(), request.getMethod(), e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of("서버 오류가 발생했습니다."));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    protected ResponseEntity<ErrorResponse> handleMissingRequestParam(MissingServletRequestParameterException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(e.getParameterName() + " 파라미터가 필요합니다."));
     }
 
     @ExceptionHandler(BindException.class)
