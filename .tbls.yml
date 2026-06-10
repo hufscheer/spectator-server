@@ -1,0 +1,11 @@
+# DB 스키마 문서 자동 생성 설정 (https://github.com/k1LoW/tbls)
+#
+# 로컬 재생성: ./scripts/generate-schema-docs.sh
+# CI 검증:     .github/workflows/schema-docs.yml (docs/schema가 마이그레이션과 일치하는지 검사)
+name: hufscheer spectator-server
+dsn: ${TBLS_DSN}
+docPath: docs/schema
+er:
+  format: svg
+exclude:
+  - flyway_schema_history

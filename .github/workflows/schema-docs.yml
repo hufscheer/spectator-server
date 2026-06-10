@@ -1,0 +1,58 @@
+name: Schema Docs
+
+# DB 마이그레이션이 바뀌면 docs/schema 문서도 함께 갱신됐는지 검증한다.
+# 실패 시: 로컬에서 ./scripts/generate-schema-docs.sh 실행 후 산출물을 커밋할 것.
+on:
+  pull_request:
+    paths:
+      - 'src/main/resources/db/migration/prod/**'
+      - 'docs/schema/**'
+      - '.tbls.yml'
+      - '.github/workflows/schema-docs.yml'
+
+jobs:
+  check-schema-docs:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: hufscheer
+        ports:
+          - 33306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -uroot -proot --silent"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
+
+    env:
+      TBLS_DSN: mysql://root:root@127.0.0.1:33306/hufscheer
+      MIG_DIR: src/main/resources/db/migration/prod
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply migrations in version order
+        run: |
+          for f in $(ls "$MIG_DIR" | grep '^V.*\.sql$' | sort -t_ -k1.2 -n); do
+            echo "applying $f"
+            mysql -h127.0.0.1 -P33306 -uroot -proot hufscheer < "$MIG_DIR/$f"
+          done
+
+      - uses: k1LoW/setup-tbls@v1
+        with:
+          version: v1.94.5 # 로컬(scripts/generate-schema-docs.sh)과 버전 불일치 시 diff 오탐 방지
+
+      - name: Regenerate schema docs
+        run: tbls doc --force -c .tbls.yml
+
+      - name: Fail if docs/schema is stale
+        run: |
+          if [ -n "$(git status --porcelain -- docs/schema)" ]; then
+            git status --porcelain -- docs/schema
+            echo "::error::docs/schema가 현재 마이그레이션과 일치하지 않습니다. ./scripts/generate-schema-docs.sh 실행 후 변경분을 커밋하세요."
+            exit 1
+          fi
