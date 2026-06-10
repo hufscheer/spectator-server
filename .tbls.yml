@@ -7,5 +7,7 @@ dsn: ${TBLS_DSN}
 docPath: docs/schema
 er:
   format: svg
+# 기계가독 스키마(schema.json)는 커밋하지 않음 — 문서 디렉토리를 사람이 읽는 파일로만 유지
+disableOutputSchema: true
 exclude:
   - flyway_schema_history
