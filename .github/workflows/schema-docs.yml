@@ -23,8 +23,9 @@ jobs:
           MYSQL_DATABASE: hufscheer
         ports:
           - 33306:3306
+        # ping은 초기화 중 임시 서버에도 응답하므로 실제 쿼리로 준비 상태를 확인한다.
         options: >-
-          --health-cmd "mysqladmin ping -h localhost -uroot -proot --silent"
+          --health-cmd "mysql -h127.0.0.1 -uroot -proot -e 'SELECT 1' hufscheer"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 30
@@ -58,8 +59,10 @@ jobs:
         with:
           version: ${{ steps.tbls.outputs.version }}
 
+      # --rm-dist: 생성 전 docPath를 비운다. 삭제된 테이블의 문서가 고아로 남는 걸 막고,
+      # 스크립트와 같은 플래그를 써야 커밋된 고아 파일이 여기서 삭제로 잡혀 CI가 실패한다.
       - name: Regenerate schema docs
-        run: tbls doc --force -c .tbls.yml
+        run: tbls doc --force --rm-dist -c .tbls.yml
 
       - name: Fail if docs/schema is stale
         run: |

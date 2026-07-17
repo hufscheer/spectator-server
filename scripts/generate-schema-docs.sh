@@ -6,6 +6,7 @@
 #
 # 동작: 임시 MySQL 8.0 컨테이너에 db/migration/prod 마이그레이션을 순서대로 적용한 뒤
 #       tbls로 docs/schema 문서를 재생성한다. 스키마 변경 PR에는 이 산출물을 함께 커밋할 것.
+#       --rm-dist로 docs/schema를 비우고 다시 만들므로, 이 디렉토리에 손으로 쓴 파일을 두지 말 것.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -25,7 +26,10 @@ docker run -d --name "$CONTAINER" \
 trap 'docker rm -f "$CONTAINER" >/dev/null 2>&1' EXIT
 
 echo "MySQL 기동 대기 중..."
-until docker exec "$CONTAINER" mysqladmin ping -uroot -proot --silent >/dev/null 2>&1; do
+# ping 대신 실제 쿼리로 확인한다. 초기화 중 임시 서버가 소켓 ping에 응답해버려서,
+# ping만 보면 root 비밀번호/DB가 준비되기 전에 통과해 다음 단계가 Access denied로 죽는다.
+# -h127.0.0.1로 TCP를 강제하면 skip-networking인 임시 서버는 걸러진다.
+until docker exec "$CONTAINER" mysql -h127.0.0.1 -uroot -proot -e 'SELECT 1' hufscheer >/dev/null 2>&1; do
   sleep 2
 done
 
@@ -46,7 +50,7 @@ fi
 
 if [ "$LOCAL_TBLS" = "$TBLS_VERSION" ]; then
   echo "  로컬 tbls ${TBLS_VERSION} 사용"
-  TBLS_DSN="mysql://root:root@127.0.0.1:${PORT}/hufscheer" tbls doc --force -c .tbls.yml
+  TBLS_DSN="mysql://root:root@127.0.0.1:${PORT}/hufscheer" tbls doc --force --rm-dist -c .tbls.yml
 else
   if [ -n "$LOCAL_TBLS" ]; then
     echo "  로컬 tbls(${LOCAL_TBLS})가 핀 버전(${TBLS_VERSION})과 달라 Docker 이미지로 실행합니다."
@@ -54,7 +58,7 @@ else
   docker run --rm -v "$PWD":/work -w /work \
     --add-host=host.docker.internal:host-gateway \
     -e TBLS_DSN="mysql://root:root@host.docker.internal:${PORT}/hufscheer" \
-    "ghcr.io/k1low/tbls:${TBLS_VERSION}" doc --force -c /work/.tbls.yml
+    "ghcr.io/k1low/tbls:${TBLS_VERSION}" doc --force --rm-dist -c /work/.tbls.yml
 fi
 
 echo "완료: docs/schema/ 를 확인하세요."
