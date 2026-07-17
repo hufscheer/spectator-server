@@ -32,7 +32,7 @@ CREATE TABLE `games` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
-| id | bigint |  | false | auto_increment | [game_teams](game_teams.md) [timelines](timelines.md) |  |  |
+| id | bigint |  | false | auto_increment | [bracket_matches](bracket_matches.md) [game_teams](game_teams.md) [timelines](timelines.md) |  |  |
 | administrator_id | bigint |  | true |  |  | [members](members.md) |  |
 | league_id | bigint |  | false |  |  | [leagues](leagues.md) |  |
 | start_time | datetime |  | false |  |  |  |  |

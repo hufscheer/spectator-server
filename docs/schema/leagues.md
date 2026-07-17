@@ -31,7 +31,7 @@ CREATE TABLE `leagues` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
-| id | bigint |  | false | auto_increment | [games](games.md) [league_statistics](league_statistics.md) [league_teams](league_teams.md) [league_top_scorers](league_top_scorers.md) |  |  |
+| id | bigint |  | false | auto_increment | [bracket_matches](bracket_matches.md) [games](games.md) [league_statistics](league_statistics.md) [league_teams](league_teams.md) [league_top_scorers](league_top_scorers.md) |  |  |
 | organization_id | bigint |  | false |  |  | [organizations](organizations.md) |  |
 | administrator_id | bigint |  | false |  |  | [members](members.md) |  |
 | name | varchar(255) |  | false |  |  |  |  |

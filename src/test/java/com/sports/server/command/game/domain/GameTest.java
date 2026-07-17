@@ -298,6 +298,75 @@ class GameTest {
         }
 
         @Test
+        void 동점이면_무승부로_기록된다() {
+            // given
+            team1.score(1);
+            team2.score(1);
+            game.updateState(GameState.FINISHED);
+
+            // when
+            game.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getResult()).isEqualTo(GameResult.DRAW),
+                    () -> assertThat(team2.getResult()).isEqualTo(GameResult.DRAW)
+            );
+        }
+
+        @Test
+        void 동점이고_승부차기를_진행했다면_승부차기_점수로_승자를_결정한다() {
+            // given
+            Game pkGame = entityBuilder(Game.class)
+                    .set("id", 3L)
+                    .set("gameTeams", new ArrayList<>())
+                    .set("isPkTaken", true)
+                    .sample();
+            GameTeam pkTeam1 = entityBuilder(GameTeam.class)
+                    .set("id", 1L).set("game", pkGame).set("score", 1).set("pkScore", 4).sample();
+            GameTeam pkTeam2 = entityBuilder(GameTeam.class)
+                    .set("id", 2L).set("game", pkGame).set("score", 1).set("pkScore", 3).sample();
+            pkGame.addGameTeam(pkTeam1);
+            pkGame.addGameTeam(pkTeam2);
+            pkGame.updateState(GameState.FINISHED);
+
+            // when
+            pkGame.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(pkTeam1.getResult()).isEqualTo(GameResult.WIN),
+                    () -> assertThat(pkTeam2.getResult()).isEqualTo(GameResult.LOSE)
+            );
+        }
+
+        @Test
+        void 승부차기_점수까지_동점이면_무승부로_기록된다() {
+            // given
+            Game pkGame = entityBuilder(Game.class)
+                    .set("id", 3L)
+                    .set("gameTeams", new ArrayList<>())
+                    .set("isPkTaken", true)
+                    .sample();
+            GameTeam pkTeam1 = entityBuilder(GameTeam.class)
+                    .set("id", 1L).set("game", pkGame).set("score", 1).set("pkScore", 3).sample();
+            GameTeam pkTeam2 = entityBuilder(GameTeam.class)
+                    .set("id", 2L).set("game", pkGame).set("score", 1).set("pkScore", 3).sample();
+            pkGame.addGameTeam(pkTeam1);
+            pkGame.addGameTeam(pkTeam2);
+            pkGame.updateState(GameState.FINISHED);
+
+            // when
+            pkGame.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(pkTeam1.getResult()).isEqualTo(GameResult.DRAW),
+                    () -> assertThat(pkTeam2.getResult()).isEqualTo(GameResult.DRAW)
+            );
+        }
+
+        @Test
         void 참가팀이_2팀이_아니면_결과를_계산하지_않는다() {
             // given
             GameTeam singleTeam = entityBuilder(GameTeam.class)

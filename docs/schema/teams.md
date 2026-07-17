@@ -26,7 +26,7 @@ CREATE TABLE `teams` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
-| id | bigint |  | false | auto_increment | [game_teams](game_teams.md) [league_statistics](league_statistics.md) [league_teams](league_teams.md) [team_players](team_players.md) |  |  |
+| id | bigint |  | false | auto_increment | [bracket_matches](bracket_matches.md) [game_teams](game_teams.md) [league_statistics](league_statistics.md) [league_teams](league_teams.md) [team_players](team_players.md) |  |  |
 | name | varchar(255) |  | false |  |  |  |  |
 | logo_image_url | varchar(255) |  | true |  |  |  |  |
 | team_color | varchar(255) |  | false |  |  |  |  |
