@@ -8,6 +8,7 @@ on:
       - 'src/main/resources/db/migration/prod/**'
       - 'docs/schema/**'
       - '.tbls.yml'
+      - 'scripts/generate-schema-docs.sh'
       - '.github/workflows/schema-docs.yml'
 
 jobs:
@@ -42,9 +43,20 @@ jobs:
             mysql -h127.0.0.1 -P33306 -uroot -proot hufscheer < "$MIG_DIR/$f"
           done
 
+      # 버전 핀의 단일 출처는 스크립트다. 여기 값을 따로 두면 로컬과 갈려 diff 오탐이 난다.
+      - name: Read pinned tbls version
+        id: tbls
+        run: |
+          version=$(sed -n 's/^TBLS_VERSION=//p' scripts/generate-schema-docs.sh)
+          if [ -z "$version" ]; then
+            echo "::error::scripts/generate-schema-docs.sh에서 TBLS_VERSION을 찾지 못했습니다."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - uses: k1LoW/setup-tbls@v1
         with:
-          version: v1.94.5 # 로컬(scripts/generate-schema-docs.sh)과 버전 불일치 시 diff 오탐 방지
+          version: ${{ steps.tbls.outputs.version }}
 
       - name: Regenerate schema docs
         run: tbls doc --force -c .tbls.yml
