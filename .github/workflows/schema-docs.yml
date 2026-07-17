@@ -1,0 +1,73 @@
+name: Schema Docs
+
+# DB 마이그레이션이 바뀌면 docs/schema 문서도 함께 갱신됐는지 검증한다.
+# 실패 시: 로컬에서 ./scripts/generate-schema-docs.sh 실행 후 산출물을 커밋할 것.
+on:
+  pull_request:
+    paths:
+      - 'src/main/resources/db/migration/prod/**'
+      - 'docs/schema/**'
+      - '.tbls.yml'
+      - 'scripts/generate-schema-docs.sh'
+      - '.github/workflows/schema-docs.yml'
+
+jobs:
+  check-schema-docs:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: hufscheer
+        ports:
+          - 33306:3306
+        # ping은 초기화 중 임시 서버에도 응답하므로 실제 쿼리로 준비 상태를 확인한다.
+        options: >-
+          --health-cmd "mysql -h127.0.0.1 -uroot -proot -e 'SELECT 1' hufscheer"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
+
+    env:
+      TBLS_DSN: mysql://root:root@127.0.0.1:33306/hufscheer
+      MIG_DIR: src/main/resources/db/migration/prod
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply migrations in version order
+        run: |
+          for f in $(ls "$MIG_DIR" | grep '^V.*\.sql$' | sort -t_ -k1.2 -n); do
+            echo "applying $f"
+            mysql -h127.0.0.1 -P33306 -uroot -proot hufscheer < "$MIG_DIR/$f"
+          done
+
+      # 버전 핀의 단일 출처는 스크립트다. 여기 값을 따로 두면 로컬과 갈려 diff 오탐이 난다.
+      - name: Read pinned tbls version
+        id: tbls
+        run: |
+          version=$(sed -n 's/^TBLS_VERSION=//p' scripts/generate-schema-docs.sh)
+          if [ -z "$version" ]; then
+            echo "::error::scripts/generate-schema-docs.sh에서 TBLS_VERSION을 찾지 못했습니다."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - uses: k1LoW/setup-tbls@v1
+        with:
+          version: ${{ steps.tbls.outputs.version }}
+
+      # --rm-dist: 생성 전 docPath를 비운다. 삭제된 테이블의 문서가 고아로 남는 걸 막고,
+      # 스크립트와 같은 플래그를 써야 커밋된 고아 파일이 여기서 삭제로 잡혀 CI가 실패한다.
+      - name: Regenerate schema docs
+        run: tbls doc --force --rm-dist -c .tbls.yml
+
+      - name: Fail if docs/schema is stale
+        run: |
+          if [ -n "$(git status --porcelain -- docs/schema)" ]; then
+            git status --porcelain -- docs/schema
+            echo "::error::docs/schema가 현재 마이그레이션과 일치하지 않습니다. ./scripts/generate-schema-docs.sh 실행 후 변경분을 커밋하세요."
+            exit 1
+          fi
