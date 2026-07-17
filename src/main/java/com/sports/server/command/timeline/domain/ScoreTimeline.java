@@ -1,5 +1,7 @@
 package com.sports.server.command.timeline.domain;
 
+import java.util.List;
+
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
@@ -121,5 +123,13 @@ public class ScoreTimeline extends Timeline {
     @Override
     public void rollback() {
         game.cancelScore(scorer, score);
+    }
+
+    @Override
+    public List<LineupPlayer> getRelatedLineupPlayers() {
+        if (assistLineupPlayer == null) {
+            return List.of(scorer);
+        }
+        return List.of(scorer, assistLineupPlayer);
     }
 }
