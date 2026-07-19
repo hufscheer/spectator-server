@@ -211,7 +211,7 @@ public class TimelineService {
 
     private Game getGameForUpdate(Long id) {
         return gameRepository.findByIdForUpdate(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, TimelineErrorMessage.GAME_NOT_FOUND));
     }
 
     private Timeline getTimeline(Long timelineId, Game game) {
