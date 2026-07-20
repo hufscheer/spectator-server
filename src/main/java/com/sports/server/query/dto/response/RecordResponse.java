@@ -27,7 +27,7 @@ public record RecordResponse(
         boolean deletable,
         String undeletableReason
 ) {
-    public static RecordResponse from(Timeline timeline, TimelineDeletability.Result deletability) {
+    public static RecordResponse from(Timeline timeline, TimelineDeletabilityEvaluator.Result deletability) {
         Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
         Optional<GameTeam> gameTeam = lineupPlayer.map(LineupPlayer::getGameTeam);
         Optional<Team> team = gameTeam.map(GameTeam::getTeam);

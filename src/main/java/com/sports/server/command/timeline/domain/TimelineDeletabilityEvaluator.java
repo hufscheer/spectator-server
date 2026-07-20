@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class TimelineDeletability {
+public final class TimelineDeletabilityEvaluator {
 
-    private TimelineDeletability() {
+    private TimelineDeletabilityEvaluator() {
     }
 
     public enum Reason {

@@ -15,7 +15,7 @@ import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
-import com.sports.server.command.timeline.domain.TimelineDeletability;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
@@ -47,9 +47,9 @@ public class TimelineQueryService {
     public GameTimelineResponse getTimelines(final Long gameId) {
         List<Timeline> allTimelines = timelineQueryRepository.findByGameId(gameId);
 
-        Map<Long, TimelineDeletability.Result> deletability = allTimelines.isEmpty()
+        Map<Long, TimelineDeletabilityEvaluator.Result> deletability = allTimelines.isEmpty()
                 ? Map.of()
-                : TimelineDeletability.evaluate(allTimelines.get(0).getGame().getState(), allTimelines);
+                : TimelineDeletabilityEvaluator.evaluate(allTimelines.get(0).getGame().getState(), allTimelines);
 
         Map<Quarter, List<Timeline>> timelines = allTimelines
                 .stream()

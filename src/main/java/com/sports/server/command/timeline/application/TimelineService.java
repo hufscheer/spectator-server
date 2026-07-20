@@ -11,7 +11,7 @@ import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
-import com.sports.server.command.timeline.domain.TimelineDeletability;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.command.timeline.domain.TimelineCreatedEvent;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
@@ -166,14 +166,14 @@ public class TimelineService {
     }
 
     private void validateMiddleDeletable(Game game, Timeline target, List<Timeline> subsequents) {
-        TimelineDeletability.Result result = TimelineDeletability.evaluateMiddle(game.getState(), target, subsequents);
+        TimelineDeletabilityEvaluator.Result result = TimelineDeletabilityEvaluator.evaluateMiddle(game.getState(), target, subsequents);
         if (!result.deletable()) {
             throw new CustomException(statusOf(result.reason()), result.reasonMessage());
         }
     }
 
-    private HttpStatus statusOf(TimelineDeletability.Reason reason) {
-        if (reason == TimelineDeletability.Reason.INCONSISTENT_PROGRESS_STATE) {
+    private HttpStatus statusOf(TimelineDeletabilityEvaluator.Reason reason) {
+        if (reason == TimelineDeletabilityEvaluator.Reason.INCONSISTENT_PROGRESS_STATE) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return HttpStatus.BAD_REQUEST;
