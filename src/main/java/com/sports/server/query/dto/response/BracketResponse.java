@@ -41,8 +41,8 @@ public record BracketResponse(
             Long winnerTeamId
     ) {
         private static MatchResponse of(final Bracket bracket, final BracketMatch match) {
-            Team slot1 = bracket.slot1Of(match);
-            Team slot2 = bracket.slot2Of(match);
+            Team slot1 = bracket.slotOf(match, Bracket.TEAM1_SIDE);
+            Team slot2 = bracket.slotOf(match, Bracket.TEAM2_SIDE);
             Team display1 = slot1;
             Team display2 = slot2;
 

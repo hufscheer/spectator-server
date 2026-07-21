@@ -10,6 +10,7 @@ import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.exception.BadRequestException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,11 @@ import java.util.stream.IntStream;
  * 팀 배치(team1/team2)는 1라운드에만 저장되고, 상위 라운드 슬롯은 경기 결과와 부전승으로부터 유도된다.
  */
 public class Bracket {
+
+    public static final int TEAM1_SIDE = 1;
+    public static final int TEAM2_SIDE = 2;
+
+    private static final int TEAMS_PER_MATCH = 2;
 
     private final int size;
     private final Map<Integer, Map<Integer, BracketMatch>> matchesByRound;
@@ -39,15 +45,23 @@ public class Bracket {
     public static List<BracketMatch> generate(final League league, final int size,
                                               final Map<Integer, Team> placements) {
         List<BracketMatch> matches = new ArrayList<>();
-        for (int roundNumber = size; roundNumber >= Round.FINAL.getNumber(); roundNumber /= 2) {
-            Round round = Round.from(roundNumber);
-            for (int matchNumber = 1; matchNumber <= roundNumber / 2; matchNumber++) {
-                BracketMatch match = new BracketMatch(league, round, matchNumber);
-                if (roundNumber == size) {
-                    match.placeTeams(placements.get(matchNumber * 2 - 1), placements.get(matchNumber * 2));
-                }
-                matches.add(match);
+        for (int roundNumber = size; roundNumber >= Round.FINAL.getNumber(); roundNumber /= TEAMS_PER_MATCH) {
+            matches.addAll(generateRound(league, size, roundNumber, placements));
+        }
+        return matches;
+    }
+
+    private static List<BracketMatch> generateRound(final League league, final int size, final int roundNumber,
+                                                    final Map<Integer, Team> placements) {
+        Round round = Round.from(roundNumber);
+        List<BracketMatch> matches = new ArrayList<>();
+        for (int matchNumber = 1; matchNumber <= roundNumber / TEAMS_PER_MATCH; matchNumber++) {
+            BracketMatch match = new BracketMatch(league, round, matchNumber);
+            if (roundNumber == size) {
+                match.placeTeams(placements.get(team1PositionOf(matchNumber)),
+                        placements.get(team2PositionOf(matchNumber)));
             }
+            matches.add(match);
         }
         return matches;
     }
@@ -56,23 +70,39 @@ public class Bracket {
         if (matches.isEmpty()) {
             throw new BadRequestException(BracketErrorMessages.BRACKET_NOT_FOUND);
         }
+        Map<Integer, Map<Integer, BracketMatch>> matchesByRound = groupByRound(matches);
+        int size = matchesByRound.keySet().stream().mapToInt(Integer::intValue).max().orElseThrow();
+        return new Bracket(size, matchesByRound, firstRoundPlacements(matchesByRound.get(size).values()));
+    }
+
+    private static Map<Integer, Map<Integer, BracketMatch>> groupByRound(final List<BracketMatch> matches) {
         Map<Integer, Map<Integer, BracketMatch>> matchesByRound = new HashMap<>();
         for (BracketMatch match : matches) {
             matchesByRound.computeIfAbsent(match.getRound().getNumber(), key -> new HashMap<>())
                     .put(match.getMatchNumber(), match);
         }
-        int size = matchesByRound.keySet().stream().mapToInt(Integer::intValue).max().orElseThrow();
+        return matchesByRound;
+    }
 
+    private static Map<Integer, Team> firstRoundPlacements(final Collection<BracketMatch> firstRoundMatches) {
         Map<Integer, Team> placements = new HashMap<>();
-        for (BracketMatch match : matchesByRound.get(size).values()) {
+        for (BracketMatch match : firstRoundMatches) {
             if (match.getTeam1() != null) {
-                placements.put(match.getMatchNumber() * 2 - 1, match.getTeam1());
+                placements.put(team1PositionOf(match.getMatchNumber()), match.getTeam1());
             }
             if (match.getTeam2() != null) {
-                placements.put(match.getMatchNumber() * 2, match.getTeam2());
+                placements.put(team2PositionOf(match.getMatchNumber()), match.getTeam2());
             }
         }
-        return new Bracket(size, matchesByRound, placements);
+        return placements;
+    }
+
+    private static int team1PositionOf(final int matchNumber) {
+        return matchNumber * TEAMS_PER_MATCH - 1;
+    }
+
+    private static int team2PositionOf(final int matchNumber) {
+        return matchNumber * TEAMS_PER_MATCH;
     }
 
     public int getSize() {
@@ -81,7 +111,7 @@ public class Bracket {
 
     public List<Integer> roundNumbers() {
         List<Integer> roundNumbers = new ArrayList<>();
-        for (int roundNumber = size; roundNumber >= Round.FINAL.getNumber(); roundNumber /= 2) {
+        for (int roundNumber = size; roundNumber >= Round.FINAL.getNumber(); roundNumber /= TEAMS_PER_MATCH) {
             roundNumbers.add(roundNumber);
         }
         return roundNumbers;
@@ -117,12 +147,15 @@ public class Bracket {
                 matchesByRound.get(roundNumber).get(meetingMatchNumber(roundNumber, position1)));
     }
 
-    public Team slot1Of(final BracketMatch match) {
-        return slotOf(match, 1);
-    }
-
-    public Team slot2Of(final BracketMatch match) {
-        return slotOf(match, 2);
+    public Team slotOf(final BracketMatch match, final int side) {
+        if (isFirstRound(match)) {
+            return side == TEAM1_SIDE ? match.getTeam1() : match.getTeam2();
+        }
+        BracketMatch feeder = feederOf(match, side);
+        if (feeder == null) {
+            return null;
+        }
+        return advancerOf(feeder);
     }
 
     /**
@@ -136,12 +169,12 @@ public class Bracket {
         if (match.isLinked()) {
             return null;
         }
-        Team slot1 = slotOf(match, 1);
-        Team slot2 = slotOf(match, 2);
-        if (slot1 != null && slot2 == null && !subtreeHasTeam(match, 2)) {
+        Team slot1 = slotOf(match, TEAM1_SIDE);
+        Team slot2 = slotOf(match, TEAM2_SIDE);
+        if (slot1 != null && slot2 == null && !subtreeHasTeam(match, TEAM2_SIDE)) {
             return slot1;
         }
-        if (slot2 != null && slot1 == null && !subtreeHasTeam(match, 1)) {
+        if (slot2 != null && slot1 == null && !subtreeHasTeam(match, TEAM1_SIDE)) {
             return slot2;
         }
         return null;
@@ -159,31 +192,20 @@ public class Bracket {
                 .orElse(null);
     }
 
-    private Team slotOf(final BracketMatch match, final int side) {
-        if (isFirstRound(match)) {
-            return side == 1 ? match.getTeam1() : match.getTeam2();
-        }
-        BracketMatch feeder = feederOf(match, side);
-        if (feeder == null) {
-            return null;
-        }
-        return advancerOf(feeder);
-    }
-
     private boolean isFirstRound(final BracketMatch match) {
         return match.getRound().getNumber() == size;
     }
 
     private BracketMatch feederOf(final BracketMatch match, final int side) {
-        int feederRoundNumber = match.getRound().getNumber() * 2;
-        int feederMatchNumber = match.getMatchNumber() * 2 - (side == 1 ? 1 : 0);
+        int feederRoundNumber = match.getRound().getNumber() * TEAMS_PER_MATCH;
+        int feederMatchNumber = match.getMatchNumber() * TEAMS_PER_MATCH - (side == TEAM1_SIDE ? 1 : 0);
         return matchesByRound.getOrDefault(feederRoundNumber, Map.of()).get(feederMatchNumber);
     }
 
     // 해당 사이드로 이어지는 1라운드 구간에 배치된 팀이 하나라도 있는지 (부전승 판단용)
     private boolean subtreeHasTeam(final BracketMatch match, final int side) {
         int blockSize = size / match.getRound().getNumber();
-        int start = (match.getMatchNumber() - 1) * blockSize * 2 + (side - 1) * blockSize + 1;
+        int start = (match.getMatchNumber() - 1) * blockSize * TEAMS_PER_MATCH + (side - 1) * blockSize + 1;
         return IntStream.range(start, start + blockSize).anyMatch(placements::containsKey);
     }
 
@@ -197,7 +219,7 @@ public class Bracket {
 
     // 1라운드 position 의 팀이 해당 라운드에서 배정되는 매치 번호
     private int meetingMatchNumber(final int roundNumber, final int position) {
-        return ceilDiv(position * roundNumber, size * 2);
+        return ceilDiv(position * roundNumber, size * TEAMS_PER_MATCH);
     }
 
     // 매치 내 좌우 슬롯을 구분하는 전역 블록 번호 (같은 값이면 같은 사이드)

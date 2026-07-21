@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 public interface BracketMatchRepository extends JpaRepository<BracketMatch, Long> {
 
     @Query("SELECT bm FROM BracketMatch bm "
-            + "LEFT JOIN FETCH bm.team1 LEFT JOIN FETCH bm.team2 "
+            + "LEFT JOIN FETCH bm.team1 LEFT JOIN FETCH bm.team2 LEFT JOIN FETCH bm.game "
             + "WHERE bm.league.id = :leagueId")
     List<BracketMatch> findAllByLeagueId(@Param("leagueId") Long leagueId);
 

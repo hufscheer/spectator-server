@@ -32,21 +32,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BracketService {
 
+    private static final int MINIMUM_TEAMS = 2;
+    private static final int FIRST_POSITION = 1;
+
     private final EntityUtils entityUtils;
     private final BracketMatchRepository bracketMatchRepository;
     private final LeagueTeamRepository leagueTeamRepository;
 
-    /**
-     * 대회 생성 시 대진표를 생성한다. 팀 목록은 LeagueService 에서 이미 검증된 리그 참가 팀이다.
-     */
     public void create(final League league, final List<Team> teams, final BracketRequest.Save request) {
-        validateAndGenerate(league, teams, request);
+        bracketMatchRepository.saveAll(validatedBracketMatches(league, teams, request));
     }
 
-    /**
-     * 대진표를 새로 배치한다. 아직 대진표가 없던 리그에도 사용할 수 있으며,
-     * 이미 경기가 연결된 대진표는 수정할 수 없다.
-     */
     public void replace(final Member administrator, final Long leagueId, final BracketRequest.Save request) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
@@ -56,14 +52,12 @@ public class BracketService {
         }
 
         List<Team> teams = findValidatedLeagueTeams(leagueId, request);
+        List<BracketMatch> matches = validatedBracketMatches(league, teams, request);
+
         bracketMatchRepository.deleteAllByLeagueId(leagueId);
-        validateAndGenerate(league, teams, request);
+        bracketMatchRepository.saveAll(matches);
     }
 
-    /**
-     * 경기의 두 팀이 대진표상 해당 라운드에서 만나는 매치를 찾아 자동으로 연결한다.
-     * 대진표가 없거나, 팀이 배치되지 않았거나, 대진표상 만날 수 없는 조합이면 연결 없이 넘어간다.
-     */
     public void linkGame(final League league, final Game game, final Long teamId1, final Long teamId2) {
         List<BracketMatch> matches = bracketMatchRepository.findAllByLeagueId(league.getId());
         if (matches.isEmpty()) {
@@ -85,20 +79,17 @@ public class BracketService {
         bracketMatchRepository.findByGame(game).ifPresent(BracketMatch::unlinkGame);
     }
 
-    /**
-     * 리그에서 제외된 팀을 아직 경기가 연결되지 않은 매치의 배치에서 제거한다.
-     */
     public void removeTeams(final League league, final List<Team> teams) {
         bracketMatchRepository.findAllByLeagueId(league.getId()).stream()
                 .filter(match -> !match.isLinked())
                 .forEach(match -> teams.forEach(match::removeTeam));
     }
 
-    private void validateAndGenerate(final League league, final List<Team> teams,
-                                     final BracketRequest.Save request) {
+    private List<BracketMatch> validatedBracketMatches(final League league, final List<Team> teams,
+                                                       final BracketRequest.Save request) {
         validateSize(league, request.size());
         Map<Integer, Team> placements = validatedPlacements(request, teams);
-        bracketMatchRepository.saveAll(Bracket.generate(league, request.size(), placements));
+        return Bracket.generate(league, request.size(), placements);
     }
 
     private void validateSize(final League league, final int size) {
@@ -109,18 +100,13 @@ public class BracketService {
     }
 
     private Map<Integer, Team> validatedPlacements(final BracketRequest.Save request, final List<Team> teams) {
-        List<BracketRequest.Entry> entries = request.entries();
-        if (entries == null || entries.size() < 2) {
-            throw new BadRequestException(BracketErrorMessages.NOT_ENOUGH_TEAMS);
-        }
-
         Map<Long, Team> teamsById = teams.stream()
                 .collect(Collectors.toMap(Team::getId, Function.identity()));
 
         Map<Integer, Team> placements = new HashMap<>();
         Set<Long> placedTeamIds = new HashSet<>();
-        for (BracketRequest.Entry entry : entries) {
-            if (entry.position() < 1 || entry.position() > request.size()) {
+        for (BracketRequest.Entry entry : validatedEntries(request)) {
+            if (entry.position() < FIRST_POSITION || entry.position() > request.size()) {
                 throw new BadRequestException(BracketErrorMessages.POSITION_OUT_OF_RANGE);
             }
             if (!placedTeamIds.add(entry.teamId())) {
@@ -138,10 +124,7 @@ public class BracketService {
     }
 
     private List<Team> findValidatedLeagueTeams(final Long leagueId, final BracketRequest.Save request) {
-        if (request.entries() == null || request.entries().size() < 2) {
-            throw new BadRequestException(BracketErrorMessages.NOT_ENOUGH_TEAMS);
-        }
-        List<Long> teamIds = request.entries().stream()
+        List<Long> teamIds = validatedEntries(request).stream()
                 .map(BracketRequest.Entry::teamId)
                 .distinct()
                 .toList();
@@ -152,5 +135,13 @@ public class BracketService {
         return leagueTeams.stream()
                 .map(LeagueTeam::getTeam)
                 .toList();
+    }
+
+    private List<BracketRequest.Entry> validatedEntries(final BracketRequest.Save request) {
+        List<BracketRequest.Entry> entries = request.entries();
+        if (entries == null || entries.size() < MINIMUM_TEAMS) {
+            throw new BadRequestException(BracketErrorMessages.NOT_ENOUGH_TEAMS);
+        }
+        return entries;
     }
 }

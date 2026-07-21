@@ -232,8 +232,9 @@ class BracketTest {
             // when & then
             assertAll(
                     () -> assertThat(bracket.advancerOf(firstMatch)).isEqualTo(teams.get(1L)),
-                    () -> assertThat(bracket.slot1Of(matchOf(matches, 4, 1))).isEqualTo(teams.get(1L)),
-                    () -> assertThat(bracket.slot2Of(matchOf(matches, 4, 1))).isNull()
+                    () -> assertThat(bracket.slotOf(matchOf(matches, 4, 1), Bracket.TEAM1_SIDE))
+                            .isEqualTo(teams.get(1L)),
+                    () -> assertThat(bracket.slotOf(matchOf(matches, 4, 1), Bracket.TEAM2_SIDE)).isNull()
             );
         }
 
@@ -271,7 +272,8 @@ class BracketTest {
             // when & then
             assertAll(
                     () -> assertThat(bracket.advancerOf(matchOf(matches, 8, 1))).isEqualTo(teams.get(1L)),
-                    () -> assertThat(bracket.slot1Of(matchOf(matches, 4, 1))).isEqualTo(teams.get(1L))
+                    () -> assertThat(bracket.slotOf(matchOf(matches, 4, 1), Bracket.TEAM1_SIDE))
+                            .isEqualTo(teams.get(1L))
             );
         }
 
@@ -285,7 +287,8 @@ class BracketTest {
             assertAll(
                     () -> assertThat(bracket.advancerOf(matchOf(matches, 8, 2))).isEqualTo(teams.get(3L)),
                     () -> assertThat(bracket.advancerOf(matchOf(matches, 4, 1))).isEqualTo(teams.get(3L)),
-                    () -> assertThat(bracket.slot1Of(matchOf(matches, 2, 1))).isEqualTo(teams.get(3L))
+                    () -> assertThat(bracket.slotOf(matchOf(matches, 2, 1), Bracket.TEAM1_SIDE))
+                            .isEqualTo(teams.get(3L))
             );
         }
 
