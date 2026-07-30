@@ -1,6 +1,7 @@
 package com.sports.server.command.game.application;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
+import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.league.domain.Quarter;
@@ -42,6 +43,7 @@ public class GameService {
     private final LineupPlayerRepository lineupPlayerRepository;
     private final GameTeamRepository gameTeamRepository;
     private final LeagueTeamRepository leagueTeamRepository;
+    private final BracketService bracketService;
 
     @Transactional
     public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
@@ -54,6 +56,7 @@ public class GameService {
         Game game = saveGame(league, administrator, request);
         registerGameTeamAndLineup(game, request.team1());
         registerGameTeamAndLineup(game, request.team2());
+        bracketService.linkGame(league, game, request.team1().teamId(), request.team2().teamId());
 
         return game.getId();
     }
@@ -96,6 +99,7 @@ public class GameService {
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
         game.updateRound(Round.from(request.round()));
+        bracketService.relinkGame(league, game);
     }
 
     @Transactional
@@ -104,6 +108,7 @@ public class GameService {
         PermissionValidator.checkPermission(league, administrator);
 
         Game game = entityUtils.getEntity(gameId, Game.class);
+        bracketService.unlinkGame(game);
         timelineRepository.deleteByGame(game);
         gameRepository.delete(game);
     }
@@ -117,6 +122,7 @@ public class GameService {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
         game.removeGameTeam(gameTeam);
+        bracketService.unlinkGame(game);
     }
 
     private Game saveGame(League league, Member administrator, GameRequest.Register request) {
