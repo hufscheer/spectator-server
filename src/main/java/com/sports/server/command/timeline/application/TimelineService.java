@@ -3,17 +3,15 @@ package com.sports.server.command.timeline.application;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
-import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
-import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.command.timeline.domain.ReplacementTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.command.timeline.domain.TimelineCreatedEvent;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
@@ -30,8 +28,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -170,32 +166,17 @@ public class TimelineService {
     }
 
     private void validateMiddleDeletable(Game game, Timeline target, List<Timeline> subsequents) {
-        if (game.getState() != GameState.PLAYING) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, TimelineErrorMessage.MIDDLE_DELETE_ONLY_WHILE_PLAYING);
-        }
-        if (target instanceof GameProgressTimeline) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, TimelineErrorMessage.PROGRESS_TIMELINE_NOT_LAST);
-        }
-        if (subsequents.stream().anyMatch(Timeline::isGameEnd)) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, TimelineErrorMessage.INCONSISTENT_PROGRESS_STATE);
-        }
-        if (target instanceof ReplacementTimeline replacement) {
-            validateReplacementNotReferenced(replacement, subsequents);
+        TimelineDeletabilityEvaluator.Result result = TimelineDeletabilityEvaluator.evaluateMiddle(game.getState(), target, subsequents);
+        if (!result.deletable()) {
+            throw new CustomException(statusOf(result.reason()), result.reasonMessage());
         }
     }
 
-    private void validateReplacementNotReferenced(ReplacementTimeline target, List<Timeline> subsequents) {
-        Set<Long> replacementPlayerIds = target.getRelatedLineupPlayers().stream()
-                .map(LineupPlayer::getId)
-                .collect(Collectors.toSet());
-
-        boolean referenced = subsequents.stream()
-                .flatMap(timeline -> timeline.getRelatedLineupPlayers().stream())
-                .anyMatch(player -> replacementPlayerIds.contains(player.getId()));
-
-        if (referenced) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS);
+    private HttpStatus statusOf(TimelineDeletabilityEvaluator.Reason reason) {
+        if (reason == TimelineDeletabilityEvaluator.Reason.INCONSISTENT_PROGRESS_STATE) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
+        return HttpStatus.BAD_REQUEST;
     }
 
     private void rollbackWithUnderflowLog(Timeline timeline) {
