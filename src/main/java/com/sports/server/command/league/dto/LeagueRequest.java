@@ -1,5 +1,6 @@
 package com.sports.server.command.league.dto;
 
+import com.sports.server.command.bracket.dto.BracketRequest;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.league.domain.SportType;
 import java.time.LocalDateTime;
@@ -15,7 +16,8 @@ public class LeagueRequest {
 		LocalDateTime startAt,
 		LocalDateTime endAt,
 		List<Long> teamIds,
-		SportType sportType
+		SportType sportType,
+		BracketRequest.Save bracket
 	) {
 		public League toEntity(final Member manager) {
 			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.from(maxRound), sportType);

@@ -30,6 +30,83 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LeagueQueryControllerTest extends DocumentationTest {
 
     @Test
+    void 리그의_대진표를_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+        BracketResponse response = new BracketResponse(4, List.of(
+                new BracketResponse.RoundResponse(4, List.of(
+                        new BracketResponse.MatchResponse(1L, 1,
+                                new BracketResponse.TeamResponse(1L, "경영 야생마", "https://example.com/logos/1.png"),
+                                new BracketResponse.TeamResponse(2L, "서어 뻬데뻬", "https://example.com/logos/2.png"),
+                                10L, "FINISHED", LocalDateTime.of(2025, 8, 5, 18, 0), 1L),
+                        new BracketResponse.MatchResponse(2L, 2,
+                                new BracketResponse.TeamResponse(3L, "미컴 축구생각", "https://example.com/logos/3.png"),
+                                null, null, null, null, 3L)
+                )),
+                new BracketResponse.RoundResponse(2, List.of(
+                        new BracketResponse.MatchResponse(3L, 1,
+                                new BracketResponse.TeamResponse(1L, "경영 야생마", "https://example.com/logos/1.png"),
+                                new BracketResponse.TeamResponse(3L, "미컴 축구생각", "https://example.com/logos/3.png"),
+                                null, null, null, null)
+                ))
+        ));
+
+        given(bracketQueryService.findBracketByLeagueId(any()))
+                .willReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/bracket", leagueId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("대진표를 조회할 리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("size").type(JsonFieldType.NUMBER)
+                                        .description("대진표 크기 (1라운드 팀 슬롯 수)"),
+                                fieldWithPath("rounds").type(JsonFieldType.ARRAY)
+                                        .description("라운드 목록 (1라운드 → 결승 순)"),
+                                fieldWithPath("rounds[].round").type(JsonFieldType.NUMBER)
+                                        .description("라운드 숫자 (결승 2, 4강 4, 8강 8, 16강 16)"),
+                                fieldWithPath("rounds[].matches").type(JsonFieldType.ARRAY)
+                                        .description("라운드의 매치 목록"),
+                                fieldWithPath("rounds[].matches[].id").type(JsonFieldType.NUMBER)
+                                        .description("매치 ID"),
+                                fieldWithPath("rounds[].matches[].matchNumber").type(JsonFieldType.NUMBER)
+                                        .description("라운드 내 매치 순번 (1부터 시작)"),
+                                fieldWithPath("rounds[].matches[].team1").type(JsonFieldType.OBJECT)
+                                        .description("첫 번째 팀. 미확정이면 null").optional(),
+                                fieldWithPath("rounds[].matches[].team1.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("rounds[].matches[].team1.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("rounds[].matches[].team1.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("rounds[].matches[].team2").type(JsonFieldType.OBJECT)
+                                        .description("두 번째 팀. 미확정이거나 부전승이면 null").optional(),
+                                fieldWithPath("rounds[].matches[].team2.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("rounds[].matches[].team2.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("rounds[].matches[].team2.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("rounds[].matches[].gameId").type(JsonFieldType.NUMBER)
+                                        .description("연결된 경기 ID. 아직 경기가 없으면 null").optional(),
+                                fieldWithPath("rounds[].matches[].gameState").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 상태 (SCHEDULED, PLAYING, FINISHED)").optional(),
+                                fieldWithPath("rounds[].matches[].gameStartTime").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 시작 시간").optional(),
+                                fieldWithPath("rounds[].matches[].winnerTeamId").type(JsonFieldType.NUMBER)
+                                        .description("매치 승자(다음 라운드 진출팀)의 팀 ID. 부전승 포함, 미확정이면 null").optional()
+                        )
+                ));
+    }
+
+    @Test
     void 리그_전체를_조회한다() throws Exception {
 
         // given

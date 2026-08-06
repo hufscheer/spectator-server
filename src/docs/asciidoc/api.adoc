@@ -170,6 +170,14 @@ operation::league-controller-test/리그에_참가하는_팀들을_추가한다[
 
 operation::league-controller-test/리그에_참가하는_팀들을_삭제한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
 
+=== 대진표 배치
+
+operation::bracket-controller-test/대진표를_배치한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+
+=== 리그 대진표 조회
+
+operation::league-query-controller-test/리그의_대진표를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
 === 리그 전체 조회
 
 operation::league-query-controller-test/리그_전체를_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
