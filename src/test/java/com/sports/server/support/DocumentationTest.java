@@ -5,6 +5,8 @@ import com.sports.server.auth.application.AuthService;
 import com.sports.server.auth.presentation.AuthController;
 import com.sports.server.auth.resolver.AuthMemberResolver;
 import com.sports.server.auth.utils.JwtUtil;
+import com.sports.server.command.bracket.application.BracketService;
+import com.sports.server.command.bracket.presentation.BracketController;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.presentation.CheerTalkController;
 import com.sports.server.command.game.application.GameService;
@@ -71,6 +73,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 NlController.class,
                 OrganizationQueryController.class,
                 S3Controller.class,
+                BracketController.class,
         })
 @Import({
         TimeLogTemplate.class,
@@ -118,6 +121,12 @@ public class DocumentationTest {
 
     @MockBean
     protected LeagueQueryService leagueQueryService;
+
+    @MockBean
+    protected BracketService bracketService;
+
+    @MockBean
+    protected BracketQueryService bracketQueryService;
 
     @MockBean
     protected TimelineQueryService timelineQueryService;

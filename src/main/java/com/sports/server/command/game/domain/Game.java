@@ -246,6 +246,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         GameTeam team2 = getTeam2();
 
         int comparison = compareScores(team1, team2, GameTeam::getScore);
+        if (comparison == 0 && Boolean.TRUE.equals(isPkTaken)) {
+            comparison = compareScores(team1, team2, GameTeam::getPkScore);
+        }
 
         if (comparison > 0) {
             markWinnerAndLoser(team1, team2);

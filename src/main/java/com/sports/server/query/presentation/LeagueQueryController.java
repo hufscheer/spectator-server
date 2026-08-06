@@ -2,6 +2,7 @@ package com.sports.server.query.presentation;
 
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
+import com.sports.server.query.application.BracketQueryService;
 import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class LeagueQueryController {
 
     private final LeagueQueryService leagueQueryService;
+    private final BracketQueryService bracketQueryService;
 
     @GetMapping
     public ResponseEntity<List<LeagueResponse>> findLeagues(
@@ -35,6 +37,11 @@ public class LeagueQueryController {
     @GetMapping("/{leagueId}")
     public ResponseEntity<LeagueDetailResponse> findLeagueDetail(@PathVariable Long leagueId) {
         return ResponseEntity.ok(leagueQueryService.findLeagueDetail(leagueId));
+    }
+
+    @GetMapping("/{leagueId}/bracket")
+    public ResponseEntity<BracketResponse> findBracketByLeague(@PathVariable final Long leagueId) {
+        return ResponseEntity.ok(bracketQueryService.findBracketByLeagueId(leagueId));
     }
 
     @GetMapping("/{leagueId}/statistics")

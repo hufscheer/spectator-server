@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.sports.server.command.bracket.dto.BracketRequest;
 import com.sports.server.command.league.dto.LeagueRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.support.DocumentationTest;
@@ -31,7 +32,9 @@ class LeagueControllerTest extends DocumentationTest {
 	void 리그를_생성한다() throws Exception {
 		// given
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of(1L, 2L), null);
+		BracketRequest.Save bracket = new BracketRequest.Save(4,
+				List.of(new BracketRequest.Entry(1, 1L), new BracketRequest.Entry(4, 2L)));
+		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of(1L, 2L), null, bracket);
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
 
@@ -50,7 +53,12 @@ class LeagueControllerTest extends DocumentationTest {
                                         fieldWithPath("startAt").type(JsonFieldType.STRING).description("대회 시작 시간"),
                                         fieldWithPath("endAt").type(JsonFieldType.STRING).description("대회 종료 시간"),
 										fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("대회 참가 팀들의 teamId 배열 (없다면 빈 배열)"),
-									fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL). 미입력 시 SOCCER").optional()
+									fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL). 미입력 시 SOCCER").optional(),
+										fieldWithPath("bracket").type(JsonFieldType.OBJECT).description("대진표 정보. 미입력 시 대진표를 생성하지 않음").optional(),
+										fieldWithPath("bracket.size").type(JsonFieldType.NUMBER).description("대진표 크기 (2, 4, 8, 16)").optional(),
+										fieldWithPath("bracket.entries").type(JsonFieldType.ARRAY).description("1라운드 팀 배치 목록").optional(),
+										fieldWithPath("bracket.entries[].position").type(JsonFieldType.NUMBER).description("배치 위치 (1 ~ size). 비어있는 위치는 부전승").optional(),
+										fieldWithPath("bracket.entries[].teamId").type(JsonFieldType.NUMBER).description("배치할 팀 ID").optional()
                                 ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
