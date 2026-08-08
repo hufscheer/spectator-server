@@ -243,6 +243,10 @@ operation::timeline-controller-test/득점_타임라인을_생성한다[snippets
 
 operation::timeline-controller-test/농구_득점_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
+=== 자책골 타임라인 생성
+
+operation::timeline-controller-test/자책골_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
 
 === 축구 교체 타임라인 생성
 

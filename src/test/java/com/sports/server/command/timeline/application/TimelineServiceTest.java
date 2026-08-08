@@ -172,6 +172,73 @@ class TimelineServiceTest extends ServiceTest {
         }
     }
 
+    @DisplayName("자책골 타임라인을")
+    @Nested
+    class CreateOwnGoalTest {
+        @Test
+        void team1_선수의_자책골이면_team2가_득점한다() {
+            // given
+            Long team1Id = 1L;
+            Long team1PlayerId = 1L;
+
+            TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                    3, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1Id, team1PlayerId);
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            OwnGoalTimeline actual = (OwnGoalTimeline) timelineFixtureRepository.findAllLatest(gameId).get(0);
+
+            assertAll(() -> assertThat(actual.getScorer().getId()).isEqualTo(team1PlayerId),
+                    () -> assertThat(actual.getSnapshotScore1()).isEqualTo(15),
+                    () -> assertThat(actual.getSnapshotScore2()).isEqualTo(11));
+        }
+
+        @Test
+        void 승부차기에서는_등록할_수_없다() {
+            // given
+            Long team1Id = 1L;
+            Long team1PlayerId = 1L;
+
+            TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                    3, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(), team1Id, team1PlayerId);
+
+            // when then
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+
+        @Test
+        void 요청한_팀과_다른_팀_선수는_자책골_선수로_등록할_수_없다() {
+            // given
+            Long team1Id = 1L;
+            Long team2PlayerId = 6L; // 팀2 소속 선수
+
+            TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                    3, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1Id, team2PlayerId);
+
+            // when then
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+
+        @Test
+        void 농구_경기에서는_등록할_수_없다() {
+            // given: 농구 경기(game 5)에 자책골 등록 시도
+            Long basketballGameId = 5L;
+            Long basketballTeamId = 7L;
+            Long basketballPlayerId = 17L;
+
+            TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                    3, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(), basketballTeamId, basketballPlayerId);
+
+            // when then
+            assertThatThrownBy(() -> timelineService.register(manager, basketballGameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+    }
+
     @DisplayName("교체 타임라인을")
     @Nested
     class CreateReplacementTest {
