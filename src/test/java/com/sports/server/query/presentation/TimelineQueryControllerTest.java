@@ -60,6 +60,12 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         new ScoreRecordResponse.Snapshot(
                                                                 TEAM_B, TEAM_B_IMAGE_URL, 3)
                                                 ), null),
+                                                new OwnGoalRecordResponse(2L, 1, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 3)
+                                                )),
                                                 new ReplacementRecordResponse(1L, "선수3", null),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_START),
                                                 new PkRecordResponse(1L, true),
@@ -78,6 +84,12 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         new ScoreRecordResponse.Snapshot(
                                                                 TEAM_B, TEAM_B_IMAGE_URL, 0)
                                                 ), null),
+                                                new OwnGoalRecordResponse(2L, 1, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                                )),
                                                 new ReplacementRecordResponse(1L, "선수3", null),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                                 new PkRecordResponse(4L, false),
@@ -96,6 +108,12 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         new ScoreRecordResponse.Snapshot(
                                                                 TEAM_B, TEAM_B_IMAGE_URL, 0)
                                                 ), null),
+                                                new OwnGoalRecordResponse(2L, 1, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                                )),
                                                 new ReplacementRecordResponse(2L, "선수5", true),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                                 new PkRecordResponse(4L, false),
@@ -150,6 +168,17 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 점수"),
                                 fieldWithPath("timelines[].records[].scoreRecord.assistPlayerName").type(JsonFieldType.NULL)
                                         .description("SCORE 타입일 때 어시스트 선수 이름 (없으면 null)").optional(),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.ownGoalRecordId").type(JsonFieldType.NUMBER)
+                                        .description("OWN_GOAL 타입 기록의 ID"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.score").type(JsonFieldType.NUMBER)
+                                        .description("OWN_GOAL 타입일 때 상대 팀에 반영된 점수"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.snapshot[].teamName").type(JsonFieldType.STRING)
+                                        .description("OWN_GOAL 타입일 때 점수 스냅샷에 표시할 팀 이름"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.snapshot[].teamImageUrl").type(
+                                                JsonFieldType.STRING)
+                                        .description("OWN_GOAL 타입일 때 점수 스냅샷에 표시할 팀 이미지"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.snapshot[].score").type(JsonFieldType.NUMBER)
+                                        .description("OWN_GOAL 타입일 때 점수 스냅샷에 표시할 점수"),
                                 fieldWithPath("timelines[].records[].replacementRecord.replacementRecordId").type(
                                                 JsonFieldType.NUMBER)
                                         .description("REPLACEMENT 타입 기록의  ID"),
