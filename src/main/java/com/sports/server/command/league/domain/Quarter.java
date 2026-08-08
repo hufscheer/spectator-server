@@ -24,4 +24,8 @@ public interface Quarter {
     default boolean canEndGameAfterQuarterEnd() {
         return false;
     }
+
+    default boolean canRecordOwnGoal() {
+        return false;
+    }
 }
