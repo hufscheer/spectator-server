@@ -117,48 +117,51 @@
 <!-- leagues -->
 <g id="node3" class="node">
 <title>leagues</title>
-<polygon fill="#efefef" stroke="none" points="399.49,-996.6 399.49,-1032.2 621.27,-1032.2 621.27,-996.6 399.49,-996.6"/>
-<polygon fill="none" stroke="black" points="399.49,-996.6 399.49,-1032.2 621.27,-1032.2 621.27,-996.6 399.49,-996.6"/>
-<text text-anchor="start" x="421.15" y="-1010" font-family="Arial Bold" font-size="18.00">leagues</text>
-<text text-anchor="start" x="475.12" y="-1010" font-family="Arial" font-size="14.00">    </text>
-<text text-anchor="start" x="506.24" y="-1010" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="black" points="399.49,-965.8 399.49,-996.6 621.27,-996.6 621.27,-965.8 399.49,-965.8"/>
-<text text-anchor="start" x="406.49" y="-978" font-family="Arial" font-size="14.00">id </text>
-<text text-anchor="start" x="421.28" y="-978" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="black" points="399.49,-935 399.49,-965.8 621.27,-965.8 621.27,-935 399.49,-935"/>
-<text text-anchor="start" x="406.49" y="-947.2" font-family="Arial" font-size="14.00">organization_id </text>
-<text text-anchor="start" x="505.34" y="-947.2" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="black" points="399.49,-904.2 399.49,-935 621.27,-935 621.27,-904.2 399.49,-904.2"/>
-<text text-anchor="start" x="406.49" y="-916.4" font-family="Arial" font-size="14.00">administrator_id </text>
-<text text-anchor="start" x="509.98" y="-916.4" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="black" points="399.49,-873.4 399.49,-904.2 621.27,-904.2 621.27,-873.4 399.49,-873.4"/>
-<text text-anchor="start" x="406.49" y="-885.6" font-family="Arial" font-size="14.00">name </text>
-<text text-anchor="start" x="445.4" y="-885.6" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
-<polygon fill="none" stroke="black" points="399.49,-842.6 399.49,-873.4 621.27,-873.4 621.27,-842.6 399.49,-842.6"/>
-<text text-anchor="start" x="406.49" y="-854.8" font-family="Arial" font-size="14.00">start_at </text>
-<text text-anchor="start" x="457.07" y="-854.8" font-family="Arial" font-size="14.00" fill="#666666">[datetime]</text>
-<polygon fill="none" stroke="black" points="399.49,-811.8 399.49,-842.6 621.27,-842.6 621.27,-811.8 399.49,-811.8"/>
-<text text-anchor="start" x="406.49" y="-824" font-family="Arial" font-size="14.00">end_at </text>
-<text text-anchor="start" x="453.2" y="-824" font-family="Arial" font-size="14.00" fill="#666666">[datetime]</text>
-<polygon fill="none" stroke="black" points="399.49,-781 399.49,-811.8 621.27,-811.8 621.27,-781 399.49,-781"/>
-<text text-anchor="start" x="406.49" y="-793.2" font-family="Arial" font-size="14.00">is_deleted </text>
-<text text-anchor="start" x="474.21" y="-793.2" font-family="Arial" font-size="14.00" fill="#666666">[tinyint(1)]</text>
-<polygon fill="none" stroke="black" points="399.49,-750.2 399.49,-781 621.27,-781 621.27,-750.2 399.49,-750.2"/>
-<text text-anchor="start" x="406.49" y="-762.4" font-family="Arial" font-size="14.00">max_round </text>
-<text text-anchor="start" x="480.42" y="-762.4" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
-<polygon fill="none" stroke="black" points="399.49,-719.4 399.49,-750.2 621.27,-750.2 621.27,-719.4 399.49,-719.4"/>
-<text text-anchor="start" x="406.49" y="-731.6" font-family="Arial" font-size="14.00">in_progress_round </text>
-<text text-anchor="start" x="527.12" y="-731.6" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
-<polygon fill="none" stroke="black" points="399.49,-688.6 399.49,-719.4 621.27,-719.4 621.27,-688.6 399.49,-688.6"/>
-<text text-anchor="start" x="406.49" y="-700.8" font-family="Arial" font-size="14.00">sport_type </text>
-<text text-anchor="start" x="475.75" y="-700.8" font-family="Arial" font-size="14.00" fill="#666666">[varchar(20)]</text>
+<polygon fill="#efefef" stroke="none" points="399.49,-1012 399.49,-1047.6 621.27,-1047.6 621.27,-1012 399.49,-1012"/>
+<polygon fill="none" stroke="black" points="399.49,-1012 399.49,-1047.6 621.27,-1047.6 621.27,-1012 399.49,-1012"/>
+<text text-anchor="start" x="421.15" y="-1025.4" font-family="Arial Bold" font-size="18.00">leagues</text>
+<text text-anchor="start" x="475.12" y="-1025.4" font-family="Arial" font-size="14.00">    </text>
+<text text-anchor="start" x="506.24" y="-1025.4" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="black" points="399.49,-981.2 399.49,-1012 621.27,-1012 621.27,-981.2 399.49,-981.2"/>
+<text text-anchor="start" x="406.49" y="-993.4" font-family="Arial" font-size="14.00">id </text>
+<text text-anchor="start" x="421.28" y="-993.4" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="black" points="399.49,-950.4 399.49,-981.2 621.27,-981.2 621.27,-950.4 399.49,-950.4"/>
+<text text-anchor="start" x="406.49" y="-962.6" font-family="Arial" font-size="14.00">organization_id </text>
+<text text-anchor="start" x="505.34" y="-962.6" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="black" points="399.49,-919.6 399.49,-950.4 621.27,-950.4 621.27,-919.6 399.49,-919.6"/>
+<text text-anchor="start" x="406.49" y="-931.8" font-family="Arial" font-size="14.00">administrator_id </text>
+<text text-anchor="start" x="509.98" y="-931.8" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="black" points="399.49,-888.8 399.49,-919.6 621.27,-919.6 621.27,-888.8 399.49,-888.8"/>
+<text text-anchor="start" x="406.49" y="-901" font-family="Arial" font-size="14.00">name </text>
+<text text-anchor="start" x="445.4" y="-901" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="none" stroke="black" points="399.49,-858 399.49,-888.8 621.27,-888.8 621.27,-858 399.49,-858"/>
+<text text-anchor="start" x="406.49" y="-870.2" font-family="Arial" font-size="14.00">start_at </text>
+<text text-anchor="start" x="457.07" y="-870.2" font-family="Arial" font-size="14.00" fill="#666666">[datetime]</text>
+<polygon fill="none" stroke="black" points="399.49,-827.2 399.49,-858 621.27,-858 621.27,-827.2 399.49,-827.2"/>
+<text text-anchor="start" x="406.49" y="-839.4" font-family="Arial" font-size="14.00">end_at </text>
+<text text-anchor="start" x="453.2" y="-839.4" font-family="Arial" font-size="14.00" fill="#666666">[datetime]</text>
+<polygon fill="none" stroke="black" points="399.49,-796.4 399.49,-827.2 621.27,-827.2 621.27,-796.4 399.49,-796.4"/>
+<text text-anchor="start" x="406.49" y="-808.6" font-family="Arial" font-size="14.00">is_deleted </text>
+<text text-anchor="start" x="474.21" y="-808.6" font-family="Arial" font-size="14.00" fill="#666666">[tinyint(1)]</text>
+<polygon fill="none" stroke="black" points="399.49,-765.6 399.49,-796.4 621.27,-796.4 621.27,-765.6 399.49,-765.6"/>
+<text text-anchor="start" x="406.49" y="-777.8" font-family="Arial" font-size="14.00">max_round </text>
+<text text-anchor="start" x="480.42" y="-777.8" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="none" stroke="black" points="399.49,-734.8 399.49,-765.6 621.27,-765.6 621.27,-734.8 399.49,-734.8"/>
+<text text-anchor="start" x="406.49" y="-747" font-family="Arial" font-size="14.00">in_progress_round </text>
+<text text-anchor="start" x="527.12" y="-747" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="none" stroke="black" points="399.49,-704 399.49,-734.8 621.27,-734.8 621.27,-704 399.49,-704"/>
+<text text-anchor="start" x="406.49" y="-716.2" font-family="Arial" font-size="14.00">sport_type </text>
+<text text-anchor="start" x="475.75" y="-716.2" font-family="Arial" font-size="14.00" fill="#666666">[varchar(20)]</text>
+<polygon fill="none" stroke="black" points="399.49,-673.2 399.49,-704 621.27,-704 621.27,-673.2 399.49,-673.2"/>
+<text text-anchor="start" x="406.49" y="-685.4" font-family="Arial" font-size="14.00">third_place_enabled </text>
+<text text-anchor="start" x="536.48" y="-685.4" font-family="Arial" font-size="14.00" fill="#666666">[tinyint(1)]</text>
 </g>
 <!-- leagues&#45;&gt;members -->
 <g id="edge2" class="edge">
 <title>leagues:administrator_id&#45;&gt;members:id</title>
-<path fill="none" stroke="black" d="M388.48,-917.28C342.08,-893.77 376.81,-697.96 399.49,-645.4 412.64,-614.94 440.37,-624.41 453.61,-594 470.86,-554.39 497.82,-496.8 454.61,-496.8"/>
-<polygon fill="black" stroke="black" points="388.42,-917.27 397.15,-923.91 393.62,-918.47 397.84,-919.45 397.84,-919.45 397.84,-919.45 393.62,-918.47 399.18,-915.14 388.42,-917.27"/>
-<text text-anchor="start" x="405.49" y="-929.6" font-family="Arial" font-size="10.00">FOREIGN KEY (administrator_id) REFERENCES members (id)</text>
+<path fill="none" stroke="black" d="M388.29,-932.87C334.71,-908.72 369.14,-686.42 399.49,-630 413.18,-604.56 439.84,-619.39 453.61,-594 474.21,-556.03 497.82,-496.8 454.61,-496.8"/>
+<polygon fill="black" stroke="black" points="388.37,-932.89 397.24,-939.34 393.6,-933.98 397.84,-934.86 397.84,-934.86 397.84,-934.86 393.6,-933.98 399.08,-930.53 388.37,-932.89"/>
+<text text-anchor="start" x="405.49" y="-945" font-family="Arial" font-size="10.00">FOREIGN KEY (administrator_id) REFERENCES members (id)</text>
 </g>
 </g>
 </svg>

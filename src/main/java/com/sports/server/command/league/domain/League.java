@@ -1,5 +1,6 @@
 package com.sports.server.command.league.domain;
 
+import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.common.domain.BaseEntity;
@@ -49,6 +50,9 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     @Column(name = "in_progress_round")
     private Round inProgressRound;
 
+    @Column(name = "third_place_enabled", nullable = false)
+    private boolean thirdPlaceEnabled;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "sport_type", nullable = false)
     private SportType sportType;
@@ -69,7 +73,8 @@ public class League extends BaseEntity<League> implements ManagedEntity {
             final LocalDateTime startAt,
             final LocalDateTime endAt,
             final Round maxRound,
-            final SportType sportType
+            final SportType sportType,
+            final boolean thirdPlaceEnabled
     ) {
         this.administrator = administrator;
         this.organization = organization;
@@ -79,16 +84,19 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.maxRound = maxRound;
         this.inProgressRound = maxRound;
         this.sportType = sportType != null ? sportType : SportType.SOCCER;
+        this.thirdPlaceEnabled = thirdPlaceEnabled;
         this.isDeleted = false;
     }
 
-    public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound) {
+    public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound,
+                           boolean thirdPlaceEnabled) {
         if (StringUtils.hasText(name)) {
             this.name = name;
         }
         this.startAt = startAt;
         this.endAt = endAt;
         this.maxRound = maxRound;
+        this.thirdPlaceEnabled = thirdPlaceEnabled;
     }
 
     @Override
@@ -107,6 +115,20 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     public void validateRoundWithinLimit(Integer round) {
         if (maxRound.numberIsLessThan(round)) {
             throw new BadRequestException(ExceptionMessages.LEAGUE_ROUND_EXCEEDS_MAX);
+        }
+    }
+
+    public void validateRound(int roundNumber, boolean thirdPlace) {
+        if (thirdPlace) {
+            validateThirdPlaceEnabled();
+            return;
+        }
+        validateRoundWithinLimit(roundNumber);
+    }
+
+    private void validateThirdPlaceEnabled() {
+        if (!thirdPlaceEnabled) {
+            throw new BadRequestException(LeagueErrorMessages.THIRD_PLACE_NOT_ENABLED);
         }
     }
 

@@ -2,8 +2,11 @@ package com.sports.server.command.bracket.domain;
 
 import static com.sports.server.support.fixture.FixtureMonkeyUtils.entityBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.bracket.exception.BracketErrorMessages;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameState;
@@ -11,6 +14,7 @@ import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.team.domain.Team;
+import com.sports.server.common.exception.BadRequestException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +32,7 @@ class BracketTest {
 
     @BeforeEach
     void setUp() {
-        league = entityBuilder(League.class).set("id", 1L).sample();
+        league = entityBuilder(League.class).set("id", 1L).set("thirdPlaceEnabled", false).sample();
         teams = new HashMap<>();
         for (long id = 1; id <= 8; id++) {
             teams.put(id, entityBuilder(Team.class).set("id", id).set("name", "팀" + id).sample());
@@ -54,6 +58,10 @@ class BracketTest {
 
     private Game finishedGame(Team winner, Team loser) {
         return gameOf(GameState.FINISHED, winner, GameResult.WIN, loser, GameResult.LOSE);
+    }
+
+    private Game drawGame(Team team1, Team team2) {
+        return gameOf(GameState.FINISHED, team1, GameResult.DRAW, team2, GameResult.DRAW);
     }
 
     private Game gameOf(GameState state, Team team1, GameResult result1, Team team2, GameResult result2) {
@@ -311,6 +319,155 @@ class BracketTest {
 
             // when & then
             assertThat(bracket.advancerOf(matchOf(matches, 4, 1))).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("3·4위전을 진행하는 대회에서")
+    class ThirdPlaceTest {
+
+        private League thirdPlaceLeague;
+
+        @BeforeEach
+        void setUp() {
+            thirdPlaceLeague = entityBuilder(League.class)
+                    .set("id", 2L)
+                    .set("thirdPlaceEnabled", true)
+                    .sample();
+        }
+
+        private BracketMatch thirdPlaceOf(List<BracketMatch> matches) {
+            return matches.stream()
+                    .filter(match -> match.getRound() == Round.THIRD_PLACE)
+                    .findAny()
+                    .orElse(null);
+        }
+
+        private List<BracketMatch> semiFinalsPlayed(Map<Integer, Team> placements) {
+            List<BracketMatch> matches = Bracket.generate(thirdPlaceLeague, 4, placements);
+            matchOf(matches, 4, 1).linkGame(finishedGame(teams.get(1L), teams.get(2L)));
+            matchOf(matches, 4, 2).linkGame(finishedGame(teams.get(3L), teams.get(4L)));
+            return matches;
+        }
+
+        @Test
+        void 트리와_별도로_3_4위전_매치가_생성된다() {
+            // when
+            List<BracketMatch> matches = Bracket.generate(thirdPlaceLeague, 4, placementsOf(1, 2, 3, 4));
+
+            // then
+            assertThat(thirdPlaceOf(matches)).isNotNull();
+        }
+
+        @Test
+        void 대회가_3_4위전을_진행하지_않으면_매치가_생성되지_않는다() {
+            // when
+            List<BracketMatch> matches = Bracket.generate(league, 4, placementsOf(1, 2, 3, 4));
+
+            // then
+            assertThat(thirdPlaceOf(matches)).isNull();
+        }
+
+        @Test
+        void 준결승이_없는_크기에서는_3_4위전_매치가_생성되지_않는다() {
+            // when (2팀 대회는 결승뿐이라 준결승 패자가 없다)
+            List<BracketMatch> matches = Bracket.generate(thirdPlaceLeague, 2, placementsOf(1, 2));
+
+            // then
+            assertThat(thirdPlaceOf(matches)).isNull();
+        }
+
+        @Test
+        void 부속_매치는_트리_라운드_목록에_포함되지_않는다() {
+            // given
+            List<BracketMatch> matches = Bracket.generate(thirdPlaceLeague, 4, placementsOf(1, 2, 3, 4));
+
+            // when
+            Bracket bracket = Bracket.from(matches);
+
+            // then
+            assertAll(
+                    () -> assertThat(bracket.roundNumbers()).containsExactly(4, 2),
+                    () -> assertThat(bracket.getThirdPlaceMatch()).isNotNull()
+            );
+        }
+
+        @Test
+        void 참가팀은_준결승_패자로_유도된다() {
+            // given
+            Bracket bracket = Bracket.from(semiFinalsPlayed(placementsOf(1, 2, 3, 4)));
+
+            // when & then
+            assertAll(
+                    () -> assertThat(bracket.thirdPlaceSlotOf(Bracket.TEAM1_SIDE)).isEqualTo(teams.get(2L)),
+                    () -> assertThat(bracket.thirdPlaceSlotOf(Bracket.TEAM2_SIDE)).isEqualTo(teams.get(4L))
+            );
+        }
+
+        @Test
+        void 준결승이_끝나지_않으면_참가팀이_미확정이다() {
+            // given
+            Bracket bracket = Bracket.from(Bracket.generate(thirdPlaceLeague, 4, placementsOf(1, 2, 3, 4)));
+
+            // when & then
+            assertAll(
+                    () -> assertThat(bracket.thirdPlaceSlotOf(Bracket.TEAM1_SIDE)).isNull(),
+                    () -> assertThat(bracket.thirdPlaceSlotOf(Bracket.TEAM2_SIDE)).isNull()
+            );
+        }
+
+        @Test
+        void 준결승_패자_두_팀이면_검증을_통과한다() {
+            // given
+            Bracket bracket = Bracket.from(semiFinalsPlayed(placementsOf(1, 2, 3, 4)));
+
+            // when & then
+            assertThatNoException()
+                    .isThrownBy(() -> bracket.validateThirdPlaceContenders(2L, 4L));
+        }
+
+        @Test
+        void 팀_순서가_바뀌어도_검증을_통과한다() {
+            // given
+            Bracket bracket = Bracket.from(semiFinalsPlayed(placementsOf(1, 2, 3, 4)));
+
+            // when & then
+            assertThatNoException()
+                    .isThrownBy(() -> bracket.validateThirdPlaceContenders(4L, 2L));
+        }
+
+        @Test
+        void 준결승_패자가_아닌_팀이_섞이면_검증에_실패한다() {
+            // given
+            Bracket bracket = Bracket.from(semiFinalsPlayed(placementsOf(1, 2, 3, 4)));
+
+            // when & then
+            assertThatThrownBy(() -> bracket.validateThirdPlaceContenders(1L, 4L))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessageContaining(BracketErrorMessages.THIRD_PLACE_TEAMS_MISMATCH);
+        }
+
+        @Test
+        void 준결승이_끝나지_않았으면_검증을_건너뛴다() {
+            // given
+            Bracket bracket = Bracket.from(Bracket.generate(thirdPlaceLeague, 4, placementsOf(1, 2, 3, 4)));
+
+            // when & then (자동 배정이 불가능하므로 수동 선택을 허용한다)
+            assertThatNoException()
+                    .isThrownBy(() -> bracket.validateThirdPlaceContenders(1L, 3L));
+        }
+
+        @Test
+        void 무승부로_남은_준결승은_패자가_없어_검증을_건너뛴다() {
+            // given
+            List<BracketMatch> matches = Bracket.generate(thirdPlaceLeague, 4, placementsOf(1, 2, 3, 4));
+            matchOf(matches, 4, 1).linkGame(drawGame(teams.get(1L), teams.get(2L)));
+            matchOf(matches, 4, 2).linkGame(finishedGame(teams.get(3L), teams.get(4L)));
+            Bracket bracket = Bracket.from(matches);
+
+            // when & then
+            assertThatNoException()
+                    .isThrownBy(() -> bracket.validateThirdPlaceContenders(1L, 4L));
         }
     }
 }

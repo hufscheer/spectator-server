@@ -13,6 +13,7 @@ import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.application.EntityUtils;
@@ -73,7 +74,7 @@ public class GameServiceTest extends ServiceTest {
         );
         team2 = new GameRequest.TeamLineupRequest(2L, team2Players);
 
-        this.requestDto = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED", LocalDateTime.now(), null, team1, team2);
+        this.requestDto = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED", LocalDateTime.now(), null, team1, team2, false);
         LocalDateTime fixedNow = LocalDateTime.of(2024, 11, 26, 0, 0, 0, 0);
         Clock fixedClock = Clock.fixed(fixedNow.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -166,11 +167,25 @@ public class GameServiceTest extends ServiceTest {
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
             GameRequest.Register requestDto = new GameRequest.Register(nameOfGame, 32, "FIRST_HALF", "SCHEDULED",
-                    LocalDateTime.now(), null, team1, team2);
+                    LocalDateTime.now(), null, team1, team2, false);
 
             // when & then
             assertThatThrownBy(() -> gameService.register(leagueId, requestDto, manager)).isInstanceOf(
                     CustomException.class).hasMessage("최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
+        }
+
+        @Test
+        void 대회가_3_4위전을_진행하지_않으면_3_4위전_경기를_등록할_수_없다() {
+            // given
+            Long leagueId = 1L;
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            GameRequest.Register thirdPlaceRequest = new GameRequest.Register(nameOfGame, 4, "FIRST_HALF", "SCHEDULED",
+                    LocalDateTime.now(), null, team1, team2, true);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.register(leagueId, thirdPlaceRequest, manager))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(LeagueErrorMessages.THIRD_PLACE_NOT_ENABLED);
         }
 
         @Test
@@ -184,7 +199,7 @@ public class GameServiceTest extends ServiceTest {
             );
             GameRequest.TeamLineupRequest invalidTeam1 = new GameRequest.TeamLineupRequest(1L, twoCaptainsLineup);
             GameRequest.Register invalidRequest = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED",
-                    LocalDateTime.now(), null, invalidTeam1, team2);
+                    LocalDateTime.now(), null, invalidTeam1, team2, false);
 
             // when & then
             assertThatThrownBy(() -> gameService.register(leagueId, invalidRequest, manager))
@@ -205,7 +220,7 @@ public class GameServiceTest extends ServiceTest {
         @BeforeEach
         void setUp() {
             LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-            updateDto = new GameRequest.Update(nameOfGame, 8, fixedLocalDateTime, "videoId");
+            updateDto = new GameRequest.Update(nameOfGame, 8, fixedLocalDateTime, "videoId", false);
             leagueId = 1L;
             gameId = 1L;
             manager = entityUtils.getEntity(1L, Member.class);
@@ -234,7 +249,7 @@ public class GameServiceTest extends ServiceTest {
 
             GameRequest.Update finishAttempt = new GameRequest.Update(
                     nameOfGame, 4, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
-            );
+            , false);
 
             // when
             gameService.updateGame(leagueId, gameId, finishAttempt, manager);

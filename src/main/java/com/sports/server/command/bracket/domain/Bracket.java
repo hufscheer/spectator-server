@@ -16,12 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 /**
  * 리그의 대진표 트리. round/matchNumber 수학으로 부모-자식 매치를 유도한다.
  * round R 의 match m 은 아래 라운드(2R)의 match 2m-1, 2m 승자끼리 대결한다.
  * 팀 배치(team1/team2)는 1라운드에만 저장되고, 상위 라운드 슬롯은 경기 결과와 부전승으로부터 유도된다.
+ * 3·4위전은 준결승 패자가 모이는 경기라 이 수학 밖이며, 트리와 분리해 부속 매치로 들고 있다.
  */
 public class Bracket {
 
@@ -29,17 +31,23 @@ public class Bracket {
     public static final int TEAM2_SIDE = 2;
 
     private static final int TEAMS_PER_MATCH = 2;
+    private static final int THIRD_PLACE_MATCH_NUMBER = 1;
+    private static final int FIRST_SEMI_FINAL = 1;
+    private static final int SECOND_SEMI_FINAL = 2;
 
     private final int size;
     private final Map<Integer, Map<Integer, BracketMatch>> matchesByRound;
     private final Map<Integer, Team> placements;
+    private final BracketMatch thirdPlaceMatch;
 
     private Bracket(final int size,
                     final Map<Integer, Map<Integer, BracketMatch>> matchesByRound,
-                    final Map<Integer, Team> placements) {
+                    final Map<Integer, Team> placements,
+                    final BracketMatch thirdPlaceMatch) {
         this.size = size;
         this.matchesByRound = matchesByRound;
         this.placements = placements;
+        this.thirdPlaceMatch = thirdPlaceMatch;
     }
 
     public static List<BracketMatch> generate(final League league, final int size,
@@ -48,7 +56,14 @@ public class Bracket {
         for (int roundNumber = size; roundNumber >= Round.FINAL.getNumber(); roundNumber /= TEAMS_PER_MATCH) {
             matches.addAll(generateRound(league, size, roundNumber, placements));
         }
+        if (needsThirdPlaceMatch(league, size)) {
+            matches.add(new BracketMatch(league, Round.THIRD_PLACE, THIRD_PLACE_MATCH_NUMBER));
+        }
         return matches;
+    }
+
+    private static boolean needsThirdPlaceMatch(final League league, final int size) {
+        return league.isThirdPlaceEnabled() && size >= Round.SEMI_FINAL.getNumber();
     }
 
     private static List<BracketMatch> generateRound(final League league, final int size, final int roundNumber,
@@ -67,12 +82,20 @@ public class Bracket {
     }
 
     public static Bracket from(final List<BracketMatch> matches) {
-        if (matches.isEmpty()) {
+        List<BracketMatch> treeMatches = matches.stream()
+                .filter(match -> match.getRound().isInBracketTree())
+                .toList();
+        if (treeMatches.isEmpty()) {
             throw new BadRequestException(BracketErrorMessages.BRACKET_NOT_FOUND);
         }
-        Map<Integer, Map<Integer, BracketMatch>> matchesByRound = groupByRound(matches);
+        Map<Integer, Map<Integer, BracketMatch>> matchesByRound = groupByRound(treeMatches);
         int size = matchesByRound.keySet().stream().mapToInt(Integer::intValue).max().orElseThrow();
-        return new Bracket(size, matchesByRound, firstRoundPlacements(matchesByRound.get(size).values()));
+        BracketMatch thirdPlaceMatch = matches.stream()
+                .filter(match -> match.getRound() == Round.THIRD_PLACE)
+                .findAny()
+                .orElse(null);
+        return new Bracket(size, matchesByRound, firstRoundPlacements(matchesByRound.get(size).values()),
+                thirdPlaceMatch);
     }
 
     private static Map<Integer, Map<Integer, BracketMatch>> groupByRound(final List<BracketMatch> matches) {
@@ -107,6 +130,10 @@ public class Bracket {
 
     public int getSize() {
         return size;
+    }
+
+    public BracketMatch getThirdPlaceMatch() {
+        return thirdPlaceMatch;
     }
 
     public List<Integer> roundNumbers() {
@@ -181,12 +208,46 @@ public class Bracket {
     }
 
     public Team winnerOf(final BracketMatch match) {
+        return teamWithResult(match, GameResult.WIN);
+    }
+
+    /**
+     * 3·4위전 참가팀이 준결승 패자와 일치하는지 검증한다.
+     * 준결승이 끝나지 않았거나 무승부로 남아 패자가 가려지지 않으면 검증을 건너뛰어 수동 선택을 허용한다.
+     */
+    public void validateThirdPlaceContenders(final Long teamId1, final Long teamId2) {
+        Team loser1 = thirdPlaceSlotOf(TEAM1_SIDE);
+        Team loser2 = thirdPlaceSlotOf(TEAM2_SIDE);
+        if (loser1 == null || loser2 == null) {
+            return;
+        }
+        if (!Set.of(loser1.getId(), loser2.getId()).equals(Set.copyOf(List.of(teamId1, teamId2)))) {
+            throw new BadRequestException(BracketErrorMessages.THIRD_PLACE_TEAMS_MISMATCH);
+        }
+    }
+
+    /**
+     * 3·4위전에 배정될 팀. 준결승 패자이며, 준결승이 끝나지 않았거나 무승부로 남아 패자가 없으면 null.
+     */
+    public Team thirdPlaceSlotOf(final int side) {
+        Map<Integer, BracketMatch> semiFinals = matchesByRound.get(Round.SEMI_FINAL.getNumber());
+        if (semiFinals == null) {
+            return null;
+        }
+        BracketMatch semiFinal = semiFinals.get(side == TEAM1_SIDE ? FIRST_SEMI_FINAL : SECOND_SEMI_FINAL);
+        if (semiFinal == null) {
+            return null;
+        }
+        return teamWithResult(semiFinal, GameResult.LOSE);
+    }
+
+    private Team teamWithResult(final BracketMatch match, final GameResult result) {
         Game game = match.getGame();
         if (game == null || game.getState() != GameState.FINISHED) {
             return null;
         }
         return game.getGameTeams().stream()
-                .filter(gameTeam -> gameTeam.getResult() == GameResult.WIN)
+                .filter(gameTeam -> gameTeam.getResult() == result)
                 .map(GameTeam::getTeam)
                 .findAny()
                 .orElse(null);

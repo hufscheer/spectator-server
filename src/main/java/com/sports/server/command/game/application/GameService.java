@@ -49,9 +49,12 @@ public class GameService {
     public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
-        league.validateRoundWithinLimit(request.round());
+        league.validateRound(request.round(), request.thirdPlace());
 
         validateGameTeamsInLeague(league, request.team1(), request.team2());
+        if (request.thirdPlace()) {
+            bracketService.validateThirdPlaceContenders(league, request.team1().teamId(), request.team2().teamId());
+        }
 
         Game game = saveGame(league, administrator, request);
         registerGameTeamAndLineup(game, request.team1());
@@ -91,14 +94,14 @@ public class GameService {
     public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
-        league.validateRoundWithinLimit(request.round());
+        league.validateRound(request.round(), request.thirdPlace());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
 
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
-        game.updateRound(Round.from(request.round()));
+        game.updateRound(request.resolveRound());
         bracketService.relinkGame(league, game);
     }
 

@@ -41,7 +41,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 10L, "FINISHED", LocalDateTime.of(2025, 8, 5, 18, 0), 1L),
                         new BracketResponse.MatchResponse(2L, 2,
                                 new BracketResponse.TeamResponse(3L, "미컴 축구생각", "https://example.com/logos/3.png"),
-                                null, null, null, null, 3L)
+                                new BracketResponse.TeamResponse(4L, "체육 파이터", "https://example.com/logos/4.png"),
+                                11L, "FINISHED", LocalDateTime.of(2025, 8, 5, 20, 0), 3L)
                 )),
                 new BracketResponse.RoundResponse(2, List.of(
                         new BracketResponse.MatchResponse(3L, 1,
@@ -49,7 +50,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 new BracketResponse.TeamResponse(3L, "미컴 축구생각", "https://example.com/logos/3.png"),
                                 null, null, null, null)
                 ))
-        ));
+        ), new BracketResponse.MatchResponse(4L, 1,
+                new BracketResponse.TeamResponse(2L, "서어 뻬데뻬", "https://example.com/logos/2.png"),
+                new BracketResponse.TeamResponse(4L, "체육 파이터", "https://example.com/logos/4.png"),
+                null, null, null, null));
 
         given(bracketQueryService.findBracketByLeagueId(any()))
                 .willReturn(response);
@@ -101,7 +105,38 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("rounds[].matches[].gameStartTime").type(JsonFieldType.STRING)
                                         .description("연결된 경기 시작 시간").optional(),
                                 fieldWithPath("rounds[].matches[].winnerTeamId").type(JsonFieldType.NUMBER)
-                                        .description("매치 승자(다음 라운드 진출팀)의 팀 ID. 부전승 포함, 미확정이면 null").optional()
+                                        .description("매치 승자(다음 라운드 진출팀)의 팀 ID. 부전승 포함, 미확정이면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.OBJECT)
+                                        .description("3·4위전 매치. 대회가 3·4위전을 진행하지 않으면 null. "
+                                                + "rounds 배열에는 포함되지 않는다").optional(),
+                                fieldWithPath("thirdPlaceMatch.id").type(JsonFieldType.NUMBER)
+                                        .description("매치 ID").optional(),
+                                fieldWithPath("thirdPlaceMatch.matchNumber").type(JsonFieldType.NUMBER)
+                                        .description("매치 순번 (3·4위전은 항상 1)").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1").type(JsonFieldType.OBJECT)
+                                        .description("준결승 1경기 패배팀. 미확정이면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2").type(JsonFieldType.OBJECT)
+                                        .description("준결승 2경기 패배팀. 미확정이면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("thirdPlaceMatch.gameId").type(JsonFieldType.NUMBER)
+                                        .description("연결된 경기 ID. 아직 경기가 없으면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch.gameState").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 상태 (SCHEDULED, PLAYING, FINISHED)").optional(),
+                                fieldWithPath("thirdPlaceMatch.gameStartTime").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 시작 시간").optional(),
+                                fieldWithPath("thirdPlaceMatch.winnerTeamId").type(JsonFieldType.NUMBER)
+                                        .description("3위 팀 ID. 경기가 끝나지 않았으면 null").optional()
                         )
                 ));
     }

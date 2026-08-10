@@ -194,7 +194,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, List.of());
 
         GameRequest.Register request = new GameRequest.Register("경기 이름", 16, "FIRST_HALF", "SCHEDULED",
-                LocalDateTime.now(), null, team1, team2);
+                LocalDateTime.now(), null, team1, team2, false);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 
@@ -222,7 +222,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         int round = 16;
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         String videoId = "videoId";
-        GameRequest.Update request = new GameRequest.Update(name, round, fixedLocalDateTime, videoId);
+        GameRequest.Update request = new GameRequest.Update(name, round, fixedLocalDateTime, videoId, false);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

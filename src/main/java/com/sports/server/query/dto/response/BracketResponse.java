@@ -9,13 +9,22 @@ import java.util.List;
 
 public record BracketResponse(
         int size,
-        List<RoundResponse> rounds
+        List<RoundResponse> rounds,
+        MatchResponse thirdPlaceMatch
 ) {
     public static BracketResponse of(final Bracket bracket) {
         List<RoundResponse> rounds = bracket.roundNumbers().stream()
                 .map(roundNumber -> RoundResponse.of(bracket, roundNumber))
                 .toList();
-        return new BracketResponse(bracket.getSize(), rounds);
+        return new BracketResponse(bracket.getSize(), rounds, thirdPlaceMatchOf(bracket));
+    }
+
+    private static MatchResponse thirdPlaceMatchOf(final Bracket bracket) {
+        BracketMatch match = bracket.getThirdPlaceMatch();
+        if (match == null) {
+            return null;
+        }
+        return MatchResponse.ofThirdPlace(bracket, match);
     }
 
     public record RoundResponse(
@@ -41,8 +50,17 @@ public record BracketResponse(
             Long winnerTeamId
     ) {
         private static MatchResponse of(final Bracket bracket, final BracketMatch match) {
-            Team slot1 = bracket.slotOf(match, Bracket.TEAM1_SIDE);
-            Team slot2 = bracket.slotOf(match, Bracket.TEAM2_SIDE);
+            return from(match, bracket.slotOf(match, Bracket.TEAM1_SIDE), bracket.slotOf(match, Bracket.TEAM2_SIDE),
+                    bracket.advancerOf(match));
+        }
+
+        private static MatchResponse ofThirdPlace(final Bracket bracket, final BracketMatch match) {
+            return from(match, bracket.thirdPlaceSlotOf(Bracket.TEAM1_SIDE),
+                    bracket.thirdPlaceSlotOf(Bracket.TEAM2_SIDE), bracket.winnerOf(match));
+        }
+
+        private static MatchResponse from(final BracketMatch match, final Team slot1, final Team slot2,
+                                          final Team winner) {
             Team display1 = slot1;
             Team display2 = slot2;
 
@@ -56,7 +74,6 @@ public record BracketResponse(
                 display2 = shouldSwap ? gameTeam1 : gameTeam2;
             }
 
-            Team advancer = bracket.advancerOf(match);
             return new MatchResponse(
                     match.getId(),
                     match.getMatchNumber(),
@@ -65,7 +82,7 @@ public record BracketResponse(
                     game == null ? null : game.getId(),
                     game == null ? null : game.getState().name(),
                     game == null ? null : game.getStartTime(),
-                    advancer == null ? null : advancer.getId()
+                    winner == null ? null : winner.getId()
             );
         }
     }

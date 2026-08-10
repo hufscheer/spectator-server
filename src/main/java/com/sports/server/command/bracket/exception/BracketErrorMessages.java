@@ -2,6 +2,7 @@ package com.sports.server.command.bracket.exception;
 
 public class BracketErrorMessages {
     public static final String BRACKET_NOT_FOUND = "해당 리그의 대진표가 존재하지 않습니다.";
+    public static final String THIRD_PLACE_TEAMS_MISMATCH = "3·4위전은 준결승에서 패배한 두 팀으로만 생성할 수 있습니다.";
     public static final String INVALID_BRACKET_SIZE = "유효하지 않은 대진표 크기입니다.";
     public static final String NOT_ENOUGH_TEAMS = "대진표에는 최소 2팀 이상 배치되어야 합니다.";
     public static final String POSITION_OUT_OF_RANGE = "대진표 위치가 유효한 범위를 벗어났습니다.";

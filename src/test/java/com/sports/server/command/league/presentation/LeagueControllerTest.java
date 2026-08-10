@@ -34,7 +34,7 @@ class LeagueControllerTest extends DocumentationTest {
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
 		BracketRequest.Save bracket = new BracketRequest.Save(4,
 				List.of(new BracketRequest.Entry(1, 1L), new BracketRequest.Entry(4, 2L)));
-		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of(1L, 2L), null, bracket);
+		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of(1L, 2L), null, bracket, false);
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
 
@@ -58,7 +58,8 @@ class LeagueControllerTest extends DocumentationTest {
 										fieldWithPath("bracket.size").type(JsonFieldType.NUMBER).description("대진표 크기 (2, 4, 8, 16)").optional(),
 										fieldWithPath("bracket.entries").type(JsonFieldType.ARRAY).description("1라운드 팀 배치 목록").optional(),
 										fieldWithPath("bracket.entries[].position").type(JsonFieldType.NUMBER).description("배치 위치 (1 ~ size). 비어있는 위치는 부전승").optional(),
-										fieldWithPath("bracket.entries[].teamId").type(JsonFieldType.NUMBER).description("배치할 팀 ID").optional()
+										fieldWithPath("bracket.entries[].teamId").type(JsonFieldType.NUMBER).description("배치할 팀 ID").optional(),
+										fieldWithPath("thirdPlaceEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부. 미입력 시 false").optional()
                                 ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -98,7 +99,7 @@ class LeagueControllerTest extends DocumentationTest {
 		Long leagueId = 5124L;
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
 		LeagueRequest.Update request = new LeagueRequest.Update("훕치치배 망고 빨리먹기 대회", 16, fixedDateTime,
-				fixedDateTime);
+				fixedDateTime, false);
 
 		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequest.Update.class), anyLong());
 
@@ -118,7 +119,9 @@ class LeagueControllerTest extends DocumentationTest {
 					fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 대회의 이름"),
 					fieldWithPath("startAt").type(JsonFieldType.STRING).description("변경할 대회 시작시간"),
 					fieldWithPath("endAt").type(JsonFieldType.STRING).description("변경할 대회 종료시간"),
-					fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("변경할 대회의 총 라운드 수")
+					fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("변경할 대회의 총 라운드 수"),
+					fieldWithPath("thirdPlaceEnabled").type(JsonFieldType.BOOLEAN)
+						.description("3·4위전 진행 여부. 대진표에 경기가 연결된 뒤에는 변경할 수 없다").optional()
 				),
 				requestCookies(
 					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

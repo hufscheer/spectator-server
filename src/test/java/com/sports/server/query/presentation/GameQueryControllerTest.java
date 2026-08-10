@@ -147,7 +147,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                 parameterWithName("cursor").description("페이징 커서"),
                                 parameterWithName("size").description("페이징 사이즈"),
                                 parameterWithName("league_team_id").description("리그팀의 ID"),
-                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
+                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2"),
+                                parameterWithName("third_place").optional()
+                                        .description("true 면 3·4위전 경기만 조회한다. round 파라미터보다 우선한다")
                         ),
                         responseFields(
                                 fieldWithPath("content").type(JsonFieldType.ARRAY).description("리그별 게임 목록"),

@@ -33,7 +33,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
                 teamIds,
                 null,
                 bracket
-        );
+        , false);
 
         configureMockJwtForEmail("john.doe@example.com");
 
@@ -78,7 +78,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
                 "라임즙 많이 먹기 대회",
                 16,
                 LocalDateTime.of(24, 12, 11, 0, 0, 0),
-                LocalDateTime.of(24, 12, 13, 0, 0, 0));
+                LocalDateTime.of(24, 12, 13, 0, 0, 0), false);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

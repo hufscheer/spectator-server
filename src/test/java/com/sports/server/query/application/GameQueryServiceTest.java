@@ -38,7 +38,7 @@ public class GameQueryServiceTest extends ServiceTest {
         //given
         String invalidStateValue = "INVALID";
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, invalidStateValue,
-                null, null);
+                null, null, null);
 
         // when
         assertThrows(CustomException.class,
@@ -51,7 +51,7 @@ public class GameQueryServiceTest extends ServiceTest {
         Long leagueId = 1L;
         PageRequestDto pageRequestDto = new PageRequestDto(null, 5);
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(leagueId, "SCHEDULED",
-                leagueTeamIds, null);
+                leagueTeamIds, null, null);
 
         //when
         List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content();
@@ -76,7 +76,7 @@ public class GameQueryServiceTest extends ServiceTest {
         Long leagueId = 1L;
         PageRequestDto pageRequestDto = new PageRequestDto(2L, 5);
         GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(leagueId, "SCHEDULED", leagueTeamIds,
-                null);
+                null, null);
 
         //when
         List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content();
@@ -98,7 +98,7 @@ public class GameQueryServiceTest extends ServiceTest {
     void 커서를_이용해서_조회한다() {
         // given
         int size = 7;
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null, null);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, null, null, null);
 
         // when
         List<LeagueWithGamesResponse> firstPage = gameQueryService.getAllGames(
@@ -133,7 +133,7 @@ public class GameQueryServiceTest extends ServiceTest {
     @Test
     void 리그_아이디가_쿼리_스트링으로_조회되지_않는_경우_전체가_반환된다() {
         //given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null, null);
 
         //when
         List<LeagueWithGamesResponse> response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content();
@@ -152,7 +152,7 @@ public class GameQueryServiceTest extends ServiceTest {
     void 하나의_게임에서_팀이_아이디_순으로_반환된다() {
 
         //given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null, null);
 
         //when
         LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
@@ -175,7 +175,7 @@ public class GameQueryServiceTest extends ServiceTest {
     void 게임에_참여한_팀들의_순서가_알맞게_반환된다() {
 
         //given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", leagueTeamIds, null);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, "FINISHED", leagueTeamIds, null, null);
 
         //when
         LeagueWithGamesResponse response = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
@@ -200,7 +200,7 @@ public class GameQueryServiceTest extends ServiceTest {
         void 세개만_조회한다() {
 
             // given
-            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null);
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds, null, null);
             PageRequestDto pageRequestDto = new PageRequestDto(1L, 3);
 
             //when
@@ -218,7 +218,7 @@ public class GameQueryServiceTest extends ServiceTest {
 
             // given
             GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(null, stateValue, leagueTeamIds,
-                    null);
+                    null, null);
             PageRequestDto pageRequestDto = new PageRequestDto(1L, null);
 
             //when
@@ -237,7 +237,7 @@ public class GameQueryServiceTest extends ServiceTest {
             // given
             int size = 5;
             Long leagueId = 1L;
-            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(leagueId, stateValue, null, null);
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(leagueId, stateValue, null, null, null);
 
             //when
             LeagueWithGamesResponse response1 = gameQueryService.getAllGames(queryRequestDto, pageRequestDto).content().get(0);
@@ -261,7 +261,7 @@ public class GameQueryServiceTest extends ServiceTest {
         @Test
         void game_id가_start_time과_순서가_불일치해도_커서페이징이_잘_수행된다_SCHEDULED() {
             // given
-            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, stateValue, null, null);
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(validLeagueId, stateValue, null, null, null);
 
             //when
             List<GameResponseDto> after15 = gameQueryService.getAllGames(
@@ -301,7 +301,7 @@ public class GameQueryServiceTest extends ServiceTest {
         @Test
         void game_id가_start_time과_순서가_불일치해도_커서페이징이_잘_수행된다_FINISHED() {
             // given
-            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "FINISHED", null, null);
+            GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "FINISHED", null, null, null);
 
             //when
             List<GameResponseDto> firstPage = gameQueryService.getAllGames(
@@ -328,7 +328,7 @@ public class GameQueryServiceTest extends ServiceTest {
     @Test
     void league_team_id로_게임을_조회한다() {
         // given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", leagueTeamIds, null);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", leagueTeamIds, null, null);
 
         //when
         List<GameResponseDto> firstPage = gameQueryService.getAllGames(
@@ -354,7 +354,7 @@ public class GameQueryServiceTest extends ServiceTest {
     @Test
     void round로_게임을_조회한다() {
         // given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, 8);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, 8, null);
 
         //when
         List<GameResponseDto> firstPage = gameQueryService.getAllGames(
@@ -381,7 +381,7 @@ public class GameQueryServiceTest extends ServiceTest {
     void 게임팀이_순서에_맞게_반환된다() {
 
         // given
-        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, 8);
+        GamesQueryRequestDto queryRequestDto = new GamesQueryRequestDto(1L, "SCHEDULED", null, 8, null);
 
         //when
         List<GameResponseDto> responseDtos = gameQueryService.getAllGames(

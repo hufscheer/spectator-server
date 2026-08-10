@@ -132,7 +132,7 @@ public class GameControllerTest extends DocumentationTest {
                 "video url",
                 team1,
                 team2
-        );
+        , false);
 
         // when
         ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/games", leagueId)
@@ -150,6 +150,9 @@ public class GameControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("경기의 총 라운드 ex. 16강->16"),
+                                fieldWithPath("thirdPlace").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. true 면 round 값은 무시되고 준결승 패배 두 팀인지 검증한다. "
+                                                + "미입력 시 false").optional(),
                                 fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태 (SCHEDULED, PLAYING, FINISHED)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
@@ -183,7 +186,7 @@ public class GameControllerTest extends DocumentationTest {
         Long gameId = 1L;
         GameRequest.Update requestDto = new GameRequest.Update(
                 "게임 이름", 16, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
-        );
+        , false);
 
         // when
         ResultActions result = mockMvc.perform(put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
@@ -202,6 +205,8 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER)
                                         .description("변경할 경기의 라운드 ex. 16강->16, 결승->2"),
+                                fieldWithPath("thirdPlace").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. true 면 round 값은 무시된다. 미입력 시 false").optional(),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING)
                                         .description("경기 영상 링크")

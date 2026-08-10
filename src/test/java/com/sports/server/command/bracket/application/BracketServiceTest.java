@@ -212,7 +212,7 @@ public class BracketServiceTest extends ServiceTest {
                     "4강 1경기", 4, "경기전", "SCHEDULED", LocalDateTime.of(2025, 8, 5, 18, 0), null,
                     new GameRequest.TeamLineupRequest(1L, List.of()),
                     new GameRequest.TeamLineupRequest(2L, List.of())
-            );
+            , false);
 
             // when
             Long gameId = gameService.register(2L, request, manager());
@@ -284,7 +284,7 @@ public class BracketServiceTest extends ServiceTest {
 
             // when (1번, 2번 팀은 결승에서 만날 수 없는 조합)
             gameService.updateGame(2L, 1L, new GameRequest.Update(
-                    "결승으로 변경", 2, LocalDateTime.of(2025, 8, 10, 18, 0), null), manager());
+                    "결승으로 변경", 2, LocalDateTime.of(2025, 8, 10, 18, 0), null, false), manager());
 
             // then
             assertThat(bracketMatchRepository.findByGame(game)).isEmpty();
@@ -304,7 +304,7 @@ public class BracketServiceTest extends ServiceTest {
                     LocalDateTime.of(2025, 9, 1, 0, 0), LocalDateTime.of(2025, 9, 15, 0, 0),
                     List.of(7L, 8L), null,
                     saveRequestOf(4, entry(1, 7L), entry(4, 8L))
-            );
+            , false);
 
             // when
             leagueService.register(manager(), request);
@@ -321,7 +321,7 @@ public class BracketServiceTest extends ServiceTest {
                     "새 대회", 4,
                     LocalDateTime.of(2025, 9, 1, 0, 0), LocalDateTime.of(2025, 9, 15, 0, 0),
                     List.of(7L, 8L), null, null
-            );
+            , false);
 
             // when
             leagueService.register(manager(), request);
