@@ -60,18 +60,9 @@ public record RecordResponse(
 
     private static Optional<GameTeam> getCreditedGameTeam(Timeline timeline, Optional<LineupPlayer> lineupPlayer) {
         if (timeline instanceof OwnGoalTimeline ownGoalTimeline) {
-            return Optional.of(resolveOpponentTeam(ownGoalTimeline));
+            return Optional.of(ownGoalTimeline.getOpponentGameTeam());
         }
         return lineupPlayer.map(LineupPlayer::getGameTeam);
-    }
-
-    // 자책골의 경우에는 타임라인이 등록 주체의 상대 팀으로 표기됨
-    private static GameTeam resolveOpponentTeam(OwnGoalTimeline ownGoalTimeline) {
-        GameTeam ownTeam = ownGoalTimeline.getScorer().getGameTeam();
-        if (ownTeam.equals(ownGoalTimeline.getGameTeam1())) {
-            return ownGoalTimeline.getGameTeam2();
-        }
-        return ownGoalTimeline.getGameTeam1();
     }
 
     private static Optional<LineupPlayer> getPlayer(Timeline timeline) {

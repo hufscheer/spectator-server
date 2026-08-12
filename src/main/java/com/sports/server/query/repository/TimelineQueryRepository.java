@@ -2,6 +2,7 @@ package com.sports.server.query.repository;
 
 import com.sports.server.command.team.domain.PlayerGoalCount;
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
+import com.sports.server.command.timeline.domain.OwnGoalTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.query.dto.TeamTopScorerResult;
@@ -22,6 +23,9 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
 
     @Query("SELECT st FROM ScoreTimeline st JOIN FETCH st.scorer sc JOIN FETCH sc.gameTeam WHERE st.game.id = :gameId")
     List<ScoreTimeline> findScoreTimelinesByGameId(@Param("gameId") Long gameId);
+
+    @Query("SELECT ogt FROM OwnGoalTimeline ogt JOIN FETCH ogt.scorer sc JOIN FETCH sc.gameTeam WHERE ogt.game.id = :gameId")
+    List<OwnGoalTimeline> findOwnGoalTimelinesByGameId(@Param("gameId") Long gameId);
 
     @Query("SELECT COALESCE(SUM(st.score), 0) FROM ScoreTimeline st WHERE st.scorer.player.id = :playerId")
     int countTotalGoalsByPlayerId(@Param("playerId") Long playerId);

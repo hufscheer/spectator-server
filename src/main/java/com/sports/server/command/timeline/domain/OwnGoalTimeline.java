@@ -116,4 +116,12 @@ public class OwnGoalTimeline extends Timeline {
     public void rollback() {
         game.cancelOwnGoalScore(scorer, score);
     }
+
+    public GameTeam getOpponentGameTeam() {
+        GameTeam ownTeam = scorer.getGameTeam();
+        if (ownTeam.equals(gameTeam1)) {
+            return gameTeam2;
+        }
+        return gameTeam1;
+    }
 }
