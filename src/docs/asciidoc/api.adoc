@@ -60,7 +60,14 @@ operation::cheer-talk-controller-test/리그_응원톡을_가리기_취소한다
 
 === 게임 생성
 
+3·4위전 경기는 `round` 대신 `thirdPlaceMatch: true` 로 지정한다. 3·4위전은 브래킷 트리 밖 라운드라 참가 팀 수(`round`)로는 결승과 구분되지 않기 때문이다.
+이 경우 서버가 참가팀이 준결승 패배 두 팀인지 검증하며, 준결승이 끝나지 않았거나 무승부로 남아 패자가 가려지지 않으면 검증을 건너뛰어 매니저가 직접 고를 수 있게 한다.
+
 operation::game-controller-test/게임을_등록한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+
+==== 3·4위전 생성 조건을 만족하지 않는 경우
+
+operation::game-controller-test/조건에_맞지_않는_3_4위전_경기_생성은_사유와_함께_거부된다[snippets='http-request,http-response,response-fields']
 
 === 게임 수정
 
@@ -175,6 +182,10 @@ operation::league-controller-test/리그에_참가하는_팀들을_삭제한다[
 operation::bracket-controller-test/대진표를_배치한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
 
 === 리그 대진표 조회
+
+3·4위전은 승자가 아니라 준결승 패자가 모이는 경기라 브래킷 트리에 속하지 않는다. 그래서 `rounds` 배열에는 들어가지 않고 `thirdPlaceMatch` 필드로 따로 내려간다.
+3·4위전을 진행하지 않는 대회에서는 `null` 이며, 화면에 라운드 탭을 그린다면 준결승과 결승 사이에 넣으면 된다.
+참가팀은 준결승 두 경기의 패배팀으로 유도되고, 아직 확정되지 않았으면 `team1`·`team2` 가 `null` 이다.
 
 operation::league-query-controller-test/리그의_대진표를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
