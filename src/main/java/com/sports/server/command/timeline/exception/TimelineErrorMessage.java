@@ -13,7 +13,7 @@ public class TimelineErrorMessage {
     public static final String GAME_NOT_FOUND = "존재하지 않는 경기예요.";
     public static final String MIDDLE_DELETE_ONLY_WHILE_PLAYING = "종료된 경기는 최근 기록만 삭제할 수 있어요.";
     public static final String PROGRESS_TIMELINE_NOT_LAST = "쿼터 시작·종료 기록은 최근 기록일 때만 삭제할 수 있어요.";
-    public static final String REPLACEMENT_PLAYER_HAS_LATER_RECORDS = "교체로 들어오거나 나간 선수의 기록이 뒤에 더 있어요. 그 기록부터 먼저 삭제해 주세요.";
+    public static final String REPLACEMENT_PLAYER_HAS_LATER_RECORDS = "교체 선수의 이후 기록이 있어요. 해당 기록부터 삭제해 주세요.";
     public static final String INCONSISTENT_PROGRESS_STATE = "경기 상태와 기록이 맞지 않아 삭제할 수 없어요. 문제가 운영팀에 자동으로 전달됐어요.";
 
 }
