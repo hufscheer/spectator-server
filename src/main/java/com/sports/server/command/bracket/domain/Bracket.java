@@ -20,10 +20,10 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 /**
- * 리그의 대진표 트리. round/matchNumber 수학으로 부모-자식 매치를 유도한다.
+ * 리그의 대진표 트리. 부모-자식 매치를 저장하지 않고 round/matchNumber 값으로 계산해 찾는다.
  * round R 의 match m 은 아래 라운드(2R)의 match 2m-1, 2m 승자끼리 대결한다.
  * 팀 배치(team1/team2)는 1라운드에만 저장되고, 상위 라운드 슬롯은 경기 결과와 부전승으로부터 유도된다.
- * 3·4위전은 준결승 패자가 모이는 경기라 이 수학 밖이며, 트리와 분리해 부속 매치로 들고 있다.
+ * 3·4위전은 승자가 아닌 준결승 패자가 모이는 경기라 이 계산이 성립하지 않아, 트리와 분리해 부속 매치로 들고 있다.
  */
 public class Bracket {
 
@@ -57,13 +57,13 @@ public class Bracket {
             matches.addAll(generateRound(league, size, roundNumber, placements));
         }
         if (needsThirdPlaceMatch(league, size)) {
-            matches.add(new BracketMatch(league, Round.THIRD_PLACE, THIRD_PLACE_MATCH_NUMBER));
+            matches.add(new BracketMatch(league, Round.THIRD_PLACE_MATCH, THIRD_PLACE_MATCH_NUMBER));
         }
         return matches;
     }
 
     private static boolean needsThirdPlaceMatch(final League league, final int size) {
-        return league.isThirdPlaceEnabled() && size >= Round.SEMI_FINAL.getNumber();
+        return league.isThirdPlaceMatchEnabled() && size >= Round.SEMI_FINAL.getNumber();
     }
 
     private static List<BracketMatch> generateRound(final League league, final int size, final int roundNumber,
@@ -91,7 +91,7 @@ public class Bracket {
         Map<Integer, Map<Integer, BracketMatch>> matchesByRound = groupByRound(treeMatches);
         int size = matchesByRound.keySet().stream().mapToInt(Integer::intValue).max().orElseThrow();
         BracketMatch thirdPlaceMatch = matches.stream()
-                .filter(match -> match.getRound() == Round.THIRD_PLACE)
+                .filter(match -> match.getRound() == Round.THIRD_PLACE_MATCH)
                 .findAny()
                 .orElse(null);
         return new Bracket(size, matchesByRound, firstRoundPlacements(matchesByRound.get(size).values()),

@@ -32,7 +32,7 @@ class BracketTest {
 
     @BeforeEach
     void setUp() {
-        league = entityBuilder(League.class).set("id", 1L).set("thirdPlaceEnabled", false).sample();
+        league = entityBuilder(League.class).set("id", 1L).set("thirdPlaceMatchEnabled", false).sample();
         teams = new HashMap<>();
         for (long id = 1; id <= 8; id++) {
             teams.put(id, entityBuilder(Team.class).set("id", id).set("name", "팀" + id).sample());
@@ -332,13 +332,13 @@ class BracketTest {
         void setUp() {
             thirdPlaceLeague = entityBuilder(League.class)
                     .set("id", 2L)
-                    .set("thirdPlaceEnabled", true)
+                    .set("thirdPlaceMatchEnabled", true)
                     .sample();
         }
 
         private BracketMatch thirdPlaceOf(List<BracketMatch> matches) {
             return matches.stream()
-                    .filter(match -> match.getRound() == Round.THIRD_PLACE)
+                    .filter(match -> match.getRound() == Round.THIRD_PLACE_MATCH)
                     .findAny()
                     .orElse(null);
         }

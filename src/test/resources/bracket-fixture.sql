@@ -80,7 +80,7 @@ VALUES (1, 2, '4강', 1, 1, 2, null),
 
 -- 리그 4: 3·4위전을 진행하는 대회. 준결승 두 경기가 끝나 패자(2번, 4번 팀)가 확정된 상태
 INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round,
-                     in_progress_round, sport_type, third_place_enabled)
+                     in_progress_round, sport_type, third_place_match_enabled)
 VALUES (4, 1, 1, '3·4위전 대회', '2025-08-01 10:00:00', '2025-08-15 22:00:00', false, '4강', '4강', 'SOCCER', true);
 
 INSERT INTO league_teams (id, league_id, team_id)

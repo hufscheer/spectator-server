@@ -13,15 +13,15 @@ public class GamesQueryRequestDto {
     private String stateValue;
     private List<Long> leagueTeamIds;
     private Integer round;
-    private Boolean thirdPlace;
+    private Boolean thirdPlaceMatch;
 
     public GamesQueryRequestDto(Long league_id, String state, List<Long> league_team_id, Integer round,
-                                Boolean third_place) {
+                                Boolean third_place_match) {
         this.leagueId = league_id;
         this.stateValue = state;
         this.leagueTeamIds = league_team_id;
         this.round = round;
-        this.thirdPlace = third_place;
+        this.thirdPlaceMatch = third_place_match;
     }
 
     public String getStateValue() {
@@ -39,7 +39,7 @@ public class GamesQueryRequestDto {
     }
 
     public boolean isThirdPlace() {
-        return Boolean.TRUE.equals(thirdPlace);
+        return Boolean.TRUE.equals(thirdPlaceMatch);
     }
 
 }

@@ -65,7 +65,8 @@ public class BracketService {
             return;
         }
         Bracket bracket = Bracket.from(matches);
-        if (game.getRound() == Round.THIRD_PLACE) {
+        // 3·4위전은 결승과 참가 팀 수가 같아 findMeetingMatch 로는 결승 매치가 잡힌다. 트리 조회 전에 분리한다
+        if (game.getRound() == Round.THIRD_PLACE_MATCH) {
             Optional.ofNullable(bracket.getThirdPlaceMatch())
                     .filter(match -> !match.isLinked())
                     .ifPresent(match -> match.linkGame(game));

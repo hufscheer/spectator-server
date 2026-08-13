@@ -150,7 +150,7 @@ public class GameControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("경기의 총 라운드 ex. 16강->16"),
-                                fieldWithPath("thirdPlace").type(JsonFieldType.BOOLEAN)
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
                                         .description("3·4위전 여부. true 면 round 값은 무시되고 준결승 패배 두 팀인지 검증한다. "
                                                 + "미입력 시 false").optional(),
                                 fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
@@ -205,7 +205,7 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER)
                                         .description("변경할 경기의 라운드 ex. 16강->16, 결승->2"),
-                                fieldWithPath("thirdPlace").type(JsonFieldType.BOOLEAN)
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
                                         .description("3·4위전 여부. true 면 round 값은 무시된다. 미입력 시 false").optional(),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING)

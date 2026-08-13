@@ -44,11 +44,11 @@ public class LeagueService {
 
 	public void update(final Member administrator, final LeagueRequest.Update request, final Long leagueId) {
 		League league = findValidatedLeague(leagueId, administrator);
-		if (league.isThirdPlaceEnabled() != request.thirdPlaceEnabled()) {
+		if (league.isThirdPlaceMatchEnabled() != request.thirdPlaceMatchEnabled()) {
 			bracketService.validateThirdPlaceChangeable(leagueId);
 		}
 		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()),
-			request.thirdPlaceEnabled());
+			request.thirdPlaceMatchEnabled());
 	}
 
     public void delete(final Member administrator, final Long leagueId) {

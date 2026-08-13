@@ -49,10 +49,10 @@ public class GameService {
     public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
-        league.validateRound(request.round(), request.thirdPlace());
+        league.validateRound(request.round(), request.thirdPlaceMatch());
 
         validateGameTeamsInLeague(league, request.team1(), request.team2());
-        if (request.thirdPlace()) {
+        if (request.thirdPlaceMatch()) {
             bracketService.validateThirdPlaceContenders(league, request.team1().teamId(), request.team2().teamId());
         }
 
@@ -94,7 +94,7 @@ public class GameService {
     public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
-        league.validateRound(request.round(), request.thirdPlace());
+        league.validateRound(request.round(), request.thirdPlaceMatch());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
 

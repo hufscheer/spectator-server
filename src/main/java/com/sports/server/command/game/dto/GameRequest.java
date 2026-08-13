@@ -21,10 +21,10 @@ public class GameRequest {
     private interface RoundSelectable {
         int round();
 
-        boolean thirdPlace();
+        boolean thirdPlaceMatch();
 
         default Round resolveRound() {
-            return thirdPlace() ? Round.THIRD_PLACE : Round.from(round());
+            return thirdPlaceMatch() ? Round.THIRD_PLACE_MATCH : Round.from(round());
         }
     }
 
@@ -37,7 +37,7 @@ public class GameRequest {
             String videoId,
             TeamLineupRequest team1,
             TeamLineupRequest team2,
-            boolean thirdPlace
+            boolean thirdPlaceMatch
     ) implements RoundSelectable {
         public Game toEntity(Member administrator, League league) {
             return Game.builder()
@@ -76,7 +76,7 @@ public class GameRequest {
             int round,
             LocalDateTime startTime,
             String videoId,
-            boolean thirdPlace
+            boolean thirdPlaceMatch
     ) implements RoundSelectable {
     }
 }

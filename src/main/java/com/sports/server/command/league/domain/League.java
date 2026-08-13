@@ -50,8 +50,8 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     @Column(name = "in_progress_round")
     private Round inProgressRound;
 
-    @Column(name = "third_place_enabled", nullable = false)
-    private boolean thirdPlaceEnabled;
+    @Column(name = "third_place_match_enabled", nullable = false)
+    private boolean thirdPlaceMatchEnabled;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sport_type", nullable = false)
@@ -74,7 +74,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
             final LocalDateTime endAt,
             final Round maxRound,
             final SportType sportType,
-            final boolean thirdPlaceEnabled
+            final boolean thirdPlaceMatchEnabled
     ) {
         this.administrator = administrator;
         this.organization = organization;
@@ -84,19 +84,19 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.maxRound = maxRound;
         this.inProgressRound = maxRound;
         this.sportType = sportType != null ? sportType : SportType.SOCCER;
-        this.thirdPlaceEnabled = thirdPlaceEnabled;
+        this.thirdPlaceMatchEnabled = thirdPlaceMatchEnabled;
         this.isDeleted = false;
     }
 
     public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound,
-                           boolean thirdPlaceEnabled) {
+                           boolean thirdPlaceMatchEnabled) {
         if (StringUtils.hasText(name)) {
             this.name = name;
         }
         this.startAt = startAt;
         this.endAt = endAt;
         this.maxRound = maxRound;
-        this.thirdPlaceEnabled = thirdPlaceEnabled;
+        this.thirdPlaceMatchEnabled = thirdPlaceMatchEnabled;
     }
 
     @Override
@@ -118,16 +118,16 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         }
     }
 
-    public void validateRound(int roundNumber, boolean thirdPlace) {
-        if (thirdPlace) {
-            validateThirdPlaceEnabled();
+    public void validateRound(int roundNumber, boolean thirdPlaceMatch) {
+        if (thirdPlaceMatch) {
+            validateThirdPlaceMatchEnabled();
             return;
         }
         validateRoundWithinLimit(roundNumber);
     }
 
-    private void validateThirdPlaceEnabled() {
-        if (!thirdPlaceEnabled) {
+    private void validateThirdPlaceMatchEnabled() {
+        if (!thirdPlaceMatchEnabled) {
             throw new BadRequestException(LeagueErrorMessages.THIRD_PLACE_NOT_ENABLED);
         }
     }

@@ -52,7 +52,7 @@ public class GamesQueryConditionMapper {
 
         int roundNumber = gamesQueryRequestDto.getRound();
         if (gamesQueryRequestDto.isThirdPlace()) {
-            booleanBuilder.and(() -> game.round.eq(Round.THIRD_PLACE));
+            booleanBuilder.and(() -> game.round.eq(Round.THIRD_PLACE_MATCH));
         } else if (Round.isValidNumber(roundNumber)) {
             Round round = Round.from(roundNumber);
             booleanBuilder.and(() -> game.round.eq(round));

@@ -18,11 +18,11 @@ public class LeagueRequest {
 		List<Long> teamIds,
 		SportType sportType,
 		BracketRequest.Save bracket,
-		boolean thirdPlaceEnabled
+		boolean thirdPlaceMatchEnabled
 	) {
 		public League toEntity(final Member manager) {
 			return new League(manager, manager.getOrganization(), name, startAt, endAt, Round.from(maxRound), sportType,
-				thirdPlaceEnabled);
+				thirdPlaceMatchEnabled);
 		}
 	}
 
@@ -31,7 +31,7 @@ public class LeagueRequest {
 		int maxRound,
 		LocalDateTime startAt,
 		LocalDateTime endAt,
-		boolean thirdPlaceEnabled
+		boolean thirdPlaceMatchEnabled
 	) {
 	}
 

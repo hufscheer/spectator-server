@@ -59,7 +59,7 @@ class LeagueControllerTest extends DocumentationTest {
 										fieldWithPath("bracket.entries").type(JsonFieldType.ARRAY).description("1라운드 팀 배치 목록").optional(),
 										fieldWithPath("bracket.entries[].position").type(JsonFieldType.NUMBER).description("배치 위치 (1 ~ size). 비어있는 위치는 부전승").optional(),
 										fieldWithPath("bracket.entries[].teamId").type(JsonFieldType.NUMBER).description("배치할 팀 ID").optional(),
-										fieldWithPath("thirdPlaceEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부. 미입력 시 false").optional()
+										fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부. 미입력 시 false").optional()
                                 ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -120,7 +120,7 @@ class LeagueControllerTest extends DocumentationTest {
 					fieldWithPath("startAt").type(JsonFieldType.STRING).description("변경할 대회 시작시간"),
 					fieldWithPath("endAt").type(JsonFieldType.STRING).description("변경할 대회 종료시간"),
 					fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("변경할 대회의 총 라운드 수"),
-					fieldWithPath("thirdPlaceEnabled").type(JsonFieldType.BOOLEAN)
+					fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN)
 						.description("3·4위전 진행 여부. 대진표에 경기가 연결된 뒤에는 변경할 수 없다").optional()
 				),
 				requestCookies(
