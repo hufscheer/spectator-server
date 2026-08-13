@@ -1,5 +1,7 @@
 package com.sports.server.command.timeline.domain;
 
+import java.util.List;
+
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
@@ -76,5 +78,10 @@ public abstract class ReplacementTimeline extends Timeline {
             return null;
         }
         return replacedLineupPlayer.getPlayer().getName();
+    }
+
+    @Override
+    public List<LineupPlayer> getRelatedLineupPlayers() {
+        return List.of(originLineupPlayer, replacedLineupPlayer);
     }
 }

@@ -2,6 +2,7 @@ package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
+import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.QuarterConverter;
 import com.sports.server.common.exception.CustomException;
@@ -12,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -86,5 +88,15 @@ public class GameProgressTimeline extends Timeline {
             game.updateState(GameState.PLAYING);
             game.resetResult();
         }
+    }
+
+    @Override
+    public List<LineupPlayer> getRelatedLineupPlayers() {
+        return List.of();
+    }
+
+    @Override
+    public boolean isGameEnd() {
+        return gameProgressType == GameProgressType.GAME_END;
     }
 }
