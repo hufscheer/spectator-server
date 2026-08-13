@@ -11,6 +11,7 @@ import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.WarningCardType;
+import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
 import com.sports.server.query.dto.response.QuarterResponse;
@@ -63,7 +64,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new ReplacementRecordResponse(1L, "선수3", null),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_START),
                                                 new PkRecordResponse(1L, true),
-                                                new WarningCardRecordResponse(WarningCardType.YELLOW)
+                                                new WarningCardRecordResponse(WarningCardType.YELLOW),
+                                                true,
+                                                null
                                         ),
                                         new RecordResponse(
                                                 null, 1L, SOCCER_REPLACEMENT_TYPE,
@@ -81,7 +84,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new ReplacementRecordResponse(1L, "선수3", null),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                                 new PkRecordResponse(4L, false),
-                                                new WarningCardRecordResponse(WarningCardType.RED)
+                                                new WarningCardRecordResponse(WarningCardType.RED),
+                                                false,
+                                                TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS
                                         ),
                                         new RecordResponse(
                                                 null, 1L, BASKETBALL_REPLACEMENT_TYPE,
@@ -99,7 +104,9 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new ReplacementRecordResponse(2L, "선수5", true),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                                 new PkRecordResponse(4L, false),
-                                                new WarningCardRecordResponse(WarningCardType.RED)
+                                                new WarningCardRecordResponse(WarningCardType.RED),
+                                                true,
+                                                null
                                         )
                                 ))
                         )
@@ -169,7 +176,12 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("승부차기 득점 성공 여부"),
                                 fieldWithPath("timelines[].records[].warningCardRecord.warningCardType").type(
                                                 JsonFieldType.STRING)
-                                        .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
+                                        .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)"),
+                                fieldWithPath("timelines[].records[].deletable").type(JsonFieldType.BOOLEAN)
+                                        .description("현재 시점 기준 이 기록의 삭제 가능 여부"),
+                                fieldWithPath("timelines[].records[].undeletableReason").type(JsonFieldType.VARIES)
+                                        .description("삭제 불가 사유 (삭제 가능하면 null, DELETE 실패 message와 동일 문구)")
+                                        .optional()
                         )
                 ));
     }

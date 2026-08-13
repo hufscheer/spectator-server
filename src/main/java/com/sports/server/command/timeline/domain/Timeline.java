@@ -1,11 +1,13 @@
 package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.QuarterConverter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
+import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
@@ -62,4 +64,10 @@ public abstract class Timeline extends BaseEntity<Timeline> {
     public abstract void apply();
 
     public abstract void rollback();
+
+    public abstract List<LineupPlayer> getRelatedLineupPlayers();
+
+    public boolean isGameEnd() {
+        return false;
+    }
 }
