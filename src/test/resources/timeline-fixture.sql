@@ -239,6 +239,25 @@ VALUES (9, 6, 1, 0, 0, 0, null),
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, previous_quarter, previous_quarter_changed_at)
 VALUES ('GAME_PROGRESS', 6, 'SECOND_HALF', 0, 'QUARTER_START', 'FIRST_HALF', null);
 
+-- game 6 라인업: 중간 삭제(replay) 테스트용 — 점수/타임라인 정합 상태에서 register 로 쌓아 검증
+INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
+VALUES (31, 9, 1, 1, TRUE, 'STARTER', TRUE, null),
+       (32, 9, 2, 2, FALSE, 'STARTER', TRUE, null),
+       (33, 9, 3, 3, FALSE, 'CANDIDATE', FALSE, null),
+       (34, 9, 4, 4, FALSE, 'CANDIDATE', FALSE, null);
+
+-- game 7: SCHEDULED 상태 중간 삭제 거부 테스트용 (타임라인 2개 보유)
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at, game_quarter, state, round, is_pk_taken)
+VALUES (7, 1, 1, '시작_전_중간삭제_테스트용', '2023-11-13 10:00:00', null, null, 'PRE_GAME', 'SCHEDULED', '4강', FALSE);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (11, 7, 1, 0, 0, 0, null),
+       (12, 7, 2, 0, 0, 0, null);
+
+INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, previous_quarter, previous_quarter_changed_at)
+VALUES ('GAME_PROGRESS', 7, 'FIRST_HALF', 0, 'QUARTER_START', 'PRE_GAME', null),
+       ('GAME_PROGRESS', 7, 'FIRST_HALF', 45, 'QUARTER_END', 'FIRST_HALF', null);
+
 -- 응원톡 생성
 INSERT INTO cheer_talks (id, game_team_id, content, created_at, block_status)
 VALUES (1, 1, '화이팅!', '2023-11-12 10:05:00', 'ACTIVE'),

@@ -3,29 +3,34 @@ package com.sports.server.command.timeline.application;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
+import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.command.timeline.domain.TimelineCreatedEvent;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.command.timeline.mapper.TimelineMapper;
-import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.CustomException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,7 +39,6 @@ public class TimelineService {
     private final TimelineRepository timelineRepository;
     private final GameProgressTimelineRepository gameProgressTimelineRepository;
     private final TimelineMapper timelineMapper;
-    private final EntityUtils entityUtils;
     private final ApplicationEventPublisher eventPublisher;
     private final GameStatusScheduler gameStatusScheduler;
 
@@ -58,8 +62,7 @@ public class TimelineService {
         timeline.apply();
         timelineRepository.save(timeline);
 
-        if (timeline instanceof GameProgressTimeline progress
-                && progress.getGameProgressType() == GameProgressType.GAME_END) {
+        if (timeline.isGameEnd()) {
             gameStatusScheduler.updateLeagueStatisticsIfNeeded(game);
         }
 
@@ -128,12 +131,21 @@ public class TimelineService {
 
     @Transactional
     public void deleteTimeline(Member manager, Long gameId, Long timelineId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = getGameForUpdate(gameId);
         PermissionValidator.checkPermission(game, manager);
 
-        Timeline timeline = getLastTimeline(timelineId, game);
-        boolean isGameEnd = timeline instanceof GameProgressTimeline progress
-                && progress.getGameProgressType() == GameProgressType.GAME_END;
+        Timeline timeline = getTimeline(timelineId, game);
+        List<Timeline> subsequents = timelineRepository.findByGameAndIdGreaterThanOrderByIdAsc(game, timelineId);
+
+        if (subsequents.isEmpty()) {
+            deleteLastTimeline(game, timeline);
+            return;
+        }
+        deleteMiddleTimeline(game, timeline, subsequents);
+    }
+
+    private void deleteLastTimeline(Game game, Timeline timeline) {
+        boolean isGameEnd = timeline.isGameEnd();
         timeline.rollback();
         timelineRepository.delete(timeline);
 
@@ -142,13 +154,50 @@ public class TimelineService {
         }
     }
 
-    private Game getGameForUpdate(Long id) {
-        return gameRepository.findByIdForUpdate(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."));
+    private void deleteMiddleTimeline(Game game, Timeline target, List<Timeline> subsequents) {
+        validateMiddleDeletable(game, target, subsequents);
+
+        for (int i = subsequents.size() - 1; i >= 0; i--) {
+            rollbackWithUnderflowLog(subsequents.get(i));
+        }
+        rollbackWithUnderflowLog(target);
+        timelineRepository.delete(target);
+        subsequents.forEach(Timeline::apply);
     }
 
-    private Timeline getLastTimeline(Long timelineId, Game game) {
-        return timelineRepository.findFirstByGameOrderByIdDesc(game).filter(t -> t.getId().equals(timelineId))
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "마지막 타임라인만 삭제할 수 있습니다."));
+    private void validateMiddleDeletable(Game game, Timeline target, List<Timeline> subsequents) {
+        TimelineDeletabilityEvaluator.Result result = TimelineDeletabilityEvaluator.evaluateMiddle(game.getState(), target, subsequents);
+        if (!result.deletable()) {
+            throw new CustomException(statusOf(result.reason()), result.reasonMessage());
+        }
+    }
+
+    private HttpStatus statusOf(TimelineDeletabilityEvaluator.Reason reason) {
+        if (reason == TimelineDeletabilityEvaluator.Reason.INCONSISTENT_PROGRESS_STATE) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return HttpStatus.BAD_REQUEST;
+    }
+
+    private void rollbackWithUnderflowLog(Timeline timeline) {
+        if (timeline instanceof ScoreTimeline scoreTimeline) {
+            GameTeam scorerTeam = scoreTimeline.getScorer().getGameTeam();
+            if (scorerTeam.getScore() < scoreTimeline.getScore()) {
+                log.warn("타임라인 replay 롤백 중 점수 언더플로 감지 — 데이터 정합 확인 필요. timelineId={}, teamScore={}, rollbackScore={}",
+                        timeline.getId(), scorerTeam.getScore(), scoreTimeline.getScore());
+            }
+        }
+        timeline.rollback();
+    }
+
+    private Game getGameForUpdate(Long id) {
+        return gameRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, TimelineErrorMessage.GAME_NOT_FOUND));
+    }
+
+    private Timeline getTimeline(Long timelineId, Game game) {
+        return timelineRepository.findById(timelineId)
+                .filter(timeline -> timeline.getGame().getId().equals(game.getId()))
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, TimelineErrorMessage.TIMELINE_NOT_FOUND));
     }
 }
