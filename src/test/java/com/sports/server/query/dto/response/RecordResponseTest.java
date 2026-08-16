@@ -13,6 +13,7 @@ import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.timeline.domain.OwnGoalTimeline;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -83,7 +84,7 @@ class RecordResponseTest {
             timeline.apply();
 
             // when
-            RecordResponse actual = RecordResponse.from(timeline);
+            RecordResponse actual = RecordResponse.from(timeline, TimelineDeletabilityEvaluator.Result.allowed());
 
             // then
             assertAll(
@@ -114,7 +115,7 @@ class RecordResponseTest {
             timeline.apply();
 
             // when
-            RecordResponse actual = RecordResponse.from(timeline);
+            RecordResponse actual = RecordResponse.from(timeline, TimelineDeletabilityEvaluator.Result.allowed());
 
             // then
             assertAll(

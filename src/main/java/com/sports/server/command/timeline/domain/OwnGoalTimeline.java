@@ -6,6 +6,7 @@ import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
+import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -115,6 +116,11 @@ public class OwnGoalTimeline extends Timeline {
     @Override
     public void rollback() {
         game.cancelOwnGoalScore(scorer, score);
+    }
+
+    @Override
+    public List<LineupPlayer> getRelatedLineupPlayers() {
+        return List.of(scorer);
     }
 
     public GameTeam getOpponentGameTeam() {
