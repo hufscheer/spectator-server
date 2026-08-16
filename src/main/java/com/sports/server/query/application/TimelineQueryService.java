@@ -14,6 +14,7 @@ import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
@@ -44,7 +45,13 @@ public class TimelineQueryService {
     private final EntityUtils entityUtils;
 
     public GameTimelineResponse getTimelines(final Long gameId) {
-        Map<Quarter, List<Timeline>> timelines = timelineQueryRepository.findByGameId(gameId)
+        List<Timeline> allTimelines = timelineQueryRepository.findByGameId(gameId);
+
+        Map<Long, TimelineDeletabilityEvaluator.Result> deletability = allTimelines.isEmpty()
+                ? Map.of()
+                : TimelineDeletabilityEvaluator.evaluate(allTimelines.get(0).getGame().getState(), allTimelines);
+
+        Map<Quarter, List<Timeline>> timelines = allTimelines
                 .stream()
                 .collect(groupingBy(Timeline::getRecordedQuarter));
 
@@ -53,7 +60,8 @@ public class TimelineQueryService {
                 .sorted(comparingInt(Quarter::getOrder).reversed())
                 .map(quarter -> TimelineResponse.of(
                         quarter,
-                        timelines.get(quarter)
+                        timelines.get(quarter),
+                        deletability
                 )).toList();
 
         WinnerResponse winner = gameTeamQueryRepository

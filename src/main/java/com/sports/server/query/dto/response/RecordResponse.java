@@ -24,9 +24,11 @@ public record RecordResponse(
         ReplacementRecordResponse replacementRecord,
         ProgressRecordResponse progressRecord,
         PkRecordResponse pkRecord,
-        WarningCardRecordResponse warningCardRecord
+        WarningCardRecordResponse warningCardRecord,
+        boolean deletable,
+        String undeletableReason
 ) {
-    public static RecordResponse from(Timeline timeline) {
+    public static RecordResponse from(Timeline timeline, TimelineDeletabilityEvaluator.Result deletability) {
         Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
         Optional<GameTeam> gameTeam = getCreditedGameTeam(timeline, lineupPlayer);
         Optional<Team> team = gameTeam.map(GameTeam::getTeam);
@@ -54,7 +56,9 @@ public record RecordResponse(
                 timeline instanceof PKTimeline pkTimeline
                         ? new PkRecordResponse(pkTimeline.getId(), pkTimeline.getIsSuccess()) : null,
                 timeline instanceof WarningCardTimeline warningCardTimeline
-                        ? new WarningCardRecordResponse(warningCardTimeline.getWarningCardType()) : null
+                        ? new WarningCardRecordResponse(warningCardTimeline.getWarningCardType()) : null,
+                deletability.deletable(),
+                deletability.reasonMessage()
         );
     }
 
