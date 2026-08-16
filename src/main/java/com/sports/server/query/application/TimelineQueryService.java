@@ -125,13 +125,13 @@ public class TimelineQueryService {
                 .sorted(comparingInt(Quarter::getOrder))
                 .toList();
 
-        Map<Quarter, Map<Long, Integer>> scoreByQuarterAndTeam = collectScoreByQuarterAndTeam(gameId);
+        QuarterTeamScores scoreByQuarterAndTeam = collectScoreByQuarterAndTeam(gameId);
 
         return completedQuarters.stream()
                 .map(quarter -> QuarterScoreResponse.of(
                         quarter,
                         gameTeamIds,
-                        scoreByQuarterAndTeam.getOrDefault(quarter, Map.of())
+                        scoreByQuarterAndTeam.scoresOf(quarter)
                 ))
                 .toList();
     }
@@ -139,7 +139,22 @@ public class TimelineQueryService {
     private record QuarterTeamScore(Quarter quarter, Long gameTeamId, int score) {
     }
 
-    private Map<Quarter, Map<Long, Integer>> collectScoreByQuarterAndTeam(Long gameId) {
+    private record QuarterTeamScores(Map<Quarter, Map<Long, Integer>> scoresByQuarter) {
+
+        static QuarterTeamScores from(Stream<QuarterTeamScore> contributions) {
+            Map<Quarter, Map<Long, Integer>> scoresByQuarter = contributions.collect(groupingBy(
+                    QuarterTeamScore::quarter,
+                    groupingBy(QuarterTeamScore::gameTeamId, summingInt(QuarterTeamScore::score))
+            ));
+            return new QuarterTeamScores(scoresByQuarter);
+        }
+
+        Map<Long, Integer> scoresOf(Quarter quarter) {
+            return scoresByQuarter.getOrDefault(quarter, Map.of());
+        }
+    }
+
+    private QuarterTeamScores collectScoreByQuarterAndTeam(Long gameId) {
         Stream<QuarterTeamScore> scoreContributions = timelineQueryRepository.findScoreTimelinesByGameId(gameId)
                 .stream()
                 .map(st -> new QuarterTeamScore(st.getRecordedQuarter(), st.getScorer().getGameTeam().getId(), st.getScore()));
@@ -148,11 +163,7 @@ public class TimelineQueryService {
                 .stream()
                 .map(ogt -> new QuarterTeamScore(ogt.getRecordedQuarter(), ogt.getOpponentGameTeam().getId(), ogt.getScore()));
 
-        return Stream.concat(scoreContributions, ownGoalContributions)
-                .collect(groupingBy(
-                        QuarterTeamScore::quarter,
-                        groupingBy(QuarterTeamScore::gameTeamId, summingInt(QuarterTeamScore::score))
-                ));
+        return QuarterTeamScores.from(Stream.concat(scoreContributions, ownGoalContributions));
     }
 
     private List<ProgressAction> actionsFromQuarterEnd(Quarter lastQuarter, SportType sportType) {
