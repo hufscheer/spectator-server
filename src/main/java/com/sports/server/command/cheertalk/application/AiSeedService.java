@@ -82,7 +82,7 @@ private boolean canPublish(Game game) {
         if (isTooSoonSinceLastSeed(gameTeamIds)) {
             return false;
         }
-        return triggerType == AiSeedTriggerType.GOAL || !hasRecentUserCheerTalk(gameTeamIds);
+        return isGoalLike(triggerType) || !hasRecentUserCheerTalk(gameTeamIds);
     }
 
     private boolean hasReachedMaxSeeds(List<Long> gameTeamIds) {
@@ -105,13 +105,17 @@ private boolean canPublish(Game game) {
     }
 
     private GameTeam selectTeam(AiSeedTriggerType triggerType, Long scoringGameTeamId, List<GameTeam> gameTeams) {
-        if (triggerType == AiSeedTriggerType.GOAL && scoringGameTeamId != null) {
+        if (isGoalLike(triggerType) && scoringGameTeamId != null) {
             return gameTeams.stream()
                     .filter(gt -> gt.getId().equals(scoringGameTeamId))
                     .findFirst()
                     .orElse(randomTeam(gameTeams));
         }
         return randomTeam(gameTeams);
+    }
+
+    private boolean isGoalLike(AiSeedTriggerType triggerType) {
+        return triggerType == AiSeedTriggerType.GOAL || triggerType == AiSeedTriggerType.OWN_GOAL;
     }
 
     private GameTeam randomTeam(List<GameTeam> gameTeams) {
