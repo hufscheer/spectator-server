@@ -245,6 +245,11 @@ operation::timeline-controller-test/농구_득점_타임라인을_생성한다[s
 
 === 자책골 타임라인 생성
 
+등록 요청의 `gameTeamId`/`scorerLineupPlayerId`는 자책골을 넣은 선수가 소속된 팀("우리 팀") 기준이다.
+반면 게임의 타임라인 조회(`GET /games/{gameId}/timeline`) 응답에서는 자책골 기록이 실제로 점수를 얻은
+상대 팀 기준(`gameTeamId`/`teamName`/`teamImageUrl`)으로 표시된다. `playerName`은 등록 시와 동일하게
+자책골을 넣은 선수 이름을 유지한다.
+
 operation::timeline-controller-test/자책골_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
 
 

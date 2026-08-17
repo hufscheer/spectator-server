@@ -124,10 +124,6 @@ public class OwnGoalTimeline extends Timeline {
     }
 
     public GameTeam getOpponentGameTeam() {
-        GameTeam ownTeam = scorer.getGameTeam();
-        if (ownTeam.equals(gameTeam1)) {
-            return gameTeam2;
-        }
-        return gameTeam1;
+        return game.opponentOf(scorer.getGameTeam());
     }
 }

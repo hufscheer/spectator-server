@@ -231,6 +231,32 @@ class GameTest {
             assertThatThrownBy(() -> basketballGame.scoreOwnGoal(scorer, 1))
                     .isInstanceOf(BadRequestException.class);
         }
+
+        @Test
+        void 상대_팀이_없으면_자책골을_기록할_수_없다() {
+            // given
+            League soloTeamLeague = entityBuilder(League.class)
+                    .set("sportType", SportType.SOCCER)
+                    .sample();
+            Game soloTeamGame = entityBuilder(Game.class)
+                    .set("id", 4L)
+                    .set("league", soloTeamLeague)
+                    .set("gameTeams", new ArrayList<>())
+                    .sample();
+            GameTeam onlyTeam = entityBuilder(GameTeam.class)
+                    .set("id", 5L)
+                    .set("game", soloTeamGame)
+                    .sample();
+            soloTeamGame.addGameTeam(onlyTeam);
+
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", onlyTeam)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> soloTeamGame.scoreOwnGoal(scorer, 1))
+                    .isInstanceOf(BadRequestException.class);
+        }
     }
 
     @Nested

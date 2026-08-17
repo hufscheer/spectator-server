@@ -142,11 +142,11 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         opponentOf(ownTeam).cancelScore(scoreValue);
     }
 
-    private GameTeam opponentOf(GameTeam team) {
+    public GameTeam opponentOf(GameTeam team) {
         return gameTeams.stream()
                 .filter(gameTeam -> !gameTeam.equals(team))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION));
+                .orElseThrow(() -> new BadRequestException(GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION));
     }
 
     public void cancelPkScore(LineupPlayer scorer) {
