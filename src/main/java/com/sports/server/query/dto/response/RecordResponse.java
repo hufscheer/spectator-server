@@ -25,7 +25,8 @@ public record RecordResponse(
         PkRecordResponse pkRecord,
         WarningCardRecordResponse warningCardRecord,
         boolean deletable,
-        String undeletableReason
+        String undeletableReason,
+        String undeletableReasonCode
 ) {
     public static RecordResponse from(Timeline timeline, TimelineDeletabilityEvaluator.Result deletability) {
         Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
@@ -55,7 +56,8 @@ public record RecordResponse(
                 timeline instanceof WarningCardTimeline warningCardTimeline
                         ? new WarningCardRecordResponse(warningCardTimeline.getWarningCardType()) : null,
                 deletability.deletable(),
-                deletability.reasonMessage()
+                deletability.reasonMessage(),
+                deletability.reasonCode()
         );
     }
 

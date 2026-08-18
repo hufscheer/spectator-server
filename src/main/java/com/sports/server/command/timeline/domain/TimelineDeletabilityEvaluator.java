@@ -47,6 +47,10 @@ public final class TimelineDeletabilityEvaluator {
         public String reasonMessage() {
             return reason == null ? null : reason.getMessage();
         }
+
+        public String reasonCode() {
+            return reason == null ? null : reason.name();
+        }
     }
 
     public static Map<Long, Result> evaluate(GameState gameState, List<Timeline> timelines) {
