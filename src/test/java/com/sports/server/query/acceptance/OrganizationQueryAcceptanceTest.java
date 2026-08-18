@@ -48,12 +48,12 @@ public class OrganizationQueryAcceptanceTest extends AcceptanceTest {
                 admin, ongoingOrg, "진행중 리그",
                 now.minusDays(1), now.plusDays(1),
                 Round.from(8), SportType.SOCCER
-        ));
+        , false));
         leagueRepository.save(new League(
                 admin, ongoingOrg, "종료된 리그",
                 now.minusDays(10), now.minusDays(5),
                 Round.from(8), SportType.SOCCER
-        ));
+        , false));
     }
 
     @Test

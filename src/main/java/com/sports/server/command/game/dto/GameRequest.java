@@ -14,6 +14,20 @@ import java.util.List;
 import java.util.Optional;
 
 public class GameRequest {
+
+    /**
+     * 3·4위전은 트리 밖 라운드라 숫자로 지목할 수 없어 별도 플래그로 받는다.
+     */
+    private interface RoundSelectable {
+        int round();
+
+        boolean thirdPlaceMatch();
+
+        default Round resolveRound() {
+            return thirdPlaceMatch() ? Round.THIRD_PLACE_MATCH : Round.from(round());
+        }
+    }
+
     public record Register(
             String name,
             int round,
@@ -22,8 +36,9 @@ public class GameRequest {
             LocalDateTime startTime,
             String videoId,
             TeamLineupRequest team1,
-            TeamLineupRequest team2
-    ) {
+            TeamLineupRequest team2,
+            boolean thirdPlaceMatch
+    ) implements RoundSelectable {
         public Game toEntity(Member administrator, League league) {
             return Game.builder()
                     .administrator(administrator)
@@ -33,7 +48,7 @@ public class GameRequest {
                     .videoId(this.videoId())
                     .gameQuarter(QuarterResolver.resolve(this.quarter()).name())
                     .state(GameState.from(this.state()))
-                    .round(Round.from(this.round()))
+                    .round(this.resolveRound())
                     .isPkTaken(false)
                     .build();
         }
@@ -60,7 +75,8 @@ public class GameRequest {
             String name,
             int round,
             LocalDateTime startTime,
-            String videoId
-    ) {
+            String videoId,
+            boolean thirdPlaceMatch
+    ) implements RoundSelectable {
     }
 }

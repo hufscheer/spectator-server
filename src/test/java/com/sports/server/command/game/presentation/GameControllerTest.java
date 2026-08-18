@@ -1,17 +1,23 @@
 package com.sports.server.command.game.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
+import com.sports.server.command.bracket.exception.BracketErrorMessages;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
@@ -132,7 +138,7 @@ public class GameControllerTest extends DocumentationTest {
                 "video url",
                 team1,
                 team2
-        );
+        , false);
 
         // when
         ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/games", leagueId)
@@ -150,6 +156,9 @@ public class GameControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("경기의 총 라운드 ex. 16강->16"),
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. true 면 round 값은 무시되고 준결승 패배 두 팀인지 검증한다. "
+                                                + "미입력 시 false").optional(),
                                 fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태 (SCHEDULED, PLAYING, FINISHED)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
@@ -183,7 +192,7 @@ public class GameControllerTest extends DocumentationTest {
         Long gameId = 1L;
         GameRequest.Update requestDto = new GameRequest.Update(
                 "게임 이름", 16, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
-        );
+        , false);
 
         // when
         ResultActions result = mockMvc.perform(put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
@@ -202,6 +211,8 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER)
                                         .description("변경할 경기의 라운드 ex. 16강->16, 결승->2"),
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. true 면 round 값은 무시된다. 미입력 시 false").optional(),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING)
                                         .description("경기 영상 링크")
@@ -388,6 +399,45 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 조건에_맞지_않는_3_4위전_경기_생성은_사유와_함께_거부된다() throws Exception {
+        // given
+        given(gameService.register(anyLong(), any(), any()))
+                .willThrow(new BadRequestException(BracketErrorMessages.THIRD_PLACE_TEAMS_MISMATCH));
+
+        GameRequest.TeamLineupRequest team1 = new GameRequest.TeamLineupRequest(1L, List.of());
+        GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, List.of());
+        GameRequest.Register requestDto = new GameRequest.Register(
+                "3·4위전", 4, "경기전", "SCHEDULED",
+                LocalDateTime.of(2025, 8, 14, 19, 0, 0), null, team1, team2, true);
+
+        // when
+        ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/games", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("실패 사유. 가능한 값 — "
+                                                + "3·4위전은 준결승에서 패배한 두 팀으로만 생성할 수 있습니다. / "
+                                                + "3·4위전을 진행하지 않는 대회입니다."),
+                                fieldWithPath("fieldErrors").type(JsonFieldType.ARRAY).optional()
+                                        .description("입력값 검증 실패 상세. 이 경우에는 사용하지 않는다")
                         )
                 ));
     }

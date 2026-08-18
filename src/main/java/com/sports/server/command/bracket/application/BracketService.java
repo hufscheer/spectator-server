@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -63,9 +64,25 @@ public class BracketService {
         if (matches.isEmpty()) {
             return;
         }
-        Bracket.from(matches).findMeetingMatch(game.getRound(), teamId1, teamId2)
+        Bracket bracket = Bracket.from(matches);
+        // 3·4위전은 결승과 참가 팀 수가 같아 findMeetingMatch 로는 결승 매치가 잡힌다. 트리 조회 전에 분리한다
+        if (game.getRound() == Round.THIRD_PLACE_MATCH) {
+            Optional.ofNullable(bracket.getThirdPlaceMatch())
+                    .filter(match -> !match.isLinked())
+                    .ifPresent(match -> match.linkGame(game));
+            return;
+        }
+        bracket.findMeetingMatch(game.getRound(), teamId1, teamId2)
                 .filter(match -> !match.isLinked())
                 .ifPresent(match -> match.linkGame(game));
+    }
+
+    public void validateThirdPlaceContenders(final League league, final Long teamId1, final Long teamId2) {
+        List<BracketMatch> matches = bracketMatchRepository.findAllByLeagueId(league.getId());
+        if (matches.isEmpty()) {
+            return;
+        }
+        Bracket.from(matches).validateThirdPlaceContenders(teamId1, teamId2);
     }
 
     public void relinkGame(final League league, final Game game) {
@@ -77,6 +94,12 @@ public class BracketService {
 
     public void unlinkGame(final Game game) {
         bracketMatchRepository.findByGame(game).ifPresent(BracketMatch::unlinkGame);
+    }
+
+    public void validateThirdPlaceChangeable(final Long leagueId) {
+        if (bracketMatchRepository.existsByLeagueIdAndGameIsNotNull(leagueId)) {
+            throw new BadRequestException(LeagueErrorMessages.THIRD_PLACE_CANNOT_CHANGE_WITH_LINKED_GAMES);
+        }
     }
 
     public void removeTeams(final League league, final List<Team> teams) {
