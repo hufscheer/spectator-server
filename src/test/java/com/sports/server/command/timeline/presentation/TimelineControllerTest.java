@@ -105,6 +105,41 @@ public class TimelineControllerTest extends DocumentationTest {
     }
 
     @Test
+    void 자책골_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                10, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
+                1L,
+                1L
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/own-goal", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (SOCCER)"),
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("자책골 선수가 소속된(우리) 팀의 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_HALF, SECOND_HALF, EXTRA_TIME. 승부차기는 불가)"),
+                                fieldWithPath("scorerLineupPlayerId").type(JsonFieldType.NUMBER).description("자책골 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("기록 시간")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
     void 축구_교체_타임라인을_생성한다() throws Exception {
         // given
         TimelineRequest.RegisterReplacement request = new TimelineRequest.RegisterReplacement(

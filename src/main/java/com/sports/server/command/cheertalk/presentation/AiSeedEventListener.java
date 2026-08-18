@@ -5,6 +5,7 @@ import com.sports.server.command.cheertalk.domain.AiSeedTriggerType;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.OwnGoalTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineCreatedEvent;
@@ -40,6 +41,7 @@ public class AiSeedEventListener {
     public void handle(TimelineCreatedEvent event) {
         switch (event.type()) {
             case SCORE -> handleGoal(event);
+            case OWN_GOAL -> handleOwnGoal(event);
             case GAME_PROGRESS -> handleGameProgress(event);
             default -> { }
         }
@@ -57,6 +59,21 @@ public class AiSeedEventListener {
         int delay = randomDelay(GOAL_DELAY_MIN_SECONDS, GOAL_DELAY_MAX_SECONDS);
         taskScheduler.schedule(
                 () -> aiSeedService.publish(event.gameId(), AiSeedTriggerType.GOAL, scoringGameTeamId, scorerName),
+                Instant.now().plusSeconds(delay)
+        );
+    }
+
+    private void handleOwnGoal(TimelineCreatedEvent event) {
+        Timeline timeline = timelineRepository.findById(event.timelineId()).orElse(null);
+        if (!(timeline instanceof OwnGoalTimeline ownGoalTimeline)) {
+            return;
+        }
+
+        Long creditedGameTeamId = ownGoalTimeline.getOpponentGameTeam().getId();
+
+        int delay = randomDelay(GOAL_DELAY_MIN_SECONDS, GOAL_DELAY_MAX_SECONDS);
+        taskScheduler.schedule(
+                () -> aiSeedService.publish(event.gameId(), AiSeedTriggerType.OWN_GOAL, creditedGameTeamId, null),
                 Instant.now().plusSeconds(delay)
         );
     }

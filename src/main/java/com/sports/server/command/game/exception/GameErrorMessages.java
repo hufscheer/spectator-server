@@ -10,6 +10,9 @@ public class GameErrorMessages {
     public static final String PLAYER_NOT_PARTICIPANT_SCORE_EXCEPTION = "참여하지 않는 선수는 득점할 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_PK_SCORE_EXCEPTION = "참여하지 않는 선수는 승부차기에서 득점할 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION = "참여하지 않는 선수는 득점을 취소할 수 없습니다.";
+    public static final String OWN_GOAL_NOT_ALLOWED_FOR_NON_SOCCER = "자책골은 축구 경기에서만 등록할 수 있습니다.";
+    public static final String PLAYER_NOT_PARTICIPANT_OWN_GOAL_EXCEPTION = "참여하지 않는 선수는 자책골을 기록할 수 없습니다.";
+    public static final String PLAYER_NOT_PARTICIPANT_CANCEL_OWN_GOAL_EXCEPTION = "참여하지 않는 선수는 자책골 기록을 취소할 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_ISSUE_WARNING_CARD_EXCEPTION = "참여하지 않는 선수는 경고카드를 받을 수 없습니다.";
     public static final String PLAYER_NOT_PARTICIPANT_CANCEL_WARNING_CARD_EXCEPTION = "참여하지 않는 선수는 경고카드를 취소할 수 없습니다.";
     public static final String BASKETBALL_REPLACEMENT_NOT_ALLOWED_FOR_NON_BASKETBALL = "농구 교체는 농구 경기에서만 등록할 수 있습니다.";

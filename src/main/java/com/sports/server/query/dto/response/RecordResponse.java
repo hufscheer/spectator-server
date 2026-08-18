@@ -20,6 +20,7 @@ public record RecordResponse(
         String teamName,
         String teamImageUrl,
         ScoreRecordResponse scoreRecord,
+        OwnGoalRecordResponse ownGoalRecord,
         ReplacementRecordResponse replacementRecord,
         ProgressRecordResponse progressRecord,
         PkRecordResponse pkRecord,
@@ -29,7 +30,7 @@ public record RecordResponse(
 ) {
     public static RecordResponse from(Timeline timeline, TimelineDeletabilityEvaluator.Result deletability) {
         Optional<LineupPlayer> lineupPlayer = getPlayer(timeline);
-        Optional<GameTeam> gameTeam = lineupPlayer.map(LineupPlayer::getGameTeam);
+        Optional<GameTeam> gameTeam = getCreditedGameTeam(timeline, lineupPlayer);
         Optional<Team> team = gameTeam.map(GameTeam::getTeam);
 
         return new RecordResponse(
@@ -43,6 +44,8 @@ public record RecordResponse(
                 team.map(Team::getLogoImageUrl).orElse(null),
                 timeline instanceof ScoreTimeline scoreTimeline
                         ? ScoreRecordResponse.from(scoreTimeline) : null,
+                timeline instanceof OwnGoalTimeline ownGoalTimeline
+                        ? OwnGoalRecordResponse.from(ownGoalTimeline) : null,
                 timeline instanceof ReplacementTimeline replacementTimeline
                         ? new ReplacementRecordResponse(
                                 replacementTimeline.getId(),
@@ -59,9 +62,18 @@ public record RecordResponse(
         );
     }
 
+    private static Optional<GameTeam> getCreditedGameTeam(Timeline timeline, Optional<LineupPlayer> lineupPlayer) {
+        if (timeline instanceof OwnGoalTimeline ownGoalTimeline) {
+            return Optional.of(ownGoalTimeline.getOpponentGameTeam());
+        }
+        return lineupPlayer.map(LineupPlayer::getGameTeam);
+    }
+
     private static Optional<LineupPlayer> getPlayer(Timeline timeline) {
         if (timeline instanceof ScoreTimeline scoreTimeline) {
             return Optional.of(scoreTimeline.getScorer());
+        } else if (timeline instanceof OwnGoalTimeline ownGoalTimeline) {
+            return Optional.of(ownGoalTimeline.getScorer());
         } else if (timeline instanceof ReplacementTimeline replacementTimeline) {
             return Optional.of(replacementTimeline.getOriginLineupPlayer());
         } else if (timeline instanceof PKTimeline pkTimeline) {

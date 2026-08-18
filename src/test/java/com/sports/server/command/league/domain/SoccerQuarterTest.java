@@ -62,4 +62,15 @@ class SoccerQuarterTest {
             assertThat(quarters[i].getOrder()).isLessThan(quarters[i + 1].getOrder());
         }
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "FIRST_HALF, true",
+            "SECOND_HALF, true",
+            "EXTRA_TIME, true",
+            "PENALTY_SHOOTOUT, false"
+    })
+    void 승부차기를_제외한_쿼터에서만_자책골을_기록할_수_있다(SoccerQuarter quarter, boolean expected) {
+        assertThat(quarter.canRecordOwnGoal()).isEqualTo(expected);
+    }
 }

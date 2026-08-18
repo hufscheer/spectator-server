@@ -13,7 +13,6 @@ import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.common.application.EntityUtils;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,24 +125,45 @@ public class TimelineQueryService {
                 .sorted(comparingInt(Quarter::getOrder))
                 .toList();
 
-        Map<Quarter, Map<Long, Integer>> scoreByQuarterAndTeam = timelineQueryRepository
-                .findScoreTimelinesByGameId(gameId)
-                .stream()
-                .collect(groupingBy(
-                        Timeline::getRecordedQuarter,
-                        groupingBy(
-                                st -> st.getScorer().getGameTeam().getId(),
-                                summingInt(ScoreTimeline::getScore)
-                        )
-                ));
+        QuarterTeamScores scoreByQuarterAndTeam = collectScoreByQuarterAndTeam(gameId);
 
         return completedQuarters.stream()
                 .map(quarter -> QuarterScoreResponse.of(
                         quarter,
                         gameTeamIds,
-                        scoreByQuarterAndTeam.getOrDefault(quarter, Map.of())
+                        scoreByQuarterAndTeam.scoresOf(quarter)
                 ))
                 .toList();
+    }
+
+    private record QuarterTeamScore(Quarter quarter, Long gameTeamId, int score) {
+    }
+
+    private record QuarterTeamScores(Map<Quarter, Map<Long, Integer>> scoresByQuarter) {
+
+        static QuarterTeamScores from(Stream<QuarterTeamScore> contributions) {
+            Map<Quarter, Map<Long, Integer>> scoresByQuarter = contributions.collect(groupingBy(
+                    QuarterTeamScore::quarter,
+                    groupingBy(QuarterTeamScore::gameTeamId, summingInt(QuarterTeamScore::score))
+            ));
+            return new QuarterTeamScores(scoresByQuarter);
+        }
+
+        Map<Long, Integer> scoresOf(Quarter quarter) {
+            return scoresByQuarter.getOrDefault(quarter, Map.of());
+        }
+    }
+
+    private QuarterTeamScores collectScoreByQuarterAndTeam(Long gameId) {
+        Stream<QuarterTeamScore> scoreContributions = timelineQueryRepository.findScoreTimelinesByGameId(gameId)
+                .stream()
+                .map(st -> new QuarterTeamScore(st.getRecordedQuarter(), st.getScorer().getGameTeam().getId(), st.getScore()));
+
+        Stream<QuarterTeamScore> ownGoalContributions = timelineQueryRepository.findOwnGoalTimelinesByGameId(gameId)
+                .stream()
+                .map(ogt -> new QuarterTeamScore(ogt.getRecordedQuarter(), ogt.getOpponentGameTeam().getId(), ogt.getScore()));
+
+        return QuarterTeamScores.from(Stream.concat(scoreContributions, ownGoalContributions));
     }
 
     private List<ProgressAction> actionsFromQuarterEnd(Quarter lastQuarter, SportType sportType) {

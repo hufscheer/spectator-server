@@ -108,6 +108,29 @@ public abstract class TimelineRequest {
     }
 
     @Getter
+    public static class RegisterOwnGoal extends TimelineRequest {
+        private final Long gameTeamId;
+        private final Long scorerLineupPlayerId;
+
+        public RegisterOwnGoal(
+                Integer recordedAt,
+                SportType sportType,
+                String recordedQuarter,
+                Long gameTeamId,
+                Long scorerLineupPlayerId
+        ) {
+            super(sportType, recordedQuarter, recordedAt);
+            this.gameTeamId = gameTeamId;
+            this.scorerLineupPlayerId = scorerLineupPlayerId;
+        }
+
+        @Override
+        public TimelineType getType() {
+            return TimelineType.OWN_GOAL;
+        }
+    }
+
+    @Getter
     public static class RegisterReplacement extends TimelineRequest {
         private final Long gameTeamId;
         private final Long originLineupPlayerId;

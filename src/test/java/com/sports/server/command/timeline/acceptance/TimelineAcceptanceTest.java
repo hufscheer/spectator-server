@@ -80,6 +80,77 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 자책골_타임라인을_생성한다() {
+        // given
+        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                3, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                team1Id,
+                team1PlayerId
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/own-goal", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 요청한_팀과_다른_팀_선수를_자책골_선수로_등록하면_400을_반환한다() {
+        // given
+        long team2PlayerId = 6L; // 팀2 소속 선수 (팀1 자책골 타임라인에 등록 시도)
+
+        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                3, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                team1Id,
+                team2PlayerId
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/own-goal", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 승부차기에서_자책골_타임라인을_등록하면_400을_반환한다() {
+        // given
+        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
+                3, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(),
+                team1Id,
+                team1PlayerId
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/own-goal", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     void 다른_팀_선수를_어시스트로_등록하면_400을_반환한다() {
         // given
         long team2PlayerId = 6L; // 팀2 소속 선수 (팀1 득점 타임라인에 어시스트로 등록 시도)
