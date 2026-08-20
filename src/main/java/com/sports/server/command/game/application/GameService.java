@@ -179,6 +179,7 @@ public class GameService {
                     teamPlayer.getPlayer(),
                     lineupPlayerRequest.state(),
                     teamPlayer.getJerseyNumber(),
+                    teamPlayer.getPosition(),
                     lineupPlayerRequest.isCaptain()
             );
             lineupPlayerRepository.save(lineupPlayer);

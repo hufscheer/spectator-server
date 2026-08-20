@@ -4,6 +4,7 @@ import static com.sports.server.command.game.domain.LineupPlayerState.CANDIDATE;
 import static com.sports.server.command.game.domain.LineupPlayerState.STARTER;
 
 import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.team.domain.Position;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
@@ -32,6 +33,10 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @Column(name = "jersey_number", nullable = true)
     private Integer jerseyNumber;
 
+    @Column(name = "position")
+    @Enumerated(EnumType.STRING)
+    private Position position;
+
     @Column(name = "is_captain", nullable = false)
     private boolean isCaptain;
 
@@ -46,17 +51,19 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @JoinColumn(name = "replaced_player_id", nullable = true)
     private LineupPlayer replacedPlayer;
 
-    private LineupPlayer(@NonNull GameTeam gameTeam, @NonNull Player player, @NonNull LineupPlayerState state, Integer jerseyNumber, boolean isCaptain){
+    private LineupPlayer(@NonNull GameTeam gameTeam, @NonNull Player player, @NonNull LineupPlayerState state, Integer jerseyNumber, Position position, boolean isCaptain){
         this.gameTeam = gameTeam;
         this.player = player;
         this.state = state;
         this.jerseyNumber = jerseyNumber;
+        this.position = position;
         this.isCaptain = isCaptain;
         this.isPlaying = (state == LineupPlayerState.STARTER);
     }
 
-    public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber, boolean isCaptain) {
-        return new LineupPlayer(gameTeam, player, state, jerseyNumber, isCaptain);
+    public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber,
+                                  Position position, boolean isCaptain) {
+        return new LineupPlayer(gameTeam, player, state, jerseyNumber, position, isCaptain);
     }
 
     public boolean isReplaced() {

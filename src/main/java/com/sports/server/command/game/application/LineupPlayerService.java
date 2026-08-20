@@ -61,6 +61,7 @@ public class LineupPlayerService {
                 teamPlayer.getPlayer(),
                 request.state(),
                 teamPlayer.getJerseyNumber(),
+                teamPlayer.getPosition(),
                 request.isCaptain()
         );
         lineupPlayerRepository.save(lineupPlayer);
