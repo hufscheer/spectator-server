@@ -37,7 +37,7 @@ public class TeamTest {
         @Test
         void 새로운_선수를_팀에_추가한다(){
             // when
-            team.addPlayer(player1, 10);
+            team.addPlayer(player1, 10, null);
 
             // then
             assertThat(team.getTeamPlayers()).hasSize(1);
@@ -50,10 +50,10 @@ public class TeamTest {
         @Test
         void 기존에_소속된_선수를_추가하면_예외가_발생한다(){
             // given
-            team.addPlayer(player1, 10);
+            team.addPlayer(player1, 10, null);
 
             // when & then
-            assertThatThrownBy(() -> team.addPlayer(player1, 10))
+            assertThatThrownBy(() -> team.addPlayer(player1, 10, null))
                     .isInstanceOf(CustomException.class)
                     .hasMessage("이미 팀에 소속된 선수입니다.");
         }
@@ -61,8 +61,8 @@ public class TeamTest {
         @Test
         void 팀에서_선수를_제거한다(){
             // given
-            team.addPlayer(player1, 10);
-            team.addPlayer(player2, 5);
+            team.addPlayer(player1, 10, null);
+            team.addPlayer(player2, 5, null);
 
             // when
             team.removeTeamPlayer(player1);

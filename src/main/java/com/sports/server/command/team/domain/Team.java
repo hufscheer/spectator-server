@@ -81,14 +81,14 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
         }
     }
 
-    public TeamPlayer addPlayer(Player player, Integer jerseyNumber) {
+    public TeamPlayer addPlayer(Player player, Integer jerseyNumber, Position position) {
         boolean alreadyExists = this.teamPlayers.stream()
                 .anyMatch(tp -> tp.getPlayer().equals(player));
         if (alreadyExists) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 팀에 소속된 선수입니다.");
         }
 
-        return TeamPlayer.of(this, player, jerseyNumber);
+        return TeamPlayer.of(this, player, jerseyNumber, position);
     }
 
     void addTeamPlayer(TeamPlayer teamPlayer) {

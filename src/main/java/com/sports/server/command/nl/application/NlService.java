@@ -318,7 +318,9 @@ public class NlService {
                 continue;
             }
 
-            context.teamPlayerRegisters.add(new TeamRequest.TeamPlayerRegister(playerId, playerData.jerseyNumber()));
+            // NL 벌크 등록은 아직 포지션을 다루지 않는다. 등록 후 팀 관리에서 지정한다.
+            context.teamPlayerRegisters.add(
+                    new TeamRequest.TeamPlayerRegister(playerId, playerData.jerseyNumber(), null));
             context.assigned++;
         }
     }

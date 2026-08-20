@@ -80,8 +80,8 @@ public class TeamServiceTest extends ServiceTest {
         void origin_prefix가_포함되지_않은_이미지_url을_등록할_경우_예외가_발생한다() {
             // given
             List<TeamRequest.TeamPlayerRegister> playerRegisterRequests = List.of(
-                    new TeamRequest.TeamPlayerRegister(1L, 10),
-                    new TeamRequest.TeamPlayerRegister(2L, 7));
+                    new TeamRequest.TeamPlayerRegister(1L, 10, null),
+                    new TeamRequest.TeamPlayerRegister(2L, 7, null));
 
             TeamRequest.Register request = new TeamRequest.Register("name", "invalid-logo-url",
                     "사회과학대학","color code", playerRegisterRequests, null);
@@ -96,8 +96,8 @@ public class TeamServiceTest extends ServiceTest {
         void 존재하지_않는_단위를_요청할_경우_예외가_발생한다() {
             // given
             List<TeamRequest.TeamPlayerRegister> playerRegisterRequests = List.of(
-                    new TeamRequest.TeamPlayerRegister(1L, 10),
-                    new TeamRequest.TeamPlayerRegister(2L, 7));
+                    new TeamRequest.TeamPlayerRegister(1L, 10, null),
+                    new TeamRequest.TeamPlayerRegister(2L, 7, null));
 
             TeamRequest.Register request = new TeamRequest.Register("name", imageUrl,
                     "invalid unit","color code", playerRegisterRequests, null);
@@ -189,8 +189,8 @@ public class TeamServiceTest extends ServiceTest {
             // given
             Long teamId = 1L; // 기존 선수: 3L, 4L 두 명
             List<TeamRequest.TeamPlayerRegister> players = List.of(
-                    new TeamRequest.TeamPlayerRegister(1L, 10),
-                    new TeamRequest.TeamPlayerRegister(2L, 7)
+                    new TeamRequest.TeamPlayerRegister(1L, 10, null),
+                    new TeamRequest.TeamPlayerRegister(2L, 7, null)
             );
             TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
 
@@ -209,7 +209,7 @@ public class TeamServiceTest extends ServiceTest {
             // given
             Long teamId = 1L; // 기존 선수: 3L(등번호 9), 4L(등번호 11)
             List<TeamRequest.TeamPlayerRegister> players = List.of(
-                    new TeamRequest.TeamPlayerRegister(3L, 99)
+                    new TeamRequest.TeamPlayerRegister(3L, 99, null)
             );
             TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
 
@@ -229,11 +229,70 @@ public class TeamServiceTest extends ServiceTest {
         }
 
         @Test
+        void 포지션도_함께_수정된다() {
+            // given: 팀 1 은 축구팀(sport_type 기본값 SOCCER)
+            Long teamId = 1L;
+            List<TeamRequest.TeamPlayerRegister> players = List.of(
+                    new TeamRequest.TeamPlayerRegister(3L, 99, Position.CM)
+            );
+            TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
+
+            doNothing().when(s3Service).doesFileExist(anyString());
+
+            // when
+            teamService.update(manager, request, teamId);
+
+            // then
+            TeamPlayer updated = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId).stream()
+                    .filter(tp -> tp.getPlayer().getId().equals(3L))
+                    .findFirst()
+                    .orElseThrow();
+            assertThat(updated.getPosition()).isEqualTo(Position.CM);
+        }
+
+        @Test
+        void 포지션을_비우면_null_로_수정된다() {
+            // given
+            Long teamId = 1L;
+            doNothing().when(s3Service).doesFileExist(anyString());
+            teamService.update(manager, new TeamRequest.Update(null, null, null, null,
+                    List.of(new TeamRequest.TeamPlayerRegister(3L, 99, Position.CM))), teamId);
+
+            // when: 포지션 없이 다시 보내면 선택 입력이므로 해제된다
+            teamService.update(manager, new TeamRequest.Update(null, null, null, null,
+                    List.of(new TeamRequest.TeamPlayerRegister(3L, 99, null))), teamId);
+
+            // then
+            TeamPlayer updated = teamPlayerRepository.findTeamPlayersWithPlayerByTeamId(teamId).stream()
+                    .filter(tp -> tp.getPlayer().getId().equals(3L))
+                    .findFirst()
+                    .orElseThrow();
+            assertThat(updated.getPosition()).isNull();
+        }
+
+        @Test
+        void 팀_종목에_없는_포지션이면_예외가_발생한다() {
+            // given: 축구팀에 농구 포지션
+            Long teamId = 1L;
+            List<TeamRequest.TeamPlayerRegister> players = List.of(
+                    new TeamRequest.TeamPlayerRegister(3L, 99, Position.PG)
+            );
+            TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
+
+            doNothing().when(s3Service).doesFileExist(anyString());
+
+            // when then
+            assertThatThrownBy(() -> teamService.update(manager, request, teamId))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining("PG");
+        }
+
+        @Test
         void 존재하지_않는_선수가_포함되면_예외가_발생한다() {
             // given
             Long teamId = 1L;
             List<TeamRequest.TeamPlayerRegister> players = List.of(
-                    new TeamRequest.TeamPlayerRegister(999L, 10)
+                    new TeamRequest.TeamPlayerRegister(999L, 10, null)
             );
             TeamRequest.Update request = new TeamRequest.Update(null, null, null, null, players);
 
@@ -255,8 +314,8 @@ public class TeamServiceTest extends ServiceTest {
             // given
             Long teamId = 1L; // 기존 선수: 3L, 4L 두 명
             List<TeamRequest.TeamPlayerRegister> playerToAdd = List.of(
-                    new TeamRequest.TeamPlayerRegister(1L, 10),
-                    new TeamRequest.TeamPlayerRegister(2L, 7)
+                    new TeamRequest.TeamPlayerRegister(1L, 10, null),
+                    new TeamRequest.TeamPlayerRegister(2L, 7, null)
             );
 
             // when
@@ -272,8 +331,8 @@ public class TeamServiceTest extends ServiceTest {
             // given
             Long teamId = 1L; // 기존 선수: 3L, 4L 두 명
             List<TeamRequest.TeamPlayerRegister> playerToAdd = List.of(
-                    new TeamRequest.TeamPlayerRegister(3L, 10),
-                    new TeamRequest.TeamPlayerRegister(2L, 7)
+                    new TeamRequest.TeamPlayerRegister(3L, 10, null),
+                    new TeamRequest.TeamPlayerRegister(2L, 7, null)
             );
 
             // when & then
@@ -301,7 +360,7 @@ public class TeamServiceTest extends ServiceTest {
             // given
             Long teamId = 1L;
             List<TeamRequest.TeamPlayerRegister> playerToAdd = List.of(
-                    new TeamRequest.TeamPlayerRegister(999L, 10)
+                    new TeamRequest.TeamPlayerRegister(999L, 10, null)
             );
 
             // when & then

@@ -1,5 +1,6 @@
 package com.sports.server.command.team.presentation;
 
+import com.sports.server.command.team.domain.Position;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
@@ -29,9 +30,9 @@ public class TeamControllerTest extends DocumentationTest {
     void 팀을_생성한다() throws Exception {
         // given
         List<TeamRequest.TeamPlayerRegister> teamPlayersRequest = List.of(
-                new TeamRequest.TeamPlayerRegister(1L, 1),
-                new TeamRequest.TeamPlayerRegister(2L, 7),
-                new TeamRequest.TeamPlayerRegister(3L, 10)
+                new TeamRequest.TeamPlayerRegister(1L, 1, Position.GK),
+                new TeamRequest.TeamPlayerRegister(2L, 7, Position.CM),
+                new TeamRequest.TeamPlayerRegister(3L, 10, null)
         );
 
         TeamRequest.Register request = new TeamRequest.Register(
@@ -63,7 +64,9 @@ public class TeamControllerTest extends DocumentationTest {
                                         fieldWithPath("sportType").type(JsonFieldType.STRING).description("팀의 종목 (SOCCER, BASKETBALL)").optional(),
                                         fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("팀에 추가할 선수들 목록 (없다면 빈 리스트)"),
                                         fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 Id"),
-                                        fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호 (nullable)")
+                                        fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호 (nullable)"),
+                                        fieldWithPath("teamPlayers[].position").type(JsonFieldType.STRING).optional()
+                                                .description("포지션 (nullable, 선택 입력). 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, 농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
                                         ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -108,8 +111,8 @@ public class TeamControllerTest extends DocumentationTest {
                 "경영대학",
                 "team-color",
                 List.of(
-                        new TeamRequest.TeamPlayerRegister(1L, 10),
-                        new TeamRequest.TeamPlayerRegister(2L, 7)
+                        new TeamRequest.TeamPlayerRegister(1L, 10, Position.ST),
+                        new TeamRequest.TeamPlayerRegister(2L, 7, Position.CM)
                 )
         );
 
@@ -134,7 +137,9 @@ public class TeamControllerTest extends DocumentationTest {
                                 fieldWithPath("teamColor").type(JsonFieldType.STRING).description("팀의 대표 색의 hexCode"),
                                 fieldWithPath("teamPlayers").type(JsonFieldType.ARRAY).description("수정할 팀 선수 목록 (null이면 선수 변경 없음)").optional(),
                                 fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
-                                fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수의 등번호")
+                                fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수의 등번호"),
+                                fieldWithPath("teamPlayers[].position").type(JsonFieldType.STRING).optional()
+                                        .description("포지션 (nullable, 선택 입력). 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, 농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -148,8 +153,8 @@ public class TeamControllerTest extends DocumentationTest {
         Long teamId = 1L;
 
         List<TeamRequest.TeamPlayerRegister> request = List.of(
-                new TeamRequest.TeamPlayerRegister(1L, 10),
-                new TeamRequest.TeamPlayerRegister(2L, 7)
+                new TeamRequest.TeamPlayerRegister(1L, 10, Position.ST),
+                new TeamRequest.TeamPlayerRegister(2L, 7, Position.CM)
         );
 
         doNothing().when(teamService).addPlayersToTeam(any(), anyLong(), any());
@@ -169,7 +174,9 @@ public class TeamControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("[]").type(JsonFieldType.ARRAY).description("추가할 선수 정보 목록"),
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 ID"),
-                                fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호")
+                                fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호"),
+                                fieldWithPath("[].position").type(JsonFieldType.STRING).optional()
+                                        .description("포지션 (nullable, 선택 입력). 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, 농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

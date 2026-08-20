@@ -15,6 +15,7 @@ CREATE TABLE `lineup_players` (
   `state` varchar(255) NOT NULL,
   `is_playing` tinyint(1) NOT NULL DEFAULT '1',
   `replaced_player_id` bigint DEFAULT NULL,
+  `position` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_lineup_player` (`game_team_id`,`player_id`),
   KEY `FK_LINEUP_PLAYERS_ON_PLAYERS` (`player_id`),
@@ -39,6 +40,7 @@ CREATE TABLE `lineup_players` (
 | state | varchar(255) |  | false |  |  |  |  |
 | is_playing | tinyint(1) | 1 | false |  |  |  |  |
 | replaced_player_id | bigint |  | true |  |  | [lineup_players](lineup_players.md) |  |
+| position | varchar(255) |  | true |  |  |  |  |
 
 ## Constraints
 
