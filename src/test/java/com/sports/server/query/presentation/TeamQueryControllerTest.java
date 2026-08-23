@@ -205,9 +205,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
 
         List<GameDetailResponse> response = List.of(
                 new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", new QuarterResponse("SECOND_HALF", "후반전"), "혁명 대전 결승",
-                        gameTeams1, "PLAYING", 2, false,1L, "혁명 대전"),
+                        gameTeams1, "PLAYING", 2, false, false,1L, "혁명 대전"),
                 new GameDetailResponse(2L, LocalDateTime.of(2024, 10, 10, 13, 0, 0), "video-id", new QuarterResponse("PENALTY_SHOOTOUT", "승부차기"), "외교 대전 4강",
-                        gameTeams2, "FINISHED", 4, true, 2L,"외교 대전")
+                        gameTeams2, "FINISHED", 4, false, true, 2L,"외교 대전")
         );
 
         given(gameQueryService.getAllGamesDetailByTeam(teamId)).willReturn(response);
@@ -256,9 +256,9 @@ public class TeamQueryControllerTest extends DocumentationTest {
         );
         List<GameDetailResponse> recentGames = List.of(
                 new GameDetailResponse(1L, LocalDateTime.of(2025, 8, 21, 19, 30, 0), "video-id", new QuarterResponse("SECOND_HALF", "후반전"), "혁명 대전 결승",
-                        gameTeams1, "PLAYING", 2, false,1L, "혁명 대전"),
+                        gameTeams1, "PLAYING", 2, false, false,1L, "혁명 대전"),
                 new GameDetailResponse(2L, LocalDateTime.of(2024, 10, 10, 13, 0, 0), "video-id", new QuarterResponse("PENALTY_SHOOTOUT", "승부차기"), "외교 대전 4강",
-                        gameTeams2, "FINISHED", 4, true, 2L,"외교 대전")
+                        gameTeams2, "FINISHED", 4, false, true, 2L,"외교 대전")
         );
 
         List<TeamSummaryResponse> teamSummaryResponses = List.of(new TeamSummaryResponse(teamDetail, recentGames));
@@ -350,6 +350,8 @@ public class TeamQueryControllerTest extends DocumentationTest {
                 fieldWithPath(prefix + "gameName").type(JsonFieldType.STRING).description("경기 이름"),
                 fieldWithPath(prefix + "state").type(JsonFieldType.STRING).description("경기 상태 (SCHEDULED, PLAYING, FINISHED)"),
                 fieldWithPath(prefix + "round").type(JsonFieldType.NUMBER).description("현재 라운드"),
+                fieldWithPath(prefix + "thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                        .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                 fieldWithPath(prefix + "isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진행 여부"),
 
                 fieldWithPath(prefix + "gameTeams").type(JsonFieldType.ARRAY).description("경기에 참여하는 두 팀의 정보"),

@@ -13,6 +13,7 @@ public record GameResponseDto(
         QuarterResponse gameQuarter,
         String gameName,
         int round,
+        boolean thirdPlaceMatch,
         String videoId,
         List<TeamResponse> gameTeams,
         boolean isPkTaken
@@ -24,6 +25,7 @@ public record GameResponseDto(
                 QuarterResponse.from(game.getQuarter()),
                 game.getName(),
                 game.getRound().getNumber(),
+                game.isThirdPlaceMatch(),
                 game.getVideoId(),
                 gameTeams.stream()
                         .sorted(Comparator.comparingLong(GameTeam::getId))

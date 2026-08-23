@@ -728,6 +728,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         new QuarterResponse("FIRST_HALF", "전반전"),
                                         "결승전",
                                         2,
+                                        false,
                                         "abc123",
                                         "PLAYING",
                                         List.of(
@@ -767,6 +768,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].games[].gameQuarter.label").type(JsonFieldType.STRING).description("경기 쿼터 표시명"),
                                 fieldWithPath("[].games[].gameName").type(JsonFieldType.STRING).description("경기 이름"),
                                 fieldWithPath("[].games[].round").type(JsonFieldType.NUMBER).description("경기 라운드"),
+                                fieldWithPath("[].games[].thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID").optional(),
                                 fieldWithPath("[].games[].gameState").type(JsonFieldType.STRING).description("경기 상태 (PLAYING, FINISHED, SCHEDULED)"),
                                 fieldWithPath("[].games[].isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),

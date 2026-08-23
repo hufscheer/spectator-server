@@ -36,7 +36,7 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(gameId,
-                startTime, "videoId", new QuarterResponse("FIRST_HALF", "전반전"), "여름축구", gameTeams, "PLAYING", 4, false, 1L, "외대 월드컵"
+                startTime, "videoId", new QuarterResponse("FIRST_HALF", "전반전"), "여름축구", gameTeams, "PLAYING", 4, false, false, 1L, "외대 월드컵"
         );
         given(gameQueryService.getGameDetail(gameId))
                 .willReturn(response);
@@ -61,6 +61,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("gameQuarter.label").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
                                 fieldWithPath("gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("게임의 라운드"),
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
                                 fieldWithPath("gameTeams[].gameTeamName").type(JsonFieldType.STRING)
@@ -117,8 +119,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2, 0)
         );
         List<GameResponseDto> responses = List.of(
-                new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "4강", 4, "abc123", gameTeams1, false),
-                new GameResponseDto(2L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "결승전", 2, "abc123", gameTeams2, false)
+                new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "4강", 4, false, "abc123", gameTeams1, false),
+                new GameResponseDto(2L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "결승전", 2, false, "abc123", gameTeams2, false)
         );
         List<LeagueWithGamesResponse> finalResponse = List.of(
                 new LeagueWithGamesResponse(1L, "2025 외대월드컵", responses)
@@ -167,6 +169,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("content[].games[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("content[].games[].round").type(JsonFieldType.NUMBER)
                                         .description("라운드의 이름 ex. 4강->4, 결승->2"),
+                                fieldWithPath("content[].games[].thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("content[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
                                 fieldWithPath("content[].games[].isPkTaken").type(JsonFieldType.BOOLEAN)
                                         .description("승부차기 진출 여부"),
@@ -424,8 +428,8 @@ class GameQueryControllerTest extends DocumentationTest {
         );
         
         List<GameDetailResponse> responses = List.of(
-                new GameDetailResponse(1L, startTime1, "video1", new QuarterResponse("FIRST_HALF", "전반전"), "4강", gameTeams1, "FINISHED", 4, false, 1L, "춘계리그"),
-                new GameDetailResponse(2L, startTime2, "video2", new QuarterResponse("SECOND_HALF", "후반전"), "결승", gameTeams2, "PLAYING", 2, false, 1L, "춘계리그")
+                new GameDetailResponse(1L, startTime1, "video1", new QuarterResponse("FIRST_HALF", "전반전"), "4강", gameTeams1, "FINISHED", 4, false, false, 1L, "춘계리그"),
+                new GameDetailResponse(2L, startTime2, "video2", new QuarterResponse("SECOND_HALF", "후반전"), "결승", gameTeams2, "PLAYING", 2, false, false, 1L, "춘계리그")
         );
 
         given(gameQueryService.getGamesByYearAndMonth(year, month))
@@ -454,6 +458,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameQuarter.label").type(JsonFieldType.STRING).description("게임 쿼터 표시명"),
                                 fieldWithPath("[].gameName").type(JsonFieldType.STRING).description("게임 이름"),
                                 fieldWithPath("[].round").type(JsonFieldType.NUMBER).description("게임의 라운드"),
+                                fieldWithPath("[].thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
                                 fieldWithPath("[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
