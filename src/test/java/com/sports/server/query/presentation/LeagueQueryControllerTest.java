@@ -335,7 +335,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         4,
                         "진행 중",
                         3,
-                        "SOCCER"
+                        "SOCCER",
+                        true
                 ));
 
         // when
@@ -357,7 +358,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("리그 총 라운드"),
                                 fieldWithPath("leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
                                 fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수"),
-                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)")
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
+                                fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부")
                         )
                 ));
     }
@@ -469,9 +471,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         List<LeagueResponseToManage> responses = List.of(
                 new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, 16, fixedDateTime,
-                        fixedDateTime, "SOCCER"),
+                        fixedDateTime, "SOCCER", true),
                 new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, 16, fixedDateTime,
-                        fixedDateTime, "SOCCER"));
+                        fixedDateTime, "SOCCER", false));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -498,7 +500,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
                                 fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
                                 fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
-                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)")
+                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
+                                fieldWithPath("[].thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부")
                         )
                 ));
     }
@@ -534,7 +537,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         );
         LeagueResponseWithGames response = new LeagueResponseWithGames(
                 1L, "첫번째 리그", 6, 16, LocalDateTime.of(2024, 8, 11, 13, 30), LocalDateTime.of(2024, 8, 30, 13, 30),
-                "SOCCER", playingGames, scheduledGames, finishedGames
+                "SOCCER", true, playingGames, scheduledGames, finishedGames
         );
 
         given(leagueQueryService.findLeagueAndGames(leagueId))
@@ -558,6 +561,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("startAt").type(JsonFieldType.STRING).description("리그 시작 시간"),
                                 fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
                                 fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
+                                fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부"),
                                 fieldWithPath("playingGames").type(JsonFieldType.ARRAY).description("진행 중인 경기 목록"),
                                 fieldWithPath("playingGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("playingGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
