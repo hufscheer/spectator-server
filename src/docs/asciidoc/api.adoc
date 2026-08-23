@@ -248,7 +248,17 @@ operation::league-query-controller-test/최근_리그의_게임_목록을_조회
 
 === 득점 타임라인 생성 (축구)
 
+`isOwnGoal`을 `true`로 지정하면 자책골로 등록된다(SOCCER 전용). 자책골 등록 시 `gameTeamId`/`scoreLineupPlayerId`는
+자책골을 넣은 선수가 소속된 팀("우리 팀") 기준이며, `assistLineupPlayerId`는 값을 보내도 무시된다.
+반면 게임의 타임라인 조회(`GET /games/{gameId}/timeline`) 응답에서는 자책골 기록이 실제로 점수를 얻은
+상대 팀 기준(`gameTeamId`/`teamName`/`teamImageUrl`)으로 표시된다. `playerName`은 등록 시와 동일하게
+자책골을 넣은 선수 이름을 유지한다.
+
 operation::timeline-controller-test/득점_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+자책골 등록 예시:
+
+operation::timeline-controller-test/자책골_타임라인을_생성한다[snippets='http-request,request-fields']
 
 === 득점 타임라인 생성 (농구)
 

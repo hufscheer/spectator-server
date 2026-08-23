@@ -68,7 +68,7 @@ class TimelineServiceTest extends ServiceTest {
         Long team1PlayerId = 1L;
 
         TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                team1PlayerId, 3, null);
+                team1PlayerId, 3, null, null);
 
         // when & then
         assertThatThrownBy(() -> timelineService.register(nonManager, gameId, request)).isInstanceOf(
@@ -86,7 +86,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1PlayerId = 1L;
 
             TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                    team1PlayerId, 3, null);
+                    team1PlayerId, 3, null, null);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -109,7 +109,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team2PlayerId = 6L;
 
             TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team2Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                    team2PlayerId, 5, null);
+                    team2PlayerId, 5, null, null);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -132,7 +132,7 @@ class TimelineServiceTest extends ServiceTest {
             Long assistId = 2L; // 같은 팀1 소속 선수
 
             TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                    scorerId, 3, assistId);
+                    scorerId, 3, assistId, null);
 
             // when
             timelineService.register(manager, gameId, request);
@@ -152,7 +152,7 @@ class TimelineServiceTest extends ServiceTest {
             Long assistId = 6L;   // 팀2 선수
 
             TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                    scorerId, 3, assistId);
+                    scorerId, 3, assistId, null);
 
             // when & then
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
@@ -166,10 +166,77 @@ class TimelineServiceTest extends ServiceTest {
             Long scorerId = 1L;
 
             TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                    scorerId, 3, scorerId);
+                    scorerId, 3, scorerId, null);
 
             // when & then
             assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @DisplayName("자책골 타임라인을")
+    @Nested
+    class CreateOwnGoalTest {
+        @Test
+        void team1_선수의_자책골이면_team2가_득점한다() {
+            // given
+            Long team1Id = 1L;
+            Long team1PlayerId = 1L;
+
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                    team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1PlayerId, 3, null, true);
+
+            // when
+            timelineService.register(manager, gameId, request);
+
+            // then
+            OwnGoalTimeline actual = (OwnGoalTimeline) timelineFixtureRepository.findAllLatest(gameId).get(0);
+
+            assertAll(() -> assertThat(actual.getScorer().getId()).isEqualTo(team1PlayerId),
+                    () -> assertThat(actual.getSnapshotScore1()).isEqualTo(15),
+                    () -> assertThat(actual.getSnapshotScore2()).isEqualTo(11));
+        }
+
+        @Test
+        void 승부차기에서는_등록할_수_없다() {
+            // given
+            Long team1Id = 1L;
+            Long team1PlayerId = 1L;
+
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                    team1Id, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(), team1PlayerId, 3, null, true);
+
+            // when then
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+
+        @Test
+        void 요청한_팀과_다른_팀_선수는_자책골_선수로_등록할_수_없다() {
+            // given
+            Long team1Id = 1L;
+            Long team2PlayerId = 6L; // 팀2 소속 선수
+
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                    team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team2PlayerId, 3, null, true);
+
+            // when then
+            assertThatThrownBy(() -> timelineService.register(manager, gameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+
+        @Test
+        void 농구_경기에서는_등록할_수_없다() {
+            // given: 농구 경기(game 5)에 자책골 등록 시도
+            Long basketballGameId = 5L;
+            Long basketballTeamId = 7L;
+            Long basketballPlayerId = 17L;
+
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                    basketballTeamId, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), basketballPlayerId, 3, null, true);
+
+            // when then
+            assertThatThrownBy(() -> timelineService.register(manager, basketballGameId, request))
                     .isInstanceOf(BadRequestException.class);
         }
     }
@@ -335,7 +402,7 @@ class TimelineServiceTest extends ServiceTest {
             Long team1Id = 1L;
             Long team1PlayerId = 1L;
             TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
-                    team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1PlayerId, 3, null
+                    team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1PlayerId, 3, null, null
             );
 
             // when
@@ -656,7 +723,7 @@ class TimelineServiceTest extends ServiceTest {
         private void registerGoal(Long scorerLineupPlayerId, Long assistLineupPlayerId) {
             timelineService.register(manager, replayGameId, new TimelineRequest.RegisterSoccerScore(
                     replayGameTeamId, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                    scorerLineupPlayerId, 10, assistLineupPlayerId));
+                    scorerLineupPlayerId, 10, assistLineupPlayerId, null));
         }
 
         private void registerReplacement(Long originLineupPlayerId, Long replacementLineupPlayerId) {
@@ -684,7 +751,7 @@ class TimelineServiceTest extends ServiceTest {
         Long finishedGameId = 2L;
 
         TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                team1PlayerId, 3, null);
+                team1PlayerId, 3, null, null);
 
         // when & then
         assertThatThrownBy(() -> timelineService.register(manager, finishedGameId, request)).isInstanceOf(
@@ -708,7 +775,7 @@ class TimelineServiceTest extends ServiceTest {
             // given
             AtomicInteger successCount = new AtomicInteger(0);
 
-            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(1L, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), 1L, 1, null);
+            TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(1L, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), 1L, 1, null, null);
 
             int initialScore1 = 15;
             int initialScore2 = 10;

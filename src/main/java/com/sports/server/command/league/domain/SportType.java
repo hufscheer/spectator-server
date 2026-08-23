@@ -35,6 +35,11 @@ public enum SportType {
         public Quarter nextQuarter(Quarter current) {
             return quarterByOrder(current.getOrder() + 1);
         }
+
+        @Override
+        public boolean canRecordOwnGoal() {
+            return true;
+        }
     },
     BASKETBALL {
         @Override
@@ -82,4 +87,8 @@ public enum SportType {
     public abstract Quarter quarterByOrder(int order);
 
     public abstract Quarter nextQuarter(Quarter current);
+
+    public boolean canRecordOwnGoal() {
+        return false;
+    }
 }

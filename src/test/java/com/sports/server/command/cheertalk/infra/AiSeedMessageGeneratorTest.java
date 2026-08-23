@@ -31,7 +31,8 @@ class AiSeedMessageGeneratorTest {
                 "ㅋㅋ,ㅋㅋㅋ,ㅋㅋㅋㅋ,ㄷㄷ,ㄷㄷㄷ,와,ㅎㅎ,ㅎㅎㅎ,ㄹㅇ",
                 "경기 시작 전 프롬프트 {team_name}",
                 "후반전 프롬프트 {team_name}",
-                "골 프롬프트 {team_name} {scorer_name}"
+                "골 프롬프트 {team_name} {scorer_name}",
+                "자책골 프롬프트 {team_name}"
         );
     }
 
@@ -59,6 +60,17 @@ class AiSeedMessageGeneratorTest {
             String result = generator.generate(AiSeedTriggerType.SCHEDULED, "경영", null);
 
             assertThat(result).isEqualTo("경영 간다");
+        }
+
+        @Test
+        @DisplayName("OWN_GOAL 트리거는 선수명 없이도 정상 응답을 반환한다")
+        void OWN_GOAL_정상_응답() {
+            when(chatCaller.call(any(), any(Duration.class)))
+                    .thenReturn(responseOf("어...?"));
+
+            String result = generator.generate(AiSeedTriggerType.OWN_GOAL, "경영", null);
+
+            assertThat(result).isEqualTo("어...?");
         }
 
         @Test
@@ -124,6 +136,17 @@ class AiSeedMessageGeneratorTest {
             String result = generator.generate(AiSeedTriggerType.GOAL, "경영", "민준");
 
             assertThat(result).isEqualTo("민준 좋았다");
+        }
+
+        @Test
+        @DisplayName("LLM 호출 실패 시 OWN_GOAL fallback은 선수명을 포함하지 않는다")
+        void LLM_실패_OWN_GOAL_fallback() {
+            when(chatCaller.call(any(), any(Duration.class)))
+                    .thenThrow(new RuntimeException("network error"));
+
+            String result = generator.generate(AiSeedTriggerType.OWN_GOAL, "경영", null);
+
+            assertThat(result).isEqualTo("이건 예상 못했네");
         }
 
         @Test

@@ -14,6 +14,7 @@ public record LeagueResponseWithGames(
         LocalDateTime startAt,
         LocalDateTime endAt,
         String sportType,
+        boolean thirdPlaceMatchEnabled,
         List<GameDetail> playingGames,
         List<GameDetail> scheduledGames,
         List<GameDetail> finishedGames
@@ -33,6 +34,7 @@ public record LeagueResponseWithGames(
                 league.getId(), league.getName(), league.getLeagueTeams().size(),
                 league.getMaxRound().getNumber(), league.getStartAt(), league.getEndAt(),
                 league.getSportType().name(),
+                league.isThirdPlaceMatchEnabled(),
                 playingGames, scheduledGames, finishedGames
         );
     }

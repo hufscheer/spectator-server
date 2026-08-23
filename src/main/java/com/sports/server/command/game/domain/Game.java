@@ -129,6 +129,26 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelScore(scoreValue);
     }
 
+    public void scoreOwnGoal(LineupPlayer scorer, int scoreValue) {
+        if (!league.getSportType().canRecordOwnGoal()) {
+            throw new BadRequestException(GameErrorMessages.OWN_GOAL_NOT_ALLOWED_FOR_NON_SOCCER);
+        }
+        GameTeam ownTeam = findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_OWN_GOAL_EXCEPTION);
+        opponentOf(ownTeam).score(scoreValue);
+    }
+
+    public void cancelOwnGoalScore(LineupPlayer scorer, int scoreValue) {
+        GameTeam ownTeam = findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_OWN_GOAL_EXCEPTION);
+        opponentOf(ownTeam).cancelScore(scoreValue);
+    }
+
+    public GameTeam opponentOf(GameTeam team) {
+        return gameTeams.stream()
+                .filter(gameTeam -> !gameTeam.equals(team))
+                .findAny()
+                .orElseThrow(() -> new BadRequestException(GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION));
+    }
+
     public void cancelPkScore(LineupPlayer scorer) {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelPkScore();
     }
