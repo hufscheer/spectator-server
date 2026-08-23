@@ -133,8 +133,8 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
             Long team1PlayerId = 1L; // 선수1: 리그1(game1, game2)에서 이미 2골
 
             Member manager = memberRepository.findMemberByEmail("john.doe@example.com").orElseThrow();
-            TimelineRequest.RegisterOwnGoal ownGoalRequest = new TimelineRequest.RegisterOwnGoal(
-                    50, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1Id, team1PlayerId);
+            TimelineRequest.RegisterSoccerScore ownGoalRequest = new TimelineRequest.RegisterSoccerScore(
+                    team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1PlayerId, 50, null, true);
             timelineService.register(manager, gameId, ownGoalRequest);
 
             // when

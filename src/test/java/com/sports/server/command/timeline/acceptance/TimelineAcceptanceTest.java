@@ -36,6 +36,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 team1Id, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 team1PlayerId,
                 3,
+                null,
                 null
         );
 
@@ -62,7 +63,8 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 team1Id, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 team1PlayerId,
                 3,
-                assistPlayerId
+                assistPlayerId,
+                null
         );
 
         // when
@@ -82,10 +84,12 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
     @Test
     void 자책골_타임라인을_생성한다() {
         // given
-        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
-                3, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                team1Id,
-                team1PlayerId
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                team1PlayerId,
+                3,
+                null,
+                true
         );
 
         // when
@@ -94,7 +98,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .post("/games/{gameId}/timelines/own-goal", gameId)
+                .post("/games/{gameId}/timelines/score", gameId)
                 .then().log().all()
                 .extract();
 
@@ -107,10 +111,12 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
         // given
         long team2PlayerId = 6L; // 팀2 소속 선수 (팀1 자책골 타임라인에 등록 시도)
 
-        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
-                3, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                team1Id,
-                team2PlayerId
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                team2PlayerId,
+                3,
+                null,
+                true
         );
 
         // when
@@ -119,7 +125,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .post("/games/{gameId}/timelines/own-goal", gameId)
+                .post("/games/{gameId}/timelines/score", gameId)
                 .then().log().all()
                 .extract();
 
@@ -130,10 +136,12 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
     @Test
     void 승부차기에서_자책골_타임라인을_등록하면_400을_반환한다() {
         // given
-        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
-                3, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(),
-                team1Id,
-                team1PlayerId
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                team1Id, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(),
+                team1PlayerId,
+                3,
+                null,
+                true
         );
 
         // when
@@ -142,7 +150,7 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
-                .post("/games/{gameId}/timelines/own-goal", gameId)
+                .post("/games/{gameId}/timelines/score", gameId)
                 .then().log().all()
                 .extract();
 
@@ -159,7 +167,8 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
                 team1Id, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 team1PlayerId,
                 3,
-                team2PlayerId
+                team2PlayerId,
+                null
         );
 
         // when
