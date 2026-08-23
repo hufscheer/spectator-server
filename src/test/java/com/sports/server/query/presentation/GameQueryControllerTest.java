@@ -265,9 +265,11 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].starterPlayers[].jerseyNumber").type(JsonFieldType.NUMBER)
                                         .description("선발 선수의 등번호"),
                                 fieldWithPath("[].starterPlayers[].position").type(JsonFieldType.STRING).optional()
-                                        .description("선발 선수의 포지션. 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
-                                                + "농구 PG/SG/SF/PF/C. 선발 중 한 명이라도 포지션이 등록되지 않았으면 "
-                                                + "라인업 전체가 null 로 내려간다"),
+                                        .description("선발 선수의 포지션. 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 FW/MF/DF, 농구 PG/SG/SF/PF/C. "
+                                                + "표시 수준은 팀의 선발 라인업 기준으로 정해진다 — 선발 중 한 명이라도 미등록이면 "
+                                                + "라인업 전체가 null, 전원 등록됐지만 대분류까지만 넣은 선수가 있으면 전원 대분류, "
+                                                + "전원 세부까지 넣었으면 세부로 내려간다"),
                                 fieldWithPath("[].starterPlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
                                         .description("선발 선수가 주장인지에 대한 정보"),
                                 fieldWithPath("[].starterPlayers[].state").type(JsonFieldType.STRING)
@@ -303,9 +305,11 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].candidatePlayers[].jerseyNumber").type(JsonFieldType.NUMBER)
                                         .description("후보 선수의 등번호"),
                                 fieldWithPath("[].candidatePlayers[].position").type(JsonFieldType.STRING).optional()
-                                        .description("후보 선수의 포지션. 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
-                                                + "농구 PG/SG/SF/PF/C. 선발 중 한 명이라도 포지션이 등록되지 않았으면 "
-                                                + "라인업 전체가 null 로 내려간다"),
+                                        .description("후보 선수의 포지션. 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 FW/MF/DF, 농구 PG/SG/SF/PF/C. "
+                                                + "표시 수준은 팀의 선발 라인업 기준으로 정해진다 — 선발 중 한 명이라도 미등록이면 "
+                                                + "라인업 전체가 null, 전원 등록됐지만 대분류까지만 넣은 선수가 있으면 전원 대분류, "
+                                                + "전원 세부까지 넣었으면 세부로 내려간다"),
                                 fieldWithPath("[].candidatePlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
                                         .description("후보 선수가 주장인지에 대한 정보"),
                                 fieldWithPath("[].candidatePlayers[].state").type(JsonFieldType.STRING)
@@ -385,8 +389,10 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].gameTeamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER)
                                         .description("선수의 등번호"),
                                 fieldWithPath("[].gameTeamPlayers[].position").type(JsonFieldType.STRING).optional()
-                                        .description("선수의 포지션. 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
-                                                + "농구 PG/SG/SF/PF/C. 등록되지 않았으면 null"),
+                                        .description("선수의 포지션. 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 FW/MF/DF, 농구 PG/SG/SF/PF/C. "
+                                                + "매니저 기록용이라 관객 화면의 표시 수준 게이트를 적용하지 않고 저장된 값을 그대로 내려준다. "
+                                                + "등록되지 않았으면 null"),
                                 fieldWithPath("[].gameTeamPlayers[].isCaptain").type(JsonFieldType.BOOLEAN)
                                         .description("선수가 주장인지에 대한 정보"),
                                 fieldWithPath("[].gameTeamPlayers[].state").type(JsonFieldType.STRING)

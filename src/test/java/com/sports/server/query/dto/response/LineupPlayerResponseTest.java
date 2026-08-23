@@ -75,6 +75,75 @@ class LineupPlayerResponseTest {
     }
 
     @Nested
+    @DisplayName("선발 중 대분류까지만 입력된 선수가 있으면")
+    class SomeStarterHasCategoryOnly {
+
+        @Test
+        void 전원을_대분류로_낮춰_내려준다() {
+            // given: 수비수만 대분류(DF), 나머지는 세부까지 입력
+            List<LineupPlayer> lineupPlayers = List.of(
+                    starter("골키퍼", Position.GK),
+                    starter("수비수", Position.DF),
+                    starter("미드필더", Position.CM),
+                    starter("공격수", Position.ST)
+            );
+
+            // when
+            LineupPlayerResponse.All response = new LineupPlayerResponse.All(gameTeam, lineupPlayers);
+
+            // then: 상세도가 섞이지 않도록 세부 입력자도 대분류로 접힌다
+            assertAll(
+                    () -> assertThat(response.starterPlayers())
+                            .extracting(LineupPlayerResponse.PlayerResponse::playerName)
+                            .containsExactly("공격수", "미드필더", "수비수", "골키퍼"),
+                    () -> assertThat(response.starterPlayers())
+                            .extracting(LineupPlayerResponse.PlayerResponse::position)
+                            .containsExactly(Position.FW, Position.MF, Position.DF, Position.GK)
+            );
+        }
+
+        @Test
+        void 후보도_같은_수준으로_통일한다() {
+            // given
+            List<LineupPlayer> lineupPlayers = List.of(
+                    starter("공격수", Position.FW),
+                    starter("골키퍼", Position.GK),
+                    candidate("후보공격수", Position.ST)
+            );
+
+            // when
+            LineupPlayerResponse.All response = new LineupPlayerResponse.All(gameTeam, lineupPlayers);
+
+            // then
+            assertThat(response.candidatePlayers())
+                    .extracting(LineupPlayerResponse.PlayerResponse::position)
+                    .containsExactly(Position.FW);
+        }
+    }
+
+    @Nested
+    @DisplayName("농구는 대분류 개념이 없어")
+    class Basketball {
+
+        @Test
+        void 선발_전원이_입력되면_항상_세부로_내려준다() {
+            // given
+            List<LineupPlayer> lineupPlayers = List.of(
+                    starter("센터", Position.C),
+                    starter("포인트가드", Position.PG)
+            );
+
+            // when
+            LineupPlayerResponse.All response = new LineupPlayerResponse.All(gameTeam, lineupPlayers);
+
+            // then: PG → C 순, 값은 접히지 않는다
+            assertThat(response.starterPlayers())
+                    .extracting(LineupPlayerResponse.PlayerResponse::position)
+                    .containsExactly(Position.PG, Position.C);
+        }
+    }
+
+    @Nested
     @DisplayName("선발 중 한 명이라도 포지션이 없으면")
     class SomeStarterHasNoPosition {
 

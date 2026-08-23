@@ -66,7 +66,9 @@ public class TeamControllerTest extends DocumentationTest {
                                         fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 Id"),
                                         fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호 (nullable)"),
                                         fieldWithPath("teamPlayers[].position").type(JsonFieldType.STRING).optional()
-                                                .description("포지션 (nullable, 선택 입력). 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, 농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
+                                                .description("포지션 (nullable, 선택 입력). 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 전용 FW/MF/DF (세부를 '선택 안 함' 으로 둔 경우), "
+                                                + "농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
                                         ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -139,7 +141,9 @@ public class TeamControllerTest extends DocumentationTest {
                                 fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
                                 fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수의 등번호"),
                                 fieldWithPath("teamPlayers[].position").type(JsonFieldType.STRING).optional()
-                                        .description("포지션 (nullable, 선택 입력). 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, 농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
+                                        .description("포지션 (nullable, 선택 입력). 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 전용 FW/MF/DF (세부를 '선택 안 함' 으로 둔 경우), "
+                                                + "농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -176,7 +180,9 @@ public class TeamControllerTest extends DocumentationTest {
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("추가할 선수의 ID"),
                                 fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("추가할 선수의 등번호"),
                                 fieldWithPath("[].position").type(JsonFieldType.STRING).optional()
-                                        .description("포지션 (nullable, 선택 입력). 축구 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, 농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
+                                        .description("포지션 (nullable, 선택 입력). 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 전용 FW/MF/DF (세부를 '선택 안 함' 으로 둔 경우), "
+                                                + "농구 PG/SG/SF/PF/C. 팀 종목과 맞지 않는 값이면 400")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
