@@ -65,6 +65,8 @@ public abstract class TimelineRequest {
 
     @Getter
     public static class RegisterSoccerScore extends RegisterScore {
+        private final Boolean isOwnGoal;
+
         @JsonCreator
         public RegisterSoccerScore(
                 @JsonProperty("gameTeamId") Long gameTeamId,
@@ -72,14 +74,21 @@ public abstract class TimelineRequest {
                 @JsonProperty("recordedQuarter") String recordedQuarter,
                 @JsonProperty("scoreLineupPlayerId") Long scoreLineupPlayerId,
                 @JsonProperty("recordedAt") Integer recordedAt,
-                @JsonProperty("assistLineupPlayerId") Long assistLineupPlayerId
+                @JsonProperty("assistLineupPlayerId") Long assistLineupPlayerId,
+                @JsonProperty("isOwnGoal") Boolean isOwnGoal
         ) {
             super(gameTeamId, sportType, recordedQuarter, scoreLineupPlayerId, recordedAt, assistLineupPlayerId);
+            this.isOwnGoal = isOwnGoal;
         }
 
         @Override
         public int getScoreValue() {
             return SoccerScore.GOAL.getValue();
+        }
+
+        @Override
+        public TimelineType getType() {
+            return Boolean.TRUE.equals(isOwnGoal) ? TimelineType.OWN_GOAL : TimelineType.SCORE;
         }
     }
 
@@ -104,29 +113,6 @@ public abstract class TimelineRequest {
         @Override
         public int getScoreValue() {
             return score.getValue();
-        }
-    }
-
-    @Getter
-    public static class RegisterOwnGoal extends TimelineRequest {
-        private final Long gameTeamId;
-        private final Long scorerLineupPlayerId;
-
-        public RegisterOwnGoal(
-                Integer recordedAt,
-                SportType sportType,
-                String recordedQuarter,
-                Long gameTeamId,
-                Long scorerLineupPlayerId
-        ) {
-            super(sportType, recordedQuarter, recordedAt);
-            this.gameTeamId = gameTeamId;
-            this.scorerLineupPlayerId = scorerLineupPlayerId;
-        }
-
-        @Override
-        public TimelineType getType() {
-            return TimelineType.OWN_GOAL;
         }
     }
 
