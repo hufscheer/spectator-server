@@ -38,6 +38,7 @@ public class TimelineControllerTest extends DocumentationTest {
                 1L, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 1L,
                 10,
+                null,
                 null
         );
 
@@ -60,7 +61,8 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
-                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional()
+                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional(),
+                                fieldWithPath("isOwnGoal").type(JsonFieldType.NULL).description("자책골 여부 (SOCCER 전용, 없으면 일반 득점으로 처리)").optional()
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -107,14 +109,16 @@ public class TimelineControllerTest extends DocumentationTest {
     @Test
     void 자책골_타임라인을_생성한다() throws Exception {
         // given
-        TimelineRequest.RegisterOwnGoal request = new TimelineRequest.RegisterOwnGoal(
-                10, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                1L, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 1L,
-                1L
+                10,
+                null,
+                true
         );
 
         // when
-        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/own-goal", 1)
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/score", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
@@ -130,8 +134,10 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (SOCCER)"),
                                 fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("자책골 선수가 소속된(우리) 팀의 Id"),
                                 fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_HALF, SECOND_HALF, EXTRA_TIME. 승부차기는 불가)"),
-                                fieldWithPath("scorerLineupPlayerId").type(JsonFieldType.NUMBER).description("자책골 선수 Id"),
-                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("기록 시간")
+                                fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("자책골 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("기록 시간"),
+                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (자책골에서는 무시됨)").optional(),
+                                fieldWithPath("isOwnGoal").type(JsonFieldType.BOOLEAN).description("true로 지정하면 자책골로 등록")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

@@ -108,7 +108,7 @@ class TimelineQueryServiceTest extends ServiceTest {
     private void registerGoal(Long scorerLineupPlayerId, Long assistLineupPlayerId) {
         timelineService.register(manager, replayGameId, new TimelineRequest.RegisterSoccerScore(
                 replayGameTeamId, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                scorerLineupPlayerId, 10, assistLineupPlayerId));
+                scorerLineupPlayerId, 10, assistLineupPlayerId, null));
     }
 
     private void registerReplacement(Long originLineupPlayerId, Long replacementLineupPlayerId) {

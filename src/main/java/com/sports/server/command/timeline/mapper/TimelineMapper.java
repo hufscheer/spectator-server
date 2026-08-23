@@ -21,7 +21,7 @@ public class TimelineMapper {
             TimelineType.SCORE,
             (game, request) -> toScoreTimeline(game, (TimelineRequest.RegisterScore) request),
             TimelineType.OWN_GOAL,
-            (game, request) -> toOwnGoalTimeline(game, (TimelineRequest.RegisterOwnGoal) request),
+            (game, request) -> toOwnGoalTimeline(game, (TimelineRequest.RegisterScore) request),
             TimelineType.SOCCER_REPLACEMENT,
             (game, request) -> toReplacementTimeline(game, (TimelineRequest.RegisterReplacement) request),
             TimelineType.BASKETBALL_REPLACEMENT,
@@ -58,14 +58,14 @@ public class TimelineMapper {
     }
 
     private OwnGoalTimeline toOwnGoalTimeline(Game game,
-                                              TimelineRequest.RegisterOwnGoal ownGoalRequest) {
+                                              TimelineRequest.RegisterScore ownGoalRequest) {
         GameTeam requestedTeam = entityUtils.getEntity(ownGoalRequest.getGameTeamId(), GameTeam.class);
 
         return OwnGoalTimeline.of(
                 game,
                 ownGoalRequest.resolveQuarter(),
                 ownGoalRequest.getRecordedAt(),
-                getPlayer(ownGoalRequest.getScorerLineupPlayerId()),
+                getPlayer(ownGoalRequest.getScoreLineupPlayerId()),
                 requestedTeam,
                 SoccerScore.GOAL.getValue()
         );

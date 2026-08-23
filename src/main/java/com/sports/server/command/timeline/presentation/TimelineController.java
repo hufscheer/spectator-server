@@ -20,13 +20,6 @@ public class TimelineController {
         timelineService.register(member, gameId, request);
     }
 
-    @PostMapping("/own-goal")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createOwnGoalTimeline(@PathVariable Long gameId,
-                                      @RequestBody TimelineRequest.RegisterOwnGoal request, Member member) {
-        timelineService.register(member, gameId, request);
-    }
-
     @PostMapping("/replacement")
     @ResponseStatus(HttpStatus.CREATED)
     public void createReplacementTimeline(@PathVariable Long gameId,
