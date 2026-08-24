@@ -25,6 +25,7 @@ public record RecentLeagueGamesResponse(
             QuarterResponse gameQuarter,
             String gameName,
             int round,
+            boolean thirdPlaceMatch,
             String videoId,
             String gameState,
             List<TeamResponse> gameTeams,
@@ -37,6 +38,7 @@ public record RecentLeagueGamesResponse(
                     QuarterResponse.from(game.getQuarter()),
                     game.getName(),
                     game.getRound().getNumber(),
+                    game.isThirdPlaceMatch(),
                     game.getVideoId(),
                     game.getState().name(),
                     gameTeams.stream()
