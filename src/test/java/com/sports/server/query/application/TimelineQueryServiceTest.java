@@ -8,6 +8,7 @@ import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.timeline.application.TimelineService;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator.Reason;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.query.dto.response.RecordResponse;
@@ -65,13 +66,19 @@ class TimelineQueryServiceTest extends ServiceTest {
                 () -> assertThat(quarterStart.deletable()).isFalse(),
                 () -> assertThat(quarterStart.undeletableReason())
                         .isEqualTo(TimelineErrorMessage.PROGRESS_TIMELINE_NOT_LAST),
+                () -> assertThat(quarterStart.undeletableReasonCode())
+                        .isEqualTo(Reason.PROGRESS_TIMELINE_NOT_LAST.name()),
                 () -> assertThat(firstGoal.deletable()).isTrue(),
                 () -> assertThat(firstGoal.undeletableReason()).isNull(),
+                () -> assertThat(firstGoal.undeletableReasonCode()).isNull(),
                 () -> assertThat(replacement.deletable()).isFalse(),
                 () -> assertThat(replacement.undeletableReason())
                         .isEqualTo(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS),
+                () -> assertThat(replacement.undeletableReasonCode())
+                        .isEqualTo(Reason.REPLACEMENT_PLAYER_HAS_LATER_RECORDS.name()),
                 () -> assertThat(lastGoal.deletable()).isTrue(),
-                () -> assertThat(lastGoal.undeletableReason()).isNull()
+                () -> assertThat(lastGoal.undeletableReason()).isNull(),
+                () -> assertThat(lastGoal.undeletableReasonCode()).isNull()
         );
     }
 
@@ -90,10 +97,13 @@ class TimelineQueryServiceTest extends ServiceTest {
                 () -> assertThat(middles).isNotEmpty(),
                 () -> assertThat(last.deletable()).isTrue(),
                 () -> assertThat(last.undeletableReason()).isNull(),
+                () -> assertThat(last.undeletableReasonCode()).isNull(),
                 () -> assertThat(middles).allSatisfy(record -> {
                     assertThat(record.deletable()).isFalse();
                     assertThat(record.undeletableReason())
                             .isEqualTo(TimelineErrorMessage.MIDDLE_DELETE_ONLY_WHILE_PLAYING);
+                    assertThat(record.undeletableReasonCode())
+                            .isEqualTo(Reason.MIDDLE_DELETE_ONLY_WHILE_PLAYING.name());
                 })
         );
     }

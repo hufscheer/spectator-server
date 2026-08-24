@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.query.dto.response.*;
@@ -72,6 +73,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new PkRecordResponse(1L, true),
                                                 new WarningCardRecordResponse(WarningCardType.YELLOW),
                                                 true,
+                                                null,
                                                 null
                                         ),
                                         new RecordResponse(
@@ -98,7 +100,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new PkRecordResponse(4L, false),
                                                 new WarningCardRecordResponse(WarningCardType.RED),
                                                 false,
-                                                TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS
+                                                TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS,
+                                                TimelineDeletabilityEvaluator.Reason.REPLACEMENT_PLAYER_HAS_LATER_RECORDS.name()
                                         ),
                                         new RecordResponse(
                                                 null, 1L, BASKETBALL_REPLACEMENT_TYPE,
@@ -124,6 +127,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 new PkRecordResponse(4L, false),
                                                 new WarningCardRecordResponse(WarningCardType.RED),
                                                 true,
+                                                null,
                                                 null
                                         )
                                 ))
@@ -207,9 +211,20 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 JsonFieldType.STRING)
                                         .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)"),
                                 fieldWithPath("timelines[].records[].deletable").type(JsonFieldType.BOOLEAN)
-                                        .description("현재 시점 기준 이 기록의 삭제 가능 여부"),
+                                        .description("현재 시점 기준 이 기록의 삭제 가능 여부. "
+                                                + "삭제 아이콘 노출 여부는 기록 타입이 아니라 이 값으로 판단한다 — "
+                                                + "쿼터 시작·종료, 경기 종료 기록도 마지막 기록이면 true 이며, "
+                                                + "이것이 오입력한 경기 종료를 되돌리는 유일한 수단이다"),
                                 fieldWithPath("timelines[].records[].undeletableReason").type(JsonFieldType.VARIES)
                                         .description("삭제 불가 사유 (삭제 가능하면 null, DELETE 실패 message와 동일 문구)")
+                                        .optional(),
+                                fieldWithPath("timelines[].records[].undeletableReasonCode").type(JsonFieldType.VARIES)
+                                        .description("삭제 불가 사유 코드 (삭제 가능하면 null). 문구 대신 이 값으로 분기한다. "
+                                                + "가능한 값 — "
+                                                + "REPLACEMENT_PLAYER_HAS_LATER_RECORDS: 교체 투입 선수의 이후 기록 존재 / "
+                                                + "PROGRESS_TIMELINE_NOT_LAST: 쿼터 시작·종료 기록의 중간 삭제 / "
+                                                + "MIDDLE_DELETE_ONLY_WHILE_PLAYING: 종료된 경기의 중간 삭제 / "
+                                                + "INCONSISTENT_PROGRESS_STATE: 경기 상태와 기록 불일치")
                                         .optional()
                         )
                 ));

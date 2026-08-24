@@ -1,6 +1,8 @@
 package com.sports.server.command.timeline.domain;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
@@ -82,6 +84,8 @@ public abstract class ReplacementTimeline extends Timeline {
 
     @Override
     public List<LineupPlayer> getRelatedLineupPlayers() {
-        return List.of(originLineupPlayer, replacedLineupPlayer);
+        return Stream.of(originLineupPlayer, replacedLineupPlayer)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

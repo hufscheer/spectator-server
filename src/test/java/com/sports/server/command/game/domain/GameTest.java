@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
@@ -557,5 +558,35 @@ class GameTest {
         assertThatThrownBy(() -> game.changePlayerToCaptain(lineupPlayer))
                 .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
                 .isInstanceOf(CustomException.class);
+    }
+
+    @Nested
+    @DisplayName("3·4위전 판정은")
+    class ThirdPlaceMatch {
+
+        @Test
+        void 라운드가_3_4위전이면_참이다() {
+            Game thirdPlace = entityBuilder(Game.class)
+                    .set("round", Round.THIRD_PLACE_MATCH)
+                    .set("gameTeams", new ArrayList<>())
+                    .sample();
+
+            assertThat(thirdPlace.isThirdPlaceMatch()).isTrue();
+        }
+
+        @Test
+        void 결승은_참가_팀_수가_같아도_거짓이다() {
+            // 두 라운드 모두 number 가 2라 숫자만으로는 구분되지 않는다
+            Game aFinal = entityBuilder(Game.class)
+                    .set("round", Round.FINAL)
+                    .set("gameTeams", new ArrayList<>())
+                    .sample();
+
+            assertAll(
+                    () -> assertThat(aFinal.isThirdPlaceMatch()).isFalse(),
+                    () -> assertThat(Round.FINAL.getNumber())
+                            .isEqualTo(Round.THIRD_PLACE_MATCH.getNumber())
+            );
+        }
     }
 }
