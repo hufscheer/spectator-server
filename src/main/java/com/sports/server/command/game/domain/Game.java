@@ -353,6 +353,10 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
+    public SportType getSportType() {
+        return league.getSportType();
+    }
+
     @Override
     public boolean isManagedBy(Member administrator) {
         return administrator.getId() == 1 || this.administrator.equals(administrator);

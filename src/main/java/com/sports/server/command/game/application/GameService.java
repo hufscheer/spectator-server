@@ -176,7 +176,7 @@ public class GameService {
 
             Position position = lineupPlayerRequest.position();
             if (position != null) {
-                position.validateFor(gameTeam.getGame().getLeague().getSportType());
+                position.validateFor(gameTeam.getSportType());
             }
 
             LineupPlayer lineupPlayer = LineupPlayer.of(

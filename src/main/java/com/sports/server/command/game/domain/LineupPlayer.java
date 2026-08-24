@@ -108,6 +108,10 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
         return Objects.equals(this.gameTeam, team);
     }
 
+    public boolean isInGame(Game game) {
+        return Objects.equals(this.gameTeam.getGame().getId(), game.getId());
+    }
+
     public void activatePlayerInGame() {
         this.isPlaying = true;
     }

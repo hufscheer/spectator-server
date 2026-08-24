@@ -186,7 +186,7 @@ public class TeamService {
         players.forEach(player -> PermissionValidator.checkPermission(player, member));
     }
 
-    private static Map<Long, TeamRequest.TeamPlayerRegister> buildRequestMap(
+    private Map<Long, TeamRequest.TeamPlayerRegister> buildRequestMap(
             List<TeamRequest.TeamPlayerRegister> request) {
         return request.stream()
                 .collect(Collectors.toMap(
