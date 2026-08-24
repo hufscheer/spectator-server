@@ -98,13 +98,12 @@ public class TeamService {
 
         List<Player> players = fetchAndValidatePlayers(request);
         validatePlayersOrganization(players, member);
-        validatePositions(team, request);
         Map<Long, TeamRequest.TeamPlayerRegister> requests = buildRequestMap(request);
 
         List<TeamPlayer> newTeamPlayers = players.stream()
                 .map(player -> {
                     TeamRequest.TeamPlayerRegister playerRequest = requests.get(player.getId());
-                    return team.addPlayer(player, playerRequest.jerseyNumber(), playerRequest.position());
+                    return team.addPlayer(player, playerRequest.jerseyNumber());
                 })
                 .toList();
 
@@ -130,7 +129,6 @@ public class TeamService {
     private void upsertPlayersToTeam(Member member, Team team, List<TeamRequest.TeamPlayerRegister> request) {
         List<Player> players = fetchAndValidatePlayers(request);
         validatePlayersOrganization(players, member);
-        validatePositions(team, request);
         Map<Long, TeamRequest.TeamPlayerRegister> requests = buildRequestMap(request);
         Map<Long, TeamPlayer> existingTeamPlayersMap = buildExistingTeamPlayerMap(team.getId());
 
@@ -163,7 +161,6 @@ public class TeamService {
                     TeamRequest.TeamPlayerRegister playerRequest = requests.get(player.getId());
                     TeamPlayer teamPlayer = existingTeamPlayersMap.get(player.getId());
                     teamPlayer.updateJerseyNumber(playerRequest.jerseyNumber());
-                    teamPlayer.updatePosition(playerRequest.position());
                 });
     }
 
@@ -174,7 +171,7 @@ public class TeamService {
                 .filter(player -> !existingTeamPlayersMap.containsKey(player.getId()))
                 .map(player -> {
                     TeamRequest.TeamPlayerRegister playerRequest = requests.get(player.getId());
-                    return TeamPlayer.of(team, player, playerRequest.jerseyNumber(), playerRequest.position());
+                    return TeamPlayer.of(team, player, playerRequest.jerseyNumber());
                 })
                 .toList();
     }
@@ -196,16 +193,6 @@ public class TeamService {
                         TeamRequest.TeamPlayerRegister::playerId,
                         Function.identity()
                 ));
-    }
-
-    private void validatePositions(Team team, List<TeamRequest.TeamPlayerRegister> request) {
-        for (TeamRequest.TeamPlayerRegister playerRequest : request) {
-            Position position = playerRequest.position();
-            if (position != null && !position.isFor(team.getSportType())) {
-                throw new BadRequestException(String.format(
-                        TeamErrorMessages.POSITION_NOT_FOR_SPORT_TYPE_EXCEPTION, position.name()));
-            }
-        }
     }
 
     private String resolveLogoImageUrl(String requestLogoImageUrl, Team team) {

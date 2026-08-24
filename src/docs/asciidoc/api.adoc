@@ -140,6 +140,13 @@ operation::game-controller-test/라인업_선수의_상태를_선발로_변경�
 
 operation::game-controller-test/라인업_선수의_상태를_후보로_변경한다[snippets='http-request,path-parameters,request-cookies,http-response']
 
+=== 라인업 선수 포지션 변경
+
+포지션은 그 경기의 라인업 정보라 다른 경기의 포지션에는 영향을 주지 않는다. 같은 선수가 경기마다 다른 포지션으로 출전할 수 있다.
+`position` 에 `null` 을 보내면 해제된다.
+
+operation::game-controller-test/라인업_선수의_포지션을_변경한다[snippets='http-request,path-parameters,request-fields,request-cookies,http-response']
+
 === 라인업 선수 주장으로 등록
 
 operation::game-controller-test/라인업_선수를_주장으로_등록한다[snippets='http-request,path-parameters,request-cookies,http-response']

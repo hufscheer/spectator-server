@@ -1,7 +1,6 @@
 package com.sports.server.command.team.dto;
 
 import com.sports.server.command.league.domain.SportType;
-import com.sports.server.command.team.domain.Position;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.Unit;
 
@@ -37,8 +36,7 @@ public class TeamRequest {
 
     public record TeamPlayerRegister(
             Long playerId,
-            Integer jerseyNumber,
-            Position position
+            Integer jerseyNumber
     ){}
 
 }

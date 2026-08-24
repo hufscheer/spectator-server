@@ -63,14 +63,14 @@ public class GameServiceTest extends ServiceTest {
         this.nameOfGame = "경기 이름";
 
         List<GameRequest.LineupPlayerRequest> team1LineupPlayers = List.of(
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false)
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true, null),
+                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false, null)
         );
         team1 = new GameRequest.TeamLineupRequest(1L, team1LineupPlayers);
 
         List<GameRequest.LineupPlayerRequest> team2Players = List.of(
-                new GameRequest.LineupPlayerRequest(6L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(7L, LineupPlayerState.CANDIDATE, false)
+                new GameRequest.LineupPlayerRequest(6L, LineupPlayerState.STARTER, true, null),
+                new GameRequest.LineupPlayerRequest(7L, LineupPlayerState.CANDIDATE, false, null)
         );
         team2 = new GameRequest.TeamLineupRequest(2L, team2Players);
 
@@ -194,8 +194,8 @@ public class GameServiceTest extends ServiceTest {
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
             List<GameRequest.LineupPlayerRequest> twoCaptainsLineup = List.of(
-                    new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
-                    new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, true)
+                    new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true, null),
+                    new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, true, null)
             );
             GameRequest.TeamLineupRequest invalidTeam1 = new GameRequest.TeamLineupRequest(1L, twoCaptainsLineup);
             GameRequest.Register invalidRequest = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED",

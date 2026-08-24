@@ -1,4 +1,4 @@
-package com.sports.server.command.team.domain;
+package com.sports.server.command.game.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

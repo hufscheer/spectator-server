@@ -4,6 +4,7 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerRepository;
+import com.sports.server.command.game.domain.Position;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
@@ -49,6 +50,22 @@ public class LineupPlayerService {
         game.revokeCaptainFromPlayer(lineupPlayer);
     }
 
+    /**
+     * 라인업 선수의 포지션을 변경한다. 포지션은 그 경기의 라인업 정보라 다른 경기에는 영향이 없다.
+     * null 을 보내면 해제된다.
+     */
+    public void changePlayerPosition(final Long gameId, final Long lineupPlayerId, final Position position) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
+        if (!lineupPlayer.getGameTeam().getGame().getId().equals(game.getId())) {
+            throw new BadRequestException(GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);
+        }
+        if (position != null) {
+            position.validateFor(game.getLeague().getSportType());
+        }
+        lineupPlayer.updatePosition(position);
+    }
+
     public Long addPlayerToLineup(final Long gameTeamId, final GameRequest.LineupPlayerRequest request) {
         GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
         TeamPlayer teamPlayer = teamPlayerRepository.findById(request.teamPlayerId())
@@ -56,12 +73,17 @@ public class LineupPlayerService {
 
         validateLineupAddition(gameTeam, teamPlayer, request.isCaptain());
 
+        Position position = request.position();
+        if (position != null) {
+            position.validateFor(gameTeam.getGame().getLeague().getSportType());
+        }
+
         LineupPlayer lineupPlayer = LineupPlayer.of(
                 gameTeam,
                 teamPlayer.getPlayer(),
                 request.state(),
                 teamPlayer.getJerseyNumber(),
-                teamPlayer.getPosition(),
+                position,
                 request.isCaptain()
         );
         lineupPlayerRepository.save(lineupPlayer);

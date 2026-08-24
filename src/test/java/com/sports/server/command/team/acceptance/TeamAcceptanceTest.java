@@ -42,8 +42,8 @@ public class TeamAcceptanceTest extends AcceptanceTest {
     void 팀을_생성한다() {
         // given
         List<TeamRequest.TeamPlayerRegister> playersToRegister = List.of(
-                new TeamRequest.TeamPlayerRegister(1L, 10, null),
-                new TeamRequest.TeamPlayerRegister(2L, 7, null)
+                new TeamRequest.TeamPlayerRegister(1L, 10),
+                new TeamRequest.TeamPlayerRegister(2L, 7)
         );
 
         TeamRequest.Register request = new TeamRequest.Register(
@@ -113,8 +113,8 @@ public class TeamAcceptanceTest extends AcceptanceTest {
                 null,
                 null,
                 List.of(
-                        new TeamRequest.TeamPlayerRegister(3L, 99, null),
-                        new TeamRequest.TeamPlayerRegister(1L, 10, null)
+                        new TeamRequest.TeamPlayerRegister(3L, 99),
+                        new TeamRequest.TeamPlayerRegister(1L, 10)
                 )
         );
         configureMockJwtForEmail("john@example.com");

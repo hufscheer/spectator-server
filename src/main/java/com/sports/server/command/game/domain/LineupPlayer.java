@@ -4,7 +4,6 @@ import static com.sports.server.command.game.domain.LineupPlayerState.CANDIDATE;
 import static com.sports.server.command.game.domain.LineupPlayerState.STARTER;
 
 import com.sports.server.command.player.domain.Player;
-import com.sports.server.command.team.domain.Position;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
@@ -64,6 +63,10 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber,
                                   Position position, boolean isCaptain) {
         return new LineupPlayer(gameTeam, player, state, jerseyNumber, position, isCaptain);
+    }
+
+    public void updatePosition(Position position) {
+        this.position = position;
     }
 
     public boolean isReplaced() {

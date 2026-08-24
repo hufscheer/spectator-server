@@ -19,7 +19,7 @@
 | [pending_cheer_talks](pending_cheer_talks.md) | 4 |  | BASE TABLE |
 | [players](players.md) | 4 |  | BASE TABLE |
 | [reports](reports.md) | 4 |  | BASE TABLE |
-| [team_players](team_players.md) | 5 |  | BASE TABLE |
+| [team_players](team_players.md) | 4 |  | BASE TABLE |
 | [teams](teams.md) | 7 |  | BASE TABLE |
 | [timelines](timelines.md) | 20 |  | BASE TABLE |
 | [units](units.md) | 3 |  | BASE TABLE |

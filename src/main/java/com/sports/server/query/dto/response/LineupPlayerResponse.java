@@ -3,7 +3,7 @@ package com.sports.server.query.dto.response;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerState;
-import com.sports.server.command.team.domain.Position;
+import com.sports.server.command.game.domain.Position;
 
 import java.util.Comparator;
 import java.util.List;
@@ -51,7 +51,8 @@ public class LineupPlayerResponse {
 							.toList(),
 					lineupPlayers.stream()
 							.filter(lineupPlayer -> !lineupPlayer.isPlaying())
-							.map(lineupPlayer -> new PlayerResponse(lineupPlayer, displayLevel))
+							// 후보는 화면에 포지션을 노출하지 않는다 (등번호·이름·교체 표시만)
+							.map(lineupPlayer -> new PlayerResponse(lineupPlayer, PositionDisplayLevel.HIDDEN))
 							.toList()
 			);
 		}

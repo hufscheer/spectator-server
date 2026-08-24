@@ -29,19 +29,14 @@ public class TeamPlayer extends BaseEntity<TeamPlayer> {
     @Column(name = "jersey_number")
     private Integer jerseyNumber;
 
-    @Column(name = "position")
-    @Enumerated(EnumType.STRING)
-    private Position position;
-
-    private TeamPlayer(Team team, Player player, Integer jerseyNumber, Position position) {
+    private TeamPlayer(Team team, Player player, Integer jerseyNumber) {
         this.team = team;
         this.player = player;
         this.jerseyNumber = jerseyNumber;
-        this.position = position;
     }
 
-    public static TeamPlayer of(Team team, Player player, Integer jerseyNumber, Position position) {
-        TeamPlayer teamPlayer = new TeamPlayer(team, player, jerseyNumber, position);
+    public static TeamPlayer of(Team team, Player player, Integer jerseyNumber) {
+        TeamPlayer teamPlayer = new TeamPlayer(team, player, jerseyNumber);
         team.addTeamPlayer(teamPlayer);
         player.addTeamPlayer(teamPlayer);
         return teamPlayer;
@@ -49,10 +44,6 @@ public class TeamPlayer extends BaseEntity<TeamPlayer> {
 
     public void updateJerseyNumber(Integer jerseyNumber) {
         this.jerseyNumber = jerseyNumber;
-    }
-
-    public void updatePosition(Position position) {
-        this.position = position;
     }
 
 }

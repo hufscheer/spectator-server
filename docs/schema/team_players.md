@@ -11,7 +11,6 @@ CREATE TABLE `team_players` (
   `team_id` bigint NOT NULL,
   `player_id` bigint NOT NULL,
   `jersey_number` int DEFAULT NULL,
-  `position` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_team_player` (`team_id`,`player_id`),
   KEY `FK_TEAM_PLAYERS_ON_PLAYERS` (`player_id`),
@@ -30,7 +29,6 @@ CREATE TABLE `team_players` (
 | team_id | bigint |  | false |  |  | [teams](teams.md) |  |
 | player_id | bigint |  | false |  |  | [players](players.md) |  |
 | jersey_number | int |  | true |  |  |  |  |
-| position | varchar(255) |  | true |  |  |  |  |
 
 ## Constraints
 

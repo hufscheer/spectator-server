@@ -3,6 +3,7 @@ package com.sports.server.command.game.dto;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.LineupPlayerState;
+import com.sports.server.command.game.domain.Position;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.member.domain.Member;
@@ -63,7 +64,8 @@ public class GameRequest {
     public record LineupPlayerRequest(
             Long teamPlayerId,
             LineupPlayerState state,
-            Boolean isCaptain
+            Boolean isCaptain,
+            Position position
     ) {
         public LineupPlayerRequest {
             state = Optional.ofNullable(state).orElse(LineupPlayerState.STARTER);
