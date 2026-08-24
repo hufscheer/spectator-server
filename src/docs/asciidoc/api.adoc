@@ -312,7 +312,14 @@ operation::timeline-query-controller-test/가능한_경기_진행_액션을_조�
 * 종료된 경기의 중간 기록 — 마지막 기록만 삭제 가능
 
 "뒤에 남아 있는지"는 화면 정렬(경기 시각)이 아니라 실제 입력 순서를 기준으로 판단한다.
-각 기록의 삭제 가능 여부는 타임라인 조회 응답의 `deletable`·`undeletableReason` 으로도 미리 확인할 수 있다.
+각 기록의 삭제 가능 여부는 타임라인 조회 응답의 `deletable`·`undeletableReason`·`undeletableReasonCode` 로도 미리 확인할 수 있다.
+
+삭제 아이콘 노출 여부는 기록 타입이 아니라 `deletable` 값으로 판단한다.
+쿼터 시작·종료와 경기 종료 기록도 마지막 기록이면 `deletable` 이 `true` 이고,
+오입력한 경기 종료를 되돌릴 수 있는 유일한 수단이므로 타입만 보고 아이콘을 숨기면 안 된다.
+
+문구에 따라 분기해야 할 때는 `undeletableReason`(사용자 노출용 문구) 대신
+`undeletableReasonCode` 를 쓴다. 문구는 바뀔 수 있지만 코드는 유지된다.
 
 operation::timeline-controller-test/타임라인을_삭제한다[snippets='http-request,request-cookies,path-parameters,http-response']
 
