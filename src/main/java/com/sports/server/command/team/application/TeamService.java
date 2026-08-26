@@ -10,6 +10,7 @@ import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.application.S3Service;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -97,10 +98,13 @@ public class TeamService {
 
         List<Player> players = fetchAndValidatePlayers(request);
         validatePlayersOrganization(players, member);
-        Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
+        Map<Long, TeamRequest.TeamPlayerRegister> requests = buildRequestMap(request);
 
         List<TeamPlayer> newTeamPlayers = players.stream()
-                .map(player -> team.addPlayer(player, jerseyNumbers.get(player.getId())))
+                .map(player -> {
+                    TeamRequest.TeamPlayerRegister playerRequest = requests.get(player.getId());
+                    return team.addPlayer(player, playerRequest.jerseyNumber());
+                })
                 .toList();
 
         teamPlayerRepository.saveAll(newTeamPlayers);
@@ -125,12 +129,12 @@ public class TeamService {
     private void upsertPlayersToTeam(Member member, Team team, List<TeamRequest.TeamPlayerRegister> request) {
         List<Player> players = fetchAndValidatePlayers(request);
         validatePlayersOrganization(players, member);
-        Map<Long, Integer> jerseyNumbers = buildJerseyNumberMap(request);
+        Map<Long, TeamRequest.TeamPlayerRegister> requests = buildRequestMap(request);
         Map<Long, TeamPlayer> existingTeamPlayersMap = buildExistingTeamPlayerMap(team.getId());
 
-        updateExistingPlayers(players, jerseyNumbers, existingTeamPlayersMap);
+        updateExistingPlayers(players, requests, existingTeamPlayersMap);
 
-        List<TeamPlayer> newTeamPlayers = createNewTeamPlayers(team, players, jerseyNumbers, existingTeamPlayersMap);
+        List<TeamPlayer> newTeamPlayers = createNewTeamPlayers(team, players, requests, existingTeamPlayersMap);
         if (!newTeamPlayers.isEmpty()) {
             teamPlayerRepository.saveAll(newTeamPlayers);
         }
@@ -149,20 +153,26 @@ public class TeamService {
                 .collect(Collectors.toMap(tp -> tp.getPlayer().getId(), Function.identity()));
     }
 
-    private void updateExistingPlayers(List<Player> players, Map<Long, Integer> jerseyNumbers,
+    private void updateExistingPlayers(List<Player> players, Map<Long, TeamRequest.TeamPlayerRegister> requests,
                                         Map<Long, TeamPlayer> existingTeamPlayersMap) {
         players.stream()
                 .filter(player -> existingTeamPlayersMap.containsKey(player.getId()))
-                .forEach(player -> existingTeamPlayersMap.get(player.getId())
-                        .updateJerseyNumber(jerseyNumbers.get(player.getId())));
+                .forEach(player -> {
+                    TeamRequest.TeamPlayerRegister playerRequest = requests.get(player.getId());
+                    TeamPlayer teamPlayer = existingTeamPlayersMap.get(player.getId());
+                    teamPlayer.updateJerseyNumber(playerRequest.jerseyNumber());
+                });
     }
 
     private List<TeamPlayer> createNewTeamPlayers(Team team, List<Player> players,
-                                                   Map<Long, Integer> jerseyNumbers,
+                                                   Map<Long, TeamRequest.TeamPlayerRegister> requests,
                                                    Map<Long, TeamPlayer> existingTeamPlayersMap) {
         return players.stream()
                 .filter(player -> !existingTeamPlayersMap.containsKey(player.getId()))
-                .map(player -> TeamPlayer.of(team, player, jerseyNumbers.get(player.getId())))
+                .map(player -> {
+                    TeamRequest.TeamPlayerRegister playerRequest = requests.get(player.getId());
+                    return TeamPlayer.of(team, player, playerRequest.jerseyNumber());
+                })
                 .toList();
     }
 
@@ -176,11 +186,12 @@ public class TeamService {
         players.forEach(player -> PermissionValidator.checkPermission(player, member));
     }
 
-    private static Map<Long, Integer> buildJerseyNumberMap(List<TeamRequest.TeamPlayerRegister> request) {
+    private Map<Long, TeamRequest.TeamPlayerRegister> buildRequestMap(
+            List<TeamRequest.TeamPlayerRegister> request) {
         return request.stream()
                 .collect(Collectors.toMap(
                         TeamRequest.TeamPlayerRegister::playerId,
-                        TeamRequest.TeamPlayerRegister::jerseyNumber
+                        Function.identity()
                 ));
     }
 

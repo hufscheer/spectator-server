@@ -13,7 +13,7 @@
 | [league_teams](league_teams.md) | 6 |  | BASE TABLE |
 | [league_top_scorers](league_top_scorers.md) | 5 |  | BASE TABLE |
 | [leagues](leagues.md) | 11 |  | BASE TABLE |
-| [lineup_players](lineup_players.md) | 8 |  | BASE TABLE |
+| [lineup_players](lineup_players.md) | 9 |  | BASE TABLE |
 | [members](members.md) | 6 |  | BASE TABLE |
 | [organizations](organizations.md) | 4 |  | BASE TABLE |
 | [pending_cheer_talks](pending_cheer_talks.md) | 4 |  | BASE TABLE |

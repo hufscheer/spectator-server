@@ -353,6 +353,10 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
+    public SportType getSportType() {
+        return league.getSportType();
+    }
+
     /**
      * 3·4위전 경기인지. {@code round} 를 숫자로만 내보내면 결승과 구분되지 않는다 —
      * 두 라운드 모두 참가 팀 수가 2라 number 가 같기 때문이다.

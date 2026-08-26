@@ -174,11 +174,17 @@ public class GameService {
                 throw new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION);
             }
 
+            Position position = lineupPlayerRequest.position();
+            if (position != null) {
+                position.validateFor(gameTeam.getSportType());
+            }
+
             LineupPlayer lineupPlayer = LineupPlayer.of(
                     gameTeam,
                     teamPlayer.getPlayer(),
                     lineupPlayerRequest.state(),
                     teamPlayer.getJerseyNumber(),
+                    position,
                     lineupPlayerRequest.isCaptain()
             );
             lineupPlayerRepository.save(lineupPlayer);

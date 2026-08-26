@@ -318,7 +318,8 @@ public class NlService {
                 continue;
             }
 
-            context.teamPlayerRegisters.add(new TeamRequest.TeamPlayerRegister(playerId, playerData.jerseyNumber()));
+            context.teamPlayerRegisters.add(
+                    new TeamRequest.TeamPlayerRegister(playerId, playerData.jerseyNumber()));
             context.assigned++;
         }
     }
