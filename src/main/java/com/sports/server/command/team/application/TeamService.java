@@ -1,5 +1,7 @@
 package com.sports.server.command.team.application;
 
+import com.sports.server.command.game.domain.GameTeamRepository;
+import com.sports.server.command.league.domain.LeagueTeamRepository;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.domain.Player;
 import com.sports.server.command.player.domain.PlayerRepository;
@@ -36,6 +38,8 @@ public class TeamService {
     private String replacePrefix;
 
     private final TeamRepository teamRepository;
+    private final GameTeamRepository gameTeamRepository;
+    private final LeagueTeamRepository leagueTeamRepository;
     private final TeamPlayerRepository teamPlayerRepository;
     private final PlayerRepository playerRepository;
     private final UnitRepository unitRepository;
@@ -89,7 +93,25 @@ public class TeamService {
     public void delete(final Member member, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
         PermissionValidator.checkPermission(team, member);
+        validateNotReferenced(team);
         teamRepository.delete(team);
+    }
+
+    /**
+     * 팀은 소프트 삭제(@SQLDelete)라 삭제해도 teams 행이 남는다. 그런데 조회 시에는
+     * @Where(is_deleted = 0) 때문에 그 행을 찾지 못한다.
+     *
+     * <p>그래서 game_teams·league_teams 가 계속 이 팀을 가리키고 있으면, 나중에 그 연관을
+     * 타고 팀을 로드하는 순간 EntityNotFoundException 이 터져 조회 API 가 통째로 500 이 된다.
+     * 매니저가 대회 화면을 아예 열지 못하게 되므로 남은 참조가 있으면 삭제를 막는다.
+     */
+    private void validateNotReferenced(final Team team) {
+        if (gameTeamRepository.existsByTeamId(team.getId())) {
+            throw new CustomException(HttpStatus.CONFLICT, TeamErrorMessages.TEAM_IN_GAME_DELETE_EXCEPTION);
+        }
+        if (leagueTeamRepository.existsByTeamId(team.getId())) {
+            throw new CustomException(HttpStatus.CONFLICT, TeamErrorMessages.TEAM_IN_LEAGUE_DELETE_EXCEPTION);
+        }
     }
 
     public void addPlayersToTeam(final Member member, final Long teamId, final List<TeamRequest.TeamPlayerRegister> request) {

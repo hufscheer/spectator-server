@@ -42,4 +42,7 @@ public interface GameTeamRepository extends Repository<GameTeam, Long> {
             "JOIN FETCH gt.game " +
             "WHERE gt.id = :id")
     Optional<GameTeam> findByIdWithGame(Long id);
+
+    @Query("SELECT COUNT(gt) > 0 FROM GameTeam gt WHERE gt.team.id = :teamId")
+    boolean existsByTeamId(@Param("teamId") Long teamId);
 }

@@ -26,6 +26,9 @@ public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
 
     List<LeagueTeam> findByLeagueId(Long id);
 
+    @Query("SELECT COUNT(lt) > 0 FROM LeagueTeam lt WHERE lt.team.id = :teamId")
+    boolean existsByTeamId(@Param("teamId") Long teamId);
+
     @Modifying
     @Query("UPDATE LeagueTeam lt SET lt.totalCheerCount = " +
            "COALESCE((SELECT CAST(SUM(gt.cheerCount) AS int) " +
