@@ -29,26 +29,31 @@ class PositionTest {
         assertThat(position.category()).isEqualTo(expected);
     }
 
-    @ParameterizedTest(name = "{0} 은 대분류가 자기 자신")
-    @EnumSource(value = Position.class, names = {"PG", "SG", "SF", "PF", "C"})
-    void 농구는_대분류가_없어_자기_자신으로_접힌다(Position position) {
-        assertThat(position.category()).isEqualTo(position);
+    @ParameterizedTest(name = "{0} 의 대분류는 {1}")
+    @CsvSource({
+            "PG,G", "SG,G", "G,G",
+            "SF,F", "PF,F", "F,F",
+            "C,C"
+    })
+    void 농구_세부와_대분류_전용_값이_같은_대분류로_접힌다(Position position, Position expected) {
+        assertThat(position.category()).isEqualTo(expected);
     }
 
     @ParameterizedTest(name = "{0} 은 대분류까지만 입력된 값")
-    @EnumSource(value = Position.class, names = {"FW", "MF", "DF"})
+    @EnumSource(value = Position.class, names = {"FW", "MF", "DF", "G", "F"})
     void 대분류_전용_값만_대분류_입력으로_판정한다(Position position) {
         assertThat(position.isCategoryOnly()).isTrue();
     }
 
-    @Test
-    void 골키퍼는_세부가_곧_대분류라_대분류_입력으로_보지_않는다() {
-        assertThat(Position.GK.isCategoryOnly()).isFalse();
+    @ParameterizedTest(name = "{0} 은 세부가 곧 대분류라 대분류 입력으로 보지 않는다")
+    @EnumSource(value = Position.class, names = {"GK", "C"})
+    void 세부가_하나뿐인_포지션은_대분류_입력으로_보지_않는다(Position position) {
+        assertThat(position.isCategoryOnly()).isFalse();
     }
 
-    @ParameterizedTest(name = "농구 포지션 {0} 은 대분류 입력이 아니다")
-    @EnumSource(value = Position.class, names = {"PG", "SG", "SF", "PF", "C"})
-    void 농구는_대분류_입력이_존재하지_않는다(Position position) {
+    @ParameterizedTest(name = "농구 세부 포지션 {0} 은 대분류 입력이 아니다")
+    @EnumSource(value = Position.class, names = {"PG", "SG", "SF", "PF"})
+    void 농구_세부_포지션은_대분류_입력이_아니다(Position position) {
         assertThat(position.isCategoryOnly()).isFalse();
     }
 
@@ -58,6 +63,14 @@ class PositionTest {
 
         assertThat(shuffled.stream().sorted(Position.DISPLAY_ORDER).toList())
                 .containsExactly(Position.ST, Position.CM, Position.CB, Position.GK);
+    }
+
+    @Test
+    void 농구_대분류는_G_F_C_순으로_정렬된다() {
+        List<Position> shuffled = List.of(Position.C, Position.F, Position.G);
+
+        assertThat(shuffled.stream().sorted(Position.DISPLAY_ORDER).toList())
+                .containsExactly(Position.G, Position.F, Position.C);
     }
 
     @Test

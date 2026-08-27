@@ -8,9 +8,9 @@ import java.util.Comparator;
 /**
  * 경기 라인업에서의 선수 포지션. 팀이 아니라 그 경기의 정보라 같은 선수가 경기마다 다를 수 있다.
  *
- * <p>{@link #FW}·{@link #MF}·{@link #DF} 는 대분류 전용 값이다. 매니저가 세부를 "선택 안 함" 으로
- * 둔 경우가 세부와 같은 컬럼에 저장되기 때문에 값으로 존재한다. 골키퍼는 대분류와 세부가 같고,
- * 농구에는 대분류 개념이 없다.
+ * <p>{@link #FW}·{@link #MF}·{@link #DF}·{@link #G}·{@link #F} 는 대분류 전용 값이다. 매니저가
+ * 세부를 "선택 안 함" 으로 둔 경우가 세부와 같은 컬럼에 저장되기 때문에 값으로 존재한다.
+ * 골키퍼({@link #GK})와 센터({@link #C})는 대분류와 세부가 같아 대분류 전용 값이 따로 없다.
  */
 public enum Position {
 
@@ -33,12 +33,18 @@ public enum Position {
     SG(SportType.BASKETBALL, 2),
     SF(SportType.BASKETBALL, 3),
     PF(SportType.BASKETBALL, 4),
-    C(SportType.BASKETBALL, 5);
+    C(SportType.BASKETBALL, 5),
+
+    G(SportType.BASKETBALL, 1),
+    F(SportType.BASKETBALL, 3);
 
     /**
-     * 축구 FW → MF → DF → GK, 농구 PG → SG → SF → PF → C 순. 대분류 사이의 순서는 기획이 정했고,
-     * 축구 대분류 안의 세부 순서(좌 → 중앙 → 우)는 기획에 없어 표기 관례를 따랐다.
-     * 대분류 전용 값은 자기 그룹의 첫 세부와 같은 자리인데, 둘이 한 화면에 섞이지 않아 충돌하지 않는다.
+     * 축구 FW(LW → ST → RW) → MF(LM → CM → RM) → DF(LB → CB → RB) → GK,
+     * 농구 G(PG → SG) → F(SF → PF) → C 순. 전부 기획이 정한 순서다.
+     * 같은 대분류 안의 좌 → 중앙 → 우 순서도 2026-08-26 기획 회신으로 확정됐다.
+     *
+     * <p>대분류 전용 값은 자기 그룹의 첫 세부와 같은 자리다. 표시 수준이 팀 단위로 하나로
+     * 정해지므로 대분류와 세부가 한 목록에 섞이지 않아 자리가 겹쳐도 충돌하지 않는다.
      */
     public static final Comparator<Position> DISPLAY_ORDER =
             Comparator.nullsLast(Comparator.comparingInt(position -> position.displayOrder));
@@ -62,18 +68,23 @@ public enum Position {
         }
     }
 
-    /** 대분류 전용 값·골키퍼·농구는 자기 자신으로 접힌다. */
+    /** 대분류 전용 값은 자기 자신으로, 골키퍼·센터도 자기 자신으로 접힌다. */
     public Position category() {
         return switch (this) {
             case LW, ST, RW, FW -> FW;
             case LM, CM, RM, MF -> MF;
             case LB, CB, RB, DF -> DF;
+            case PG, SG, G -> G;
+            case SF, PF, F -> F;
             default -> this;
         };
     }
 
-    /** 세부가 존재하는데 고르지 않은 경우만 해당한다. 골키퍼와 농구는 제외. */
+    /** 세부가 존재하는데 고르지 않은 경우만 해당한다. 세부가 하나뿐인 골키퍼·센터는 제외. */
     public boolean isCategoryOnly() {
-        return this == FW || this == MF || this == DF;
+        return switch (this) {
+            case FW, MF, DF, G, F -> true;
+            default -> false;
+        };
     }
 }

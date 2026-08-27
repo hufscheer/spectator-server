@@ -113,14 +113,29 @@ operation::game-query-controller-test/연도와_월로_게임을_검색한다[sn
 
 === 게임 라인업 조회
 
-선수의 `position` 은 **선발 전원의 포지션이 등록된 경우에만** 내려간다. 한 명이라도 비어 있으면
-후보를 포함한 라인업 전체가 `null` 이며, 이때는 등번호와 이름만 표시하면 된다.
-일부 선수만 포지션이 보이는 불완전한 라인업을 막기 위한 정책이다.
+선수의 `position` 은 **팀의 선발 라인업을 기준으로 표시 수준이 한 번에 정해진다.** 선수마다 상세도가
+달라지는 걸 막기 위한 정책이라, 그 팀의 후보를 포함한 모든 선수에게 같은 수준이 적용된다.
+
+[cols="1,3"]
+|===
+| 선발 라인업 상태 | 내려가는 `position`
+
+| 포지션 미입력 선발이 한 명이라도 있음
+| 전원 `null`. 등번호와 이름만 표시하면 된다
+
+| 전원 입력했지만 대분류만 고른 선발이 있음
+| 전원 대분류로 통일 (`LW` → `FW`, `SG` → `G`)
+
+| 전원이 세부까지 입력함
+| 입력한 세부 그대로
+|===
 
 판정 기준은 출전 여부가 아니라 선발 여부다. 포지션이 없는 후보가 교체 투입돼도 표시가 사라지지 않는다.
 
-`starterPlayers` 는 포지션을 내려보낼 때 축구 FW → MF → DF → GK, 농구 PG → SG → SF → PF → C 순으로
-정렬되고, 그렇지 않으면 등번호 순이다.
+`starterPlayers` 는 포지션을 내려보낼 때 아래 순으로 정렬되고, 그렇지 않으면 등번호 순이다.
+
+- 축구: `FW`(LW → ST → RW) → `MF`(LM → CM → RM) → `DF`(LB → CB → RB) → `GK`
+- 농구: `G`(PG → SG) → `F`(SF → PF) → `C`
 
 operation::game-query-controller-test/라인업을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
@@ -144,6 +159,23 @@ operation::game-controller-test/라인업_선수의_상태를_후보로_변경�
 
 포지션은 그 경기의 라인업 정보라 다른 경기의 포지션에는 영향을 주지 않는다. 같은 선수가 경기마다 다른 포지션으로 출전할 수 있다.
 `position` 에 `null` 을 보내면 해제된다.
+
+세부 포지션을 고르지 않고 대분류만 입력하려면 대분류 값을 그대로 보낸다.
+
+[cols="1,2,2"]
+|===
+| 종목 | 세부 | 대분류만 입력할 때
+
+| 축구
+| `LW` `ST` `RW` `LM` `CM` `RM` `LB` `CB` `RB` `GK`
+| `FW` `MF` `DF` (골키퍼는 `GK` 하나뿐이라 대분류 값이 없다)
+
+| 농구
+| `PG` `SG` `SF` `PF` `C`
+| `G` `F` (센터는 `C` 하나뿐이라 대분류 값이 없다)
+|===
+
+**경기 종목**과 맞지 않는 포지션을 보내면 400 이다. 팀 종목이 아니라 그 경기의 종목이 기준이다.
 
 operation::game-controller-test/라인업_선수의_포지션을_변경한다[snippets='http-request,path-parameters,request-fields,request-cookies,http-response']
 
@@ -390,16 +422,6 @@ operation::player-query-controller-test/선수_전체를_조회한다[snippets='
 operation::player-query-controller-test/선수를_상세_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 == 팀 API
-
-선수의 포지션은 선수 개인이 아니라 **팀에서의 정보**라 팀 선수 등록·수정 요청으로 다룬다.
-같은 선수가 축구팀에서는 `LW`, 농구팀에서는 `PG` 일 수 있다. 선택 입력이라 생략하거나 `null` 로 보내면 해제된다.
-
-- 축구: `GK` `LB` `CB` `RB` `LM` `CM` `RM` `LW` `ST` `RW`
-- 농구: `PG` `SG` `SF` `PF` `C`
-
-팀 종목과 맞지 않는 포지션을 보내면 400 이다. 경기 라인업에는 등번호와 마찬가지로 로스터 값이 자동 복사되므로
-경기마다 다시 입력하지 않는다. 이미 만들어진 라인업은 이후 로스터에서 포지션을 바꿔도 그대로 유지된다.
-
 
 === 팀 생성
 
