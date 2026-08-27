@@ -182,24 +182,60 @@ class LineupPlayerResponseTest {
     }
 
     @Nested
-    @DisplayName("농구는 대분류 개념이 없어")
+    @DisplayName("농구도 축구와 같은 대분류 규칙을 따라")
     class Basketball {
 
         @Test
-        void 선발_전원이_입력되면_항상_세부로_내려준다() {
+        void 선발_전원이_세부까지_입력하면_세부로_내려준다() {
             // given
             List<LineupPlayer> lineupPlayers = List.of(
                     starter("센터", Position.C),
+                    starter("파워포워드", Position.PF),
                     starter("포인트가드", Position.PG)
             );
 
             // when
             LineupPlayerResponse.All response = new LineupPlayerResponse.All(gameTeam, lineupPlayers);
 
-            // then: PG → C 순, 값은 접히지 않는다
+            // then: G → F → C 순, 값은 접히지 않는다
             assertThat(response.starterPlayers())
                     .extracting(LineupPlayerResponse.PlayerResponse::position)
-                    .containsExactly(Position.PG, Position.C);
+                    .containsExactly(Position.PG, Position.PF, Position.C);
+        }
+
+        @Test
+        void 대분류만_입력한_선발이_있으면_전원을_대분류로_낮춘다() {
+            // given: 한 명만 "선택 안 함"으로 G 가 저장됐다
+            List<LineupPlayer> lineupPlayers = List.of(
+                    starter("센터", Position.C),
+                    starter("스몰포워드", Position.SF),
+                    starter("가드", Position.G)
+            );
+
+            // when
+            LineupPlayerResponse.All response = new LineupPlayerResponse.All(gameTeam, lineupPlayers);
+
+            // then: SF 도 F 로 접힌다
+            assertThat(response.starterPlayers())
+                    .extracting(LineupPlayerResponse.PlayerResponse::position)
+                    .containsExactly(Position.G, Position.F, Position.C);
+        }
+
+        @Test
+        void 센터는_세부가_곧_대분류라_전체를_낮추지_않는다() {
+            // given
+            List<LineupPlayer> lineupPlayers = List.of(
+                    starter("센터", Position.C),
+                    starter("슈팅가드", Position.SG)
+            );
+
+            // when
+            LineupPlayerResponse.All response = new LineupPlayerResponse.All(gameTeam, lineupPlayers);
+
+            // then: SG 가 G 로 접히지 않는다
+            assertThat(response.starterPlayers())
+                    .extracting(LineupPlayerResponse.PlayerResponse::position)
+                    .containsExactly(Position.SG, Position.C);
         }
     }
 
