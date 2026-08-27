@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -44,11 +45,13 @@ public class LeagueService {
 
 	public void update(final Member administrator, final LeagueRequest.Update request, final Long leagueId) {
 		League league = findValidatedLeague(leagueId, administrator);
-		if (league.isThirdPlaceMatchEnabled() != request.thirdPlaceMatchEnabled()) {
+		boolean thirdPlaceMatchEnabled = Optional.ofNullable(request.thirdPlaceMatchEnabled())
+			.orElseGet(league::isThirdPlaceMatchEnabled);
+		if (league.isThirdPlaceMatchEnabled() != thirdPlaceMatchEnabled) {
 			bracketService.validateThirdPlaceChangeable(leagueId);
 		}
 		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()),
-			request.thirdPlaceMatchEnabled());
+			thirdPlaceMatchEnabled);
 	}
 
     public void delete(final Member administrator, final Long leagueId) {
