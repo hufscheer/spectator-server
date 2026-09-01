@@ -125,11 +125,12 @@ public class ScoreTimeline extends Timeline {
         game.cancelScore(scorer, score);
     }
 
+    /**
+     * 어시스트 선수는 넣지 않는다. 기획상 어시스트는 교체 삭제 판정에서 "이후 기록에 등장" 으로
+     * 보지 않기 때문이다 — 교체로 들어온 선수가 이후 어시스트만 했다면 그 교체는 삭제할 수 있다.
+     */
     @Override
     public List<LineupPlayer> getRelatedLineupPlayers() {
-        if (assistLineupPlayer == null) {
-            return List.of(scorer);
-        }
-        return List.of(scorer, assistLineupPlayer);
+        return List.of(scorer);
     }
 }
