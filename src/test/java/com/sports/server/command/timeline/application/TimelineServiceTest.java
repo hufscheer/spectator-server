@@ -10,6 +10,7 @@ import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.BasketballQuarter;
+import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
@@ -1143,6 +1144,72 @@ class TimelineServiceTest extends ServiceTest {
             timelineService.register(manager, basketballGameId, new TimelineRequest.RegisterReplacement(
                     basketballTeamId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
                     basketballOffenderId, basketballSubstituteId, 10, true));
+        }
+
+        @Test
+        void 마지막_득점을_삭제하면_해당_팀_점수가_차감된다() {
+            // given
+            registerGoal(starter1Id, null);
+            registerGoal(starter2Id, null);
+            assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore()).isEqualTo(2);
+            Timeline last = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, last.getId());
+
+            // then
+            assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore())
+                    .as("마지막 득점만 차감").isEqualTo(1);
+        }
+
+        @Test
+        void 마지막_교체를_삭제하면_두_선수의_출전_상태가_되돌아간다() {
+            // given
+            registerReplacement(starter1Id, candidate1Id);
+            LineupPlayer originJustAfter = entityUtils.getEntity(starter1Id, LineupPlayer.class);
+            LineupPlayer inJustAfter = entityUtils.getEntity(candidate1Id, LineupPlayer.class);
+            assertAll(
+                    () -> assertThat(originJustAfter.isPlaying()).as("교체 직후 나간 선수").isFalse(),
+                    () -> assertThat(inJustAfter.isPlaying()).as("교체 직후 들어온 선수").isTrue()
+            );
+            Timeline replacement = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, replacement.getId());
+
+            // then
+            LineupPlayer origin = entityUtils.getEntity(starter1Id, LineupPlayer.class);
+            LineupPlayer replaced = entityUtils.getEntity(candidate1Id, LineupPlayer.class);
+            assertAll(
+                    () -> assertThat(origin.isPlaying()).as("나간 선수 출전 복귀").isTrue(),
+                    () -> assertThat(origin.isReplaced()).as("교체 표시 해제").isFalse(),
+                    () -> assertThat(replaced.isPlaying()).as("들어온 선수 후보 복귀").isFalse(),
+                    () -> assertThat(replaced.isReplaced()).isFalse()
+            );
+        }
+
+        @Test
+        void 마지막_쿼터_시작을_삭제하면_경기와_쿼터_상태가_되돌아간다() {
+            // given: game 4 는 경기 전 상태다. 1쿼터를 시작시키면 진행 중으로 바뀐다
+            Long scheduledGameId = 4L;
+            timelineService.register(manager, scheduledGameId, new TimelineRequest.RegisterProgress(
+                    0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
+            Game started = entityUtils.getEntity(scheduledGameId, Game.class);
+            assertAll(
+                    () -> assertThat(started.getState()).as("시작 직후").isEqualTo(GameState.PLAYING),
+                    () -> assertThat(started.getGameQuarter()).isEqualTo(SoccerQuarter.FIRST_HALF.name())
+            );
+            Timeline quarterStart = timelineFixtureRepository.findAllLatest(scheduledGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, scheduledGameId, quarterStart.getId());
+
+            // then
+            Game reverted = entityUtils.getEntity(scheduledGameId, Game.class);
+            assertAll(
+                    () -> assertThat(reverted.getState()).as("경기 상태 복구").isEqualTo(GameState.SCHEDULED),
+                    () -> assertThat(reverted.getGameQuarter()).as("쿼터 복구").isEqualTo(CommonQuarter.PRE_GAME.name())
+            );
         }
 
         private void registerGoal(Long scorerLineupPlayerId, Long assistLineupPlayerId) {
