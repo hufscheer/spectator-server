@@ -881,6 +881,25 @@ class TimelineServiceTest extends ServiceTest {
         }
 
         @Test
+        void 자책골을_중간에_삭제하면_상대_팀_점수가_차감된다() {
+            // given: 팀1 선수의 자책골로 팀2 가 득점한 뒤, 팀1 이 일반 득점
+            registerOwnGoal(starter1Id);
+            Timeline ownGoal = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerGoal(starter2Id, null);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, ownGoal.getId());
+
+            // then
+            GameTeam team1 = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            GameTeam team2 = entityUtils.getEntity(replayGameTeamId2, GameTeam.class);
+            assertAll(
+                    () -> assertThat(team2.getScore()).as("자책골로 올라간 상대 팀 점수 차감").isEqualTo(0),
+                    () -> assertThat(team1.getScore()).as("이후 일반 득점은 유지").isEqualTo(1)
+            );
+        }
+
+        @Test
         void 경고_카드를_중간에_삭제해도_점수는_변하지_않는다() {
             // given
             registerWarningCard(starter1Id);
