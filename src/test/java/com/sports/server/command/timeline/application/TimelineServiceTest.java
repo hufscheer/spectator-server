@@ -597,16 +597,24 @@ class TimelineServiceTest extends ServiceTest {
         }
 
         @Test
-        void 교체로_들어온_선수가_이후_어시스트에_등장하면_교체를_삭제할_수_없다() {
-            // given
+        void 교체로_들어온_선수가_이후_어시스트만_했다면_교체를_삭제할_수_있다() {
+            // given: 어시스트는 기획상 "이후 기록에 등장" 으로 보지 않는다
             registerReplacement(starter1Id, candidate1Id);
             Timeline replacement = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
             registerGoal(starter2Id, candidate1Id);
 
-            // when & then
-            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, replayGameId, replacement.getId()))
-                    .isInstanceOf(CustomException.class)
-                    .hasMessage(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS);
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, replacement.getId());
+
+            // then
+            LineupPlayer origin = entityUtils.getEntity(starter1Id, LineupPlayer.class);
+            LineupPlayer replaced = entityUtils.getEntity(candidate1Id, LineupPlayer.class);
+            GameTeam gameTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            assertAll(
+                    () -> assertThat(origin.isPlaying()).as("나간 선수 복귀").isTrue(),
+                    () -> assertThat(replaced.isPlaying()).as("들어온 선수 후보 복귀").isFalse(),
+                    () -> assertThat(gameTeam.getScore()).as("어시스트가 붙은 득점은 유지").isEqualTo(1)
+            );
         }
 
         @Test
