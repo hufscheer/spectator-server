@@ -376,6 +376,34 @@ operation::timeline-controller-test/타임라인을_삭제한다[snippets='http-
 
 operation::timeline-controller-test/삭제할_수_없는_타임라인은_사유와_함께_거부된다[snippets='http-request,http-response,response-fields']
 
+=== 타임라인 변경 알림 (WebSocket)
+
+기록이 등록되거나 삭제되면 그 경기를 보고 있는 화면에 알림을 보낸다.
+관객 화면이 새로고침 없이 점수와 기록을 갱신하기 위한 것이다.
+
+STOMP 엔드포인트는 `/ws`, 구독 목적지는 아래와 같다.
+
+....
+/topic/games/{gameId}/timeline
+....
+
+메시지는 무엇이 바뀌었는지만 담는다. 바뀐 점수나 기록은 싣지 않는다.
+
+[source,json]
+----
+{ "gameId": 81, "changeType": "CREATED" }
+----
+
+`changeType` 은 `CREATED`(등록) 또는 `DELETED`(삭제) 다.
+받은 쪽은 `GET /games/{gameId}` 와 `GET /games/{gameId}/timeline` 을 다시 호출한다.
+어느 기록이 바뀌었는지는 알려주지 않으므로 부분 갱신이 아니라 다시 조회하는 방식이다.
+
+응원톡이 쓰는 `/topic/games/{gameId}` 와는 목적지가 다르다.
+한 목적지에 형태가 다른 메시지를 섞으면 이미 붙어 있는 응원톡 구독이 깨진다.
+
+알림 전송이 실패해도 기록의 등록·삭제 자체는 되돌리지 않는다.
+알림은 커밋 뒤에 비동기로 나가므로, 놓친 경우에도 다시 조회하면 정확한 상태를 얻는다.
+
 == 사용자 API
 
 === 사용자 로그인

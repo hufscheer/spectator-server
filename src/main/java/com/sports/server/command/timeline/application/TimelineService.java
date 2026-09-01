@@ -12,6 +12,7 @@ import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
+import com.sports.server.command.timeline.domain.TimelineChangedEvent;
 import com.sports.server.command.timeline.domain.TimelineCreatedEvent;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.timeline.dto.TimelineRequest;
@@ -68,6 +69,7 @@ public class TimelineService {
 
         eventPublisher.publishEvent(new TimelineCreatedEvent(
                 timeline.getId(), gameId, timeline.getType()));
+        eventPublisher.publishEvent(TimelineChangedEvent.created(gameId));
     }
 
     private void insertQuarterEndIfNeeded(Game game, Integer recordedAt, Optional<GameProgressTimeline> lastProgressOpt) {
@@ -139,9 +141,10 @@ public class TimelineService {
 
         if (subsequents.isEmpty()) {
             deleteLastTimeline(game, timeline);
-            return;
+        } else {
+            deleteMiddleTimeline(game, timeline, subsequents);
         }
-        deleteMiddleTimeline(game, timeline, subsequents);
+        eventPublisher.publishEvent(TimelineChangedEvent.deleted(gameId));
     }
 
     private void deleteLastTimeline(Game game, Timeline timeline) {
