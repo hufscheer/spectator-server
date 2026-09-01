@@ -142,9 +142,14 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         opponentOf(ownTeam).cancelScore(scoreValue);
     }
 
+    /**
+     * 식별자로 비교한다. 지연 로딩된 GameTeam 은 프록시로 들어오는데, BaseEntity.equals 가
+     * getClass() 를 비교해서 프록시와 그 실제 엔티티를 다른 것으로 판정한다. equals 로 거르면
+     * 자기 팀이 걸러지지 않아 상대 팀 대신 자기 팀이 돌아온다.
+     */
     public GameTeam opponentOf(GameTeam team) {
         return gameTeams.stream()
-                .filter(gameTeam -> !gameTeam.equals(team))
+                .filter(gameTeam -> !Objects.equals(gameTeam.getId(), team.getId()))
                 .findAny()
                 .orElseThrow(() -> new BadRequestException(GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION));
     }
