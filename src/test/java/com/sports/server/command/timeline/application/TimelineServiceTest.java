@@ -420,6 +420,57 @@ class TimelineServiceTest extends ServiceTest {
             ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(gameId).get(0);
             assertThat(actual.getScore()).isEqualTo(1);
         }
+
+        @Test
+        void 자유투_득점에_어시스트를_등록하면_예외가_발생한다() {
+            // given
+            Long assistPlayerId = 18L; // 팀A 소속 선수
+
+            TimelineRequest.RegisterBasketballScore request = new TimelineRequest.RegisterBasketballScore(
+                    teamAId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    playerAId, 10, assistPlayerId, 1
+            );
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.register(manager, basketballGameId, request))
+                    .isInstanceOf(BadRequestException.class);
+        }
+
+        @Test
+        void 농구_2점_득점에는_어시스트를_등록할_수_있다() {
+            // given
+            Long assistPlayerId = 18L; // 팀A 소속 선수
+
+            TimelineRequest.RegisterBasketballScore request = new TimelineRequest.RegisterBasketballScore(
+                    teamAId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    playerAId, 10, assistPlayerId, 2
+            );
+
+            // when
+            timelineService.register(manager, basketballGameId, request);
+
+            // then
+            ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            assertThat(actual.getAssistLineupPlayer().getId()).isEqualTo(assistPlayerId);
+        }
+
+        @Test
+        void 농구_3점_득점에는_어시스트를_등록할_수_있다() {
+            // given
+            Long assistPlayerId = 18L; // 팀A 소속 선수
+
+            TimelineRequest.RegisterBasketballScore request = new TimelineRequest.RegisterBasketballScore(
+                    teamAId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    playerAId, 10, assistPlayerId, 3
+            );
+
+            // when
+            timelineService.register(manager, basketballGameId, request);
+
+            // then
+            ScoreTimeline actual = (ScoreTimeline) timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            assertThat(actual.getAssistLineupPlayer().getId()).isEqualTo(assistPlayerId);
+        }
     }
 
     @DisplayName("경고 타임라인을")
