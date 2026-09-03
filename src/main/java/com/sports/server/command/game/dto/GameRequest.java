@@ -22,10 +22,10 @@ public class GameRequest {
     private interface RoundSelectable {
         int round();
 
-        boolean thirdPlaceMatch();
+        Boolean thirdPlaceMatch();
 
         default Round resolveRound() {
-            return thirdPlaceMatch() ? Round.THIRD_PLACE_MATCH : Round.from(round());
+            return Boolean.TRUE.equals(thirdPlaceMatch()) ? Round.THIRD_PLACE_MATCH : Round.from(round());
         }
     }
 
@@ -38,8 +38,12 @@ public class GameRequest {
             String videoId,
             TeamLineupRequest team1,
             TeamLineupRequest team2,
-            boolean thirdPlaceMatch
+            Boolean thirdPlaceMatch
     ) implements RoundSelectable {
+        public Register {
+            thirdPlaceMatch = Optional.ofNullable(thirdPlaceMatch).orElse(false);
+        }
+
         public Game toEntity(Member administrator, League league) {
             return Game.builder()
                     .administrator(administrator)
@@ -73,12 +77,16 @@ public class GameRequest {
         }
     }
 
+    /**
+     * {@code thirdPlaceMatch} 는 래퍼 타입이다. primitive 로 두면 클라이언트가 필드를 빼먹었을 때
+     * Jackson 이 false 로 채워, 이름만 고쳐도 3·4위전 지정이 조용히 풀린다. null 은 "변경 없음" 이다.
+     */
     public record Update(
             String name,
             int round,
             LocalDateTime startTime,
             String videoId,
-            boolean thirdPlaceMatch
+            Boolean thirdPlaceMatch
     ) implements RoundSelectable {
     }
 }

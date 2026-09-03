@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import org.springframework.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
+import com.sports.server.command.league.domain.Round;
+import java.util.Optional;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,14 +96,17 @@ public class GameService {
     public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
-        league.validateRound(request.round(), request.thirdPlaceMatch());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
+        // 요청이 3·4위전 여부를 생략하면 지금 값을 그대로 둔다. 이름만 고쳤다고 라운드가 바뀌면 안 된다
+        boolean thirdPlaceMatch = Optional.ofNullable(request.thirdPlaceMatch())
+                .orElse(game.getRound() == Round.THIRD_PLACE_MATCH);
+        league.validateRound(request.round(), thirdPlaceMatch);
 
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
-        game.updateRound(request.resolveRound());
+        game.updateRound(thirdPlaceMatch ? Round.THIRD_PLACE_MATCH : Round.from(request.round()));
         bracketService.relinkGame(league, game);
     }
 

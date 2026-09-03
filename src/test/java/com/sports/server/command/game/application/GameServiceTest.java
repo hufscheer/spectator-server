@@ -48,6 +48,9 @@ public class GameServiceTest extends ServiceTest {
     private EntityUtils entityUtils;
 
     @Autowired
+    private com.sports.server.command.league.application.LeagueService leagueService;
+
+    @Autowired
     private GameFixtureRepository gameFixtureRepository;
 
     @MockBean
@@ -224,6 +227,31 @@ public class GameServiceTest extends ServiceTest {
             leagueId = 1L;
             gameId = 1L;
             manager = entityUtils.getEntity(1L, Member.class);
+        }
+
+        /**
+         * 요청 필드가 primitive 이던 시절, 클라이언트가 값을 빼먹으면 Jackson 이 false 로 채워
+         * 이름만 고쳐도 3·4위전 지정이 조용히 풀렸다.
+         */
+        @Test
+        void 삼사위전_여부를_생략하면_기존_라운드가_유지된다() {
+            // given: 3·4위전으로 지정해 둔다
+            League league = entityUtils.getEntity(leagueId, League.class);
+            leagueService.update(manager, new com.sports.server.command.league.dto.LeagueRequest.Update(
+                    league.getName(), league.getMaxRound().getNumber(),
+                    league.getStartAt(), league.getEndAt(), true), leagueId);
+            gameService.updateGame(leagueId, gameId, new GameRequest.Update(
+                    nameOfGame, 4, updateDto.startTime(), "videoId", true), manager);
+
+            // when: 3·4위전 여부를 빼고 이름만 바꾼다
+            gameService.updateGame(leagueId, gameId, new GameRequest.Update(
+                    "이름만 변경", 4, updateDto.startTime(), "videoId", null), manager);
+
+            // then
+            Game game = entityUtils.getEntity(gameId, Game.class);
+            assertAll(
+                    () -> assertThat(game.getRound()).isEqualTo(Round.THIRD_PLACE_MATCH),
+                    () -> assertThat(game.getName()).isEqualTo("이름만 변경"));
         }
 
         @Test

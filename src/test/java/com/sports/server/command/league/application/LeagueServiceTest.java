@@ -37,6 +37,56 @@ public class LeagueServiceTest extends ServiceTest {
     private LeagueTeamRepository leagueTeamRepository;
 
     @Nested
+    @DisplayName("리그 정보를 수정할 때")
+    class LeagueUpdateTest {
+
+        private static final Long LEAGUE_ID = 1L;
+
+        private Member manager() {
+            return entityUtils.getEntity(1L, Member.class);
+        }
+
+        private void update(final Boolean thirdPlaceMatchEnabled) {
+            League league = entityUtils.getEntity(LEAGUE_ID, League.class);
+            leagueService.update(manager(), new LeagueRequest.Update(
+                    league.getName(),
+                    league.getMaxRound().getNumber(),
+                    league.getStartAt(),
+                    league.getEndAt(),
+                    thirdPlaceMatchEnabled
+            ), LEAGUE_ID);
+        }
+
+        /**
+         * 요청 필드가 primitive 이던 시절, 클라이언트가 값을 빼먹으면 Jackson 이 false 로 채워
+         * 이름만 고쳐도 3·4위전 설정이 조용히 꺼졌다.
+         */
+        @Test
+        void 삼사위전_여부를_생략하면_기존_설정이_유지된다() {
+            // given
+            update(true);
+
+            // when
+            update(null);
+
+            // then
+            assertThat(entityUtils.getEntity(LEAGUE_ID, League.class).isThirdPlaceMatchEnabled()).isTrue();
+        }
+
+        @Test
+        void 삼사위전_여부를_명시하면_그대로_반영된다() {
+            // given
+            update(true);
+
+            // when
+            update(false);
+
+            // then
+            assertThat(entityUtils.getEntity(LEAGUE_ID, League.class).isThirdPlaceMatchEnabled()).isFalse();
+        }
+    }
+
+    @Nested
     @DisplayName("리그를 삭제할 때")
     class LeagueDeleteTest {
         @Test
