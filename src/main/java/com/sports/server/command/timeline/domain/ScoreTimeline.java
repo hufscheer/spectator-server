@@ -6,6 +6,7 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.Column;
@@ -70,6 +71,11 @@ public class ScoreTimeline extends Timeline {
         if (assistLineupPlayer != null
                 && (!scorer.isSameTeam(assistLineupPlayer) || scorer.getId().equals(assistLineupPlayer.getId()))) {
             throw new BadRequestException(ExceptionMessages.INVALID_ASSIST_PLAYER);
+        }
+        if (assistLineupPlayer != null
+                && game.getSportType() == SportType.BASKETBALL
+                && scoreValue == BasketballScore.ONE.getValue()) {
+            throw new BadRequestException(ExceptionMessages.INVALID_FREE_THROW_ASSIST);
         }
 
         GameTeam team1 = game.getTeam1();
