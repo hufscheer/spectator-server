@@ -239,6 +239,14 @@ VALUES (9, 6, 1, 0, 0, 0, null),
 INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progress_type, previous_quarter, previous_quarter_changed_at)
 VALUES ('GAME_PROGRESS', 6, 'SECOND_HALF', 0, 'QUARTER_START', 'FIRST_HALF', null);
 
+-- game 6 라인업: 기록이 있는 선수의 라인업 삭제 차단 검증용
+INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
+VALUES (31, 9, 1, 1, TRUE, 'STARTER', TRUE, null),
+       (32, 9, 2, 2, FALSE, 'STARTER', TRUE, null),
+       (33, 9, 3, 3, FALSE, 'CANDIDATE', FALSE, null),
+       (34, 9, 4, 4, FALSE, 'CANDIDATE', FALSE, null);
+
+
 -- 응원톡 생성
 INSERT INTO cheer_talks (id, game_team_id, content, created_at, block_status)
 VALUES (1, 1, '화이팅!', '2023-11-12 10:05:00', 'ACTIVE'),
