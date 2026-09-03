@@ -4,9 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.GameResult;
+import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.BasketballQuarter;
+import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
@@ -19,6 +23,7 @@ import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.UnauthorizedException;
+import com.sports.server.query.dto.response.QuarterScoreResponse;
 import com.sports.server.support.ServiceTest;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -51,6 +56,9 @@ class TimelineServiceTest extends ServiceTest {
 
     @Autowired
     private EntityUtils entityUtils;
+
+    @Autowired
+    private com.sports.server.query.application.TimelineQueryService timelineQueryService;
 
     private final Long gameId = 1L;
     private Member manager;
@@ -550,6 +558,11 @@ class TimelineServiceTest extends ServiceTest {
         // game 6: 점수 0:0 + QUARTER_START 만 있는 정합 상태 — register 로 쌓아서 replay 검증
         private final Long replayGameId = 6L;
         private final Long replayGameTeamId = 9L;
+        private final Long replayGameTeamId2 = 10L;
+        private final Long basketballGameId = 5L;
+        private final Long basketballTeamId = 7L;
+        private final Long basketballOffenderId = 17L;
+        private final Long basketballSubstituteId = 21L;
         private final Long starter1Id = 31L;
         private final Long starter2Id = 32L;
         private final Long candidate1Id = 33L;
@@ -593,16 +606,24 @@ class TimelineServiceTest extends ServiceTest {
         }
 
         @Test
-        void 교체로_들어온_선수가_이후_어시스트에_등장하면_교체를_삭제할_수_없다() {
-            // given
+        void 교체로_들어온_선수가_이후_어시스트만_했다면_교체를_삭제할_수_있다() {
+            // given: 어시스트는 기획상 "이후 기록에 등장" 으로 보지 않는다
             registerReplacement(starter1Id, candidate1Id);
             Timeline replacement = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
             registerGoal(starter2Id, candidate1Id);
 
-            // when & then
-            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, replayGameId, replacement.getId()))
-                    .isInstanceOf(CustomException.class)
-                    .hasMessage(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS);
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, replacement.getId());
+
+            // then
+            LineupPlayer origin = entityUtils.getEntity(starter1Id, LineupPlayer.class);
+            LineupPlayer replaced = entityUtils.getEntity(candidate1Id, LineupPlayer.class);
+            GameTeam gameTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            assertAll(
+                    () -> assertThat(origin.isPlaying()).as("나간 선수 복귀").isTrue(),
+                    () -> assertThat(replaced.isPlaying()).as("들어온 선수 후보 복귀").isFalse(),
+                    () -> assertThat(gameTeam.getScore()).as("어시스트가 붙은 득점은 유지").isEqualTo(1)
+            );
         }
 
         @Test
@@ -720,10 +741,486 @@ class TimelineServiceTest extends ServiceTest {
                     .isInstanceOf(UnauthorizedException.class);
         }
 
+        @Test
+        void 종료된_경기의_마지막_경기_종료_기록을_삭제하면_경기가_되살아나고_승패가_초기화된다() {
+            // given: 득점 1건을 남기고 경기 종료를 등록해 FINISHED 로 만든다
+            registerGoal(starter1Id, null);
+            registerGameEnd();
+            Game finished = entityUtils.getEntity(replayGameId, Game.class);
+            GameTeam scoredTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            assertAll(
+                    () -> assertThat(finished.getState()).as("사전 조건: 경기 종료").isEqualTo(GameState.FINISHED),
+                    () -> assertThat(scoredTeam.getResult()).as("사전 조건: 승패 확정").isEqualTo(GameResult.WIN)
+            );
+            Timeline gameEnd = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, gameEnd.getId());
+
+            // then
+            Game revived = entityUtils.getEntity(replayGameId, Game.class);
+            GameTeam team1 = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            GameTeam team2 = entityUtils.getEntity(replayGameTeamId2, GameTeam.class);
+            assertAll(
+                    () -> assertThat(revived.getState()).as("경기 상태").isEqualTo(GameState.PLAYING),
+                    () -> assertThat(revived.getGameQuarter()).as("쿼터 복구").isEqualTo(SoccerQuarter.SECOND_HALF.name()),
+                    () -> assertThat(team1.getResult()).as("팀1 승패 초기화").isNull(),
+                    () -> assertThat(team2.getResult()).as("팀2 승패 초기화").isNull(),
+                    () -> assertThat(team1.getScore()).as("점수는 유지").isEqualTo(1)
+            );
+        }
+
+        @Test
+        void 교체로_들어온_선수가_이후_득점하면_교체를_삭제할_수_없다() {
+            // given
+            registerReplacement(starter1Id, candidate1Id);
+            Timeline replacement = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerGoal(candidate1Id, null);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, replayGameId, replacement.getId()))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS);
+        }
+
+        @Test
+        void 교체로_나간_선수가_이후_기록에_등장하면_교체를_삭제할_수_없다() {
+            // given
+            registerReplacement(starter1Id, candidate1Id);
+            Timeline replacement = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerGoal(starter1Id, null);
+
+            // when & then
+            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, replayGameId, replacement.getId()))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS);
+        }
+
+        @Test
+        void 이후_기록을_먼저_삭제하면_교체를_삭제할_수_있다() {
+            // given
+            registerReplacement(starter1Id, candidate1Id);
+            Timeline replacement = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerGoal(candidate1Id, null);
+            Timeline goal = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+
+            // when: 막고 있던 이후 기록을 먼저 지우면 교체가 열린다
+            timelineService.deleteTimeline(manager, replayGameId, goal.getId());
+            timelineService.deleteTimeline(manager, replayGameId, replacement.getId());
+
+            // then
+            LineupPlayer origin = entityUtils.getEntity(starter1Id, LineupPlayer.class);
+            LineupPlayer replaced = entityUtils.getEntity(candidate1Id, LineupPlayer.class);
+            GameTeam gameTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            assertAll(
+                    () -> assertThat(origin.isPlaying()).as("나간 선수 복귀").isTrue(),
+                    () -> assertThat(replaced.isPlaying()).as("들어온 선수 후보 복귀").isFalse(),
+                    () -> assertThat(gameTeam.getScore()).as("득점도 함께 취소").isEqualTo(0)
+            );
+        }
+
+        @Test
+        void 종료된_경기의_중간_쿼터_기록은_경기_상태_사유로_거부된다() {
+            // given: game 6 을 종료시키면 첫 기록인 QUARTER_START 가 중간 기록이 된다
+            registerGoal(starter1Id, null);
+            registerGameEnd();
+            List<Timeline> timelines = timelineFixtureRepository.findAllLatest(replayGameId);
+            Timeline quarterStart = timelines.get(timelines.size() - 1);
+
+            // when & then: 우선순위 1(경기 상태)이 2(진행 기록)보다 먼저 걸린다
+            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, replayGameId, quarterStart.getId()))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(TimelineErrorMessage.MIDDLE_DELETE_ONLY_WHILE_PLAYING);
+        }
+
+        @Test
+        void 뒤에_경기_종료_기록이_있어도_중간_쿼터_기록은_진행_기록_사유로_거부된다() {
+            // given: game 1 은 PLAYING 인데 GAME_END 가 섞인 비정합 상태
+            Timeline oldestProgress = timelineFixtureRepository.findAllLatest(gameId).stream()
+                    .filter(timeline -> timeline instanceof GameProgressTimeline)
+                    .reduce((first, second) -> second)
+                    .orElseThrow();
+
+            // when & then: 우선순위 2(진행 기록)가 3(뒤쪽 경기 종료)보다 먼저 걸린다
+            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, gameId, oldestProgress.getId()))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(TimelineErrorMessage.PROGRESS_TIMELINE_NOT_LAST);
+        }
+
+        @Test
+        void 기록이_하나뿐인_경기의_그_기록을_삭제하면_목록이_빈다() {
+            // given: game 6 은 QUARTER_START 하나만 가진 상태
+            List<Timeline> before = timelineFixtureRepository.findAllLatest(replayGameId);
+            assertThat(before).hasSize(1);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, before.get(0).getId());
+
+            // then
+            assertThat(timelineFixtureRepository.findAllLatest(replayGameId)).isEmpty();
+        }
+
+        @Test
+        void 농구에서_가운데_득점을_삭제하면_점수와_이후_스냅샷이_재계산된다() {
+            // given: 3점 → 2점 → 3점
+            registerBasketballScore(3);
+            registerBasketballScore(2);
+            ScoreTimeline middle = (ScoreTimeline) timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            registerBasketballScore(3);
+            ScoreTimeline last = (ScoreTimeline) timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, basketballGameId, middle.getId());
+
+            // then
+            GameTeam gameTeam = entityUtils.getEntity(basketballTeamId, GameTeam.class);
+            ScoreTimeline remaining = (ScoreTimeline) entityUtils.getEntity(last.getId(), Timeline.class);
+            assertAll(
+                    () -> assertThat(gameTeam.getScore()).as("3점 + 3점").isEqualTo(6),
+                    () -> assertThat(remaining.getSnapshotScore1()).as("마지막 득점 시점 스냅샷").isEqualTo(6)
+            );
+        }
+
+        @Test
+        void 자책골을_중간에_삭제하면_상대_팀_점수가_차감된다() {
+            // given: 팀1 선수의 자책골로 팀2 가 득점한 뒤, 팀1 이 일반 득점
+            registerOwnGoal(starter1Id);
+            Timeline ownGoal = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerGoal(starter2Id, null);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, ownGoal.getId());
+
+            // then
+            GameTeam team1 = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            GameTeam team2 = entityUtils.getEntity(replayGameTeamId2, GameTeam.class);
+            assertAll(
+                    () -> assertThat(team2.getScore()).as("자책골로 올라간 상대 팀 점수 차감").isEqualTo(0),
+                    () -> assertThat(team1.getScore()).as("이후 일반 득점은 유지").isEqualTo(1)
+            );
+        }
+
+        @Test
+        void 경고_카드를_중간에_삭제해도_점수는_변하지_않는다() {
+            // given
+            registerWarningCard(starter1Id);
+            Timeline card = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerGoal(starter2Id, null);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, card.getId());
+
+            // then
+            GameTeam gameTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            assertAll(
+                    () -> assertThat(gameTeam.getScore()).as("점수 무변화").isEqualTo(1),
+                    () -> assertThat(timelineFixtureRepository.findAllLatest(replayGameId))
+                            .as("경고 기록만 제거").noneMatch(WarningCardTimeline.class::isInstance)
+            );
+        }
+
+        @Test
+        void 파울을_중간에_삭제하면_해당_기록만_사라지고_점수는_그대로다() {
+            // given
+            registerFoul(basketballOffenderId);
+            Timeline foul = timelineFixtureRepository.findAllLatest(basketballGameId).get(0);
+            registerBasketballScore(2);
+
+            // when
+            timelineService.deleteTimeline(manager, basketballGameId, foul.getId());
+
+            // then
+            GameTeam gameTeam = entityUtils.getEntity(basketballTeamId, GameTeam.class);
+            assertAll(
+                    () -> assertThat(gameTeam.getScore()).as("점수 무변화").isEqualTo(2),
+                    () -> assertThat(timelineFixtureRepository.findAllLatest(basketballGameId))
+                            .as("파울 기록만 제거").noneMatch(FoulTimeline.class::isInstance)
+            );
+        }
+
+        @Test
+        void 중간_기록을_연속으로_세_번_삭제해도_점수가_어긋나지_않는다() {
+            // given: 득점 4건
+            for (int i = 0; i < 4; i++) {
+                registerGoal(starter1Id, null);
+            }
+            assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore()).isEqualTo(4);
+
+            // when: 가장 오래된 득점을 세 번 연속으로 삭제
+            for (int i = 0; i < 3; i++) {
+                timelineService.deleteTimeline(manager, replayGameId, oldestScoreTimeline(replayGameId).getId());
+            }
+
+            // then
+            GameTeam gameTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            ScoreTimeline survivor = (ScoreTimeline) timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            assertAll(
+                    () -> assertThat(gameTeam.getScore()).as("남은 득점 1건").isEqualTo(1),
+                    () -> assertThat(survivor.getSnapshotScore1() + survivor.getSnapshotScore2())
+                            .as("남은 득점의 스냅샷도 1").isEqualTo(1)
+            );
+        }
+
+        private void registerBasketballScore(int score) {
+            timelineService.register(manager, basketballGameId, new TimelineRequest.RegisterBasketballScore(
+                    basketballTeamId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    basketballOffenderId, 10, null, score));
+        }
+
+        private void registerOwnGoal(Long scorerLineupPlayerId) {
+            timelineService.register(manager, replayGameId, new TimelineRequest.RegisterSoccerScore(
+                    replayGameTeamId, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                    scorerLineupPlayerId, 10, null, true));
+        }
+
+        private void registerWarningCard(Long lineupPlayerId) {
+            timelineService.register(manager, replayGameId, new TimelineRequest.RegisterWarningCard(
+                    10, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
+                    replayGameTeamId, lineupPlayerId, WarningCardType.YELLOW));
+        }
+
+        private void registerFoul(Long lineupPlayerId) {
+            timelineService.register(manager, basketballGameId, new TimelineRequest.RegisterFoul(
+                    10, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    basketballTeamId, lineupPlayerId));
+        }
+
+        @Test
+        void 승부차기_성공_기록을_중간에_삭제하면_승부차기_점수가_차감된다() {
+            // given: 성공 → 성공 → 실패
+            registerPk(starter1Id, true);
+            registerPk(starter2Id, true);
+            Timeline secondSuccess = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerPk(starter1Id, false);
+            assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getPkScore()).isEqualTo(2);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, secondSuccess.getId());
+
+            // then
+            GameTeam gameTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            assertThat(gameTeam.getPkScore()).as("성공 1건이 빠져 1점").isEqualTo(1);
+        }
+
+        @Test
+        void 승부차기_실패_기록을_중간에_삭제해도_점수는_변하지_않는다() {
+            // given: 성공 → 실패 → 성공
+            registerPk(starter1Id, true);
+            registerPk(starter2Id, false);
+            Timeline miss = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            registerPk(starter1Id, true);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, miss.getId());
+
+            // then
+            GameTeam gameTeam = entityUtils.getEntity(replayGameTeamId, GameTeam.class);
+            assertAll(
+                    () -> assertThat(gameTeam.getPkScore()).as("성공 2건 그대로").isEqualTo(2),
+                    () -> assertThat(timelineFixtureRepository.findAllLatest(replayGameId))
+                            .as("실패 기록만 제거").noneMatch(t -> t.getId().equals(miss.getId()))
+            );
+        }
+
+        @Test
+        void 가장_오래된_일반_기록을_삭제하면_이후_기록이_전부_재계산된다() {
+            // given
+            registerGoal(starter1Id, null);
+            registerGoal(starter2Id, null);
+            registerGoal(starter1Id, null);
+            Timeline first = oldestScoreTimeline(replayGameId);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, first.getId());
+
+            // then
+            List<Timeline> remaining = timelineFixtureRepository.findAllLatest(replayGameId);
+            ScoreTimeline last = (ScoreTimeline) remaining.get(0);
+            ScoreTimeline middle = (ScoreTimeline) remaining.get(1);
+            assertAll(
+                    () -> assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore()).isEqualTo(2),
+                    () -> assertThat(middle.getSnapshotScore1() + middle.getSnapshotScore2()).as("두 번째 득점 스냅샷").isEqualTo(1),
+                    () -> assertThat(last.getSnapshotScore1() + last.getSnapshotScore2()).as("세 번째 득점 스냅샷").isEqualTo(2)
+            );
+        }
+
+        @Test
+        void 삭제가_거부되면_점수와_기록이_그대로_남는다() {
+            // given: 진행 기록은 중간 삭제가 거부된다
+            registerGoal(starter1Id, null);
+            List<Timeline> before = timelineFixtureRepository.findAllLatest(replayGameId);
+            Timeline quarterStart = before.get(before.size() - 1);
+            int scoreBefore = entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore();
+
+            // when
+            assertThatThrownBy(() -> timelineService.deleteTimeline(manager, replayGameId, quarterStart.getId()))
+                    .isInstanceOf(CustomException.class);
+
+            // then
+            assertAll(
+                    () -> assertThat(timelineFixtureRepository.findAllLatest(replayGameId))
+                            .as("기록 수 유지").hasSameSizeAs(before),
+                    () -> assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore())
+                            .as("점수 유지").isEqualTo(scoreBefore)
+            );
+        }
+
+        @Test
+        void 득점을_삭제하면_쿼터별_점수도_다시_계산된다() {
+            // given: 농구 1쿼터는 팀A 3점 · 팀B 2점 으로 마감돼 있다
+            List<QuarterScoreResponse> before = timelineQueryService.getQuarterScores(basketballGameId);
+            assertThat(before).hasSize(1);
+            Timeline teamAScore = oldestScoreTimeline(basketballGameId);
+
+            // when
+            timelineService.deleteTimeline(manager, basketballGameId, teamAScore.getId());
+
+            // then
+            List<QuarterScoreResponse> after = timelineQueryService.getQuarterScores(basketballGameId);
+            assertAll(
+                    () -> assertThat(after).as("쿼터 수는 그대로").hasSize(1),
+                    () -> assertThat(after.get(0).scores())
+                            .as("팀A 3점이 빠진다")
+                            .extracting(QuarterScoreResponse.TeamScore::score)
+                            .containsExactly(0, 2)
+            );
+        }
+
+        @Test
+        void 기록이_스무_건_넘는_경기에서_앞쪽_기록을_삭제해도_재계산된다() {
+            // given
+            int goals = 20;
+            for (int i = 0; i < goals; i++) {
+                registerGoal(starter1Id, null);
+            }
+            assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore()).isEqualTo(goals);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, oldestScoreTimeline(replayGameId).getId());
+
+            // then
+            ScoreTimeline last = (ScoreTimeline) timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+            assertAll(
+                    () -> assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore()).isEqualTo(goals - 1),
+                    () -> assertThat(last.getSnapshotScore1() + last.getSnapshotScore2())
+                            .as("마지막 득점 스냅샷도 하나씩 밀린다").isEqualTo(goals - 1)
+            );
+        }
+
+        @Test
+        void 파울_아웃으로_교체된_선수의_파울을_삭제해도_교체는_유지된다() {
+            // given: 파울 5개 후 파울 아웃 교체
+            for (int i = 0; i < 5; i++) {
+                registerFoul(basketballOffenderId);
+            }
+            Timeline firstFoul = timelineFixtureRepository.findAllLatest(basketballGameId).stream()
+                    .filter(FoulTimeline.class::isInstance)
+                    .reduce((first, second) -> second)
+                    .orElseThrow();
+            registerFoulOutReplacement();
+
+            // when: 파울 하나를 지워 4파울이 된다
+            timelineService.deleteTimeline(manager, basketballGameId, firstFoul.getId());
+
+            // then: 현재 정책상 퇴장 상태는 그대로 둔다
+            LineupPlayer offender = entityUtils.getEntity(basketballOffenderId, LineupPlayer.class);
+            LineupPlayer substitute = entityUtils.getEntity(basketballSubstituteId, LineupPlayer.class);
+            assertAll(
+                    () -> assertThat(offender.isPlaying()).as("퇴장 유지").isFalse(),
+                    () -> assertThat(substitute.isPlaying()).as("교체 투입 유지").isTrue(),
+                    () -> assertThat(timelineFixtureRepository.findAllLatest(basketballGameId))
+                            .as("파울 4건 남음")
+                            .filteredOn(FoulTimeline.class::isInstance).hasSize(4)
+            );
+        }
+
+        private void registerPk(Long scorerLineupPlayerId, boolean isSuccess) {
+            timelineService.register(manager, replayGameId, new TimelineRequest.RegisterPk(
+                    10, SportType.SOCCER, SoccerQuarter.PENALTY_SHOOTOUT.name(),
+                    replayGameTeamId, scorerLineupPlayerId, isSuccess));
+        }
+
+        private void registerFoulOutReplacement() {
+            timelineService.register(manager, basketballGameId, new TimelineRequest.RegisterReplacement(
+                    basketballTeamId, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(),
+                    basketballOffenderId, basketballSubstituteId, 10, true));
+        }
+
+        @Test
+        void 마지막_득점을_삭제하면_해당_팀_점수가_차감된다() {
+            // given
+            registerGoal(starter1Id, null);
+            registerGoal(starter2Id, null);
+            assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore()).isEqualTo(2);
+            Timeline last = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, last.getId());
+
+            // then
+            assertThat(entityUtils.getEntity(replayGameTeamId, GameTeam.class).getScore())
+                    .as("마지막 득점만 차감").isEqualTo(1);
+        }
+
+        @Test
+        void 마지막_교체를_삭제하면_두_선수의_출전_상태가_되돌아간다() {
+            // given
+            registerReplacement(starter1Id, candidate1Id);
+            LineupPlayer originJustAfter = entityUtils.getEntity(starter1Id, LineupPlayer.class);
+            LineupPlayer inJustAfter = entityUtils.getEntity(candidate1Id, LineupPlayer.class);
+            assertAll(
+                    () -> assertThat(originJustAfter.isPlaying()).as("교체 직후 나간 선수").isFalse(),
+                    () -> assertThat(inJustAfter.isPlaying()).as("교체 직후 들어온 선수").isTrue()
+            );
+            Timeline replacement = timelineFixtureRepository.findAllLatest(replayGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, replayGameId, replacement.getId());
+
+            // then
+            LineupPlayer origin = entityUtils.getEntity(starter1Id, LineupPlayer.class);
+            LineupPlayer replaced = entityUtils.getEntity(candidate1Id, LineupPlayer.class);
+            assertAll(
+                    () -> assertThat(origin.isPlaying()).as("나간 선수 출전 복귀").isTrue(),
+                    () -> assertThat(origin.isReplaced()).as("교체 표시 해제").isFalse(),
+                    () -> assertThat(replaced.isPlaying()).as("들어온 선수 후보 복귀").isFalse(),
+                    () -> assertThat(replaced.isReplaced()).isFalse()
+            );
+        }
+
+        @Test
+        void 마지막_쿼터_시작을_삭제하면_경기와_쿼터_상태가_되돌아간다() {
+            // given: game 4 는 경기 전 상태다. 1쿼터를 시작시키면 진행 중으로 바뀐다
+            Long scheduledGameId = 4L;
+            timelineService.register(manager, scheduledGameId, new TimelineRequest.RegisterProgress(
+                    0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
+            Game started = entityUtils.getEntity(scheduledGameId, Game.class);
+            assertAll(
+                    () -> assertThat(started.getState()).as("시작 직후").isEqualTo(GameState.PLAYING),
+                    () -> assertThat(started.getGameQuarter()).isEqualTo(SoccerQuarter.FIRST_HALF.name())
+            );
+            Timeline quarterStart = timelineFixtureRepository.findAllLatest(scheduledGameId).get(0);
+
+            // when
+            timelineService.deleteTimeline(manager, scheduledGameId, quarterStart.getId());
+
+            // then
+            Game reverted = entityUtils.getEntity(scheduledGameId, Game.class);
+            assertAll(
+                    () -> assertThat(reverted.getState()).as("경기 상태 복구").isEqualTo(GameState.SCHEDULED),
+                    () -> assertThat(reverted.getGameQuarter()).as("쿼터 복구").isEqualTo(CommonQuarter.PRE_GAME.name())
+            );
+        }
+
         private void registerGoal(Long scorerLineupPlayerId, Long assistLineupPlayerId) {
             timelineService.register(manager, replayGameId, new TimelineRequest.RegisterSoccerScore(
                     replayGameTeamId, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
                     scorerLineupPlayerId, 10, assistLineupPlayerId, null));
+        }
+
+        private void registerGameEnd() {
+            timelineService.register(manager, replayGameId, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END));
         }
 
         private void registerReplacement(Long originLineupPlayerId, Long replacementLineupPlayerId) {
