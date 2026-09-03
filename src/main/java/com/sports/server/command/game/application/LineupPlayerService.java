@@ -8,6 +8,7 @@ import com.sports.server.command.game.domain.Position;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
+import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
@@ -25,6 +26,7 @@ public class LineupPlayerService {
     private final EntityUtils entityUtils;
     private final TeamPlayerRepository teamPlayerRepository;
     private final LineupPlayerRepository lineupPlayerRepository;
+    private final TimelineRepository timelineRepository;
 
     public void changePlayerStateToStarter(final Long gameId, final Long lineupPlayerId) {
         Game game = entityUtils.getEntity(gameId, Game.class);
@@ -93,6 +95,9 @@ public class LineupPlayerService {
 
         if (!lineupPlayer.getGameTeam().getId().equals(gameTeamId)) {
             throw new BadRequestException(GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);
+        }
+        if (timelineRepository.countReferencing(lineupPlayerId) > 0) {
+            throw new BadRequestException(GameErrorMessages.LINEUP_PLAYER_HAS_RECORDS);
         }
         gameTeam.removeLineupPlayer(lineupPlayer);
     }
