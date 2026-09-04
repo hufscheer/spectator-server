@@ -47,14 +47,49 @@ public class LeagueServiceTest extends ServiceTest {
         }
 
         private void update(final Boolean thirdPlaceMatchEnabled) {
+            update(thirdPlaceMatchEnabled, null);
+        }
+
+        private void update(final Boolean thirdPlaceMatchEnabled, final Boolean bracketEnabled) {
             League league = entityUtils.getEntity(LEAGUE_ID, League.class);
             leagueService.update(manager(), new LeagueRequest.Update(
                     league.getName(),
                     league.getMaxRound().getNumber(),
                     league.getStartAt(),
                     league.getEndAt(),
-                    thirdPlaceMatchEnabled
+                    thirdPlaceMatchEnabled,
+                    bracketEnabled
             ), LEAGUE_ID);
+        }
+
+        private Boolean bracketEnabled() {
+            return entityUtils.getEntity(LEAGUE_ID, League.class).getBracketEnabled();
+        }
+
+        @Test
+        void 대진표_여부는_처음에_정해지지_않은_상태다() {
+            assertThat(bracketEnabled()).isNull();
+        }
+
+        @Test
+        void 대진표_여부를_지정하면_반영된다() {
+            update(null, true);
+            assertThat(bracketEnabled()).isTrue();
+
+            update(null, false);
+            assertThat(bracketEnabled()).isFalse();
+        }
+
+        @Test
+        void 대진표_여부를_생략하면_기존_설정이_유지된다() {
+            // given: 리그전이라 대진표를 쓰지 않기로 해둔다
+            update(null, false);
+
+            // when: 이름만 고치듯 그 필드를 빼고 수정한다
+            update(null, null);
+
+            // then: false 가 null 로 되돌아가면 "정하지 않음" 과 구분이 사라진다
+            assertThat(bracketEnabled()).isFalse();
         }
 
         /**

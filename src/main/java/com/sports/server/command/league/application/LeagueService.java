@@ -50,8 +50,11 @@ public class LeagueService {
 		if (league.isThirdPlaceMatchEnabled() != thirdPlaceMatchEnabled) {
 			bracketService.validateThirdPlaceChangeable(leagueId);
 		}
+		Boolean bracketEnabled = request.bracketEnabled() != null
+			? request.bracketEnabled()
+			: league.getBracketEnabled();
 		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()),
-			thirdPlaceMatchEnabled);
+			thirdPlaceMatchEnabled, bracketEnabled);
 	}
 
     public void delete(final Member administrator, final Long leagueId) {

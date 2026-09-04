@@ -14,7 +14,8 @@ public record LeagueDetailResponse(
         String leagueProgress,
         Integer leagueTeamCount,
         String sportType,
-        boolean thirdPlaceMatchEnabled
+        boolean thirdPlaceMatchEnabled,
+        Boolean bracketEnabled
 ) {
     public static LeagueDetailResponse of(League league, Integer leagueTeamCount) {
         return new LeagueDetailResponse(
@@ -26,7 +27,8 @@ public record LeagueDetailResponse(
                 LeagueProgress.fromDate(LocalDateTime.now(), league).getDescription(),
                 leagueTeamCount,
                 league.getSportType().name(),
-                league.isThirdPlaceMatchEnabled()
+                league.isThirdPlaceMatchEnabled(),
+                league.getBracketEnabled()
         );
     }
 }
