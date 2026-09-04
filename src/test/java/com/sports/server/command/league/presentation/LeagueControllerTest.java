@@ -34,7 +34,7 @@ class LeagueControllerTest extends DocumentationTest {
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
 		BracketRequest.Save bracket = new BracketRequest.Save(4,
 				List.of(new BracketRequest.Entry(1, 1L), new BracketRequest.Entry(4, 2L)));
-		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of(1L, 2L), null, bracket, false);
+		LeagueRequest.Register request = new LeagueRequest.Register("우물정 제기차기 대회", 4, fixedDateTime, fixedDateTime, List.of(1L, 2L), null, bracket, false, null);
 
         doNothing().when(leagueService).register(any(Member.class), any(LeagueRequest.Register.class));
 
@@ -59,7 +59,8 @@ class LeagueControllerTest extends DocumentationTest {
 										fieldWithPath("bracket.entries").type(JsonFieldType.ARRAY).description("1라운드 팀 배치 목록").optional(),
 										fieldWithPath("bracket.entries[].position").type(JsonFieldType.NUMBER).description("배치 위치 (1 ~ size). 비어있는 위치는 부전승").optional(),
 										fieldWithPath("bracket.entries[].teamId").type(JsonFieldType.NUMBER).description("배치할 팀 ID").optional(),
-										fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부. 미입력 시 false").optional()
+										fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부. 미입력 시 false").optional(),
+										fieldWithPath("bracketEnabled").type(JsonFieldType.BOOLEAN).description("대진표를 쓰는 대회인지. 미입력 시 null(아직 정하지 않음)").optional()
                                 ),
                                 requestCookies(
                                         cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -99,7 +100,7 @@ class LeagueControllerTest extends DocumentationTest {
 		Long leagueId = 5124L;
 		LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
 		LeagueRequest.Update request = new LeagueRequest.Update("훕치치배 망고 빨리먹기 대회", 16, fixedDateTime,
-				fixedDateTime, false);
+				fixedDateTime, false, null);
 
 		doNothing().when(leagueService).update(any(Member.class), any(LeagueRequest.Update.class), anyLong());
 
@@ -121,7 +122,9 @@ class LeagueControllerTest extends DocumentationTest {
 					fieldWithPath("endAt").type(JsonFieldType.STRING).description("변경할 대회 종료시간"),
 					fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("변경할 대회의 총 라운드 수"),
 					fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN)
-						.description("3·4위전 진행 여부. 대진표에 경기가 연결된 뒤에는 변경할 수 없다").optional()
+						.description("3·4위전 진행 여부. 대진표에 경기가 연결된 뒤에는 변경할 수 없다").optional(),
+					fieldWithPath("bracketEnabled").type(JsonFieldType.BOOLEAN)
+						.description("대진표를 쓰는 대회인지. 생략하면 기존 값을 그대로 둔다").optional()
 				),
 				requestCookies(
 					cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

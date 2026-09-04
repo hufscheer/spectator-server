@@ -337,7 +337,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         3,
                         "SOCCER",
                         true
-                ));
+                , null));
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/{leagueId}", leagueId)
@@ -359,7 +359,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
                                 fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수"),
                                 fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
-                                fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부")
+                                fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부"),
+                                fieldWithPath("bracketEnabled").type(JsonFieldType.BOOLEAN).description("대진표를 쓰는 대회인지. null 이면 아직 정하지 않음").optional()
                         )
                 ));
     }
@@ -471,9 +472,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         List<LeagueResponseToManage> responses = List.of(
                 new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, 16, fixedDateTime,
-                        fixedDateTime, "SOCCER", true),
+                        fixedDateTime, "SOCCER", true, null),
                 new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, 16, fixedDateTime,
-                        fixedDateTime, "SOCCER", false));
+                        fixedDateTime, "SOCCER", false, null));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -501,7 +502,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
                                 fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
                                 fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
-                                fieldWithPath("[].thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부")
+                                fieldWithPath("[].thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부"),
+                                fieldWithPath("[].bracketEnabled").type(JsonFieldType.BOOLEAN).description("대진표를 쓰는 대회인지. null 이면 아직 정하지 않음").optional()
                         )
                 ));
     }

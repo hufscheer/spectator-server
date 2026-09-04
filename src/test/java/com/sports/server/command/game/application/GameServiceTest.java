@@ -239,7 +239,7 @@ public class GameServiceTest extends ServiceTest {
             League league = entityUtils.getEntity(leagueId, League.class);
             leagueService.update(manager, new com.sports.server.command.league.dto.LeagueRequest.Update(
                     league.getName(), league.getMaxRound().getNumber(),
-                    league.getStartAt(), league.getEndAt(), true), leagueId);
+                    league.getStartAt(), league.getEndAt(), true, null), leagueId);
             gameService.updateGame(leagueId, gameId, new GameRequest.Update(
                     nameOfGame, 4, updateDto.startTime(), "videoId", true), manager);
 

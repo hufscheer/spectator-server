@@ -53,6 +53,15 @@ public class League extends BaseEntity<League> implements ManagedEntity {
     @Column(name = "third_place_match_enabled", nullable = false)
     private boolean thirdPlaceMatchEnabled;
 
+    /**
+     * 대진표를 쓰는 대회인지. {@code null} 은 아직 정하지 않았다는 뜻이다.
+     * <p>
+     * 대진표 데이터 유무로는 이 값을 대신할 수 없다. "대진표를 쓸 건데 아직 안 만든 대회" 와
+     * "리그전이라 대진표가 없는 대회" 가 둘 다 행이 없는 상태로 똑같이 보이기 때문이다.
+     */
+    @Column(name = "bracket_enabled")
+    private Boolean bracketEnabled;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "sport_type", nullable = false)
     private SportType sportType;
@@ -74,7 +83,8 @@ public class League extends BaseEntity<League> implements ManagedEntity {
             final LocalDateTime endAt,
             final Round maxRound,
             final SportType sportType,
-            final boolean thirdPlaceMatchEnabled
+            final boolean thirdPlaceMatchEnabled,
+            final Boolean bracketEnabled
     ) {
         this.administrator = administrator;
         this.organization = organization;
@@ -85,11 +95,12 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.inProgressRound = maxRound;
         this.sportType = sportType != null ? sportType : SportType.SOCCER;
         this.thirdPlaceMatchEnabled = thirdPlaceMatchEnabled;
+        this.bracketEnabled = bracketEnabled;
         this.isDeleted = false;
     }
 
     public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound,
-                           boolean thirdPlaceMatchEnabled) {
+                           boolean thirdPlaceMatchEnabled, Boolean bracketEnabled) {
         if (StringUtils.hasText(name)) {
             this.name = name;
         }
@@ -97,6 +108,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.endAt = endAt;
         this.maxRound = maxRound;
         this.thirdPlaceMatchEnabled = thirdPlaceMatchEnabled;
+        this.bracketEnabled = bracketEnabled;
     }
 
     @Override

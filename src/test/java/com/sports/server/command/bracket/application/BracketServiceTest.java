@@ -304,7 +304,7 @@ public class BracketServiceTest extends ServiceTest {
                     LocalDateTime.of(2025, 9, 1, 0, 0), LocalDateTime.of(2025, 9, 15, 0, 0),
                     List.of(7L, 8L), null,
                     saveRequestOf(4, entry(1, 7L), entry(4, 8L))
-            , false);
+            , false, null);
 
             // when
             leagueService.register(manager(), request);
@@ -321,7 +321,7 @@ public class BracketServiceTest extends ServiceTest {
                     "새 대회", 4,
                     LocalDateTime.of(2025, 9, 1, 0, 0), LocalDateTime.of(2025, 9, 15, 0, 0),
                     List.of(7L, 8L), null, null
-            , false);
+            , false, null);
 
             // when
             leagueService.register(manager(), request);

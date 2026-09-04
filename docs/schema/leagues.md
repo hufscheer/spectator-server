@@ -18,6 +18,7 @@ CREATE TABLE `leagues` (
   `in_progress_round` varchar(255) DEFAULT NULL,
   `sport_type` varchar(20) NOT NULL DEFAULT 'SOCCER',
   `third_place_match_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `bracket_enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_LEAGUES_ON_ORGANIZATIONS` (`organization_id`),
   KEY `FK_LEAGUES_ON_MEMBERS` (`administrator_id`),
@@ -43,6 +44,7 @@ CREATE TABLE `leagues` (
 | in_progress_round | varchar(255) |  | true |  |  |  |  |
 | sport_type | varchar(20) | SOCCER | false |  |  |  |  |
 | third_place_match_enabled | tinyint(1) | 0 | false |  |  |  |  |
+| bracket_enabled | tinyint(1) |  | true |  |  |  |  |
 
 ## Constraints
 

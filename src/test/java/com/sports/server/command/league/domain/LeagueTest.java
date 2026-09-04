@@ -45,7 +45,7 @@ class LeagueTest {
             // when
             sut = new League(manager, organization, nameArbitrary().sample(), LocalDateTime.now(),
                     LocalDateTime.now(),
-                    maxRoundArbitrary().sample(), null, false);
+                    maxRoundArbitrary().sample(), null, false, null);
 
             // then
             assertAll(
@@ -61,7 +61,7 @@ class LeagueTest {
 
             // when
             sut = new League(manager, organization, nameArbitrary().sample(), LocalDateTime.now(), LocalDateTime.now(),
-                    maxRoundArbitrary().sample(), null, false);
+                    maxRoundArbitrary().sample(), null, false, null);
 
             // then
             assertThat(sut.getMaxRound()).isEqualTo(sut.getInProgressRound());
@@ -82,10 +82,10 @@ class LeagueTest {
                 LocalDateTime.of(20, 12, 12, 0, 0, 0),
                 Round.from(8),
                 null
-        , false);
+        , false, null);
 
         // when
-        sut.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()), false);
+        sut.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()), false, null);
 
         // then
         assertAll(
@@ -102,7 +102,7 @@ class LeagueTest {
         return Stream.of(
                 leagueUpdateRequestArgument(
                         "이름이 빈 값이 아닐 경우, 대회 이름, 시작 시간, 종료 시간, 총 라운드 수를 수정한다.",
-                        new LeagueRequest.Update(newName, maxRound, startAt, endAt, false),
+                        new LeagueRequest.Update(newName, maxRound, startAt, endAt, false, null),
                         List.of(
                                 (league) -> () -> assertThat(league.getName()).isEqualTo(newName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),
@@ -112,7 +112,7 @@ class LeagueTest {
                 ),
                 leagueUpdateRequestArgument(
                         "이름이 빈 값인 경우, 이름을 제외한 시작 시간, 종료 시간, 총 라운드 수를 수정한다.",
-                        new LeagueRequest.Update(emptyName, maxRound, startAt, endAt, false),
+                        new LeagueRequest.Update(emptyName, maxRound, startAt, endAt, false, null),
                         List.of(
                                 (league) -> () -> assertThat(league.getName()).isNotEqualTo(emptyName),
                                 (league) -> () -> assertThat(league.getStartAt()).isEqualTo(startAt),

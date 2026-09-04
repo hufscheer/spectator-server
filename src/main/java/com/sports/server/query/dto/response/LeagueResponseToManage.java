@@ -14,7 +14,8 @@ public record LeagueResponseToManage(
         LocalDateTime startAt,
         LocalDateTime endAt,
         String sportType,
-        boolean thirdPlaceMatchEnabled
+        boolean thirdPlaceMatchEnabled,
+        Boolean bracketEnabled
 ) {
     public static LeagueResponseToManage of(League league) {
         return new LeagueResponseToManage(
@@ -26,7 +27,8 @@ public record LeagueResponseToManage(
                 league.getStartAt(),
                 league.getEndAt(),
                 league.getSportType().name(),
-                league.isThirdPlaceMatchEnabled()
+                league.isThirdPlaceMatchEnabled(),
+                league.getBracketEnabled()
         );
     }
 }
