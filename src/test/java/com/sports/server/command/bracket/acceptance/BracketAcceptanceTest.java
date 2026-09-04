@@ -243,6 +243,27 @@ public class BracketAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 대진표가_없으면_3_4위전_경기를_만들_수_없다() {
+        // given (리그 7: 3·4위전 옵션만 켜져 있고 대진표가 없다)
+        Long leagueId = 7L;
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(thirdPlaceGameRequest(1L, 2L))
+                .post("/leagues/{leagueId}/games", leagueId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(BracketErrorMessages.THIRD_PLACE_REQUIRES_BRACKET);
+    }
+
+    @Test
     void 지울_수_없는_경기_종료_기록은_조회에서도_삭제_불가로_내려온다() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

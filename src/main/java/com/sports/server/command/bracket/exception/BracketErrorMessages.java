@@ -4,6 +4,7 @@ public class BracketErrorMessages {
     public static final String BRACKET_NOT_FOUND = "해당 리그의 대진표가 존재하지 않습니다.";
     public static final String THIRD_PLACE_TEAMS_MISMATCH = "3·4위전은 준결승에서 패배한 두 팀으로만 생성할 수 있습니다.";
     public static final String SEMI_FINALS_NOT_FINISHED = "준결승이 모두 끝나야 3·4위전 경기를 만들 수 있습니다.";
+    public static final String THIRD_PLACE_REQUIRES_BRACKET = "대진표가 있어야 3·4위전 경기를 만들 수 있습니다.";
     public static final String SEMI_FINAL_LOCKED_BY_THIRD_PLACE =
             "3·4위전 경기가 있어 준결승 결과를 되돌릴 수 없습니다. 3·4위전 경기를 먼저 삭제해주세요.";
     public static final String INVALID_BRACKET_SIZE = "유효하지 않은 대진표 크기입니다.";

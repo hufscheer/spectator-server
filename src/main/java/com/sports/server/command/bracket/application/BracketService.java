@@ -77,10 +77,14 @@ public class BracketService {
                 .ifPresent(match -> match.linkGame(game));
     }
 
+    /**
+     * 대진표가 없으면 준결승이 어느 경기인지 알 수 없어 참가팀을 검증할 수 없다.
+     * 건너뛰면 준결승을 한 경기도 안 치른 대회에서 아무 두 팀으로 3·4위전이 만들어진다.
+     */
     public void validateThirdPlaceContenders(final League league, final Long teamId1, final Long teamId2) {
         List<BracketMatch> matches = bracketMatchRepository.findAllByLeagueId(league.getId());
         if (matches.isEmpty()) {
-            return;
+            throw new BadRequestException(BracketErrorMessages.THIRD_PLACE_REQUIRES_BRACKET);
         }
         Bracket.from(matches).validateThirdPlaceContenders(teamId1, teamId2);
     }

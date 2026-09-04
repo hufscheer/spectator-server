@@ -235,20 +235,18 @@ public class GameServiceTest extends ServiceTest {
          */
         @Test
         void 삼사위전_여부를_생략하면_기존_라운드가_유지된다() {
-            // given: 3·4위전으로 지정해 둔다
-            League league = entityUtils.getEntity(leagueId, League.class);
-            leagueService.update(manager, new com.sports.server.command.league.dto.LeagueRequest.Update(
-                    league.getName(), league.getMaxRound().getNumber(),
-                    league.getStartAt(), league.getEndAt(), true, null), leagueId);
-            gameService.updateGame(leagueId, gameId, new GameRequest.Update(
-                    nameOfGame, 4, updateDto.startTime(), "videoId", true), manager);
+            // given: 준결승 패자 두 팀(B·D)으로 만든 경기를 3·4위전으로 지정해 둔다
+            Long thirdPlaceLeagueId = 3L;
+            Long thirdPlaceGameId = 30L;
+            gameService.updateGame(thirdPlaceLeagueId, thirdPlaceGameId, new GameRequest.Update(
+                    nameOfGame, 2, updateDto.startTime(), "videoId", true), manager);
 
             // when: 3·4위전 여부를 빼고 이름만 바꾼다
-            gameService.updateGame(leagueId, gameId, new GameRequest.Update(
-                    "이름만 변경", 4, updateDto.startTime(), "videoId", null), manager);
+            gameService.updateGame(thirdPlaceLeagueId, thirdPlaceGameId, new GameRequest.Update(
+                    "이름만 변경", 2, updateDto.startTime(), "videoId", null), manager);
 
             // then
-            Game game = entityUtils.getEntity(gameId, Game.class);
+            Game game = entityUtils.getEntity(thirdPlaceGameId, Game.class);
             assertAll(
                     () -> assertThat(game.getRound()).isEqualTo(Round.THIRD_PLACE_MATCH),
                     () -> assertThat(game.getName()).isEqualTo("이름만 변경"));

@@ -169,3 +169,15 @@ INSERT INTO timelines (id, type, game_id, recorded_quarter, recorded_at, game_pr
                        game_team1_id, game_team2_id, snapshot_score1, snapshot_score2,
                        previous_quarter, previous_quarter_changed_at)
 VALUES (1001, 'GAME_PROGRESS', 10, 'SECOND_HALF', 90, 'GAME_END', 19, 20, 2, 0, 'SECOND_HALF', null);
+
+
+-- 리그 7: 3·4위전 옵션만 켜져 있고 대진표는 만들지 않은 대회 (매니저 화면으로 만든 대회의 기본 상태)
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round,
+                     in_progress_round, sport_type, third_place_match_enabled)
+VALUES (7, 1, 1, '대진표 없는 3·4위전 대회', '2025-08-01 10:00:00', '2025-08-15 22:00:00', false, '4강', '4강', 'SOCCER', true);
+
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (27, 7, 1),
+       (28, 7, 2),
+       (29, 7, 3),
+       (30, 7, 4);
