@@ -448,13 +448,27 @@ class BracketTest {
         }
 
         @Test
-        void 준결승이_끝나지_않았으면_검증을_건너뛴다() {
+        void 준결승이_끝나지_않았으면_검증에_실패한다() {
             // given
             Bracket bracket = Bracket.from(Bracket.generate(thirdPlaceLeague, 4, placementsOf(1, 2, 3, 4)));
 
-            // when & then (자동 배정이 불가능하므로 수동 선택을 허용한다)
-            assertThatNoException()
-                    .isThrownBy(() -> bracket.validateThirdPlaceContenders(1L, 3L));
+            // when & then
+            assertThatThrownBy(() -> bracket.validateThirdPlaceContenders(1L, 3L))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessageContaining(BracketErrorMessages.SEMI_FINALS_NOT_FINISHED);
+        }
+
+        @Test
+        void 준결승_한_경기만_끝났으면_검증에_실패한다() {
+            // given (2번 팀은 확정된 패자지만 3번 팀은 아직 준결승을 뛰고 있다)
+            List<BracketMatch> matches = Bracket.generate(thirdPlaceLeague, 4, placementsOf(1, 2, 3, 4));
+            matchOf(matches, 4, 1).linkGame(finishedGame(teams.get(1L), teams.get(2L)));
+            Bracket bracket = Bracket.from(matches);
+
+            // when & then
+            assertThatThrownBy(() -> bracket.validateThirdPlaceContenders(2L, 3L))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessageContaining(BracketErrorMessages.SEMI_FINALS_NOT_FINISHED);
         }
 
         @Test

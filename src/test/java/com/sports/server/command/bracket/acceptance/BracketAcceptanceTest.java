@@ -3,6 +3,7 @@ package com.sports.server.command.bracket.acceptance;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.sports.server.command.bracket.dto.BracketRequest;
+import com.sports.server.command.bracket.exception.BracketErrorMessages;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -167,6 +168,94 @@ public class BracketAcceptanceTest extends AcceptanceTest {
                 new GameRequest.TeamLineupRequest(teamId1, List.of()),
                 new GameRequest.TeamLineupRequest(teamId2, List.of()),
                 true);
+    }
+
+    @Test
+    void 준결승이_하나라도_안_끝났으면_3_4위전_경기를_만들_수_없다() {
+        // given (리그 5: 4강 2경기가 아직 진행 중이다)
+        Long leagueId = 5L;
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when (2번 팀은 이미 확정된 패자, 3번 팀은 아직 준결승을 뛰고 있다)
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(thirdPlaceGameRequest(2L, 3L))
+                .post("/leagues/{leagueId}/games", leagueId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(BracketErrorMessages.SEMI_FINALS_NOT_FINISHED);
+    }
+
+    @Test
+    void 일반_경기를_3_4위전으로_바꿀_때도_준결승_패자인지_검증한다() {
+        // given (리그 4의 결승 진출 두 팀으로 만든 경기)
+        Long leagueId = 4L;
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        Long gameId = Long.parseLong(RestAssured.given()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new GameRequest.Register("결승", 2, "경기전", "SCHEDULED",
+                        LocalDateTime.of(2025, 8, 12, 18, 0), null,
+                        new GameRequest.TeamLineupRequest(1L, List.of()),
+                        new GameRequest.TeamLineupRequest(3L, List.of()),
+                        false))
+                .post("/leagues/{leagueId}/games", leagueId)
+                .then().extract().body().asString().trim());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new GameRequest.Update("결승", 2,
+                        LocalDateTime.of(2025, 8, 12, 18, 0), null, true))
+                .put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(BracketErrorMessages.THIRD_PLACE_TEAMS_MISMATCH);
+    }
+
+    @Test
+    void 이미_만들어진_3_4위전이_있으면_준결승_경기_종료_기록을_지울_수_없다() {
+        // given (리그 6: 3·4위전 경기가 대진표에 연결돼 있다)
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .delete("/games/{gameId}/timelines/{timelineId}", 10L, 1001L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(BracketErrorMessages.SEMI_FINAL_LOCKED_BY_THIRD_PLACE);
+    }
+
+    @Test
+    void 지울_수_없는_경기_종료_기록은_조회에서도_삭제_불가로_내려온다() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .get("/games/{gameId}/timeline", 10L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.jsonPath()
+                .getBoolean("timelines.records.flatten().find { it.recordId == 1001 }.deletable")).isFalse();
+        assertThat(response.jsonPath()
+                .getString("timelines.records.flatten().find { it.recordId == 1001 }.undeletableReasonCode"))
+                .isEqualTo("SEMI_FINAL_LOCKED_BY_THIRD_PLACE");
     }
 
     @Test

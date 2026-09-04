@@ -85,6 +85,19 @@ public class BracketService {
         Bracket.from(matches).validateThirdPlaceContenders(teamId1, teamId2);
     }
 
+    /**
+     * 준결승 결과를 되돌리면 이미 만들어진 3·4위전의 참가팀이 준결승 패자와 어긋난다.
+     */
+    public void validateSemiFinalResultChangeable(final Game game) {
+        if (game.getRound() != Round.SEMI_FINAL) {
+            return;
+        }
+        if (bracketMatchRepository.existsByLeagueIdAndRoundAndGameIsNotNull(
+                game.getLeague().getId(), Round.THIRD_PLACE_MATCH)) {
+            throw new BadRequestException(BracketErrorMessages.SEMI_FINAL_LOCKED_BY_THIRD_PLACE);
+        }
+    }
+
     public void relinkGame(final League league, final Game game) {
         unlinkGame(game);
         if (game.getGameTeams().size() == Game.MINIMUM_TEAMS) {

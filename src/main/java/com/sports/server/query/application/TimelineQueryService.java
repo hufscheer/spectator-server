@@ -5,10 +5,12 @@ import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
 
+import com.sports.server.command.bracket.domain.BracketMatchRepository;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
@@ -43,13 +45,22 @@ public class TimelineQueryService {
     private final GameProgressTimelineRepository gameProgressTimelineRepository;
     private final GameTeamQueryRepository gameTeamQueryRepository;
     private final EntityUtils entityUtils;
+    private final BracketMatchRepository bracketMatchRepository;
+
+    // 3·4위전이 이미 만들어졌으면 준결승의 경기 종료 기록을 지울 수 없다. 삭제 API 와 같은 판정을 조회에도 반영한다
+    private boolean semiFinalLockedByThirdPlace(final Game game) {
+        return game.getRound() == Round.SEMI_FINAL
+                && bracketMatchRepository.existsByLeagueIdAndRoundAndGameIsNotNull(
+                        game.getLeague().getId(), Round.THIRD_PLACE_MATCH);
+    }
 
     public GameTimelineResponse getTimelines(final Long gameId) {
         List<Timeline> allTimelines = timelineQueryRepository.findByGameId(gameId);
 
         Map<Long, TimelineDeletabilityEvaluator.Result> deletability = allTimelines.isEmpty()
                 ? Map.of()
-                : TimelineDeletabilityEvaluator.evaluate(allTimelines.get(0).getGame().getState(), allTimelines);
+                : TimelineDeletabilityEvaluator.evaluate(allTimelines.get(0).getGame().getState(), allTimelines,
+                        semiFinalLockedByThirdPlace(allTimelines.get(0).getGame()));
 
         Map<Quarter, List<Timeline>> timelines = allTimelines
                 .stream()

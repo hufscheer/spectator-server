@@ -99,9 +99,14 @@ public class GameService {
 
         Game game = entityUtils.getEntity(gameId, Game.class);
         // 요청이 3·4위전 여부를 생략하면 지금 값을 그대로 둔다. 이름만 고쳤다고 라운드가 바뀌면 안 된다
-        boolean thirdPlaceMatch = Optional.ofNullable(request.thirdPlaceMatch())
-                .orElse(game.getRound() == Round.THIRD_PLACE_MATCH);
+        boolean wasThirdPlaceMatch = game.getRound() == Round.THIRD_PLACE_MATCH;
+        boolean thirdPlaceMatch = Optional.ofNullable(request.thirdPlaceMatch()).orElse(wasThirdPlaceMatch);
         league.validateRound(request.round(), thirdPlaceMatch);
+        // 생성과 달리 전환은 검증이 없어, 결승 진출 2팀짜리 3·4위전을 만들 수 있었다
+        if (thirdPlaceMatch && !wasThirdPlaceMatch && game.getGameTeams().size() == Game.MINIMUM_TEAMS) {
+            bracketService.validateThirdPlaceContenders(league, game.getTeam1().getTeam().getId(),
+                    game.getTeam2().getTeam().getId());
+        }
 
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
