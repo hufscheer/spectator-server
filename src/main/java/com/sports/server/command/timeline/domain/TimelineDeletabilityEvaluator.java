@@ -1,5 +1,6 @@
 package com.sports.server.command.timeline.domain;
 
+import com.sports.server.command.bracket.exception.BracketErrorMessages;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.timeline.exception.TimelineErrorMessage;
@@ -21,7 +22,8 @@ public final class TimelineDeletabilityEvaluator {
         MIDDLE_DELETE_ONLY_WHILE_PLAYING(TimelineErrorMessage.MIDDLE_DELETE_ONLY_WHILE_PLAYING),
         PROGRESS_TIMELINE_NOT_LAST(TimelineErrorMessage.PROGRESS_TIMELINE_NOT_LAST),
         INCONSISTENT_PROGRESS_STATE(TimelineErrorMessage.INCONSISTENT_PROGRESS_STATE),
-        REPLACEMENT_PLAYER_HAS_LATER_RECORDS(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS);
+        REPLACEMENT_PLAYER_HAS_LATER_RECORDS(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS),
+        SEMI_FINAL_LOCKED_BY_THIRD_PLACE(BracketErrorMessages.SEMI_FINAL_LOCKED_BY_THIRD_PLACE);
 
         private final String message;
 
@@ -53,7 +55,8 @@ public final class TimelineDeletabilityEvaluator {
         }
     }
 
-    public static Map<Long, Result> evaluate(GameState gameState, List<Timeline> timelines) {
+    public static Map<Long, Result> evaluate(GameState gameState, List<Timeline> timelines,
+                                             boolean semiFinalLockedByThirdPlace) {
         List<Timeline> ordered = timelines.stream()
                 .sorted(Comparator.comparing(Timeline::getId))
                 .toList();
@@ -67,7 +70,7 @@ public final class TimelineDeletabilityEvaluator {
             boolean isLast = i == ordered.size() - 1;
 
             results.put(timeline.getId(), isLast
-                    ? Result.allowed()
+                    ? evaluateLast(timeline, semiFinalLockedByThirdPlace)
                     : evaluateMiddle(gameState, timeline, gameEndLater, laterPlayerIds));
 
             gameEndLater = gameEndLater || timeline.isGameEnd();
@@ -76,6 +79,13 @@ public final class TimelineDeletabilityEvaluator {
                     .forEach(laterPlayerIds::add);
         }
         return results;
+    }
+
+    private static Result evaluateLast(Timeline timeline, boolean semiFinalLockedByThirdPlace) {
+        if (semiFinalLockedByThirdPlace && timeline.isGameEnd()) {
+            return Result.blocked(Reason.SEMI_FINAL_LOCKED_BY_THIRD_PLACE);
+        }
+        return Result.allowed();
     }
 
     public static Result evaluateMiddle(GameState gameState, Timeline target, List<Timeline> subsequents) {

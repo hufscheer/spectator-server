@@ -1,5 +1,6 @@
 package com.sports.server.command.timeline.application;
 
+import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.game.application.GameStatusScheduler;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameRepository;
@@ -42,6 +43,7 @@ public class TimelineService {
     private final TimelineMapper timelineMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final GameStatusScheduler gameStatusScheduler;
+    private final BracketService bracketService;
 
     @Transactional
     public void register(Member manager, Long gameId, TimelineRequest request) {
@@ -137,6 +139,9 @@ public class TimelineService {
         PermissionValidator.checkPermission(game, manager);
 
         Timeline timeline = getTimeline(timelineId, game);
+        if (timeline.isGameEnd()) {
+            bracketService.validateSemiFinalResultChangeable(game);
+        }
         List<Timeline> subsequents = timelineRepository.findByGameAndIdGreaterThanOrderByIdAsc(game, timelineId);
 
         if (subsequents.isEmpty()) {

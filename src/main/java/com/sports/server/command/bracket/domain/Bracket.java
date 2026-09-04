@@ -194,10 +194,13 @@ public class Bracket {
     }
 
     /**
-     * 3·4위전 참가팀이 준결승 패자와 일치하는지 검증한다.
-     * 준결승이 끝나지 않았거나 무승부로 남아 패자가 가려지지 않으면 검증을 건너뛰어 수동 선택을 허용한다.
+     * 준결승이 하나라도 안 끝났으면 거절한다. 아직 뛰고 있는 팀도 통과해버려 결승 진출팀이 3·4위전에 들어간다.
+     * 다 끝났는데 무승부로 패자가 안 가려진 경우만 검증을 건너뛰어 수동 선택을 허용한다.
      */
     public void validateThirdPlaceContenders(final Long teamId1, final Long teamId2) {
+        if (!isFinished(semiFinalOf(TEAM1_SIDE)) || !isFinished(semiFinalOf(TEAM2_SIDE))) {
+            throw new BadRequestException(BracketErrorMessages.SEMI_FINALS_NOT_FINISHED);
+        }
         Team loser1 = thirdPlaceSlotOf(TEAM1_SIDE);
         Team loser2 = thirdPlaceSlotOf(TEAM2_SIDE);
         if (loser1 == null || loser2 == null) {
@@ -212,12 +215,20 @@ public class Bracket {
      * 3·4위전에 배정될 팀. 준결승 패자이며, 준결승이 끝나지 않았거나 무승부로 남아 패자가 없으면 null.
      */
     public Team thirdPlaceSlotOf(final int side) {
-        BracketMatch semiFinal = tree.matchAt(Round.SEMI_FINAL.getNumber(),
-                side == TEAM1_SIDE ? FIRST_SEMI_FINAL : SECOND_SEMI_FINAL);
+        BracketMatch semiFinal = semiFinalOf(side);
         if (semiFinal == null) {
             return null;
         }
         return teamWithResult(semiFinal, GameResult.LOSE);
+    }
+
+    private BracketMatch semiFinalOf(final int side) {
+        return tree.matchAt(Round.SEMI_FINAL.getNumber(),
+                side == TEAM1_SIDE ? FIRST_SEMI_FINAL : SECOND_SEMI_FINAL);
+    }
+
+    private boolean isFinished(final BracketMatch match) {
+        return match != null && match.getGame() != null && match.getGame().getState() == GameState.FINISHED;
     }
 
     private Team teamWithResult(final BracketMatch match, final GameResult result) {

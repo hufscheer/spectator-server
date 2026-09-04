@@ -104,3 +104,80 @@ VALUES (7, 4, '4강', 1, 1, 2, 6),
        (8, 4, '4강', 2, 3, 4, 7),
        (9, 4, '결승', 1, null, null, null),
        (10, 4, '3·4위전', 1, null, null, null);
+
+
+-- 리그 5: 3·4위전 대회인데 준결승 한 경기만 끝난 상태
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round,
+                     in_progress_round, sport_type, third_place_match_enabled)
+VALUES (5, 1, 1, '준결승 진행 중인 대회', '2025-08-01 10:00:00', '2025-08-15 22:00:00', false, '4강', '4강', 'SOCCER', true);
+
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (19, 5, 1),
+       (20, 5, 2),
+       (21, 5, 3),
+       (22, 5, 4);
+
+INSERT INTO games (id, administrator_id, league_id, start_time, name, round, state, game_quarter, is_pk_taken)
+VALUES (8, 1, 5, '2025-08-05 18:00:00', '4강 1경기', '4강', 'FINISHED', '경기 종료', false),
+       (9, 1, 5, '2025-08-05 20:00:00', '4강 2경기', '4강', 'PLAYING', '전반전', false);
+
+INSERT INTO game_teams (id, game_id, team_id, score, pk_score, result, cheer_count)
+VALUES (15, 8, 1, 2, 0, 'WIN', 0),
+       (16, 8, 2, 0, 0, 'LOSE', 0),
+       (17, 9, 3, 0, 0, null, 0),
+       (18, 9, 4, 0, 0, null, 0);
+
+INSERT INTO bracket_matches (id, league_id, round, match_number, team1_id, team2_id, game_id)
+VALUES (11, 5, '4강', 1, 1, 2, 8),
+       (12, 5, '4강', 2, 3, 4, 9),
+       (13, 5, '결승', 1, null, null, null),
+       (14, 5, '3·4위전', 1, null, null, null);
+
+
+-- 리그 6: 준결승 두 경기가 끝나고 3·4위전 경기까지 만들어진 상태
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round,
+                     in_progress_round, sport_type, third_place_match_enabled)
+VALUES (6, 1, 1, '3·4위전이 만들어진 대회', '2025-08-01 10:00:00', '2025-08-15 22:00:00', false, '4강', '4강', 'SOCCER', true);
+
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (23, 6, 1),
+       (24, 6, 2),
+       (25, 6, 3),
+       (26, 6, 4);
+
+INSERT INTO games (id, administrator_id, league_id, start_time, name, round, state, game_quarter, is_pk_taken)
+VALUES (10, 1, 6, '2025-08-05 18:00:00', '4강 1경기', '4강', 'FINISHED', '경기 종료', false),
+       (11, 1, 6, '2025-08-05 20:00:00', '4강 2경기', '4강', 'FINISHED', '경기 종료', false),
+       (12, 1, 6, '2025-08-09 18:00:00', '3·4위전', '3·4위전', 'SCHEDULED', '경기전', false);
+
+INSERT INTO game_teams (id, game_id, team_id, score, pk_score, result, cheer_count)
+VALUES (19, 10, 1, 2, 0, 'WIN', 0),
+       (20, 10, 2, 0, 0, 'LOSE', 0),
+       (21, 11, 3, 1, 0, 'WIN', 0),
+       (22, 11, 4, 0, 0, 'LOSE', 0),
+       (23, 12, 2, 0, 0, null, 0),
+       (24, 12, 4, 0, 0, null, 0);
+
+INSERT INTO bracket_matches (id, league_id, round, match_number, team1_id, team2_id, game_id)
+VALUES (15, 6, '4강', 1, 1, 2, 10),
+       (16, 6, '4강', 2, 3, 4, 11),
+       (17, 6, '결승', 1, null, null, null),
+       (18, 6, '3·4위전', 1, null, null, 12);
+
+-- 준결승 1경기의 경기 종료 기록. 이걸 지우면 패자가 다시 미정이 된다
+INSERT INTO timelines (id, type, game_id, recorded_quarter, recorded_at, game_progress_type,
+                       game_team1_id, game_team2_id, snapshot_score1, snapshot_score2,
+                       previous_quarter, previous_quarter_changed_at)
+VALUES (1001, 'GAME_PROGRESS', 10, 'SECOND_HALF', 90, 'GAME_END', 19, 20, 2, 0, 'SECOND_HALF', null);
+
+
+-- 리그 7: 3·4위전 옵션만 켜져 있고 대진표는 만들지 않은 대회 (매니저 화면으로 만든 대회의 기본 상태)
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, is_deleted, max_round,
+                     in_progress_round, sport_type, third_place_match_enabled)
+VALUES (7, 1, 1, '대진표 없는 3·4위전 대회', '2025-08-01 10:00:00', '2025-08-15 22:00:00', false, '4강', '4강', 'SOCCER', true);
+
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (27, 7, 1),
+       (28, 7, 2),
+       (29, 7, 3),
+       (30, 7, 4);

@@ -1,6 +1,7 @@
 package com.sports.server.command.bracket.domain;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.league.domain.Round;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,8 @@ public interface BracketMatchRepository extends JpaRepository<BracketMatch, Long
     Optional<BracketMatch> findByGame(Game game);
 
     boolean existsByLeagueIdAndGameIsNotNull(Long leagueId);
+
+    boolean existsByLeagueIdAndRoundAndGameIsNotNull(Long leagueId, Round round);
 
     // 파생 delete 는 flush 시점(insert 이후)에 실행되어 재배치 시 유니크 제약에 걸리므로 즉시 실행되는 bulk delete 사용
     @Modifying
