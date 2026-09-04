@@ -194,12 +194,13 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new LeagueTeamResponse(2L, 11L, "서어 뻬데뻬", "s3:logoImageUrl2", 6, 0, 0)
         );
 
-        given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2))
+        given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2, true))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/teams", leagueId)
                 .queryParam("round", "2")
+                .queryParam("third_place_match", "true")
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -210,7 +211,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 parameterWithName("leagueId").description("리그의 ID")
                         ),
                         queryParameters(
-                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
+                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2"),
+                                parameterWithName("third_place_match").optional()
+                                        .description("3·4위전만 조회할지 여부. 3·4위전은 결승과 라운드 번호가 같아 이 값으로 구분한다")
                         ),
                         responseFields(
                                 fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 리그팀 ID"),

@@ -30,8 +30,9 @@ public class LeagueQueryController {
     @GetMapping("/{leagueId}/teams")
     public ResponseEntity<List<LeagueTeamResponse>> findLeagueTeamsByLeague(
             @PathVariable Long leagueId,
-            @RequestParam(required = false) Integer round) {
-        return ResponseEntity.ok(leagueQueryService.findTeamsByLeagueRound(leagueId, round));
+            @RequestParam(required = false) Integer round,
+            @RequestParam(name = "third_place_match", required = false) Boolean thirdPlaceMatch) {
+        return ResponseEntity.ok(leagueQueryService.findTeamsByLeagueRound(leagueId, round, thirdPlaceMatch));
     }
 
     @GetMapping("/{leagueId}")
