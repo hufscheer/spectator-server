@@ -55,7 +55,7 @@ public class NlService {
         Team team = entityUtils.getEntity(request.teamId(), Team.class);
         validateTeamBelongsToLeague(league, team);
 
-        int studentNumberDigits = member.getOrganization().getStudentNumberDigits();
+        Integer studentNumberDigits = member.getOrganization().getStudentNumberDigits();
         NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history(), studentNumberDigits);
 
         if (!parseResult.parsed()) {
@@ -74,7 +74,7 @@ public class NlService {
 
     @Transactional(readOnly = true)
     public NlParseResponse parse(NlParseRequest request, Member member) {
-        int studentNumberDigits = member.getOrganization().getStudentNumberDigits();
+        Integer studentNumberDigits = member.getOrganization().getStudentNumberDigits();
         NlParseResult parseResult = nlClient.parsePlayers(request.message(), request.history(), studentNumberDigits);
 
         if (!parseResult.parsed()) {
@@ -158,7 +158,7 @@ public class NlService {
     private void classifyWithTeamContext(List<ParsedPlayer> parsedPlayers, Map<String, Integer> originalStudentNumberLineMap,
                                          Set<Long> teamPlayerIdSet, Map<String, Player> existingPlayerMap,
                                          List<PlayerPreview> playerPreviews, List<NlFailedLine> failedLines,
-                                         int studentNumberDigits) {
+                                         Integer studentNumberDigits) {
         Set<String> seenStudentNumbers = new HashSet<>();
 
         for (int i = 0; i < parsedPlayers.size(); i++) {
@@ -212,7 +212,7 @@ public class NlService {
 
     // --- parse 전용 (팀 컨텍스트 없음) ---
 
-    private NlParseResponse buildParsePreview(String message, List<ParsedPlayer> parsedPlayers, int studentNumberDigits) {
+    private NlParseResponse buildParsePreview(String message, List<ParsedPlayer> parsedPlayers, Integer studentNumberDigits) {
         Map<String, Integer> originalStudentNumberLineMap = extractStudentNumberLineMap(message);
 
         List<NlParseResponse.ParsedPlayerPreview> playerPreviews = new ArrayList<>();
@@ -226,7 +226,7 @@ public class NlService {
 
     private void classifyWithoutTeamContext(List<ParsedPlayer> parsedPlayers, Map<String, Integer> originalStudentNumberLineMap,
                                              List<NlParseResponse.ParsedPlayerPreview> playerPreviews,
-                                             List<NlFailedLine> failedLines, int studentNumberDigits) {
+                                             List<NlFailedLine> failedLines, Integer studentNumberDigits) {
         Set<String> seenStudentNumbers = new HashSet<>();
 
         for (int i = 0; i < parsedPlayers.size(); i++) {
@@ -362,10 +362,12 @@ public class NlService {
 
     // --- 공용 유틸 ---
 
-    private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Map<String, Integer> originalStudentNumberLineMap, int digits) {
+    private NlFailedLine validateParsedPlayer(int index, ParsedPlayer parsed, Map<String, Integer> originalStudentNumberLineMap, Integer digits) {
         String reason = null;
         if (StudentNumber.isInvalid(parsed.studentNumber(), digits)) {
-            reason = String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits);
+            reason = digits == null
+                    ? ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID_RANGE
+                    : String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits);
         } else if (!originalStudentNumberLineMap.containsKey(parsed.studentNumber())) {
             reason = NlErrorMessages.STUDENT_NUMBER_NOT_IN_ORIGINAL;
         } else if (!isValidName(parsed.name())) {
@@ -379,14 +381,14 @@ public class NlService {
         return new NlFailedLine(lineIndex, parsed.studentNumber(), parsed.name(), parsed.jerseyNumber(), reason);
     }
 
-    private void addDigitMismatchFailures(Map<String, Integer> originalStudentNumberLineMap, int digits, List<NlFailedLine> failedLines) {
+    private void addDigitMismatchFailures(Map<String, Integer> originalStudentNumberLineMap, Integer digits, List<NlFailedLine> failedLines) {
         Set<String> alreadyReported = failedLines.stream()
                 .map(NlFailedLine::studentNumber)
                 .collect(Collectors.toSet());
 
         for (Map.Entry<String, Integer> entry : originalStudentNumberLineMap.entrySet()) {
             String studentNumber = entry.getKey();
-            if (studentNumber.length() == digits) {
+            if (digits == null ? !StudentNumber.isInvalid(studentNumber) : studentNumber.length() == digits) {
                 continue;
             }
             if (!alreadyReported.add(studentNumber)) {
@@ -397,7 +399,9 @@ public class NlService {
                     studentNumber,
                     null,
                     null,
-                    String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits)
+                    digits == null
+                            ? ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID_RANGE
+                            : String.format(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID, digits)
             ));
         }
     }

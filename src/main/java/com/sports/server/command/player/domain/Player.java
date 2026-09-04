@@ -38,13 +38,13 @@ public class Player extends BaseEntity<Player> implements ManagedEntity {
     private List<LeagueTopScorer> leagueTopScorers = new ArrayList<>();
 
     @Builder
-    public Player(@NonNull String name, @NonNull String studentNumber, int studentNumberDigits) {
+    public Player(@NonNull String name, @NonNull String studentNumber, Integer studentNumberDigits) {
         StudentNumber.validate(studentNumber, studentNumberDigits);
         this.name = name;
         this.studentNumber = studentNumber;
     }
 
-    public void update(String name, String studentNumber, int studentNumberDigits) {
+    public void update(String name, String studentNumber, Integer studentNumberDigits) {
         StudentNumber.validate(studentNumber, studentNumberDigits);
         this.name = name;
         this.studentNumber = studentNumber;
