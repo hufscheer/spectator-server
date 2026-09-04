@@ -26,14 +26,15 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<LeagueTeam> findByLeagueAndRound(final League league, Integer roundNumber) {
+    public List<LeagueTeam> findByLeagueAndRound(final League league, final Integer roundNumber,
+                                                final Boolean thirdPlaceMatch) {
         return jpaQueryFactory
                 .selectFrom(leagueTeam)
                 .join(leagueTeam.team, team).fetchJoin()
                 .join(team.unit).fetchJoin()
                 .where(
                         leagueTeam.league.eq(league),
-                        teamsPlayedInRound(league, roundNumber)
+                        teamsPlayedInRound(league, roundNumber, thirdPlaceMatch)
                 )
                 .orderBy(team.name.asc())
                 .fetch();
@@ -54,11 +55,12 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
                 .fetch();
     }
 
-    private BooleanExpression teamsPlayedInRound(final League league, final Integer roundNumber) {
-        if (!Round.isValidNumber(roundNumber)) {
+    private BooleanExpression teamsPlayedInRound(final League league, final Integer roundNumber,
+                                                final Boolean thirdPlaceMatch) {
+        Round round = resolveRound(roundNumber, thirdPlaceMatch);
+        if (round == null) {
             return null;
         }
-        Round round = Round.from(roundNumber);
 
         return leagueTeam.team.id.in(
                 JPAExpressions.select(gameTeam.team.id)
@@ -69,6 +71,19 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
                                 game.round.eq(round)
                         )
         );
+    }
+
+    /**
+     * 3·4위전은 결승과 라운드 번호가 같아 번호만으로는 결승이 잡힌다. 플래그로 갈라준다.
+     */
+    private Round resolveRound(final Integer roundNumber, final Boolean thirdPlaceMatch) {
+        if (Boolean.TRUE.equals(thirdPlaceMatch)) {
+            return Round.THIRD_PLACE_MATCH;
+        }
+        if (!Round.isValidNumber(roundNumber)) {
+            return null;
+        }
+        return Round.from(roundNumber);
     }
 
     @Override

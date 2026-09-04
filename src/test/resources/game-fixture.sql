@@ -200,3 +200,33 @@ VALUES (1, 3, '4강', 1, 1, 2, 28),
        (2, 3, '4강', 2, 3, 4, 29),
        (3, 3, '결승', 1, null, null, null),
        (4, 3, '3·4위전', 1, null, null, null);
+
+
+-- 리그 4: 결승과 3·4위전의 참가팀이 서로 다른 대회. 라운드 필터가 둘을 구분하는지 확인용
+-- 준결승 승자 = 팀 A·팀 C (결승) / 패자 = 팀 B·팀 D (3·4위전)
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, max_round, in_progress_round,
+                     is_deleted, third_place_match_enabled)
+VALUES (4, 1, 1, '라운드 필터 대회', '2024-11-09 00:00:00', '2025-11-20 00:00:00', '4강', '4강', false, true);
+
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (12, 4, 1),
+       (13, 4, 2),
+       (14, 4, 3),
+       (15, 4, 4);
+
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
+                   game_quarter, state, round, is_pk_taken)
+VALUES (31, 1, 4, '4강 1경기', '2024-11-10T10:00:00', 'abc123', '2024-11-10T12:00:00', 'POST_GAME', 'FINISHED', '4강', false),
+       (32, 1, 4, '4강 2경기', '2024-11-10T14:00:00', 'abc123', '2024-11-10T16:00:00', 'POST_GAME', 'FINISHED', '4강', false),
+       (33, 1, 4, '결승', '2024-11-12T10:00:00', 'abc123', '2024-11-12T10:00:00', 'PRE_GAME', 'SCHEDULED', '결승', false),
+       (34, 1, 4, '3·4위전', '2024-11-11T10:00:00', 'abc123', '2024-11-11T10:00:00', 'PRE_GAME', 'SCHEDULED', '3·4위전', false);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (39, 31, 1, 0, 2, 0, 'WIN'),
+       (40, 31, 2, 0, 0, 0, 'LOSE'),
+       (41, 32, 3, 0, 1, 0, 'WIN'),
+       (42, 32, 4, 0, 0, 0, 'LOSE'),
+       (43, 33, 1, 0, 0, 0, null),
+       (44, 33, 3, 0, 0, 0, null),
+       (45, 34, 2, 0, 0, 0, null),
+       (46, 34, 4, 0, 0, 0, null);

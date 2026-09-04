@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface TeamQueryDynamicRepository {
 
-    List<LeagueTeam> findByLeagueAndRound(League league, Integer roundNumber);
+    List<LeagueTeam> findByLeagueAndRound(League league, Integer roundNumber, Boolean thirdPlaceMatch);
 
     long countByLeague(League league);
 
