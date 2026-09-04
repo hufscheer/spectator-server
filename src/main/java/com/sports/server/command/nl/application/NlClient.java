@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface NlClient {
-    NlParseResult parsePlayers(String message, List<Map<String, String>> history, int studentNumberDigits);
+    NlParseResult parsePlayers(String message, List<Map<String, String>> history, Integer studentNumberDigits);
 }

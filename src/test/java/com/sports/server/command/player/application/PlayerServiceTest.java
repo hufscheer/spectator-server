@@ -85,6 +85,36 @@ public class PlayerServiceTest extends ServiceTest {
             assertThat(playerId).isNotNull();
         }
 
+        /**
+         * 여러 학교가 한 조직으로 묶이는 대회는 학교마다 학번 자리수가 달라 하나로 정할 수 없다.
+         * 그런 조직은 student_number_digits 를 비워 두고 9~10 자리를 모두 받는다.
+         */
+        @Test
+        void 자리수를_정하지_않은_organization은_9자리와_10자리를_모두_받는다() {
+            // given
+            Member unionManager = memberRepository.findMemberByEmailWithOrganization("union@example.com")
+                    .orElseThrow();
+
+            // when & then
+            assertThat(playerService.register(unionManager,
+                    new PlayerRequest.Register("외대선수", "202012345"))).isNotNull();
+            assertThat(playerService.register(unionManager,
+                    new PlayerRequest.Register("경희대선수", "2020123456"))).isNotNull();
+        }
+
+        @Test
+        void 자리수를_정하지_않아도_9_10자리를_벗어나면_거부한다() {
+            // given
+            Member unionManager = memberRepository.findMemberByEmailWithOrganization("union@example.com")
+                    .orElseThrow();
+
+            // when & then
+            assertThatThrownBy(() -> playerService.register(unionManager,
+                    new PlayerRequest.Register("이상한선수", "12345678")))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(ExceptionMessages.PLAYER_STUDENT_NUMBER_INVALID_RANGE);
+        }
+
         @Test
         void 학번_10자리_organization에서_9자리_학번으로_등록_시_예외가_발생한다() {
             // given

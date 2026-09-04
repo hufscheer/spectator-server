@@ -9,7 +9,7 @@
 CREATE TABLE `organizations` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `student_number_digits` int NOT NULL DEFAULT '9',
+  `student_number_digits` int DEFAULT NULL,
   `logo_image_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -23,7 +23,7 @@ CREATE TABLE `organizations` (
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
 | id | bigint |  | false | auto_increment | [leagues](leagues.md) [members](members.md) [players](players.md) [units](units.md) |  |  |
 | name | varchar(255) |  | false |  |  |  |  |
-| student_number_digits | int | 9 | false |  |  |  |  |
+| student_number_digits | int |  | true |  |  |  |  |
 | logo_image_url | varchar(255) |  | true |  |  |  |  |
 
 ## Constraints
