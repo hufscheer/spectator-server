@@ -6,6 +6,8 @@ import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.timeline.domain.BasketballScore;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.league.domain.SportType;
+import com.sports.server.common.exception.ExceptionMessages;
+import com.sports.server.command.league.domain.CommonQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
@@ -156,6 +158,38 @@ public class TimelineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(ExceptionMessages.INVALID_OWN_GOAL_QUARTER);
+    }
+
+    /**
+     * 승부차기 전용 문구를 쓰면 경기 시작 전에도 "승부차기에서 기록할 수 없습니다" 가 나간다.
+     */
+    @Test
+    void 경기_시작_전_쿼터에_자책골_타임라인을_등록하면_400을_반환한다() {
+        // given
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                team1Id, SportType.SOCCER, CommonQuarter.PRE_GAME.name(),
+                team1PlayerId,
+                0,
+                null,
+                true
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .post("/games/{gameId}/timelines/score", gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(ExceptionMessages.INVALID_OWN_GOAL_QUARTER);
     }
 
     @Test
