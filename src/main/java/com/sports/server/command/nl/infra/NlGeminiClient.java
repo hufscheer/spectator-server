@@ -88,12 +88,12 @@ public class NlGeminiClient implements NlClient {
     );
 
     @Override
-    public NlParseResult parsePlayers(String message, List<Map<String, String>> history, int studentNumberDigits) {
+    public NlParseResult parsePlayers(String message, List<Map<String, String>> history, Integer studentNumberDigits) {
         GeminiFunctionCallResponse response = callGeminiApiWithRetry(message, history, studentNumberDigits);
         return toParseResult(response);
     }
 
-    private GeminiFunctionCallResponse callGeminiApiWithRetry(String message, List<Map<String, String>> history, int studentNumberDigits) {
+    private GeminiFunctionCallResponse callGeminiApiWithRetry(String message, List<Map<String, String>> history, Integer studentNumberDigits) {
         List<Map<String, Object>> contents = buildContents(message, history);
         Map<String, Object> body = buildRequestBody(contents, studentNumberDigits);
 
@@ -122,11 +122,13 @@ public class NlGeminiClient implements NlClient {
         throw new CustomException(HttpStatus.TOO_MANY_REQUESTS, "AI 서비스가 일시적으로 사용량이 많습니다. 잠시 후 다시 시도해주세요.");
     }
 
-    private Map<String, Object> buildRequestBody(List<Map<String, Object>> contents, int studentNumberDigits) {
-        String perCallInstruction = String.format(
-                "이 요청의 학번 자릿수는 정확히 %d자리다. %d자리가 아닌 숫자는 학번으로 추출하지 마.",
-                studentNumberDigits, studentNumberDigits
-        );
+    private Map<String, Object> buildRequestBody(List<Map<String, Object>> contents, Integer studentNumberDigits) {
+        String perCallInstruction = studentNumberDigits == null
+                ? "이 요청은 학교마다 학번 자릿수가 다르다. 9자리 또는 10자리 숫자만 학번으로 추출해."
+                : String.format(
+                        "이 요청의 학번 자릿수는 정확히 %d자리다. %d자리가 아닌 숫자는 학번으로 추출하지 마.",
+                        studentNumberDigits, studentNumberDigits
+                );
         return Map.of(
                 "systemInstruction", Map.of(
                         "parts", List.of(

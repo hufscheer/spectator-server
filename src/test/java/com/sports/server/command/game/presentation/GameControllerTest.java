@@ -1,17 +1,25 @@
 package com.sports.server.command.game.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
+import com.sports.server.command.bracket.exception.BracketErrorMessages;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.game.dto.LineupPlayerPositionUpdateRequest;
+import com.sports.server.command.game.domain.Position;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDateTime;
@@ -106,20 +114,55 @@ public class GameControllerTest extends DocumentationTest {
     }
 
     @Test
+    void 라인업_선수의_포지션을_변경한다() throws Exception {
+
+        //given
+        Long gameId = 1L;
+        Long lineupPlayerId = 1L;
+        LineupPlayerPositionUpdateRequest request = new LineupPlayerPositionUpdateRequest(Position.LW);
+
+        //when
+        ResultActions result = mockMvc.perform(
+                patch("/games/{gameId}/lineup-players/{lineupPlayerId}/position", gameId, lineupPlayerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        //then
+        result.andExpect((status().isOk()))
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("게임의 ID"),
+                                parameterWithName("lineupPlayerId").description("라인업 선수의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("position").type(JsonFieldType.STRING).optional()
+                                        .description("변경할 포지션. 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 전용 FW/MF/DF, 농구 PG/SG/SF/PF/C. "
+                                                + "null 을 보내면 해제된다. 경기 종목과 맞지 않는 값이면 400")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
     void 게임을_등록한다() throws Exception {
         // given
         Long leagueId = 1L;
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
         List<GameRequest.LineupPlayerRequest> team1LineupPlayers = List.of(
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false)
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true, null),
+                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false, null)
         );
         GameRequest.TeamLineupRequest team1 = new GameRequest.TeamLineupRequest(1L, team1LineupPlayers);
 
         List<GameRequest.LineupPlayerRequest> team2LineupPlayers = List.of(
-                new GameRequest.LineupPlayerRequest(3L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(4L, LineupPlayerState.CANDIDATE, false)
+                new GameRequest.LineupPlayerRequest(3L, LineupPlayerState.STARTER, true, null),
+                new GameRequest.LineupPlayerRequest(4L, LineupPlayerState.CANDIDATE, false, null)
         );
         GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, team2LineupPlayers);
 
@@ -132,7 +175,7 @@ public class GameControllerTest extends DocumentationTest {
                 "video url",
                 team1,
                 team2
-        );
+        , false);
 
         // when
         ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/games", leagueId)
@@ -150,6 +193,9 @@ public class GameControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER).description("경기의 총 라운드 ex. 16강->16"),
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. true 면 round 값은 무시되고 준결승 패배 두 팀인지 검증한다. "
+                                                + "미입력 시 false").optional(),
                                 fieldWithPath("quarter").type(JsonFieldType.STRING).description("쿼터"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("경기의 상태 (SCHEDULED, PLAYING, FINISHED)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
@@ -161,13 +207,21 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("team1.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수로 추가할 팀선수 ID"),
                                 fieldWithPath("team1.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE). 기본값: `STARTER`"),
                                 fieldWithPath("team1.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부. 기본값: `false`"),
+                                fieldWithPath("team1.lineupPlayers[].position").type(JsonFieldType.STRING).optional()
+                                        .description("포지션 (nullable, 선택 입력). 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 전용 FW/MF/DF (세부를 '선택 안 함' 으로 둔 경우), "
+                                                + "농구 PG/SG/SF/PF/C. 경기 종목과 맞지 않는 값이면 400"),
 
                                 fieldWithPath("team2").type(JsonFieldType.OBJECT).description("경기에 참가할 두 번째 팀"),
                                 fieldWithPath("team2.teamId").type(JsonFieldType.NUMBER).description("두 번째 팀의 ID"),
                                 fieldWithPath("team2.lineupPlayers").type(JsonFieldType.ARRAY).description("두 번째 팀의 라인업 선수 리스트 (없다면 빈 리스트)"),
                                 fieldWithPath("team2.lineupPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("라인업 선수로 추가할 팀선수 ID"),
                                 fieldWithPath("team2.lineupPlayers[].state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE). 기본값: `STARTER`"),
-                                fieldWithPath("team2.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부. 기본값: `false`")
+                                fieldWithPath("team2.lineupPlayers[].isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부. 기본값: `false`"),
+                                fieldWithPath("team2.lineupPlayers[].position").type(JsonFieldType.STRING).optional()
+                                        .description("포지션 (nullable, 선택 입력). 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 전용 FW/MF/DF (세부를 '선택 안 함' 으로 둔 경우), "
+                                                + "농구 PG/SG/SF/PF/C. 경기 종목과 맞지 않는 값이면 400")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -183,7 +237,7 @@ public class GameControllerTest extends DocumentationTest {
         Long gameId = 1L;
         GameRequest.Update requestDto = new GameRequest.Update(
                 "게임 이름", 16, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
-        );
+        , false);
 
         // when
         ResultActions result = mockMvc.perform(put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
@@ -202,6 +256,8 @@ public class GameControllerTest extends DocumentationTest {
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("변경할 경기의 이름"),
                                 fieldWithPath("round").type(JsonFieldType.NUMBER)
                                         .description("변경할 경기의 라운드 ex. 16강->16, 결승->2"),
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. true 면 round 값은 무시된다. 미입력 시 false").optional(),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("경기 시작 날짜 및 시각"),
                                 fieldWithPath("videoId").type(JsonFieldType.STRING)
                                         .description("경기 영상 링크")
@@ -286,7 +342,7 @@ public class GameControllerTest extends DocumentationTest {
         // given
         Long gameTeamId = 1L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
-                5L, LineupPlayerState.CANDIDATE, false
+                5L, LineupPlayerState.CANDIDATE, false, null
         );
 
         // when
@@ -304,7 +360,11 @@ public class GameControllerTest extends DocumentationTest {
                         requestFields(
                                 fieldWithPath("teamPlayerId").type(JsonFieldType.NUMBER).description("추가할 선수의 팀플레이어 ID"),
                                 fieldWithPath("state").type(JsonFieldType.STRING).description("선수 상태 (STARTER, CANDIDATE)"),
-                                fieldWithPath("isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부")
+                                fieldWithPath("isCaptain").type(JsonFieldType.BOOLEAN).description("주장 여부"),
+                                fieldWithPath("position").type(JsonFieldType.STRING).optional()
+                                        .description("포지션 (nullable, 선택 입력). 축구 세부 GK/LB/CB/RB/LM/CM/RM/LW/ST/RW, "
+                                                + "축구 대분류 전용 FW/MF/DF (세부를 '선택 안 함' 으로 둔 경우), "
+                                                + "농구 PG/SG/SF/PF/C. 경기 종목과 맞지 않는 값이면 400")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -388,6 +448,45 @@ public class GameControllerTest extends DocumentationTest {
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 조건에_맞지_않는_3_4위전_경기_생성은_사유와_함께_거부된다() throws Exception {
+        // given
+        given(gameService.register(anyLong(), any(), any()))
+                .willThrow(new BadRequestException(BracketErrorMessages.THIRD_PLACE_TEAMS_MISMATCH));
+
+        GameRequest.TeamLineupRequest team1 = new GameRequest.TeamLineupRequest(1L, List.of());
+        GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, List.of());
+        GameRequest.Register requestDto = new GameRequest.Register(
+                "3·4위전", 4, "경기전", "SCHEDULED",
+                LocalDateTime.of(2025, 8, 14, 19, 0, 0), null, team1, team2, true);
+
+        // when
+        ResultActions result = mockMvc.perform(post("/leagues/{leagueId}/games", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("실패 사유. 가능한 값 — "
+                                                + "3·4위전은 준결승에서 패배한 두 팀으로만 생성할 수 있습니다. / "
+                                                + "3·4위전을 진행하지 않는 대회입니다."),
+                                fieldWithPath("fieldErrors").type(JsonFieldType.ARRAY).optional()
+                                        .description("입력값 검증 실패 상세. 이 경우에는 사용하지 않는다")
                         )
                 ));
     }

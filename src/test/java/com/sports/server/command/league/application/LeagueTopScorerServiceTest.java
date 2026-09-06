@@ -6,6 +6,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.league.domain.LeagueTopScorerRepository;
+import com.sports.server.command.league.domain.SoccerQuarter;
+import com.sports.server.command.league.domain.SportType;
+import com.sports.server.command.member.domain.Member;
+import com.sports.server.command.member.domain.MemberRepository;
+import com.sports.server.command.timeline.application.TimelineService;
+import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.support.ServiceTest;
@@ -25,6 +31,12 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
 
     @Autowired
     private LeagueTopScorerRepository leagueTopScorerRepository;
+
+    @Autowired
+    private TimelineService timelineService;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private EntityUtils entityUtils;
@@ -110,6 +122,31 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("선수2가 득점왕 목록에 없습니다."));
             assertThat(player2TopScorer.getGoalCount()).isEqualTo(2); // 리그1에서만 2골
+        }
+
+        @Test
+        void 자책골은_득점왕_집계에_포함되지_않는다() {
+            // given
+            Long leagueId = 1L;
+            Long gameId = 1L;
+            Long team1Id = 1L;
+            Long team1PlayerId = 1L; // 선수1: 리그1(game1, game2)에서 이미 2골
+
+            Member manager = memberRepository.findMemberByEmail("john.doe@example.com").orElseThrow();
+            TimelineRequest.RegisterSoccerScore ownGoalRequest = new TimelineRequest.RegisterSoccerScore(
+                    team1Id, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), team1PlayerId, 50, null, true);
+            timelineService.register(manager, gameId, ownGoalRequest);
+
+            // when
+            leagueTopScorerService.updateTopScorersForLeague(leagueId);
+
+            // then
+            List<LeagueTopScorer> topScorers = leagueTopScorerRepository.findByLeagueId(leagueId);
+            LeagueTopScorer player1TopScorer = topScorers.stream()
+                    .filter(scorer -> scorer.getPlayer().getId().equals(1L))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("선수1이 득점왕 목록에 없습니다."));
+            assertThat(player1TopScorer.getGoalCount()).isEqualTo(2); // 자책골은 반영되지 않아 그대로 2골
         }
     }
 }

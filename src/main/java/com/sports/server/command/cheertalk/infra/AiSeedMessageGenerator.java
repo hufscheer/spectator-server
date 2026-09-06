@@ -29,6 +29,7 @@ public class AiSeedMessageGenerator {
     private final String scheduledPrompt;
     private final String secondHalfPrompt;
     private final String goalPrompt;
+    private final String ownGoalPrompt;
 
     public AiSeedMessageGenerator(
             OpenRouterChatCaller chatCaller,
@@ -37,7 +38,8 @@ public class AiSeedMessageGenerator {
             @Value("${ai-seed.banned-solo-reactions:ㅋㅋ,ㅋㅋㅋ,ㅋㅋㅋㅋ,ㄷㄷ,ㄷㄷㄷ,와,ㅎㅎ,ㅎㅎㅎ,ㄹㅇ}") String bannedSoloReactions,
             @Value("${ai-seed.prompt.scheduled}") String scheduledPrompt,
             @Value("${ai-seed.prompt.second-half}") String secondHalfPrompt,
-            @Value("${ai-seed.prompt.goal}") String goalPrompt
+            @Value("${ai-seed.prompt.goal}") String goalPrompt,
+            @Value("${ai-seed.prompt.own-goal}") String ownGoalPrompt
     ) {
         this.chatCaller = chatCaller;
         this.model = model;
@@ -48,6 +50,7 @@ public class AiSeedMessageGenerator {
         this.scheduledPrompt = scheduledPrompt;
         this.secondHalfPrompt = secondHalfPrompt;
         this.goalPrompt = goalPrompt;
+        this.ownGoalPrompt = ownGoalPrompt;
     }
 
     public String generate(AiSeedTriggerType triggerType, String teamName, String scorerName) {
@@ -112,6 +115,9 @@ public class AiSeedMessageGenerator {
         if (triggerType == AiSeedTriggerType.GOAL && scorerName != null) {
             return scorerName + " 좋았다";
         }
+        if (triggerType == AiSeedTriggerType.OWN_GOAL) {
+            return "이건 예상 못했네";
+        }
         return teamName + " 가자";
     }
 
@@ -120,6 +126,7 @@ public class AiSeedMessageGenerator {
             case SCHEDULED -> scheduledPrompt;
             case SECOND_HALF_START -> secondHalfPrompt;
             case GOAL -> goalPrompt;
+            case OWN_GOAL -> ownGoalPrompt;
         };
 
         String result = template.replace("{team_name}", teamName);

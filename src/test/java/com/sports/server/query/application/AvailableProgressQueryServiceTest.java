@@ -372,4 +372,31 @@ class AvailableProgressQueryServiceTest extends ServiceTest {
             assertThat(responses).isEmpty();
         }
     }
+
+    @Nested
+    @DisplayName("쿼터별 득점 조회 시 자책골이 포함되면")
+    @Sql(scripts = "/own-goal-quarter-score-fixture.sql")
+    class 쿼터별_득점_조회_자책골_포함 {
+
+        private static final long SOCCER_GAME_ID = 1L;
+        private static final long TEAM_A_GAME_TEAM_ID = 1L;
+        private static final long TEAM_B_GAME_TEAM_ID = 2L;
+
+        @Test
+        void 자책골로_상대팀이_얻은_점수가_쿼터_득점에_반영된다() {
+            List<QuarterScoreResponse> responses = timelineQueryService.getQuarterScores(SOCCER_GAME_ID);
+
+            assertThat(responses).hasSize(1);
+
+            QuarterScoreResponse firstHalfScore = responses.get(0);
+            Map<Long, Integer> scoreMap = firstHalfScore.scores().stream()
+                    .collect(Collectors.toMap(QuarterScoreResponse.TeamScore::gameTeamId, QuarterScoreResponse.TeamScore::score));
+
+            assertAll(
+                    () -> assertThat(firstHalfScore.quarter()).isEqualTo(SoccerQuarter.FIRST_HALF.name()),
+                    () -> assertThat(scoreMap.get(TEAM_A_GAME_TEAM_ID)).isEqualTo(1), // 팀A: 정상 득점 1골
+                    () -> assertThat(scoreMap.get(TEAM_B_GAME_TEAM_ID)).isEqualTo(1)  // 팀B: 팀A의 자책골로 얻은 1점
+            );
+        }
+    }
 }

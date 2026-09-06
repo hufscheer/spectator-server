@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.domain.SportType;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,13 +24,19 @@ class GameTest {
 
     @BeforeEach
     public void setUp() {
+        League soccerLeague = entityBuilder(League.class)
+                .set("sportType", SportType.SOCCER)
+                .sample();
+
         game = entityBuilder(Game.class)
                 .set("id", 1L)
+                .set("league", soccerLeague)
                 .set("gameTeams", new ArrayList<>())
                 .sample();
 
         game2 = entityBuilder(Game.class)
                 .set("id", 2L)
+                .set("league", soccerLeague)
                 .set("gameTeams", new ArrayList<>())
                 .sample();
 
@@ -139,6 +149,119 @@ class GameTest {
 
     @Nested
     @DisplayName("Game에서")
+    class OwnGoalScoreTest {
+
+        @Test
+        void team1_선수의_자책골이면_team2가_득점한다() {
+            // given
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", team1)
+                    .sample();
+
+            // when
+            game.scoreOwnGoal(scorer, 1);
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getScore()).isEqualTo(0),
+                    () -> assertThat(team2.getScore()).isEqualTo(1)
+            );
+        }
+
+        @Test
+        void team2_선수의_자책골이면_team1이_득점한다() {
+            // given
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", team2)
+                    .sample();
+
+            // when
+            game.scoreOwnGoal(scorer, 1);
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getScore()).isEqualTo(1),
+                    () -> assertThat(team2.getScore()).isEqualTo(0)
+            );
+        }
+
+        @Test
+        void 참여하지_않는_선수는_자책골을_기록할_수_없다() {
+            // given
+            GameTeam otherTeam = entityBuilder(GameTeam.class)
+                    .set("id", 999L)
+                    .set("game", game2)
+                    .sample();
+
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", otherTeam)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> game.scoreOwnGoal(scorer, 1))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 축구가_아닌_경기에서는_자책골을_기록할_수_없다() {
+            // given
+            League basketballLeague = entityBuilder(League.class)
+                    .set("sportType", SportType.BASKETBALL)
+                    .sample();
+            Game basketballGame = entityBuilder(Game.class)
+                    .set("id", 3L)
+                    .set("league", basketballLeague)
+                    .set("gameTeams", new ArrayList<>())
+                    .sample();
+            GameTeam basketballTeam1 = entityBuilder(GameTeam.class)
+                    .set("id", 3L)
+                    .set("game", basketballGame)
+                    .sample();
+            GameTeam basketballTeam2 = entityBuilder(GameTeam.class)
+                    .set("id", 4L)
+                    .set("game", basketballGame)
+                    .sample();
+            basketballGame.addGameTeam(basketballTeam1);
+            basketballGame.addGameTeam(basketballTeam2);
+
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", basketballTeam1)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> basketballGame.scoreOwnGoal(scorer, 1))
+                    .isInstanceOf(BadRequestException.class);
+        }
+
+        @Test
+        void 상대_팀이_없으면_자책골을_기록할_수_없다() {
+            // given
+            League soloTeamLeague = entityBuilder(League.class)
+                    .set("sportType", SportType.SOCCER)
+                    .sample();
+            Game soloTeamGame = entityBuilder(Game.class)
+                    .set("id", 4L)
+                    .set("league", soloTeamLeague)
+                    .set("gameTeams", new ArrayList<>())
+                    .sample();
+            GameTeam onlyTeam = entityBuilder(GameTeam.class)
+                    .set("id", 5L)
+                    .set("game", soloTeamGame)
+                    .sample();
+            soloTeamGame.addGameTeam(onlyTeam);
+
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", onlyTeam)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> soloTeamGame.scoreOwnGoal(scorer, 1))
+                    .isInstanceOf(BadRequestException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("Game에서")
     class CancelScoreTest {
 
         private LineupPlayer team1Player;
@@ -167,6 +290,38 @@ class GameTest {
                     () -> assertThat(team1.getScore()).isEqualTo(0),
                     () -> assertThat(team2.getScore()).isEqualTo(0)
             );
+        }
+
+        @Test
+        void team1_선수의_자책골로_인한_team2의_득점을_취소한다() {
+            // given
+            game.scoreOwnGoal(team1Player, 1);
+
+            // when
+            game.cancelOwnGoalScore(team1Player, 1);
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getScore()).isEqualTo(0),
+                    () -> assertThat(team2.getScore()).isEqualTo(0)
+            );
+        }
+
+        @Test
+        void 참여하지_않는_선수는_자책골_득점을_취소할_수_없다() {
+            // given
+            GameTeam otherTeam = entityBuilder(GameTeam.class)
+                    .set("id", 999L)
+                    .set("game", game2)
+                    .sample();
+
+            LineupPlayer scorer = entityBuilder(LineupPlayer.class)
+                    .set("gameTeam", otherTeam)
+                    .sample();
+
+            // when then
+            assertThatThrownBy(() -> game.cancelOwnGoalScore(scorer, 1))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -298,6 +453,75 @@ class GameTest {
         }
 
         @Test
+        void 동점이면_무승부로_기록된다() {
+            // given
+            team1.score(1);
+            team2.score(1);
+            game.updateState(GameState.FINISHED);
+
+            // when
+            game.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(team1.getResult()).isEqualTo(GameResult.DRAW),
+                    () -> assertThat(team2.getResult()).isEqualTo(GameResult.DRAW)
+            );
+        }
+
+        @Test
+        void 동점이고_승부차기를_진행했다면_승부차기_점수로_승자를_결정한다() {
+            // given
+            Game pkGame = entityBuilder(Game.class)
+                    .set("id", 3L)
+                    .set("gameTeams", new ArrayList<>())
+                    .set("isPkTaken", true)
+                    .sample();
+            GameTeam pkTeam1 = entityBuilder(GameTeam.class)
+                    .set("id", 1L).set("game", pkGame).set("score", 1).set("pkScore", 4).sample();
+            GameTeam pkTeam2 = entityBuilder(GameTeam.class)
+                    .set("id", 2L).set("game", pkGame).set("score", 1).set("pkScore", 3).sample();
+            pkGame.addGameTeam(pkTeam1);
+            pkGame.addGameTeam(pkTeam2);
+            pkGame.updateState(GameState.FINISHED);
+
+            // when
+            pkGame.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(pkTeam1.getResult()).isEqualTo(GameResult.WIN),
+                    () -> assertThat(pkTeam2.getResult()).isEqualTo(GameResult.LOSE)
+            );
+        }
+
+        @Test
+        void 승부차기_점수까지_동점이면_무승부로_기록된다() {
+            // given
+            Game pkGame = entityBuilder(Game.class)
+                    .set("id", 3L)
+                    .set("gameTeams", new ArrayList<>())
+                    .set("isPkTaken", true)
+                    .sample();
+            GameTeam pkTeam1 = entityBuilder(GameTeam.class)
+                    .set("id", 1L).set("game", pkGame).set("score", 1).set("pkScore", 3).sample();
+            GameTeam pkTeam2 = entityBuilder(GameTeam.class)
+                    .set("id", 2L).set("game", pkGame).set("score", 1).set("pkScore", 3).sample();
+            pkGame.addGameTeam(pkTeam1);
+            pkGame.addGameTeam(pkTeam2);
+            pkGame.updateState(GameState.FINISHED);
+
+            // when
+            pkGame.updateResult();
+
+            // then
+            assertAll(
+                    () -> assertThat(pkTeam1.getResult()).isEqualTo(GameResult.DRAW),
+                    () -> assertThat(pkTeam2.getResult()).isEqualTo(GameResult.DRAW)
+            );
+        }
+
+        @Test
         void 참가팀이_2팀이_아니면_결과를_계산하지_않는다() {
             // given
             GameTeam singleTeam = entityBuilder(GameTeam.class)
@@ -334,5 +558,35 @@ class GameTest {
         assertThatThrownBy(() -> game.changePlayerToCaptain(lineupPlayer))
                 .hasMessage("해당 게임팀은 이 게임에 포함되지 않습니다.")
                 .isInstanceOf(CustomException.class);
+    }
+
+    @Nested
+    @DisplayName("3·4위전 판정은")
+    class ThirdPlaceMatch {
+
+        @Test
+        void 라운드가_3_4위전이면_참이다() {
+            Game thirdPlace = entityBuilder(Game.class)
+                    .set("round", Round.THIRD_PLACE_MATCH)
+                    .set("gameTeams", new ArrayList<>())
+                    .sample();
+
+            assertThat(thirdPlace.isThirdPlaceMatch()).isTrue();
+        }
+
+        @Test
+        void 결승은_참가_팀_수가_같아도_거짓이다() {
+            // 두 라운드 모두 number 가 2라 숫자만으로는 구분되지 않는다
+            Game aFinal = entityBuilder(Game.class)
+                    .set("round", Round.FINAL)
+                    .set("gameTeams", new ArrayList<>())
+                    .sample();
+
+            assertAll(
+                    () -> assertThat(aFinal.isThirdPlaceMatch()).isFalse(),
+                    () -> assertThat(Round.FINAL.getNumber())
+                            .isEqualTo(Round.THIRD_PLACE_MATCH.getNumber())
+            );
+        }
     }
 }

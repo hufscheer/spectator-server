@@ -30,6 +30,118 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LeagueQueryControllerTest extends DocumentationTest {
 
     @Test
+    void 리그의_대진표를_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+        BracketResponse response = new BracketResponse(4, List.of(
+                new BracketResponse.RoundResponse(4, List.of(
+                        new BracketResponse.MatchResponse(1L, 1,
+                                new BracketResponse.TeamResponse(1L, "경영 야생마", "https://example.com/logos/1.png"),
+                                new BracketResponse.TeamResponse(2L, "서어 뻬데뻬", "https://example.com/logos/2.png"),
+                                10L, "FINISHED", LocalDateTime.of(2025, 8, 5, 18, 0), 1L),
+                        new BracketResponse.MatchResponse(2L, 2,
+                                new BracketResponse.TeamResponse(3L, "미컴 축구생각", "https://example.com/logos/3.png"),
+                                new BracketResponse.TeamResponse(4L, "체육 파이터", "https://example.com/logos/4.png"),
+                                11L, "FINISHED", LocalDateTime.of(2025, 8, 5, 20, 0), 3L)
+                )),
+                new BracketResponse.RoundResponse(2, List.of(
+                        new BracketResponse.MatchResponse(3L, 1,
+                                new BracketResponse.TeamResponse(1L, "경영 야생마", "https://example.com/logos/1.png"),
+                                new BracketResponse.TeamResponse(3L, "미컴 축구생각", "https://example.com/logos/3.png"),
+                                null, null, null, null)
+                ))
+        ), new BracketResponse.MatchResponse(4L, 1,
+                new BracketResponse.TeamResponse(2L, "서어 뻬데뻬", "https://example.com/logos/2.png"),
+                new BracketResponse.TeamResponse(4L, "체육 파이터", "https://example.com/logos/4.png"),
+                null, null, null, null));
+
+        given(bracketQueryService.findBracketByLeagueId(any()))
+                .willReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/bracket", leagueId)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("대진표를 조회할 리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("size").type(JsonFieldType.NUMBER)
+                                        .description("대진표 크기 (1라운드 팀 슬롯 수)"),
+                                fieldWithPath("rounds").type(JsonFieldType.ARRAY)
+                                        .description("라운드 목록 (1라운드 → 결승 순)"),
+                                fieldWithPath("rounds[].round").type(JsonFieldType.NUMBER)
+                                        .description("라운드 숫자 (결승 2, 4강 4, 8강 8, 16강 16)"),
+                                fieldWithPath("rounds[].matches").type(JsonFieldType.ARRAY)
+                                        .description("라운드의 매치 목록"),
+                                fieldWithPath("rounds[].matches[].id").type(JsonFieldType.NUMBER)
+                                        .description("매치 ID"),
+                                fieldWithPath("rounds[].matches[].matchNumber").type(JsonFieldType.NUMBER)
+                                        .description("라운드 내 매치 순번 (1부터 시작)"),
+                                fieldWithPath("rounds[].matches[].team1").type(JsonFieldType.OBJECT)
+                                        .description("첫 번째 팀. 미확정이면 null").optional(),
+                                fieldWithPath("rounds[].matches[].team1.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("rounds[].matches[].team1.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("rounds[].matches[].team1.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("rounds[].matches[].team2").type(JsonFieldType.OBJECT)
+                                        .description("두 번째 팀. 미확정이거나 부전승이면 null").optional(),
+                                fieldWithPath("rounds[].matches[].team2.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("rounds[].matches[].team2.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("rounds[].matches[].team2.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("rounds[].matches[].gameId").type(JsonFieldType.NUMBER)
+                                        .description("연결된 경기 ID. 아직 경기가 없으면 null").optional(),
+                                fieldWithPath("rounds[].matches[].gameState").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 상태 (SCHEDULED, PLAYING, FINISHED)").optional(),
+                                fieldWithPath("rounds[].matches[].gameStartTime").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 시작 시간").optional(),
+                                fieldWithPath("rounds[].matches[].winnerTeamId").type(JsonFieldType.NUMBER)
+                                        .description("매치 승자(다음 라운드 진출팀)의 팀 ID. 부전승 포함, 미확정이면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch").type(JsonFieldType.OBJECT)
+                                        .description("3·4위전 매치. 대회가 3·4위전을 진행하지 않으면 null. "
+                                                + "rounds 배열에는 포함되지 않는다").optional(),
+                                fieldWithPath("thirdPlaceMatch.id").type(JsonFieldType.NUMBER)
+                                        .description("매치 ID").optional(),
+                                fieldWithPath("thirdPlaceMatch.matchNumber").type(JsonFieldType.NUMBER)
+                                        .description("매치 순번 (3·4위전은 항상 1)").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1").type(JsonFieldType.OBJECT)
+                                        .description("준결승 1경기 패배팀. 미확정이면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("thirdPlaceMatch.team1.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2").type(JsonFieldType.OBJECT)
+                                        .description("준결승 2경기 패배팀. 미확정이면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2.teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 ID").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2.name").type(JsonFieldType.STRING)
+                                        .description("팀 이름").optional(),
+                                fieldWithPath("thirdPlaceMatch.team2.logoImageUrl").type(JsonFieldType.STRING)
+                                        .description("팀 로고 이미지 URL").optional(),
+                                fieldWithPath("thirdPlaceMatch.gameId").type(JsonFieldType.NUMBER)
+                                        .description("연결된 경기 ID. 아직 경기가 없으면 null").optional(),
+                                fieldWithPath("thirdPlaceMatch.gameState").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 상태 (SCHEDULED, PLAYING, FINISHED)").optional(),
+                                fieldWithPath("thirdPlaceMatch.gameStartTime").type(JsonFieldType.STRING)
+                                        .description("연결된 경기 시작 시간").optional(),
+                                fieldWithPath("thirdPlaceMatch.winnerTeamId").type(JsonFieldType.NUMBER)
+                                        .description("3위 팀 ID. 경기가 끝나지 않았으면 null").optional()
+                        )
+                ));
+    }
+
+    @Test
     void 리그_전체를_조회한다() throws Exception {
 
         // given
@@ -82,12 +194,13 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 new LeagueTeamResponse(2L, 11L, "서어 뻬데뻬", "s3:logoImageUrl2", 6, 0, 0)
         );
 
-        given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2))
+        given(leagueQueryService.findTeamsByLeagueRound(leagueId, 2, true))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/teams", leagueId)
                 .queryParam("round", "2")
+                .queryParam("third_place_match", "true")
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -98,7 +211,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 parameterWithName("leagueId").description("리그의 ID")
                         ),
                         queryParameters(
-                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2")
+                                parameterWithName("round").description("라운드의 이름 ex. 4강->4, 결승->2"),
+                                parameterWithName("third_place_match").optional()
+                                        .description("3·4위전만 조회할지 여부. 3·4위전은 결승과 라운드 번호가 같아 이 값으로 구분한다")
                         ),
                         responseFields(
                                 fieldWithPath("[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그의 리그팀 ID"),
@@ -223,8 +338,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                         4,
                         "진행 중",
                         3,
-                        "SOCCER"
-                ));
+                        "SOCCER",
+                        true
+                , null));
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/{leagueId}", leagueId)
@@ -245,7 +361,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("maxRound").type(JsonFieldType.NUMBER).description("리그 총 라운드"),
                                 fieldWithPath("leagueProgress").type(JsonFieldType.STRING).description("현재 대회 진행 상태"),
                                 fieldWithPath("leagueTeamCount").type(JsonFieldType.NUMBER).description("대회에 참여중인 팀의 수"),
-                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)")
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
+                                fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부"),
+                                fieldWithPath("bracketEnabled").type(JsonFieldType.BOOLEAN).description("대진표를 쓰는 대회인지. null 이면 아직 정하지 않음").optional()
                         )
                 ));
     }
@@ -357,9 +475,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         LocalDateTime fixedDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         List<LeagueResponseToManage> responses = List.of(
                 new LeagueResponseToManage(1L, "삼건물 대회", "진행 중", 2, 16, fixedDateTime,
-                        fixedDateTime, "SOCCER"),
+                        fixedDateTime, "SOCCER", true, null),
                 new LeagueResponseToManage(2L, "탁구 대회", "시작 전", 2, 16, fixedDateTime,
-                        fixedDateTime, "SOCCER"));
+                        fixedDateTime, "SOCCER", false, null));
 
         Cookie cookie = new Cookie(COOKIE_NAME, "temp-cookie");
 
@@ -386,7 +504,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].maxRound").type(JsonFieldType.NUMBER).description("리그의 최대 라운드"),
                                 fieldWithPath("[].startAt").type(JsonFieldType.STRING).description("리그 시작 날짜"),
                                 fieldWithPath("[].endAt").type(JsonFieldType.STRING).description("리그 종료 날짜"),
-                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)")
+                                fieldWithPath("[].sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
+                                fieldWithPath("[].thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부"),
+                                fieldWithPath("[].bracketEnabled").type(JsonFieldType.BOOLEAN).description("대진표를 쓰는 대회인지. null 이면 아직 정하지 않음").optional()
                         )
                 ));
     }
@@ -422,7 +542,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         );
         LeagueResponseWithGames response = new LeagueResponseWithGames(
                 1L, "첫번째 리그", 6, 16, LocalDateTime.of(2024, 8, 11, 13, 30), LocalDateTime.of(2024, 8, 30, 13, 30),
-                "SOCCER", playingGames, scheduledGames, finishedGames
+                "SOCCER", true, playingGames, scheduledGames, finishedGames
         );
 
         given(leagueQueryService.findLeagueAndGames(leagueId))
@@ -446,6 +566,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("startAt").type(JsonFieldType.STRING).description("리그 시작 시간"),
                                 fieldWithPath("endAt").type(JsonFieldType.STRING).description("리그 종료 시간"),
                                 fieldWithPath("sportType").type(JsonFieldType.STRING).description("종목 (SOCCER, BASKETBALL)"),
+                                fieldWithPath("thirdPlaceMatchEnabled").type(JsonFieldType.BOOLEAN).description("3·4위전 진행 여부"),
                                 fieldWithPath("playingGames").type(JsonFieldType.ARRAY).description("진행 중인 경기 목록"),
                                 fieldWithPath("playingGames[].id").type(JsonFieldType.NUMBER).description("경기 ID"),
                                 fieldWithPath("playingGames[].state").type(JsonFieldType.STRING).description("경기 상태"),
@@ -612,6 +733,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         new QuarterResponse("FIRST_HALF", "전반전"),
                                         "결승전",
                                         2,
+                                        false,
                                         "abc123",
                                         "PLAYING",
                                         List.of(
@@ -651,6 +773,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].games[].gameQuarter.label").type(JsonFieldType.STRING).description("경기 쿼터 표시명"),
                                 fieldWithPath("[].games[].gameName").type(JsonFieldType.STRING).description("경기 이름"),
                                 fieldWithPath("[].games[].round").type(JsonFieldType.NUMBER).description("경기 라운드"),
+                                fieldWithPath("[].games[].thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
+                                        .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID").optional(),
                                 fieldWithPath("[].games[].gameState").type(JsonFieldType.STRING).description("경기 상태 (PLAYING, FINISHED, SCHEDULED)"),
                                 fieldWithPath("[].games[].isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),

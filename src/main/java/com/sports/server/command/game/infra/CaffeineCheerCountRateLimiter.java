@@ -18,7 +18,7 @@ public class CaffeineCheerCountRateLimiter implements CheerCountRateLimiter {
     private static final long RATE_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(60);
     // window의 1.5배 — 경계 구간 안전 버퍼
     private static final long RATE_TTL_SECONDS = 90L;
-    private static final long RATE_MAX_SIZE = 50_000L;
+    private static final long RATE_MAX_SIZE = 10_000L;
 
     private static final String UNKNOWN_CLIENT = "unknown";
 

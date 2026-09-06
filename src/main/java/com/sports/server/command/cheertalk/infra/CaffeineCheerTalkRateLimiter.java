@@ -19,13 +19,13 @@ public class CaffeineCheerTalkRateLimiter implements CheerTalkRateLimiter {
     private static final long RATE_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(60);
     // window의 1.5배 — 경계 구간 안전 버퍼
     private static final long RATE_TTL_SECONDS = 90L;
-    private static final long RATE_MAX_SIZE = 50_000L;
+    private static final long RATE_MAX_SIZE = 10_000L;
 
     private static final int DEDUP_LIMIT = 3;
     private static final long DEDUP_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(3);
     // window의 2배 — 경계 구간 안전 버퍼
     private static final long DEDUP_TTL_SECONDS = 6L;
-    private static final long DEDUP_MAX_SIZE = 100_000L;
+    private static final long DEDUP_MAX_SIZE = 20_000L;
 
     private static final String UNKNOWN_CLIENT = "unknown";
 

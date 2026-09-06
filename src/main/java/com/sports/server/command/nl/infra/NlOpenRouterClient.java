@@ -69,7 +69,7 @@ public class NlOpenRouterClient implements NlClient {
     );
 
     @Override
-    public NlParseResult parsePlayers(String message, List<Map<String, String>> history, int studentNumberDigits) {
+    public NlParseResult parsePlayers(String message, List<Map<String, String>> history, Integer studentNumberDigits) {
         Map<String, Object> body = buildRequestBody(message, history, studentNumberDigits);
         OpenRouterChatResponse response = callChat(body);
         return toParseResult(response);
@@ -85,11 +85,13 @@ public class NlOpenRouterClient implements NlClient {
         }
     }
 
-    private Map<String, Object> buildRequestBody(String message, List<Map<String, String>> history, int studentNumberDigits) {
-        String perCallInstruction = String.format(
-                "이 요청의 학번 자릿수는 정확히 %d자리다. %d자리가 아닌 숫자는 학번으로 추출하지 마.",
-                studentNumberDigits, studentNumberDigits
-        );
+    private Map<String, Object> buildRequestBody(String message, List<Map<String, String>> history, Integer studentNumberDigits) {
+        String perCallInstruction = studentNumberDigits == null
+                ? "이 요청은 학교마다 학번 자릿수가 다르다. 9자리 또는 10자리 숫자만 학번으로 추출해."
+                : String.format(
+                        "이 요청의 학번 자릿수는 정확히 %d자리다. %d자리가 아닌 숫자는 학번으로 추출하지 마.",
+                        studentNumberDigits, studentNumberDigits
+                );
         List<Map<String, Object>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", systemPrompt + "\n\n" + perCallInstruction));
         if (history != null) {

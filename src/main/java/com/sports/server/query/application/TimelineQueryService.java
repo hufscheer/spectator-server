@@ -5,16 +5,18 @@ import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
 
+import com.sports.server.command.bracket.domain.BracketMatchRepository;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.Round;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
-import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,9 +45,24 @@ public class TimelineQueryService {
     private final GameProgressTimelineRepository gameProgressTimelineRepository;
     private final GameTeamQueryRepository gameTeamQueryRepository;
     private final EntityUtils entityUtils;
+    private final BracketMatchRepository bracketMatchRepository;
+
+    // 3·4위전이 이미 만들어졌으면 준결승의 경기 종료 기록을 지울 수 없다. 삭제 API 와 같은 판정을 조회에도 반영한다
+    private boolean semiFinalLockedByThirdPlace(final Game game) {
+        return game.getRound() == Round.SEMI_FINAL
+                && bracketMatchRepository.existsByLeagueIdAndRoundAndGameIsNotNull(
+                        game.getLeague().getId(), Round.THIRD_PLACE_MATCH);
+    }
 
     public GameTimelineResponse getTimelines(final Long gameId) {
-        Map<Quarter, List<Timeline>> timelines = timelineQueryRepository.findByGameId(gameId)
+        List<Timeline> allTimelines = timelineQueryRepository.findByGameId(gameId);
+
+        Map<Long, TimelineDeletabilityEvaluator.Result> deletability = allTimelines.isEmpty()
+                ? Map.of()
+                : TimelineDeletabilityEvaluator.evaluate(allTimelines.get(0).getGame().getState(), allTimelines,
+                        semiFinalLockedByThirdPlace(allTimelines.get(0).getGame()));
+
+        Map<Quarter, List<Timeline>> timelines = allTimelines
                 .stream()
                 .collect(groupingBy(Timeline::getRecordedQuarter));
 
@@ -53,7 +71,8 @@ public class TimelineQueryService {
                 .sorted(comparingInt(Quarter::getOrder).reversed())
                 .map(quarter -> TimelineResponse.of(
                         quarter,
-                        timelines.get(quarter)
+                        timelines.get(quarter),
+                        deletability
                 )).toList();
 
         WinnerResponse winner = gameTeamQueryRepository
@@ -117,24 +136,45 @@ public class TimelineQueryService {
                 .sorted(comparingInt(Quarter::getOrder))
                 .toList();
 
-        Map<Quarter, Map<Long, Integer>> scoreByQuarterAndTeam = timelineQueryRepository
-                .findScoreTimelinesByGameId(gameId)
-                .stream()
-                .collect(groupingBy(
-                        Timeline::getRecordedQuarter,
-                        groupingBy(
-                                st -> st.getScorer().getGameTeam().getId(),
-                                summingInt(ScoreTimeline::getScore)
-                        )
-                ));
+        QuarterTeamScores scoreByQuarterAndTeam = collectScoreByQuarterAndTeam(gameId);
 
         return completedQuarters.stream()
                 .map(quarter -> QuarterScoreResponse.of(
                         quarter,
                         gameTeamIds,
-                        scoreByQuarterAndTeam.getOrDefault(quarter, Map.of())
+                        scoreByQuarterAndTeam.scoresOf(quarter)
                 ))
                 .toList();
+    }
+
+    private record QuarterTeamScore(Quarter quarter, Long gameTeamId, int score) {
+    }
+
+    private record QuarterTeamScores(Map<Quarter, Map<Long, Integer>> scoresByQuarter) {
+
+        static QuarterTeamScores from(Stream<QuarterTeamScore> contributions) {
+            Map<Quarter, Map<Long, Integer>> scoresByQuarter = contributions.collect(groupingBy(
+                    QuarterTeamScore::quarter,
+                    groupingBy(QuarterTeamScore::gameTeamId, summingInt(QuarterTeamScore::score))
+            ));
+            return new QuarterTeamScores(scoresByQuarter);
+        }
+
+        Map<Long, Integer> scoresOf(Quarter quarter) {
+            return scoresByQuarter.getOrDefault(quarter, Map.of());
+        }
+    }
+
+    private QuarterTeamScores collectScoreByQuarterAndTeam(Long gameId) {
+        Stream<QuarterTeamScore> scoreContributions = timelineQueryRepository.findScoreTimelinesByGameId(gameId)
+                .stream()
+                .map(st -> new QuarterTeamScore(st.getRecordedQuarter(), st.getScorer().getGameTeam().getId(), st.getScore()));
+
+        Stream<QuarterTeamScore> ownGoalContributions = timelineQueryRepository.findOwnGoalTimelinesByGameId(gameId)
+                .stream()
+                .map(ogt -> new QuarterTeamScore(ogt.getRecordedQuarter(), ogt.getOpponentGameTeam().getId(), ogt.getScore()));
+
+        return QuarterTeamScores.from(Stream.concat(scoreContributions, ownGoalContributions));
     }
 
     private List<ProgressAction> actionsFromQuarterEnd(Quarter lastQuarter, SportType sportType) {

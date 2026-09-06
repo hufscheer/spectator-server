@@ -41,6 +41,11 @@ public enum SoccerQuarter implements Quarter {
         return this != SECOND_HALF && canEndGame();
     }
 
+    @Override
+    public boolean canRecordOwnGoal() {
+        return this != PENALTY_SHOOTOUT;
+    }
+
     public static Optional<SoccerQuarter> tryResolve(String value) {
         for (SoccerQuarter quarter : values()) {
             if (quarter.name().equals(value) || quarter.getDisplayName().equals(value)) {

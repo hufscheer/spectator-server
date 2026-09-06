@@ -32,6 +32,10 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @Column(name = "jersey_number", nullable = true)
     private Integer jerseyNumber;
 
+    @Column(name = "position")
+    @Enumerated(EnumType.STRING)
+    private Position position;
+
     @Column(name = "is_captain", nullable = false)
     private boolean isCaptain;
 
@@ -46,17 +50,23 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
     @JoinColumn(name = "replaced_player_id", nullable = true)
     private LineupPlayer replacedPlayer;
 
-    private LineupPlayer(@NonNull GameTeam gameTeam, @NonNull Player player, @NonNull LineupPlayerState state, Integer jerseyNumber, boolean isCaptain){
+    private LineupPlayer(@NonNull GameTeam gameTeam, @NonNull Player player, @NonNull LineupPlayerState state, Integer jerseyNumber, Position position, boolean isCaptain){
         this.gameTeam = gameTeam;
         this.player = player;
         this.state = state;
         this.jerseyNumber = jerseyNumber;
+        this.position = position;
         this.isCaptain = isCaptain;
         this.isPlaying = (state == LineupPlayerState.STARTER);
     }
 
-    public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber, boolean isCaptain) {
-        return new LineupPlayer(gameTeam, player, state, jerseyNumber, isCaptain);
+    public static LineupPlayer of(GameTeam gameTeam, Player player, LineupPlayerState state, Integer jerseyNumber,
+                                  Position position, boolean isCaptain) {
+        return new LineupPlayer(gameTeam, player, state, jerseyNumber, position, isCaptain);
+    }
+
+    public void updatePosition(Position position) {
+        this.position = position;
     }
 
     public boolean isReplaced() {
@@ -96,6 +106,10 @@ public class LineupPlayer extends BaseEntity<LineupPlayer> {
 
     public boolean isInTeam(GameTeam team) {
         return Objects.equals(this.gameTeam, team);
+    }
+
+    public boolean isInGame(Game game) {
+        return Objects.equals(this.gameTeam.getGame().getId(), game.getId());
     }
 
     public void activatePlayerInGame() {

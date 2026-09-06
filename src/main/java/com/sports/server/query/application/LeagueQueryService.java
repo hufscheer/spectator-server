@@ -136,10 +136,10 @@ public class LeagueQueryService {
                 ));
     }
 
-    public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round) {
+    public List<LeagueTeamResponse> findTeamsByLeagueRound(Long leagueId, Integer round, Boolean thirdPlaceMatch) {
         League league = entityUtils.getEntity(leagueId, League.class);
 
-        return teamDynamicRepository.findByLeagueAndRound(league, round).stream()
+        return teamDynamicRepository.findByLeagueAndRound(league, round, thirdPlaceMatch).stream()
                 .map(leagueTeam -> new LeagueTeamResponse(leagueTeam.getTeam(), leagueTeam.getId()))
                 .toList();
     }

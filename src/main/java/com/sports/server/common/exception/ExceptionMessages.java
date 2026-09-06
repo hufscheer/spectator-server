@@ -16,6 +16,10 @@ public class ExceptionMessages {
     public static final String REPLACEMENT_ORIGIN_NOT_IN_GAME = "이미 코트에 없는 선수는 교체할 수 없습니다.";
     public static final String REPLACEMENT_TARGET_ALREADY_IN_GAME = "이미 코트에 있는 선수는 교체 투입할 수 없습니다.";
     public static final String INVALID_ASSIST_PLAYER = "어시스트 선수는 득점 선수와 같은 팀이어야 하며, 본인일 수 없습니다.";
+    public static final String INVALID_FREE_THROW_ASSIST = "농구 자유투 득점에는 어시스트를 기록할 수 없습니다.";
+    // 승부차기뿐 아니라 경기 시작 전·경기 종료 쿼터도 이 검증에 걸린다. 규칙을 그대로 알려준다
+    public static final String INVALID_OWN_GOAL_QUARTER = "자책골은 전반전·후반전·연장전에만 기록할 수 있습니다.";
+    public static final String INVALID_OWN_GOAL_PLAYER = "자책골 선수는 요청한 팀 소속이어야 합니다.";
 
     // CheerTalk 관련
     public static final String CHEERTALK_SERIALIZATION_FAILED = "CheerTalk을 JSON으로 변환하는데 실패했습니다.";
@@ -27,6 +31,7 @@ public class ExceptionMessages {
     // Player 관련
     public static final String PLAYER_STUDENT_NUMBER_DUPLICATE = "이미 존재하는 학번입니다.";
     public static final String PLAYER_STUDENT_NUMBER_INVALID = "학번은 %d자리 숫자여야 합니다.";
+    public static final String PLAYER_STUDENT_NUMBER_INVALID_RANGE = "학번은 9자리 또는 10자리 숫자여야 합니다.";
 
     // League 관련
     public static final String LEAGUE_ROUND_EXCEEDS_MAX = "최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.";

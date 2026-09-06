@@ -1,11 +1,15 @@
 package com.sports.server.command.timeline.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,6 +21,8 @@ import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.WarningCardType;
 import com.sports.server.command.timeline.dto.TimelineRequest;
+import com.sports.server.command.timeline.exception.TimelineErrorMessage;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.support.DocumentationTest;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -32,6 +38,7 @@ public class TimelineControllerTest extends DocumentationTest {
                 1L, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
                 1L,
                 10,
+                null,
                 null
         );
 
@@ -54,7 +61,8 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (PRE_GAME, FIRST_HALF, SECOND_HALF, EXTRA_TIME, PENALTY_SHOOTOUT, POST_GAME)"),
                                 fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("득점 선수 Id"),
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
-                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional()
+                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional(),
+                                fieldWithPath("isOwnGoal").type(JsonFieldType.NULL).description("자책골 여부 (SOCCER 전용, 없으면 일반 득점으로 처리)").optional()
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -91,6 +99,45 @@ public class TimelineControllerTest extends DocumentationTest {
                                 fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("득점 시간"),
                                 fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (없으면 null)").optional(),
                                 fieldWithPath("score").type(JsonFieldType.NUMBER).description("득점한 점수 (1, 2, 3 중 하나)")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 자책골_타임라인을_생성한다() throws Exception {
+        // given
+        TimelineRequest.RegisterSoccerScore request = new TimelineRequest.RegisterSoccerScore(
+                1L, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(),
+                1L,
+                10,
+                null,
+                true
+        );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/games/{gameId}/timelines/score", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isCreated())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("sportType").type(JsonFieldType.STRING).description("스포츠 종류 (SOCCER)"),
+                                fieldWithPath("gameTeamId").type(JsonFieldType.NUMBER).description("자책골 선수가 소속된(우리) 팀의 Id"),
+                                fieldWithPath("recordedQuarter").type(JsonFieldType.STRING).description("쿼터 (FIRST_HALF, SECOND_HALF, EXTRA_TIME. 승부차기는 불가)"),
+                                fieldWithPath("scoreLineupPlayerId").type(JsonFieldType.NUMBER).description("자책골 선수 Id"),
+                                fieldWithPath("recordedAt").type(JsonFieldType.NUMBER).description("기록 시간"),
+                                fieldWithPath("assistLineupPlayerId").type(JsonFieldType.NULL).description("어시스트 선수 Id (자책골에서는 무시됨)").optional(),
+                                fieldWithPath("isOwnGoal").type(JsonFieldType.BOOLEAN).description("true로 지정하면 자책골로 등록")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
@@ -325,10 +372,49 @@ public class TimelineControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         pathParameters(
                                 parameterWithName("gameId").description("경기의 ID"),
+                                parameterWithName("timelineId").description("삭제할 타임라인의 ID. "
+                                        + "진행 중인 경기는 마지막 기록이 아니어도 삭제할 수 있고, "
+                                        + "삭제하면 이후 기록의 점수와 득점 시점 스코어가 다시 계산된다")
+                        ),
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void 삭제할_수_없는_타임라인은_사유와_함께_거부된다() throws Exception {
+        // given
+        willThrow(new BadRequestException(TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS))
+                .given(timelineService).deleteTimeline(any(), anyLong(), anyLong());
+
+        // when
+        ResultActions result = mockMvc.perform(
+                delete("/games/{gameId}/timelines/{timelineId}", 1, 1)
+                        .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("gameId").description("경기의 ID"),
                                 parameterWithName("timelineId").description("타임라인의 ID")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("삭제 불가 사유. 그대로 사용자에게 노출할 수 있으며, "
+                                                + "타임라인 조회 응답의 undeletableReason 과 같은 문구다. "
+                                                + "가능한 값 — "
+                                                + "교체 선수의 이후 기록이 있어요. 해당 기록부터 삭제해 주세요. / "
+                                                + "쿼터 시작·종료 기록은 최근 기록일 때만 삭제할 수 있어요. / "
+                                                + "종료된 경기는 최근 기록만 삭제할 수 있어요. / "
+                                                + "이미 삭제되었거나 존재하지 않는 기록이에요."),
+                                fieldWithPath("fieldErrors").type(JsonFieldType.ARRAY).optional()
+                                        .description("입력값 검증 실패 상세. 삭제 실패에서는 사용하지 않는다")
                         )
                 ));
     }
