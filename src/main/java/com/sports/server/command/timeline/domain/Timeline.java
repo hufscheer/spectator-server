@@ -1,11 +1,13 @@
 package com.sports.server.command.timeline.domain;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.QuarterConverter;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
+import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
@@ -62,4 +64,16 @@ public abstract class Timeline extends BaseEntity<Timeline> {
     public abstract void apply();
 
     public abstract void rollback();
+
+    /**
+     * 교체 삭제 판정에서 "이 기록에 선수가 등장했다" 고 볼 대상.
+     * 득점의 어시스트처럼 등장으로 치지 않기로 한 역할은 여기서 빠진다.
+     *
+     * @see TimelineDeletabilityEvaluator
+     */
+    public abstract List<LineupPlayer> getRelatedLineupPlayers();
+
+    public boolean isGameEnd() {
+        return false;
+    }
 }

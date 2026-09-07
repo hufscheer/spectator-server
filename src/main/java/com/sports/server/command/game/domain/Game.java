@@ -129,6 +129,31 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelScore(scoreValue);
     }
 
+    public void scoreOwnGoal(LineupPlayer scorer, int scoreValue) {
+        if (!league.getSportType().canRecordOwnGoal()) {
+            throw new BadRequestException(GameErrorMessages.OWN_GOAL_NOT_ALLOWED_FOR_NON_SOCCER);
+        }
+        GameTeam ownTeam = findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_OWN_GOAL_EXCEPTION);
+        opponentOf(ownTeam).score(scoreValue);
+    }
+
+    public void cancelOwnGoalScore(LineupPlayer scorer, int scoreValue) {
+        GameTeam ownTeam = findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_OWN_GOAL_EXCEPTION);
+        opponentOf(ownTeam).cancelScore(scoreValue);
+    }
+
+    /**
+     * 식별자로 비교한다. 지연 로딩된 GameTeam 은 프록시로 들어오는데, BaseEntity.equals 가
+     * getClass() 를 비교해서 프록시와 그 실제 엔티티를 다른 것으로 판정한다. equals 로 거르면
+     * 자기 팀이 걸러지지 않아 상대 팀 대신 자기 팀이 돌아온다.
+     */
+    public GameTeam opponentOf(GameTeam team) {
+        return gameTeams.stream()
+                .filter(gameTeam -> !Objects.equals(gameTeam.getId(), team.getId()))
+                .findAny()
+                .orElseThrow(() -> new BadRequestException(GameErrorMessages.GAME_TEAM_NOT_PARTICIPANT_EXCEPTION));
+    }
+
     public void cancelPkScore(LineupPlayer scorer) {
         findTeamOf(scorer, GameErrorMessages.PLAYER_NOT_PARTICIPANT_CANCEL_SCORE_EXCEPTION).cancelPkScore();
     }
@@ -246,6 +271,9 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         GameTeam team2 = getTeam2();
 
         int comparison = compareScores(team1, team2, GameTeam::getScore);
+        if (comparison == 0 && Boolean.TRUE.equals(isPkTaken)) {
+            comparison = compareScores(team1, team2, GameTeam::getPkScore);
+        }
 
         if (comparison > 0) {
             markWinnerAndLoser(team1, team2);
@@ -328,6 +356,18 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         if (this.getState().equals(GameState.FINISHED)) {
             throw new BadRequestException(GAME_ALREADY_FINISHED);
         }
+    }
+
+    public SportType getSportType() {
+        return league.getSportType();
+    }
+
+    /**
+     * 3·4위전 경기인지. {@code round} 를 숫자로만 내보내면 결승과 구분되지 않는다 —
+     * 두 라운드 모두 참가 팀 수가 2라 number 가 같기 때문이다.
+     */
+    public boolean isThirdPlaceMatch() {
+        return this.round == Round.THIRD_PLACE_MATCH;
     }
 
     @Override

@@ -71,4 +71,11 @@ class BasketballQuarterTest {
             assertThat(quarters[i].getOrder()).isLessThan(quarters[i + 1].getOrder());
         }
     }
+
+    @Test
+    void 농구_쿼터는_자책골을_기록할_수_없다() {
+        for (BasketballQuarter quarter : BasketballQuarter.values()) {
+            assertThat(quarter.canRecordOwnGoal()).isFalse();
+        }
+    }
 }

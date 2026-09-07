@@ -1,6 +1,7 @@
 package com.sports.server.command.game.application;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
+import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.league.domain.Quarter;
@@ -19,6 +20,8 @@ import java.time.LocalDateTime;
 import org.springframework.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
+import com.sports.server.command.league.domain.Round;
+import java.util.Optional;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,18 +45,23 @@ public class GameService {
     private final LineupPlayerRepository lineupPlayerRepository;
     private final GameTeamRepository gameTeamRepository;
     private final LeagueTeamRepository leagueTeamRepository;
+    private final BracketService bracketService;
 
     @Transactional
     public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
-        league.validateRoundWithinLimit(request.round());
+        league.validateRound(request.round(), request.thirdPlaceMatch());
 
         validateGameTeamsInLeague(league, request.team1(), request.team2());
+        if (request.thirdPlaceMatch()) {
+            bracketService.validateThirdPlaceContenders(league, request.team1().teamId(), request.team2().teamId());
+        }
 
         Game game = saveGame(league, administrator, request);
         registerGameTeamAndLineup(game, request.team1());
         registerGameTeamAndLineup(game, request.team2());
+        bracketService.linkGame(league, game, request.team1().teamId(), request.team2().teamId());
 
         return game.getId();
     }
@@ -88,14 +96,23 @@ public class GameService {
     public void updateGame(Long leagueId, Long gameId, GameRequest.Update request, Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
-        league.validateRoundWithinLimit(request.round());
 
         Game game = entityUtils.getEntity(gameId, Game.class);
+        // 요청이 3·4위전 여부를 생략하면 지금 값을 그대로 둔다. 이름만 고쳤다고 라운드가 바뀌면 안 된다
+        boolean wasThirdPlaceMatch = game.getRound() == Round.THIRD_PLACE_MATCH;
+        boolean thirdPlaceMatch = Optional.ofNullable(request.thirdPlaceMatch()).orElse(wasThirdPlaceMatch);
+        league.validateRound(request.round(), thirdPlaceMatch);
+        // 생성과 달리 전환은 검증이 없어, 결승 진출 2팀짜리 3·4위전을 만들 수 있었다
+        if (thirdPlaceMatch && !wasThirdPlaceMatch && game.getGameTeams().size() == Game.MINIMUM_TEAMS) {
+            bracketService.validateThirdPlaceContenders(league, game.getTeam1().getTeam().getId(),
+                    game.getTeam2().getTeam().getId());
+        }
 
         game.updateName(request.name());
         game.updateStartTime(request.startTime());
         game.updateVideoId(request.videoId());
-        game.updateRound(Round.from(request.round()));
+        game.updateRound(thirdPlaceMatch ? Round.THIRD_PLACE_MATCH : Round.from(request.round()));
+        bracketService.relinkGame(league, game);
     }
 
     @Transactional
@@ -104,6 +121,7 @@ public class GameService {
         PermissionValidator.checkPermission(league, administrator);
 
         Game game = entityUtils.getEntity(gameId, Game.class);
+        bracketService.unlinkGame(game);
         timelineRepository.deleteByGame(game);
         gameRepository.delete(game);
     }
@@ -117,6 +135,7 @@ public class GameService {
             throw new UnauthorizedException(AuthorizationErrorMessages.PERMISSION_DENIED);
         }
         game.removeGameTeam(gameTeam);
+        bracketService.unlinkGame(game);
     }
 
     private Game saveGame(League league, Member administrator, GameRequest.Register request) {
@@ -165,11 +184,17 @@ public class GameService {
                 throw new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION);
             }
 
+            Position position = lineupPlayerRequest.position();
+            if (position != null) {
+                position.validateFor(gameTeam.getSportType());
+            }
+
             LineupPlayer lineupPlayer = LineupPlayer.of(
                     gameTeam,
                     teamPlayer.getPlayer(),
                     lineupPlayerRequest.state(),
                     teamPlayer.getJerseyNumber(),
+                    position,
                     lineupPlayerRequest.isCaptain()
             );
             lineupPlayerRepository.save(lineupPlayer);

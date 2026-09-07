@@ -2,6 +2,7 @@ package com.sports.server.command.league.acceptance;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import com.sports.server.command.bracket.dto.BracketRequest;
 import com.sports.server.command.league.dto.LeagueRequest;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -22,14 +23,17 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
     void 대회를_저장한다() {
         // given
         List<Long> teamIds = List.of(4L, 5L);
+        BracketRequest.Save bracket = new BracketRequest.Save(4,
+                List.of(new BracketRequest.Entry(1, 4L), new BracketRequest.Entry(4, 5L)));
         LeagueRequest.Register request = new LeagueRequest.Register(
                 "우물정 제기차기 대회",
                 4,
                 LocalDateTime.of(2025, 1, 1, 0, 0),
                 LocalDateTime.of(2025, 1, 15, 0, 0),
                 teamIds,
-                null
-        );
+                null,
+                bracket
+        , false, null);
 
         configureMockJwtForEmail("john.doe@example.com");
 
@@ -74,7 +78,7 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
                 "라임즙 많이 먹기 대회",
                 16,
                 LocalDateTime.of(24, 12, 11, 0, 0, 0),
-                LocalDateTime.of(24, 12, 13, 0, 0, 0));
+                LocalDateTime.of(24, 12, 13, 0, 0, 0), false, null);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

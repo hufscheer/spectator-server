@@ -8,7 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.game.domain.Position;
+import com.sports.server.command.team.domain.TeamPlayer;
+import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.Test;
@@ -23,6 +27,9 @@ public class LineupPlayerServiceTest extends ServiceTest {
 
     @Autowired
     private EntityUtils entityUtils;
+
+    @Autowired
+    private TeamPlayerRepository teamPlayerRepository;
 
     @Test
     void 선수를_주장으로_등록한다() {
@@ -74,7 +81,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         // given
         Long gameTeamId = 2L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
-                7L, LineupPlayerState.STARTER, true
+                7L, LineupPlayerState.STARTER, true, null
         );
 
         // when & then
@@ -88,7 +95,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         // given
         Long gameTeamId = 1L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
-                1L, LineupPlayerState.STARTER, true
+                1L, LineupPlayerState.STARTER, true, null
         );
 
         // when
@@ -104,7 +111,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         // given
         Long gameTeamId = 2L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
-                7L, LineupPlayerState.STARTER, false
+                7L, LineupPlayerState.STARTER, false, null
         );
 
         // when
@@ -113,6 +120,84 @@ public class LineupPlayerServiceTest extends ServiceTest {
         // then
         LineupPlayer added = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         assertThat(added.isCaptain()).isEqualTo(false);
+    }
+
+    @Test
+    void 라인업에_추가할_때_요청한_포지션이_저장된다() {
+        // given
+        Long gameTeamId = 1L;
+
+        // when
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+
+        // then
+        LineupPlayer added = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
+        assertThat(added.getPosition()).isEqualTo(Position.ST);
+    }
+
+    @Test
+    void 포지션은_선택_입력이라_없이도_추가된다() {
+        // given
+        Long gameTeamId = 1L;
+
+        // when
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, null));
+
+        // then
+        assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getPosition()).isNull();
+    }
+
+    @Test
+    void 경기_종목에_없는_포지션이면_예외가_발생한다() {
+        // given: 축구 경기에 농구 포지션
+        Long gameTeamId = 1L;
+
+        // when & then
+        assertThatThrownBy(() -> lineupPlayerService.addPlayerToLineup(gameTeamId,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.PG)))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void 라인업_선수의_포지션을_수정한다() {
+        // given
+        Long gameId = 1L;
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+
+        // when
+        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, Position.LW);
+
+        // then
+        assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getPosition())
+                .isEqualTo(Position.LW);
+    }
+
+    @Test
+    void 포지션을_null_로_보내면_해제된다() {
+        // given
+        Long gameId = 1L;
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+
+        // when
+        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, null);
+
+        // then
+        assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getPosition()).isNull();
+    }
+
+    @Test
+    void 다른_경기의_라인업선수는_수정할_수_없다() {
+        // given: gameTeamId 1 은 gameId 1 에 속한다
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+
+        // when & then: 다른 경기 id 로는 건드릴 수 없다
+        assertThatThrownBy(() -> lineupPlayerService.changePlayerPosition(2L, lineupPlayerId, Position.LW))
+                .isInstanceOf(BadRequestException.class);
     }
 }
 

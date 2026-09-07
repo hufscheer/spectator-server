@@ -60,7 +60,14 @@ operation::cheer-talk-controller-test/리그_응원톡을_가리기_취소한다
 
 === 게임 생성
 
+3·4위전 경기는 `round` 대신 `thirdPlaceMatch: true` 로 지정한다. 3·4위전은 브래킷 트리 밖 라운드라 참가 팀 수(`round`)로는 결승과 구분되지 않기 때문이다.
+이 경우 서버가 참가팀이 준결승 패배 두 팀인지 검증하며, 준결승이 끝나지 않았거나 무승부로 남아 패자가 가려지지 않으면 검증을 건너뛰어 매니저가 직접 고를 수 있게 한다.
+
 operation::game-controller-test/게임을_등록한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+
+==== 3·4위전 생성 조건을 만족하지 않는 경우
+
+operation::game-controller-test/조건에_맞지_않는_3_4위전_경기_생성은_사유와_함께_거부된다[snippets='http-request,http-response,response-fields']
 
 === 게임 수정
 
@@ -106,6 +113,30 @@ operation::game-query-controller-test/연도와_월로_게임을_검색한다[sn
 
 === 게임 라인업 조회
 
+선수의 `position` 은 **팀의 선발 라인업을 기준으로 표시 수준이 한 번에 정해진다.** 선수마다 상세도가
+달라지는 걸 막기 위한 정책이라, 그 팀의 후보를 포함한 모든 선수에게 같은 수준이 적용된다.
+
+[cols="1,3"]
+|===
+| 선발 라인업 상태 | 내려가는 `position`
+
+| 포지션 미입력 선발이 한 명이라도 있음
+| 전원 `null`. 등번호와 이름만 표시하면 된다
+
+| 전원 입력했지만 대분류만 고른 선발이 있음
+| 전원 대분류로 통일 (`LW` → `FW`, `SG` → `G`)
+
+| 전원이 세부까지 입력함
+| 입력한 세부 그대로
+|===
+
+판정 기준은 출전 여부가 아니라 선발 여부다. 포지션이 없는 후보가 교체 투입돼도 표시가 사라지지 않는다.
+
+`starterPlayers` 는 포지션을 내려보낼 때 아래 순으로 정렬되고, 그렇지 않으면 등번호 순이다.
+
+- 축구: `FW`(LW → ST → RW) → `MF`(LM → CM → RM) → `DF`(LB → CB → RB) → `GK`
+- 농구: `G`(PG → SG) → `F`(SF → PF) → `C`
+
 operation::game-query-controller-test/라인업을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 게임팀에 라인업 선수 추가
@@ -127,6 +158,30 @@ operation::game-controller-test/라인업_선수의_상태를_선발로_변경�
 === 라인업 선수 후보로 변경
 
 operation::game-controller-test/라인업_선수의_상태를_후보로_변경한다[snippets='http-request,path-parameters,request-cookies,http-response']
+
+=== 라인업 선수 포지션 변경
+
+포지션은 그 경기의 라인업 정보라 다른 경기의 포지션에는 영향을 주지 않는다. 같은 선수가 경기마다 다른 포지션으로 출전할 수 있다.
+`position` 에 `null` 을 보내면 해제된다.
+
+세부 포지션을 고르지 않고 대분류만 입력하려면 대분류 값을 그대로 보낸다.
+
+[cols="1,2,2"]
+|===
+| 종목 | 세부 | 대분류만 입력할 때
+
+| 축구
+| `LW` `ST` `RW` `LM` `CM` `RM` `LB` `CB` `RB` `GK`
+| `FW` `MF` `DF` (골키퍼는 `GK` 하나뿐이라 대분류 값이 없다)
+
+| 농구
+| `PG` `SG` `SF` `PF` `C`
+| `G` `F` (센터는 `C` 하나뿐이라 대분류 값이 없다)
+|===
+
+**경기 종목**과 맞지 않는 포지션을 보내면 400 이다. 팀 종목이 아니라 그 경기의 종목이 기준이다.
+
+operation::game-controller-test/라인업_선수의_포지션을_변경한다[snippets='http-request,path-parameters,request-fields,request-cookies,http-response']
 
 === 라인업 선수 주장으로 등록
 
@@ -173,6 +228,18 @@ operation::league-controller-test/리그에_참가하는_팀들을_추가한다[
 === 리그 참가 팀 삭제
 
 operation::league-controller-test/리그에_참가하는_팀들을_삭제한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+
+=== 대진표 배치
+
+operation::bracket-controller-test/대진표를_배치한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
+
+=== 리그 대진표 조회
+
+3·4위전은 승자가 아니라 준결승 패자가 모이는 경기라 브래킷 트리에 속하지 않는다. 그래서 `rounds` 배열에는 들어가지 않고 `thirdPlaceMatch` 필드로 따로 내려간다.
+3·4위전을 진행하지 않는 대회에서는 `null` 이며, 화면에 라운드 탭을 그린다면 준결승과 결승 사이에 넣으면 된다.
+참가팀은 준결승 두 경기의 패배팀으로 유도되고, 아직 확정되지 않았으면 `team1`·`team2` 가 `null` 이다.
+
+operation::league-query-controller-test/리그의_대진표를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 리그 전체 조회
 
@@ -233,7 +300,17 @@ operation::league-query-controller-test/최근_리그의_게임_목록을_조회
 
 === 득점 타임라인 생성 (축구)
 
+`isOwnGoal`을 `true`로 지정하면 자책골로 등록된다(SOCCER 전용). 자책골 등록 시 `gameTeamId`/`scoreLineupPlayerId`는
+자책골을 넣은 선수가 소속된 팀("우리 팀") 기준이며, `assistLineupPlayerId`는 값을 보내도 무시된다.
+반면 게임의 타임라인 조회(`GET /games/{gameId}/timeline`) 응답에서는 자책골 기록이 실제로 점수를 얻은
+상대 팀 기준(`gameTeamId`/`teamName`/`teamImageUrl`)으로 표시된다. `playerName`은 등록 시와 동일하게
+자책골을 넣은 선수 이름을 유지한다.
+
 operation::timeline-controller-test/득점_타임라인을_생성한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+자책골 등록 예시:
+
+operation::timeline-controller-test/자책골_타임라인을_생성한다[snippets='http-request,request-fields']
 
 === 득점 타임라인 생성 (농구)
 
@@ -278,7 +355,58 @@ operation::timeline-query-controller-test/가능한_경기_진행_액션을_조�
 
 === 타임라인 삭제
 
+진행 중인 경기는 마지막 기록이 아니어도 삭제할 수 있다. 삭제하면 이후 기록의 점수와 득점 시점 스코어가 다시 계산된다.
+
+다만 아래 기록은 삭제가 거부된다.
+
+* 선수 교체 — 교체로 들어오거나 나간 선수의 기록이 뒤에 남아 있는 경우.
+  단 어시스트는 등장으로 보지 않는다. 교체로 들어온 선수가 뒤에서 어시스트만 했다면 그 교체는 삭제할 수 있다
+* 쿼터 시작·종료, 경기 종료 — 마지막 기록일 때만 삭제 가능
+* 종료된 경기의 중간 기록 — 마지막 기록만 삭제 가능
+
+"뒤에 남아 있는지"는 화면 정렬(경기 시각)이 아니라 실제 입력 순서를 기준으로 판단한다.
+각 기록의 삭제 가능 여부는 타임라인 조회 응답의 `deletable`·`undeletableReason`·`undeletableReasonCode` 로도 미리 확인할 수 있다.
+
+삭제 아이콘 노출 여부는 기록 타입이 아니라 `deletable` 값으로 판단한다.
+쿼터 시작·종료와 경기 종료 기록도 마지막 기록이면 `deletable` 이 `true` 이고,
+오입력한 경기 종료를 되돌릴 수 있는 유일한 수단이므로 타입만 보고 아이콘을 숨기면 안 된다.
+
+문구에 따라 분기해야 할 때는 `undeletableReason`(사용자 노출용 문구) 대신
+`undeletableReasonCode` 를 쓴다. 문구는 바뀔 수 있지만 코드는 유지된다.
+
 operation::timeline-controller-test/타임라인을_삭제한다[snippets='http-request,request-cookies,path-parameters,http-response']
+
+==== 삭제할 수 없는 기록을 삭제하려는 경우
+
+operation::timeline-controller-test/삭제할_수_없는_타임라인은_사유와_함께_거부된다[snippets='http-request,http-response,response-fields']
+
+=== 타임라인 변경 알림 (WebSocket)
+
+기록이 등록되거나 삭제되면 그 경기를 보고 있는 화면에 알림을 보낸다.
+관객 화면이 새로고침 없이 점수와 기록을 갱신하기 위한 것이다.
+
+STOMP 엔드포인트는 `/ws`, 구독 목적지는 아래와 같다.
+
+....
+/topic/games/{gameId}/timeline
+....
+
+메시지는 무엇이 바뀌었는지만 담는다. 바뀐 점수나 기록은 싣지 않는다.
+
+[source,json]
+----
+{ "gameId": 81, "changeType": "CREATED" }
+----
+
+`changeType` 은 `CREATED`(등록) 또는 `DELETED`(삭제) 다.
+받은 쪽은 `GET /games/{gameId}` 와 `GET /games/{gameId}/timeline` 을 다시 호출한다.
+어느 기록이 바뀌었는지는 알려주지 않으므로 부분 갱신이 아니라 다시 조회하는 방식이다.
+
+응원톡이 쓰는 `/topic/games/{gameId}` 와는 목적지가 다르다.
+한 목적지에 형태가 다른 메시지를 섞으면 이미 붙어 있는 응원톡 구독이 깨진다.
+
+알림 전송이 실패해도 기록의 등록·삭제 자체는 되돌리지 않는다.
+알림은 커밋 뒤에 비동기로 나가므로, 놓친 경우에도 다시 조회하면 정확한 상태를 얻는다.
 
 == 사용자 API
 

@@ -7,6 +7,7 @@ import com.sports.server.command.game.application.GameTeamService;
 import com.sports.server.command.game.application.LineupPlayerService;
 import com.sports.server.command.game.dto.CheerCountUpdateRequest;
 import com.sports.server.command.game.dto.GameRequest;
+import com.sports.server.command.game.dto.LineupPlayerPositionUpdateRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.util.VisitorIdResolver;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,6 +54,14 @@ public class GameController {
     public void changePlayerStateToCandidate(@PathVariable final Long gameId,
                                              @PathVariable final Long lineupPlayerId) {
         lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
+    }
+
+    @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/position")
+    @ResponseStatus(HttpStatus.OK)
+    public void changePlayerPosition(@PathVariable final Long gameId,
+                                     @PathVariable final Long lineupPlayerId,
+                                     @RequestBody final LineupPlayerPositionUpdateRequest request) {
+        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, request.position());
     }
 
     @PostMapping("/leagues/{leagueId}/games")

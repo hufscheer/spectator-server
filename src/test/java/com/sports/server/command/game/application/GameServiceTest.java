@@ -13,6 +13,7 @@ import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.Round;
+import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.application.EntityUtils;
@@ -47,6 +48,9 @@ public class GameServiceTest extends ServiceTest {
     private EntityUtils entityUtils;
 
     @Autowired
+    private com.sports.server.command.league.application.LeagueService leagueService;
+
+    @Autowired
     private GameFixtureRepository gameFixtureRepository;
 
     @MockBean
@@ -62,18 +66,18 @@ public class GameServiceTest extends ServiceTest {
         this.nameOfGame = "경기 이름";
 
         List<GameRequest.LineupPlayerRequest> team1LineupPlayers = List.of(
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false)
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true, null),
+                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false, null)
         );
         team1 = new GameRequest.TeamLineupRequest(1L, team1LineupPlayers);
 
         List<GameRequest.LineupPlayerRequest> team2Players = List.of(
-                new GameRequest.LineupPlayerRequest(6L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(7L, LineupPlayerState.CANDIDATE, false)
+                new GameRequest.LineupPlayerRequest(6L, LineupPlayerState.STARTER, true, null),
+                new GameRequest.LineupPlayerRequest(7L, LineupPlayerState.CANDIDATE, false, null)
         );
         team2 = new GameRequest.TeamLineupRequest(2L, team2Players);
 
-        this.requestDto = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED", LocalDateTime.now(), null, team1, team2);
+        this.requestDto = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED", LocalDateTime.now(), null, team1, team2, false);
         LocalDateTime fixedNow = LocalDateTime.of(2024, 11, 26, 0, 0, 0, 0);
         Clock fixedClock = Clock.fixed(fixedNow.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -166,11 +170,25 @@ public class GameServiceTest extends ServiceTest {
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
             GameRequest.Register requestDto = new GameRequest.Register(nameOfGame, 32, "FIRST_HALF", "SCHEDULED",
-                    LocalDateTime.now(), null, team1, team2);
+                    LocalDateTime.now(), null, team1, team2, false);
 
             // when & then
             assertThatThrownBy(() -> gameService.register(leagueId, requestDto, manager)).isInstanceOf(
                     CustomException.class).hasMessage("최대 라운드보다 더 큰 라운드의 경기를 등록할 수 없습니다.");
+        }
+
+        @Test
+        void 대회가_3_4위전을_진행하지_않으면_3_4위전_경기를_등록할_수_없다() {
+            // given
+            Long leagueId = 1L;
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            GameRequest.Register thirdPlaceRequest = new GameRequest.Register(nameOfGame, 4, "FIRST_HALF", "SCHEDULED",
+                    LocalDateTime.now(), null, team1, team2, true);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.register(leagueId, thirdPlaceRequest, manager))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage(LeagueErrorMessages.THIRD_PLACE_NOT_ENABLED);
         }
 
         @Test
@@ -179,12 +197,12 @@ public class GameServiceTest extends ServiceTest {
             Long leagueId = 1L;
             Member manager = entityUtils.getEntity(1L, Member.class);
             List<GameRequest.LineupPlayerRequest> twoCaptainsLineup = List.of(
-                    new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
-                    new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, true)
+                    new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true, null),
+                    new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, true, null)
             );
             GameRequest.TeamLineupRequest invalidTeam1 = new GameRequest.TeamLineupRequest(1L, twoCaptainsLineup);
             GameRequest.Register invalidRequest = new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED",
-                    LocalDateTime.now(), null, invalidTeam1, team2);
+                    LocalDateTime.now(), null, invalidTeam1, team2, false);
 
             // when & then
             assertThatThrownBy(() -> gameService.register(leagueId, invalidRequest, manager))
@@ -205,10 +223,33 @@ public class GameServiceTest extends ServiceTest {
         @BeforeEach
         void setUp() {
             LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
-            updateDto = new GameRequest.Update(nameOfGame, 8, fixedLocalDateTime, "videoId");
+            updateDto = new GameRequest.Update(nameOfGame, 8, fixedLocalDateTime, "videoId", false);
             leagueId = 1L;
             gameId = 1L;
             manager = entityUtils.getEntity(1L, Member.class);
+        }
+
+        /**
+         * 요청 필드가 primitive 이던 시절, 클라이언트가 값을 빼먹으면 Jackson 이 false 로 채워
+         * 이름만 고쳐도 3·4위전 지정이 조용히 풀렸다.
+         */
+        @Test
+        void 삼사위전_여부를_생략하면_기존_라운드가_유지된다() {
+            // given: 준결승 패자 두 팀(B·D)으로 만든 경기를 3·4위전으로 지정해 둔다
+            Long thirdPlaceLeagueId = 3L;
+            Long thirdPlaceGameId = 30L;
+            gameService.updateGame(thirdPlaceLeagueId, thirdPlaceGameId, new GameRequest.Update(
+                    nameOfGame, 2, updateDto.startTime(), "videoId", true), manager);
+
+            // when: 3·4위전 여부를 빼고 이름만 바꾼다
+            gameService.updateGame(thirdPlaceLeagueId, thirdPlaceGameId, new GameRequest.Update(
+                    "이름만 변경", 2, updateDto.startTime(), "videoId", null), manager);
+
+            // then
+            Game game = entityUtils.getEntity(thirdPlaceGameId, Game.class);
+            assertAll(
+                    () -> assertThat(game.getRound()).isEqualTo(Round.THIRD_PLACE_MATCH),
+                    () -> assertThat(game.getName()).isEqualTo("이름만 변경"));
         }
 
         @Test
@@ -234,7 +275,7 @@ public class GameServiceTest extends ServiceTest {
 
             GameRequest.Update finishAttempt = new GameRequest.Update(
                     nameOfGame, 4, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "videoId"
-            );
+            , false);
 
             // when
             gameService.updateGame(leagueId, gameId, finishAttempt, manager);

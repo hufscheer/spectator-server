@@ -1,5 +1,6 @@
 package com.sports.server.command.game.domain;
 
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
 import com.sports.server.common.exception.BadRequestException;
@@ -58,6 +59,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
 
     public boolean matchGame(final Game game) {
         return this.game.equals(game);
+    }
+
+    public SportType getSportType() {
+        return game.getSportType();
     }
 
     public void registerStarter(final LineupPlayer lineupPlayer) {

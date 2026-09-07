@@ -15,6 +15,7 @@ public record GameDetailResponse(
         List<TeamResponse> gameTeams,
         String state,
         int round,
+        boolean thirdPlaceMatch,
         boolean isPkTaken,
         Long leagueId,
         String leagueName
@@ -33,6 +34,7 @@ public record GameDetailResponse(
                         .toList(),
                 game.getState().name(),
                 game.getRound().getNumber(),
+                game.isThirdPlaceMatch(),
                 game.getIsPkTaken(),
                 game.getLeague().getId(),
                 game.getLeague().getName()

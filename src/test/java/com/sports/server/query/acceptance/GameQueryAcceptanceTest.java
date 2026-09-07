@@ -99,7 +99,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(
                                 new GameResponseDto(
                                         1L, LocalDateTime.of(2023, 11, 12, 10, 0, 0),
-                                        new QuarterResponse("PRE_GAME", "경기전"), "축구 대전", 4, "abc123",
+                                        new QuarterResponse("PRE_GAME", "경기전"), "축구 대전", 4, false, "abc123",
                                         List.of(new GameResponseDto.TeamResponse(
                                                         1L, "팀 A", "http://example.com/logo_a.png", 1, 0
                                                 ),
@@ -113,7 +113,7 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                         .containsExactly(
                                 new GameResponseDto(
                                         2L, LocalDateTime.of(2023, 11, 12, 10, 10, 0),
-                                        new QuarterResponse("PRE_GAME", "경기전"), "두번째로 빠른 경기", 4, "abc123",
+                                        new QuarterResponse("PRE_GAME", "경기전"), "두번째로 빠른 경기", 4, false, "abc123",
                                         List.of(new GameResponseDto.TeamResponse(
                                                         3L, "팀 B", "http://example.com/logo_b.png", 0, 0),
                                                 new GameResponseDto.TeamResponse(

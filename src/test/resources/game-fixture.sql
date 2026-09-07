@@ -169,3 +169,64 @@ VALUES -- 축구 대전(game_id = 1), A팀(game_team_id = 1) 라인업 선수
 
 
 SET foreign_key_checks = 1;
+
+-- 리그 3: 대진표가 있고 준결승이 끝난 3·4위전 대회. 패자는 팀 B(2)·팀 D(4)
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, max_round, in_progress_round,
+                     is_deleted, third_place_match_enabled)
+VALUES (3, 1, 1, '3·4위전 대회', '2024-11-09 00:00:00', '2025-11-20 00:00:00', '4강', '4강', false, true);
+
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (8, 3, 1),
+       (9, 3, 2),
+       (10, 3, 3),
+       (11, 3, 4);
+
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
+                   game_quarter, state, round, is_pk_taken)
+VALUES (28, 1, 3, '4강 1경기', '2024-11-10T10:00:00', 'abc123', '2024-11-10T12:00:00', 'POST_GAME', 'FINISHED', '4강', false),
+       (29, 1, 3, '4강 2경기', '2024-11-10T14:00:00', 'abc123', '2024-11-10T16:00:00', 'POST_GAME', 'FINISHED', '4강', false),
+       (30, 1, 3, '결승', '2024-11-12T10:00:00', 'abc123', '2024-11-12T10:00:00', 'PRE_GAME', 'SCHEDULED', '결승', false);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (33, 28, 1, 0, 2, 0, 'WIN'),
+       (34, 28, 2, 0, 0, 0, 'LOSE'),
+       (35, 29, 3, 0, 1, 0, 'WIN'),
+       (36, 29, 4, 0, 0, 0, 'LOSE'),
+       (37, 30, 2, 0, 0, 0, null),
+       (38, 30, 4, 0, 0, 0, null);
+
+INSERT INTO bracket_matches (id, league_id, round, match_number, team1_id, team2_id, game_id)
+VALUES (1, 3, '4강', 1, 1, 2, 28),
+       (2, 3, '4강', 2, 3, 4, 29),
+       (3, 3, '결승', 1, null, null, null),
+       (4, 3, '3·4위전', 1, null, null, null);
+
+
+-- 리그 4: 결승과 3·4위전의 참가팀이 서로 다른 대회. 라운드 필터가 둘을 구분하는지 확인용
+-- 준결승 승자 = 팀 A·팀 C (결승) / 패자 = 팀 B·팀 D (3·4위전)
+INSERT INTO leagues (id, administrator_id, organization_id, name, start_at, end_at, max_round, in_progress_round,
+                     is_deleted, third_place_match_enabled)
+VALUES (4, 1, 1, '라운드 필터 대회', '2024-11-09 00:00:00', '2025-11-20 00:00:00', '4강', '4강', false, true);
+
+INSERT INTO league_teams (id, league_id, team_id)
+VALUES (12, 4, 1),
+       (13, 4, 2),
+       (14, 4, 3),
+       (15, 4, 4);
+
+INSERT INTO games (id, administrator_id, league_id, name, start_time, video_id, quarter_changed_at,
+                   game_quarter, state, round, is_pk_taken)
+VALUES (31, 1, 4, '4강 1경기', '2024-11-10T10:00:00', 'abc123', '2024-11-10T12:00:00', 'POST_GAME', 'FINISHED', '4강', false),
+       (32, 1, 4, '4강 2경기', '2024-11-10T14:00:00', 'abc123', '2024-11-10T16:00:00', 'POST_GAME', 'FINISHED', '4강', false),
+       (33, 1, 4, '결승', '2024-11-12T10:00:00', 'abc123', '2024-11-12T10:00:00', 'PRE_GAME', 'SCHEDULED', '결승', false),
+       (34, 1, 4, '3·4위전', '2024-11-11T10:00:00', 'abc123', '2024-11-11T10:00:00', 'PRE_GAME', 'SCHEDULED', '3·4위전', false);
+
+INSERT INTO game_teams (id, game_id, team_id, cheer_count, score, pk_score, result)
+VALUES (39, 31, 1, 0, 2, 0, 'WIN'),
+       (40, 31, 2, 0, 0, 0, 'LOSE'),
+       (41, 32, 3, 0, 1, 0, 'WIN'),
+       (42, 32, 4, 0, 0, 0, 'LOSE'),
+       (43, 33, 1, 0, 0, 0, null),
+       (44, 33, 3, 0, 0, 0, null),
+       (45, 34, 2, 0, 0, 0, null),
+       (46, 34, 4, 0, 0, 0, null);

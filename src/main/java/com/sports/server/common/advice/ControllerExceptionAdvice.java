@@ -16,8 +16,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.stream.Collectors;
@@ -97,6 +101,34 @@ public class ControllerExceptionAdvice {
         logClientError(request, HttpStatus.NOT_FOUND, e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.of("요청한 엔드포인트를 찾을 수 없습니다."));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(e.getName() + " 파라미터의 형식이 올바르지 않습니다."));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    protected ResponseEntity<ErrorResponse> handleMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of("요청 본문을 읽을 수 없습니다."));
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    protected ResponseEntity<ErrorResponse> handleMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(ErrorResponse.of("지원하지 않는 Content-Type입니다."));
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    protected ResponseEntity<Void> handleMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.NOT_ACCEPTABLE, e.getMessage());
+        // Accept 협상이 실패한 요청이라 본문을 실으면 응답 변환이 다시 실패한다 — 상태 코드만 반환
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 
     private void logClientError(HttpServletRequest request, HttpStatus status, String message) {

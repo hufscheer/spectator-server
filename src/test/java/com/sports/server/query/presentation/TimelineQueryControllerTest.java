@@ -10,7 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.timeline.domain.GameProgressType;
+import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
 import com.sports.server.command.timeline.domain.WarningCardType;
+import com.sports.server.command.timeline.exception.TimelineErrorMessage;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
 import com.sports.server.query.dto.response.QuarterResponse;
@@ -60,10 +62,19 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         new ScoreRecordResponse.Snapshot(
                                                                 TEAM_B, TEAM_B_IMAGE_URL, 3)
                                                 ), null),
+                                                new OwnGoalRecordResponse(2L, 1, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 3)
+                                                )),
                                                 new ReplacementRecordResponse(1L, "선수3", null),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_START),
                                                 new PkRecordResponse(1L, true),
-                                                new WarningCardRecordResponse(WarningCardType.YELLOW)
+                                                new WarningCardRecordResponse(WarningCardType.YELLOW),
+                                                true,
+                                                null,
+                                                null
                                         ),
                                         new RecordResponse(
                                                 null, 1L, SOCCER_REPLACEMENT_TYPE,
@@ -78,10 +89,19 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         new ScoreRecordResponse.Snapshot(
                                                                 TEAM_B, TEAM_B_IMAGE_URL, 0)
                                                 ), null),
+                                                new OwnGoalRecordResponse(2L, 1, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                                )),
                                                 new ReplacementRecordResponse(1L, "선수3", null),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                                 new PkRecordResponse(4L, false),
-                                                new WarningCardRecordResponse(WarningCardType.RED)
+                                                new WarningCardRecordResponse(WarningCardType.RED),
+                                                false,
+                                                TimelineErrorMessage.REPLACEMENT_PLAYER_HAS_LATER_RECORDS,
+                                                TimelineDeletabilityEvaluator.Reason.REPLACEMENT_PLAYER_HAS_LATER_RECORDS.name()
                                         ),
                                         new RecordResponse(
                                                 null, 1L, BASKETBALL_REPLACEMENT_TYPE,
@@ -96,10 +116,19 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                         new ScoreRecordResponse.Snapshot(
                                                                 TEAM_B, TEAM_B_IMAGE_URL, 0)
                                                 ), null),
+                                                new OwnGoalRecordResponse(2L, 1, List.of(
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_A, TEAM_A_IMAGE_URL, 2),
+                                                        new ScoreRecordResponse.Snapshot(
+                                                                TEAM_B, TEAM_B_IMAGE_URL, 0)
+                                                )),
                                                 new ReplacementRecordResponse(2L, "선수5", true),
                                                 new ProgressRecordResponse(GameProgressType.QUARTER_END),
                                                 new PkRecordResponse(4L, false),
-                                                new WarningCardRecordResponse(WarningCardType.RED)
+                                                new WarningCardRecordResponse(WarningCardType.RED),
+                                                true,
+                                                null,
+                                                null
                                         )
                                 ))
                         )
@@ -150,6 +179,17 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("SCORE 타입일 때 점수 스냅샷에 표시할 점수"),
                                 fieldWithPath("timelines[].records[].scoreRecord.assistPlayerName").type(JsonFieldType.NULL)
                                         .description("SCORE 타입일 때 어시스트 선수 이름 (없으면 null)").optional(),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.ownGoalRecordId").type(JsonFieldType.NUMBER)
+                                        .description("OWN_GOAL 타입 기록의 ID"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.score").type(JsonFieldType.NUMBER)
+                                        .description("OWN_GOAL 타입일 때 상대 팀에 반영된 점수"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.snapshot[].teamName").type(JsonFieldType.STRING)
+                                        .description("OWN_GOAL 타입일 때 점수 스냅샷에 표시할 팀 이름"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.snapshot[].teamImageUrl").type(
+                                                JsonFieldType.STRING)
+                                        .description("OWN_GOAL 타입일 때 점수 스냅샷에 표시할 팀 이미지"),
+                                fieldWithPath("timelines[].records[].ownGoalRecord.snapshot[].score").type(JsonFieldType.NUMBER)
+                                        .description("OWN_GOAL 타입일 때 점수 스냅샷에 표시할 점수"),
                                 fieldWithPath("timelines[].records[].replacementRecord.replacementRecordId").type(
                                                 JsonFieldType.NUMBER)
                                         .description("REPLACEMENT 타입 기록의  ID"),
@@ -169,7 +209,23 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("승부차기 득점 성공 여부"),
                                 fieldWithPath("timelines[].records[].warningCardRecord.warningCardType").type(
                                                 JsonFieldType.STRING)
-                                        .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)")
+                                        .description("WARNING_CARD 타입일 때 경고 카드 타입(YELLOW, RED)"),
+                                fieldWithPath("timelines[].records[].deletable").type(JsonFieldType.BOOLEAN)
+                                        .description("현재 시점 기준 이 기록의 삭제 가능 여부. "
+                                                + "삭제 아이콘 노출 여부는 기록 타입이 아니라 이 값으로 판단한다 — "
+                                                + "쿼터 시작·종료, 경기 종료 기록도 마지막 기록이면 true 이며, "
+                                                + "이것이 오입력한 경기 종료를 되돌리는 유일한 수단이다"),
+                                fieldWithPath("timelines[].records[].undeletableReason").type(JsonFieldType.VARIES)
+                                        .description("삭제 불가 사유 (삭제 가능하면 null, DELETE 실패 message와 동일 문구)")
+                                        .optional(),
+                                fieldWithPath("timelines[].records[].undeletableReasonCode").type(JsonFieldType.VARIES)
+                                        .description("삭제 불가 사유 코드 (삭제 가능하면 null). 문구 대신 이 값으로 분기한다. "
+                                                + "가능한 값 — "
+                                                + "REPLACEMENT_PLAYER_HAS_LATER_RECORDS: 교체 투입 선수의 이후 기록 존재 / "
+                                                + "PROGRESS_TIMELINE_NOT_LAST: 쿼터 시작·종료 기록의 중간 삭제 / "
+                                                + "MIDDLE_DELETE_ONLY_WHILE_PLAYING: 종료된 경기의 중간 삭제 / "
+                                                + "INCONSISTENT_PROGRESS_STATE: 경기 상태와 기록 불일치")
+                                        .optional()
                         )
                 ));
     }

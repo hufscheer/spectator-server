@@ -1,9 +1,12 @@
 package com.sports.server.command.timeline.domain;
 
+import java.util.List;
+
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
 import jakarta.persistence.Column;
@@ -69,6 +72,11 @@ public class ScoreTimeline extends Timeline {
                 && (!scorer.isSameTeam(assistLineupPlayer) || scorer.getId().equals(assistLineupPlayer.getId()))) {
             throw new BadRequestException(ExceptionMessages.INVALID_ASSIST_PLAYER);
         }
+        if (assistLineupPlayer != null
+                && game.getSportType() == SportType.BASKETBALL
+                && scoreValue == BasketballScore.ONE.getValue()) {
+            throw new BadRequestException(ExceptionMessages.INVALID_FREE_THROW_ASSIST);
+        }
 
         GameTeam team1 = game.getTeam1();
         GameTeam team2 = game.getTeam2();
@@ -121,5 +129,14 @@ public class ScoreTimeline extends Timeline {
     @Override
     public void rollback() {
         game.cancelScore(scorer, score);
+    }
+
+    /**
+     * 어시스트 선수는 넣지 않는다. 기획상 어시스트는 교체 삭제 판정에서 "이후 기록에 등장" 으로
+     * 보지 않기 때문이다 — 교체로 들어온 선수가 이후 어시스트만 했다면 그 교체는 삭제할 수 있다.
+     */
+    @Override
+    public List<LineupPlayer> getRelatedLineupPlayers() {
+        return List.of(scorer);
     }
 }

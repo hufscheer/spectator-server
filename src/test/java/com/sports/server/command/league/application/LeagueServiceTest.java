@@ -37,6 +37,91 @@ public class LeagueServiceTest extends ServiceTest {
     private LeagueTeamRepository leagueTeamRepository;
 
     @Nested
+    @DisplayName("리그 정보를 수정할 때")
+    class LeagueUpdateTest {
+
+        private static final Long LEAGUE_ID = 1L;
+
+        private Member manager() {
+            return entityUtils.getEntity(1L, Member.class);
+        }
+
+        private void update(final Boolean thirdPlaceMatchEnabled) {
+            update(thirdPlaceMatchEnabled, null);
+        }
+
+        private void update(final Boolean thirdPlaceMatchEnabled, final Boolean bracketEnabled) {
+            League league = entityUtils.getEntity(LEAGUE_ID, League.class);
+            leagueService.update(manager(), new LeagueRequest.Update(
+                    league.getName(),
+                    league.getMaxRound().getNumber(),
+                    league.getStartAt(),
+                    league.getEndAt(),
+                    thirdPlaceMatchEnabled,
+                    bracketEnabled
+            ), LEAGUE_ID);
+        }
+
+        private Boolean bracketEnabled() {
+            return entityUtils.getEntity(LEAGUE_ID, League.class).getBracketEnabled();
+        }
+
+        @Test
+        void 대진표_여부는_처음에_정해지지_않은_상태다() {
+            assertThat(bracketEnabled()).isNull();
+        }
+
+        @Test
+        void 대진표_여부를_지정하면_반영된다() {
+            update(null, true);
+            assertThat(bracketEnabled()).isTrue();
+
+            update(null, false);
+            assertThat(bracketEnabled()).isFalse();
+        }
+
+        @Test
+        void 대진표_여부를_생략하면_기존_설정이_유지된다() {
+            // given: 리그전이라 대진표를 쓰지 않기로 해둔다
+            update(null, false);
+
+            // when: 이름만 고치듯 그 필드를 빼고 수정한다
+            update(null, null);
+
+            // then: false 가 null 로 되돌아가면 "정하지 않음" 과 구분이 사라진다
+            assertThat(bracketEnabled()).isFalse();
+        }
+
+        /**
+         * 요청 필드가 primitive 이던 시절, 클라이언트가 값을 빼먹으면 Jackson 이 false 로 채워
+         * 이름만 고쳐도 3·4위전 설정이 조용히 꺼졌다.
+         */
+        @Test
+        void 삼사위전_여부를_생략하면_기존_설정이_유지된다() {
+            // given
+            update(true);
+
+            // when
+            update(null);
+
+            // then
+            assertThat(entityUtils.getEntity(LEAGUE_ID, League.class).isThirdPlaceMatchEnabled()).isTrue();
+        }
+
+        @Test
+        void 삼사위전_여부를_명시하면_그대로_반영된다() {
+            // given
+            update(true);
+
+            // when
+            update(false);
+
+            // then
+            assertThat(entityUtils.getEntity(LEAGUE_ID, League.class).isThirdPlaceMatchEnabled()).isFalse();
+        }
+    }
+
+    @Nested
     @DisplayName("리그를 삭제할 때")
     class LeagueDeleteTest {
         @Test

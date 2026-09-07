@@ -59,4 +59,10 @@ class SportTypeTest {
         assertThat(SportType.SOCCER.resolveQuarter("PRE_GAME")).isInstanceOf(CommonQuarter.class);
         assertThat(SportType.BASKETBALL.resolveQuarter("PRE_GAME")).isInstanceOf(CommonQuarter.class);
     }
+
+    @Test
+    void 축구만_자책골을_기록할_수_있다() {
+        assertThat(SportType.SOCCER.canRecordOwnGoal()).isTrue();
+        assertThat(SportType.BASKETBALL.canRecordOwnGoal()).isFalse();
+    }
 }

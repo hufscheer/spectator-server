@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
@@ -154,6 +156,25 @@ class AiSeedServiceTest {
 
             verify(cheerTalkRepository).save(any(CheerTalk.class));
             verify(eventPublisher).publishEvent(any(Object.class));
+        }
+
+        @Test
+        @DisplayName("OWN_GOAL 트리거는 유저 발화 여부와 무관하게 발화하고, 지정된 팀(상대팀)에 귀속된다")
+        void OWN_GOAL_무조건_발화() {
+            when(gameRepository.findByIdWithLeague(1L)).thenReturn(Optional.of(soccerGame));
+            when(gameTeamRepository.findAllByGameIdWithTeamOrderByAsc(1L)).thenReturn(gameTeams);
+            when(cheerTalkRepository.countAiSeedsByGameTeamIds(anyList())).thenReturn(0L);
+            when(cheerTalkRepository.findLastAiSeed(anyList())).thenReturn(Optional.empty());
+            when(cheerTalkRepository.existsUserCheerTalkAfter(anyList(), any(LocalDateTime.class)))
+                    .thenReturn(true);
+            when(messageGenerator.generate(any(), any(), any())).thenReturn("어...?");
+
+            aiSeedService.publish(1L, AiSeedTriggerType.OWN_GOAL, 2L, null);
+
+            ArgumentCaptor<CheerTalk> cheerTalkCaptor = ArgumentCaptor.forClass(CheerTalk.class);
+            verify(cheerTalkRepository).save(cheerTalkCaptor.capture());
+            verify(eventPublisher).publishEvent(any(Object.class));
+            assertThat(cheerTalkCaptor.getValue().getGameTeamId()).isEqualTo(2L);
         }
 
         @Test

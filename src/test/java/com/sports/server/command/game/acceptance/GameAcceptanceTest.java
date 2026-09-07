@@ -143,7 +143,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         //given
         Long gameTeamId = 1L;
         GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
-                5L, LineupPlayerState.CANDIDATE, false
+                5L, LineupPlayerState.CANDIDATE, false, null
         );
 
         configureMockJwtForEmail(MOCK_EMAIL);
@@ -186,15 +186,15 @@ public class GameAcceptanceTest extends AcceptanceTest {
         Long leagueId = 1L;
 
         GameRequest.TeamLineupRequest team1 = new GameRequest.TeamLineupRequest(1L, List.of(
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true),
-                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false),
-                new GameRequest.LineupPlayerRequest(3L, LineupPlayerState.STARTER, false)
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, true, null),
+                new GameRequest.LineupPlayerRequest(2L, LineupPlayerState.STARTER, false, null),
+                new GameRequest.LineupPlayerRequest(3L, LineupPlayerState.STARTER, false, null)
         ));
 
         GameRequest.TeamLineupRequest team2 = new GameRequest.TeamLineupRequest(2L, List.of());
 
         GameRequest.Register request = new GameRequest.Register("경기 이름", 16, "FIRST_HALF", "SCHEDULED",
-                LocalDateTime.now(), null, team1, team2);
+                LocalDateTime.now(), null, team1, team2, false);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 
@@ -222,7 +222,7 @@ public class GameAcceptanceTest extends AcceptanceTest {
         int round = 16;
         LocalDateTime fixedLocalDateTime = LocalDateTime.of(2024, 9, 11, 12, 0, 0);
         String videoId = "videoId";
-        GameRequest.Update request = new GameRequest.Update(name, round, fixedLocalDateTime, videoId);
+        GameRequest.Update request = new GameRequest.Update(name, round, fixedLocalDateTime, videoId, false);
 
         configureMockJwtForEmail(MOCK_EMAIL);
 

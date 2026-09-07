@@ -13,7 +13,9 @@ public record LeagueResponseToManage(
         int maxRound,
         LocalDateTime startAt,
         LocalDateTime endAt,
-        String sportType
+        String sportType,
+        boolean thirdPlaceMatchEnabled,
+        Boolean bracketEnabled
 ) {
     public static LeagueResponseToManage of(League league) {
         return new LeagueResponseToManage(
@@ -24,7 +26,9 @@ public record LeagueResponseToManage(
                 league.getMaxRound().getNumber(),
                 league.getStartAt(),
                 league.getEndAt(),
-                league.getSportType().name()
+                league.getSportType().name(),
+                league.isThirdPlaceMatchEnabled(),
+                league.getBracketEnabled()
         );
     }
 }

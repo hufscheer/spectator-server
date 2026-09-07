@@ -1,5 +1,7 @@
 package com.sports.server.command.timeline.domain;
 
+import java.util.List;
+
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.league.domain.Quarter;
@@ -43,5 +45,10 @@ public class FoulTimeline extends Timeline {
     @Override
     public void rollback() {
         game.cancelFoul(offender);
+    }
+
+    @Override
+    public List<LineupPlayer> getRelatedLineupPlayers() {
+        return List.of(offender);
     }
 }

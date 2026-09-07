@@ -123,7 +123,7 @@ class LineupPlayerRemovalTest extends ServiceTest {
     private void registerGoal(Long scorerId, Long assistId) {
         timelineService.register(manager, GAME_ID, new TimelineRequest.RegisterSoccerScore(
                 GAME_TEAM_ID, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(),
-                scorerId, 10, assistId));
+                scorerId, 10, assistId, null));
     }
 
     private void registerReplacement(Long originId, Long replacementId) {

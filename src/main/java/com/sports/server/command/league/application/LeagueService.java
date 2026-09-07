@@ -1,5 +1,6 @@
 package com.sports.server.command.league.application;
 
+import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.team.domain.Team;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -30,16 +32,29 @@ public class LeagueService {
     private final LeagueRepository leagueRepository;
 	private final LeagueTeamRepository leagueTeamRepository;
 	private final TeamRepository teamRepository;
+	private final BracketService bracketService;
 
 	public void register(final Member administrator, final LeagueRequest.Register request) {
 		League league = leagueRepository.save(request.toEntity(administrator));
 		List<Team> teams = findValidatedTeams(request.teamIds());
 		saveLeagueTeams(league, teams);
+		if (request.bracket() != null) {
+			bracketService.create(league, teams, request.bracket());
+		}
 	}
 
 	public void update(final Member administrator, final LeagueRequest.Update request, final Long leagueId) {
 		League league = findValidatedLeague(leagueId, administrator);
-		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()));
+		boolean thirdPlaceMatchEnabled = Optional.ofNullable(request.thirdPlaceMatchEnabled())
+			.orElseGet(league::isThirdPlaceMatchEnabled);
+		if (league.isThirdPlaceMatchEnabled() != thirdPlaceMatchEnabled) {
+			bracketService.validateThirdPlaceChangeable(leagueId);
+		}
+		Boolean bracketEnabled = request.bracketEnabled() != null
+			? request.bracketEnabled()
+			: league.getBracketEnabled();
+		league.updateInfo(request.name(), request.startAt(), request.endAt(), Round.from(request.maxRound()),
+			thirdPlaceMatchEnabled, bracketEnabled);
 	}
 
     public void delete(final Member administrator, final Long leagueId) {
@@ -78,6 +93,7 @@ public class LeagueService {
 		if (leagueTeamsToRemove.size() != new HashSet<>(teamIdsToRemove).size()) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, LeagueErrorMessages.TEAMS_NOT_IN_LEAGUE_TEAM_EXCEPTION);
 		}
+		bracketService.removeTeams(league, leagueTeamsToRemove.stream().map(LeagueTeam::getTeam).toList());
 		leagueTeamsToRemove.forEach(league::removeLeagueTeam);
 	}
 
