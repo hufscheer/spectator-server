@@ -240,6 +240,7 @@ INSERT INTO timelines (type, game_id, recorded_quarter, recorded_at, game_progre
 VALUES ('GAME_PROGRESS', 6, 'SECOND_HALF', 0, 'QUARTER_START', 'FIRST_HALF', null);
 
 -- game 6 라인업: 중간 삭제(replay) 테스트용 — 점수/타임라인 정합 상태에서 register 로 쌓아 검증
+-- 기록이 있는 선수의 라인업 삭제 차단 검증에도 같이 쓴다
 INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing, replaced_player_id)
 VALUES (31, 9, 1, 1, TRUE, 'STARTER', TRUE, null),
        (32, 9, 2, 2, FALSE, 'STARTER', TRUE, null),
