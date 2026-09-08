@@ -31,9 +31,9 @@ class GameQueryControllerTest extends DocumentationTest {
         Long gameId = 1L;
         List<GameDetailResponse.TeamResponse> gameTeams = List.of(
                 new GameDetailResponse.TeamResponse(
-                        1L, "A팀", "logo.com", 2, 0, "#00000"),
+                        1L, 11L, "A팀", "logo.com", 2, 0, "#00000"),
                 new GameDetailResponse.TeamResponse(
-                        2L, "B팀", "logo.com", 1, 0, "#00000")
+                        2L, 22L, "B팀", "logo.com", 1, 0, "#00000")
         );
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         GameDetailResponse response = new GameDetailResponse(gameId,
@@ -65,7 +65,9 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
                                         .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
-                                        .description("게임팀의 ID"),
+                                        .description("게임팀의 ID. 경기마다 새로 생기는 값이다"),
+                                fieldWithPath("gameTeams[].teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 원본 ID. GET /leagues/{leagueId}/teams 의 teamId 와 같아 두 응답을 이어 붙일 때 쓴다"),
                                 fieldWithPath("gameTeams[].gameTeamName").type(JsonFieldType.STRING)
                                         .description("게임팀의 이름"),
                                 fieldWithPath("gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
@@ -433,12 +435,12 @@ class GameQueryControllerTest extends DocumentationTest {
         LocalDateTime startTime2 = LocalDateTime.of(2024, 3, 20, 16, 0, 0);
         
         List<GameDetailResponse.TeamResponse> gameTeams1 = List.of(
-                new GameDetailResponse.TeamResponse(1L, "A팀", "logo1.com", 2, 0, "#00000"),
-                new GameDetailResponse.TeamResponse(2L, "B팀", "logo2.com", 1, 0, "#00000")
+                new GameDetailResponse.TeamResponse(1L, 11L, "A팀", "logo1.com", 2, 0, "#00000"),
+                new GameDetailResponse.TeamResponse(2L, 22L, "B팀", "logo2.com", 1, 0, "#00000")
         );
         List<GameDetailResponse.TeamResponse> gameTeams2 = List.of(
-                new GameDetailResponse.TeamResponse(3L, "C팀", "logo3.com", 0, 0, "#00000"),
-                new GameDetailResponse.TeamResponse(4L, "D팀", "logo4.com", 1, 0, "#00000")
+                new GameDetailResponse.TeamResponse(3L, 33L, "C팀", "logo3.com", 0, 0, "#00000"),
+                new GameDetailResponse.TeamResponse(4L, 44L, "D팀", "logo4.com", 1, 0, "#00000")
         );
         
         List<GameDetailResponse> responses = List.of(
@@ -476,6 +478,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
+                                fieldWithPath("[].gameTeams[].teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 원본 ID. GET /leagues/{leagueId}/teams 의 teamId 와 같다"),
                                 fieldWithPath("[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
                                         .description("게임팀의 이름"),
                                 fieldWithPath("[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
