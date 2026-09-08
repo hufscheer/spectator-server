@@ -43,6 +43,12 @@ public record GameDetailResponse(
 
     public record TeamResponse(
             Long gameTeamId,
+            /**
+             * 팀 원본 id. gameTeamId 는 경기마다 새로 생기는 값이라 리그 참가팀 목록
+             * (GET /leagues/{id}/teams)과 이어 붙일 수 없었다. 매니저 경기 수정 화면이
+             * 팀 이름 문자열로 두 응답을 짝지어 왔는데, 동명 팀이나 공백 차이에서 깨진다.
+             */
+            Long teamId,
             String gameTeamName,
             String logoImageUrl,
             Integer score,
@@ -52,6 +58,7 @@ public record GameDetailResponse(
         public TeamResponse(GameTeam gameTeam) {
             this(
                     gameTeam.getId(),
+                    gameTeam.getTeam().getId(),
                     gameTeam.getTeam().getName(),
                     gameTeam.getTeam().getLogoImageUrl(),
                     gameTeam.getScore(),
