@@ -52,13 +52,13 @@ public class GameQueryAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(teams)
                         .filteredOn(team -> team.gameTeamId().equals(1L))
                         .containsExactly(new GameDetailResponse.TeamResponse(
-                                1L, "팀 A",
+                                1L, 1L, "팀 A",
                                 "http://example.com/logo_a.png", 1, 0, "#FF0000")
                         ),
                 () -> assertThat(teams)
                         .filteredOn(team -> team.gameTeamId().equals(2L))
                         .containsExactly(new GameDetailResponse.TeamResponse(
-                                2L, "팀 B",
+                                2L, 2L, "팀 B",
                                 "http://example.com/logo_b.png", 2, 0, "#0000FF")
                         ),
                 () -> assertThat(game.state()).isEqualTo("SCHEDULED")
