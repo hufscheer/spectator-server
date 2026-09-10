@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LineupPlayerRepository extends JpaRepository<LineupPlayer, Long> {
     boolean existsByGameTeamAndPlayer(GameTeam gameTeam, Player player);
+
+    boolean existsByPlayer(Player player);
 }
