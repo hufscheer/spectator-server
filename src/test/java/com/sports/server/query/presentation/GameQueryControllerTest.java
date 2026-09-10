@@ -114,12 +114,12 @@ class GameQueryControllerTest extends DocumentationTest {
         // given
         LocalDateTime startTime = LocalDateTime.of(2024, 1, 19, 13, 0, 0);
         List<GameResponseDto.TeamResponse> gameTeams1 = List.of(
-                new GameResponseDto.TeamResponse(1L, "A팀", "logo.com", 2, 0),
-                new GameResponseDto.TeamResponse(2L, "B팀", "logo.com", 1, 0)
+                new GameResponseDto.TeamResponse(1L, 11L, "A팀", "logo.com", 2, 0),
+                new GameResponseDto.TeamResponse(2L, 12L, "B팀", "logo.com", 1, 0)
         );
         List<GameResponseDto.TeamResponse> gameTeams2 = List.of(
-                new GameResponseDto.TeamResponse(3L, "C팀", "logo.com", 2, 0),
-                new GameResponseDto.TeamResponse(4L, "D팀", "logo.com", 2, 0)
+                new GameResponseDto.TeamResponse(3L, 13L, "C팀", "logo.com", 2, 0),
+                new GameResponseDto.TeamResponse(4L, 14L, "D팀", "logo.com", 2, 0)
         );
         List<GameResponseDto> responses = List.of(
                 new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "4강", 4, false, "abc123", gameTeams1, false),
@@ -179,6 +179,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                         .description("승부차기 진출 여부"),
                                 fieldWithPath("content[].games[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("게임팀의 ID"),
+                                fieldWithPath("content[].games[].gameTeams[].teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 원본 ID. GET /leagues/{leagueId}/teams 의 teamId 와 같아 두 응답을 이어 붙일 때 쓴다"),
                                 fieldWithPath("content[].games[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
                                         .description("게임팀의 이름"),
                                 fieldWithPath("content[].games[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
