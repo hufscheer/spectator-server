@@ -517,16 +517,16 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
 
         List<LeagueResponseWithGames.GameDetail.GameTeam> playingGameTeams = List.of(
-                new GameTeam(1L, "게임팀1", "이미지url", 1, 0),
-                new GameTeam(2L, "게임팀2", "이미지url", 1, 0)
+                new GameTeam(1L, 11L, "게임팀1", "이미지url", 1, 0),
+                new GameTeam(2L, 12L, "게임팀2", "이미지url", 1, 0)
         );
         List<LeagueResponseWithGames.GameDetail.GameTeam> scheduledGameTeams = List.of(
-                new GameTeam(3L, "게임팀3", "이미지url", 1, 0),
-                new GameTeam(4L, "게임팀4", "이미지url", 1, 0)
+                new GameTeam(3L, 13L, "게임팀3", "이미지url", 1, 0),
+                new GameTeam(4L, 14L, "게임팀4", "이미지url", 1, 0)
         );
         List<LeagueResponseWithGames.GameDetail.GameTeam> finishedGameTeams = List.of(
-                new GameTeam(5L, "게임팀5", "이미지url", 1, 0),
-                new GameTeam(6L, "게임팀6", "이미지url", 1, 0)
+                new GameTeam(5L, 15L, "게임팀5", "이미지url", 1, 0),
+                new GameTeam(6L, 16L, "게임팀6", "이미지url", 1, 0)
         );
         List<LeagueResponseWithGames.GameDetail> playingGames = List.of(
                 new GameDetail(1L, "PLAYING", LocalDateTime.of(2024, 8, 11, 13, 30), false,
@@ -578,6 +578,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("경기 팀 목록"),
                                 fieldWithPath("playingGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("경기 팀 ID"),
+                                fieldWithPath("playingGames[].gameTeams[].teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 원본 ID. GET /leagues/{leagueId}/teams 의 teamId 와 같아 두 응답을 이어 붙일 때 쓴다"),
                                 fieldWithPath("playingGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
                                         .description("경기 팀 이름"),
                                 fieldWithPath("playingGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
@@ -598,6 +600,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("경기 팀 목록"),
                                 fieldWithPath("scheduledGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("경기 팀 ID"),
+                                fieldWithPath("scheduledGames[].gameTeams[].teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 원본 ID. GET /leagues/{leagueId}/teams 의 teamId 와 같아 두 응답을 이어 붙일 때 쓴다"),
                                 fieldWithPath("scheduledGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
                                         .description("경기 팀 이름"),
                                 fieldWithPath("scheduledGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
@@ -618,6 +622,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                         .description("경기 팀 목록"),
                                 fieldWithPath("finishedGames[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("경기 팀 ID"),
+                                fieldWithPath("finishedGames[].gameTeams[].teamId").type(JsonFieldType.NUMBER)
+                                        .description("팀 원본 ID. GET /leagues/{leagueId}/teams 의 teamId 와 같아 두 응답을 이어 붙일 때 쓴다"),
                                 fieldWithPath("finishedGames[].gameTeams[].gameTeamName").type(JsonFieldType.STRING)
                                         .description("경기 팀 이름"),
                                 fieldWithPath("finishedGames[].gameTeams[].logoImageUrl").type(JsonFieldType.STRING)
