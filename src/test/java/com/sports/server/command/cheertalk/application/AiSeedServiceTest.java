@@ -195,6 +195,62 @@ class AiSeedServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("중복 억제")
+    class Duplicate {
+
+        @BeforeEach
+        void 발화_가능_상태() {
+            when(gameRepository.findByIdWithLeague(1L)).thenReturn(Optional.of(soccerGame));
+            when(gameTeamRepository.findAllByGameIdWithTeamOrderByAsc(1L)).thenReturn(gameTeams);
+            when(cheerTalkRepository.countAiSeedsByGameTeamIds(anyList())).thenReturn(0L);
+            when(cheerTalkRepository.findLastAiSeed(anyList())).thenReturn(Optional.empty());
+            when(cheerTalkRepository.existsUserCheerTalkAfter(anyList(), any(LocalDateTime.class)))
+                    .thenReturn(false);
+        }
+
+        @Test
+        @DisplayName("이미 나온 문장이면 다시 뽑아서 발화한다")
+        void 중복이면_다시_뽑는다() {
+            when(cheerTalkRepository.findAiSeedContents(anyList()))
+                    .thenReturn(List.of("후반도 이대로 간다 ㅋ"));
+            when(messageGenerator.generate(any(), any(), any()))
+                    .thenReturn("후반도 이대로 간다 ㅋ", "오늘 각 나온다");
+
+            aiSeedService.publish(1L, AiSeedTriggerType.SECOND_HALF_START, null, null);
+
+            ArgumentCaptor<CheerTalk> saved = ArgumentCaptor.forClass(CheerTalk.class);
+            verify(cheerTalkRepository).save(saved.capture());
+            assertThat(saved.getValue().getContent()).isEqualTo("오늘 각 나온다");
+        }
+
+        @Test
+        @DisplayName("다시 뽑아도 겹치면 이번 발화를 건너뛴다")
+        void 계속_겹치면_건너뛴다() {
+            when(cheerTalkRepository.findAiSeedContents(anyList()))
+                    .thenReturn(List.of("후반도 이대로 간다 ㅋ"));
+            when(messageGenerator.generate(any(), any(), any()))
+                    .thenReturn("후반도 이대로 간다 ㅋ");
+
+            aiSeedService.publish(1L, AiSeedTriggerType.SECOND_HALF_START, null, null);
+
+            verify(cheerTalkRepository, never()).save(any(CheerTalk.class));
+            verify(eventPublisher, never()).publishEvent(any(Object.class));
+        }
+
+        @Test
+        @DisplayName("겹치지 않으면 한 번만 뽑는다")
+        void 안_겹치면_한_번() {
+            when(cheerTalkRepository.findAiSeedContents(anyList())).thenReturn(List.of("오늘 기대됨"));
+            when(messageGenerator.generate(any(), any(), any())).thenReturn("오늘 각 나온다");
+
+            aiSeedService.publish(1L, AiSeedTriggerType.SECOND_HALF_START, null, null);
+
+            verify(messageGenerator, times(1)).generate(any(), any(), any());
+            verify(cheerTalkRepository).save(any(CheerTalk.class));
+        }
+    }
+
     private Game mockGame(GameState state, SportType sportType) {
         Game game = mock(Game.class);
         League league = mock(League.class);

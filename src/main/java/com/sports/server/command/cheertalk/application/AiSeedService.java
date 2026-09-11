@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -33,6 +34,7 @@ public class AiSeedService {
     private static final int MAX_SEEDS_PER_GAME = 5;
     private static final int SILENCE_MINUTES = 2;
     private static final int MIN_INTERVAL_MINUTES = 3;
+    private static final int MESSAGE_ATTEMPTS = 2;
 
     private final CheerTalkRepository cheerTalkRepository;
     private final GameTeamRepository gameTeamRepository;
@@ -59,7 +61,10 @@ public class AiSeedService {
 
         GameTeam selectedTeam = selectTeam(triggerType, scoringGameTeamId, gameTeams);
         String teamName = selectedTeam.getTeam().getName();
-        String message = messageGenerator.generate(triggerType, teamName, scorerName);
+        String message = pickUnusedMessage(triggerType, teamName, scorerName, gameTeamIds);
+        if (message == null) {
+            return;
+        }
 
         transactionTemplate.executeWithoutResult(status -> {
             CheerTalk aiSeed = CheerTalk.createAiSeed(message, selectedTeam.getId());
@@ -71,7 +76,29 @@ public class AiSeedService {
                 gameId, triggerType, teamName, message);
     }
 
-private boolean canPublish(Game game) {
+    /**
+     * 같은 경기에서 이미 나온 문장은 다시 내보내지 않는다.
+     *
+     * <p>모델이 같은 상황에 같은 말을 내놓는다. 한 경기 9건 중 3건이 "후반도 이대로 간다 ㅋ"
+     * 였던 적이 있다 — 전체 비율로는 작아도 한 경기만 보는 관객에게는 바로 티가 난다.
+     * 한 번 더 뽑아 보고 그래도 겹치면 이번 발화는 거른다. 억지로 내보내느니 조용한 게 낫다.
+     */
+    private String pickUnusedMessage(AiSeedTriggerType triggerType, String teamName,
+                                     String scorerName, List<Long> gameTeamIds) {
+        Set<String> published = Set.copyOf(cheerTalkRepository.findAiSeedContents(gameTeamIds));
+
+        for (int attempt = 0; attempt < MESSAGE_ATTEMPTS; attempt++) {
+            String candidate = messageGenerator.generate(triggerType, teamName, scorerName);
+            if (!published.contains(candidate)) {
+                return candidate;
+            }
+        }
+
+        log.info("AI Seed 중복으로 건너뜀: trigger={}, team={}", triggerType, teamName);
+        return null;
+    }
+
+    private boolean canPublish(Game game) {
         return isSoccerGame(game) && game.getState() != GameState.FINISHED;
     }
 
