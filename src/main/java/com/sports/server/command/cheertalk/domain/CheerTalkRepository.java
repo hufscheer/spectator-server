@@ -30,4 +30,8 @@ public interface CheerTalkRepository extends Repository<CheerTalk, Long> {
            "WHERE ct.gameTeamId IN :gameTeamIds AND ct.isAiSeed = true " +
            "ORDER BY ct.createdAt DESC LIMIT 1")
     Optional<CheerTalk> findLastAiSeed(@Param("gameTeamIds") List<Long> gameTeamIds);
+
+    @Query("SELECT ct.content FROM CheerTalk ct " +
+           "WHERE ct.gameTeamId IN :gameTeamIds AND ct.isAiSeed = true")
+    List<String> findAiSeedContents(@Param("gameTeamIds") List<Long> gameTeamIds);
 }
