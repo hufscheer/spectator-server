@@ -782,7 +782,7 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].games[].thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
                                         .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID").optional(),
-                                fieldWithPath("[].games[].gameState").type(JsonFieldType.STRING).description("경기 상태 (PLAYING, FINISHED, SCHEDULED)"),
+                                fieldWithPath("[].games[].state").type(JsonFieldType.STRING).description("경기 상태 (PLAYING, FINISHED, SCHEDULED)"),
                                 fieldWithPath("[].games[].isPkTaken").type(JsonFieldType.BOOLEAN).description("승부차기 진출 여부"),
                                 fieldWithPath("[].games[].gameTeams").type(JsonFieldType.ARRAY).description("경기 팀 목록"),
                                 fieldWithPath("[].games[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER).description("경기 팀 ID"),
