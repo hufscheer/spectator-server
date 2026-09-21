@@ -19,11 +19,11 @@ public record GameResponseDto(
          * 경기 상태(SCHEDULED·PLAYING·FINISHED). 요청에는 {@code state} 가 있는데 응답에는
          * 없어서, 관객 화면의 경기 카드 상태 배지가 빈 값으로 나왔다.
          *
-         * <p>이름은 {@code state} 다. 같은 값을 담는 응답이 넷인데 {@code GameDetailResponse}
-         * (GET /games/{id}) 와 {@code LeagueResponseWithGames}(GET /leagues/{id}/games),
-         * {@code LeagueResponseWithInProgressGames} 가 {@code state} 를 쓰고,
-         * {@code RecentLeagueGamesResponse}(GET /leagues/recent/games) 하나만
-         * {@code gameState} 다.
+         * <p><strong>객체가 경기 자체면 {@code state}, 경기를 참조하면 {@code gameState} 다.</strong>
+         * 여기와 {@code GameDetailResponse} · {@code LeagueResponseWithGames} ·
+         * {@code LeagueResponseWithInProgressGames} · {@code RecentLeagueGamesResponse} 는
+         * 객체가 곧 경기라 {@code state} 이고, {@code BracketResponse.MatchResponse} 는
+         * 대진 칸이라 {@code gameId} · {@code gameState} · {@code gameStartTime} 로 묶는다.
          */
         String state,
         List<TeamResponse> gameTeams,
