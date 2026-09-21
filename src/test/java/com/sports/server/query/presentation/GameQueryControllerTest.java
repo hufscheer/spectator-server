@@ -122,8 +122,8 @@ class GameQueryControllerTest extends DocumentationTest {
                 new GameResponseDto.TeamResponse(4L, 14L, "D팀", "logo.com", 2, 0)
         );
         List<GameResponseDto> responses = List.of(
-                new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "4강", 4, false, "abc123", gameTeams1, false),
-                new GameResponseDto(2L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "결승전", 2, false, "abc123", gameTeams2, false)
+                new GameResponseDto(1L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "4강", 4, false, "abc123", "PLAYING", gameTeams1, false),
+                new GameResponseDto(2L, startTime, new QuarterResponse("FIRST_HALF", "전반전"), "결승전", 2, false, "abc123", "PLAYING", gameTeams2, false)
         );
         List<LeagueWithGamesResponse> finalResponse = List.of(
                 new LeagueWithGamesResponse(1L, "2025 외대월드컵", responses)
@@ -175,6 +175,8 @@ class GameQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("content[].games[].thirdPlaceMatch").type(JsonFieldType.BOOLEAN)
                                         .description("3·4위전 여부. 3·4위전과 결승은 참가 팀 수가 같아 round 값이 둘 다 2 라, 이 값으로 구분한다"),
                                 fieldWithPath("content[].games[].videoId").type(JsonFieldType.STRING).description("경기 영상 ID"),
+                                fieldWithPath("content[].games[].state").type(JsonFieldType.STRING)
+                                        .description("경기 상태 (SCHEDULED, PLAYING, FINISHED)"),
                                 fieldWithPath("content[].games[].isPkTaken").type(JsonFieldType.BOOLEAN)
                                         .description("승부차기 진출 여부"),
                                 fieldWithPath("content[].games[].gameTeams[].gameTeamId").type(JsonFieldType.NUMBER)

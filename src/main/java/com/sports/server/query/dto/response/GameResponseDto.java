@@ -15,6 +15,17 @@ public record GameResponseDto(
         int round,
         boolean thirdPlaceMatch,
         String videoId,
+        /**
+         * 경기 상태(SCHEDULED·PLAYING·FINISHED). 요청에는 {@code state} 가 있는데 응답에는
+         * 없어서, 관객 화면의 경기 카드 상태 배지가 빈 값으로 나왔다.
+         *
+         * <p>이름은 {@code state} 다. 같은 값을 담는 응답이 넷인데 {@code GameDetailResponse}
+         * (GET /games/{id}) 와 {@code LeagueResponseWithGames}(GET /leagues/{id}/games),
+         * {@code LeagueResponseWithInProgressGames} 가 {@code state} 를 쓰고,
+         * {@code RecentLeagueGamesResponse}(GET /leagues/recent/games) 하나만
+         * {@code gameState} 다.
+         */
+        String state,
         List<TeamResponse> gameTeams,
         boolean isPkTaken
 ) {
@@ -27,6 +38,7 @@ public record GameResponseDto(
                 game.getRound().getNumber(),
                 game.isThirdPlaceMatch(),
                 game.getVideoId(),
+                game.getState().name(),
                 gameTeams.stream()
                         .sorted(Comparator.comparingLong(GameTeam::getId))
                         .map(TeamResponse::new)
