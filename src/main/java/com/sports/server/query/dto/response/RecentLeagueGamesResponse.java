@@ -27,7 +27,16 @@ public record RecentLeagueGamesResponse(
             int round,
             boolean thirdPlaceMatch,
             String videoId,
-            String gameState,
+            /**
+             * 이 객체는 경기 자체라서 접두사를 붙이지 않는다. 형제가 {@code id} ·
+             * {@code startTime} · {@code videoId} 로 전부 접두사가 없는데 이 필드만
+             * {@code gameState} 였고, 같은 값을 담는 다른 응답 넷도 전부 {@code state} 다.
+             *
+             * <p>대진표({@code BracketResponse.MatchResponse})의 {@code gameState} 는 그대로
+             * 둔다. 거긴 객체가 경기가 아니라 대진 칸이고 {@code gameId} · {@code gameState} ·
+             * {@code gameStartTime} 이 "이 칸에 붙은 경기" 한 묶음이라 접두사가 있어야 한다.
+             */
+            String state,
             List<TeamResponse> gameTeams,
             boolean isPkTaken
     ) {
