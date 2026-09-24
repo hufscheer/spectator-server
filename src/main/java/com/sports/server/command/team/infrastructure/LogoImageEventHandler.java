@@ -21,12 +21,15 @@ public class LogoImageEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async("asyncThreadPool")
     public void handle(LogoImageDeletedEvent event) {
-        String keyOfImageUrl = getKeyOfImageUrl(event.logoImageUrl());
-        s3Service.deleteFile(keyOfImageUrl);
+        String logoImageUrl = event.logoImageUrl();
+        if (logoImageUrl == null || !logoImageUrl.startsWith(replacePrefix)) {
+            return;
+        }
+        s3Service.deleteFile(getKeyOfImageUrl(logoImageUrl));
     }
 
     private String getKeyOfImageUrl(String logoImageUrl) {
-        return logoImageUrl.split(replacePrefix)[1];
+        return logoImageUrl.substring(replacePrefix.length());
     }
 
 }
