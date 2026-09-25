@@ -5,6 +5,12 @@ on:
   push:
     branches: [ "main", "develop" ]
 
+# develop 에 연달아 머지되면 배포 두 개가 겹쳐 같은 :dev 이미지 태그를 덮어써, 옛 커밋이 뜰 수 있었다.
+# 같은 브랜치의 배포는 하나씩 돈다. 진행 중인 배포는 끊지 않고, 기다리던 배포는 가장 최신 것 하나만 남는다
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -19,7 +25,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: 빌드
         run: ./gradlew build
@@ -55,7 +61,7 @@ jobs:
 
       - name: scp be-config docker (prod)
         if: steps.env.outputs.TARGET == 'prod'
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@7e85c2e09aa21988492acd66466b5d68bda49e2b # 2026-08-09 master (drone-scp 1.8.0)
         with:
           host: ${{ secrets.WAS_HOST }}
           username: ubuntu
@@ -66,7 +72,7 @@ jobs:
 
       - name: scp monitoring compose (prod)
         if: steps.env.outputs.TARGET == 'prod'
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@7e85c2e09aa21988492acd66466b5d68bda49e2b # 2026-08-09 master (drone-scp 1.8.0)
         with:
           host: ${{ secrets.WAS_HOST }}
           username: ubuntu
@@ -77,7 +83,7 @@ jobs:
 
       - name: scp monitoring configs (prod)
         if: steps.env.outputs.TARGET == 'prod'
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@7e85c2e09aa21988492acd66466b5d68bda49e2b # 2026-08-09 master (drone-scp 1.8.0)
         with:
           host: ${{ secrets.WAS_HOST }}
           username: ubuntu
@@ -126,7 +132,7 @@ jobs:
 
       - name: scp docker-compose (dev)
         if: steps.env.outputs.TARGET == 'dev'
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@7e85c2e09aa21988492acd66466b5d68bda49e2b # 2026-08-09 master (drone-scp 1.8.0)
         with:
           host: ${{ secrets.WAS_HOST_DEV }}
           username: ubuntu
