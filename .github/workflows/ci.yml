@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
           cache: 'gradle'
 
       - name: MySQL 서비스 상태 확인
