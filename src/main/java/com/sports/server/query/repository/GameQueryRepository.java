@@ -14,19 +14,13 @@ import org.springframework.data.repository.query.Param;
 public interface GameQueryRepository extends Repository<Game, Long> {
     Optional<Game> findById(Long id);
 
+    // 팀까지 한 번에 읽는다. 팀을 나중에 지연 로딩하면 지워진 팀(@Where)에서 EntityNotFoundException 이 난다.
+    // 지워진 팀의 경기 팀은 이 조인에서 빠진다 (경기 단건·목록 조회와 같은 동작)
     @Query(
             "SELECT g FROM Game g "
                     + "JOIN FETCH g.league "
-                    + "JOIN FETCH g.gameTeams "
-                    + "WHERE g.league =:league "
-                    + "AND g.state = 'PLAYING'"
-    )
-    List<Game> findPlayingGamesByLeagueWithGameTeams(@Param("league") League league);
-
-    @Query(
-            "SELECT g FROM Game g "
-                    + "JOIN FETCH g.league "
-                    + "JOIN FETCH g.gameTeams "
+                    + "JOIN FETCH g.gameTeams gt "
+                    + "JOIN FETCH gt.team "
                     + "WHERE g.league.id in :leagueIds "
                     + "AND g.state = 'PLAYING'"
     )
@@ -35,18 +29,11 @@ public interface GameQueryRepository extends Repository<Game, Long> {
     @Query(
             "SELECT g FROM Game g "
                     + "JOIN FETCH g.league "
-                    + "JOIN FETCH g.gameTeams "
+                    + "JOIN FETCH g.gameTeams gt "
+                    + "JOIN FETCH gt.team "
                     + "WHERE g.league=:league"
     )
     List<Game> findByLeagueWithGameTeams(@Param("league") League league);
-
-    @Query(
-            "SELECT g FROM Game g "
-                    + "JOIN FETCH g.league "
-                    + "JOIN GameTeam gt ON gt.game = g "
-                    + "WHERE gt.id = :gameTeamId"
-    )
-    Game findByGameTeamIdWithLeague(@Param("gameTeamId") Long gameTeamId);
 
     @Query(
             "SELECT new com.sports.server.query.dto.GameTeamGameInfoDto(gt.id, g.id, g.name, l.id, l.name) "
