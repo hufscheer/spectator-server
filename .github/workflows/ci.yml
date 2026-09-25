@@ -7,6 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # [측정용 임시] tmpfs 켬/끔 × 테스트 프로세스 1·2·3개 × 2회. 측정이 끝나면 최종 설정만 남긴다
+    strategy:
+      fail-fast: false
+      matrix:
+        tmpfs: [ 'on', 'off' ]
+        forks: [ 1, 2, 3 ]
+        rep: [ 1, 2 ]
     services:
       mysql:
         image: mysql:8.0
@@ -20,11 +27,11 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=20
-          --tmpfs /var/lib/mysql
+          ${{ matrix.tmpfs == 'on' && '--tmpfs /var/lib/mysql' || '' }}
     env:
       SPRING_PROFILES_ACTIVE: ci
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
-      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/test_container_test?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/test_container_test_${org.gradle.test.worker}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
     steps:
@@ -42,19 +49,30 @@ jobs:
         run: |
           timeout 60 bash -c 'until echo > /dev/tcp/127.0.0.1/3306; do sleep 2; done'
 
-      - name: 빌드 (실패 시 1회 재시도)
+      - name: 컴파일
+        run: ./gradlew --no-daemon testClasses --quiet
+
+      - name: 테스트 (측정)
         run: |
-          set +e
-          ./gradlew --no-daemon test --stacktrace --quiet
-          first_result=$?
-          if [ "$first_result" -ne 0 ]; then
-            echo "첫 번째 테스트 실행 실패. 1회 재시도합니다."
-            ./gradlew --no-daemon test --stacktrace --quiet
-            second_result=$?
-            if [ "$second_result" -ne 0 ]; then
-              exit "$second_result"
-            fi
-          fi
+          start=$(date +%s)
+          ./gradlew --no-daemon test --quiet -PtestForks=${{ matrix.forks }}
+          rc=$?
+          echo "TEST_WALL=$(( $(date +%s) - start ))" >> "$GITHUB_ENV"
+          exit $rc
+
+      - name: 측정 결과
+        if: always()
+        run: |
+          echo "RESULT tmpfs=${{ matrix.tmpfs }} forks=${{ matrix.forks }} rep=${{ matrix.rep }} test_wall=${TEST_WALL}s nproc=$(nproc) mem=$(free -g | awk '/Mem:/{print $2}')G"
+          mysql -h127.0.0.1 -P3306 -uroot -ppassword -N -e "SELECT 'RESULT_DB TRUNCATE', SUM(COUNT_STAR), ROUND(SUM(SUM_TIMER_WAIT)/1e12,1) FROM performance_schema.events_statements_summary_by_digest WHERE DIGEST_TEXT LIKE 'TRUNCATE%'; SELECT 'RESULT_DB ALL', SUM(COUNT_STAR), ROUND(SUM(SUM_TIMER_WAIT)/1e12,1) FROM performance_schema.events_statements_summary_by_digest;" 2>/dev/null
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          t=f=0
+          for x in glob.glob('build/test-results/test/TEST-*.xml'):
+              r=ET.parse(x).getroot(); t+=int(r.get('tests'))
+              f+=int(r.get('failures'))+int(r.get('errors'))
+          print(f"RESULT_TESTS tests={t} failed={f}")
+          PY
 
       - name: API 문서 누락 검사
         if: success()

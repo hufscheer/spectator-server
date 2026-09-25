@@ -98,6 +98,8 @@ test {
     outputs.dir snippetsDir
     useJUnitPlatform()
     jvmArgs '-Dnet.bytebuddy.experimental=true'
+    // -PtestForks=N 이면 테스트 클래스를 N 개 프로세스에 나눠 돌린다. 프로세스마다 DB 스키마를 따로 써야 한다 (ci.yml 참고)
+    maxParallelForks = (project.findProperty('testForks') ?: '1') as int
     testLogging {
         events "failed" // 실패한 테스트만 로그 출력
         exceptionFormat "full" // Expected vs Actual 포함
