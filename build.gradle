@@ -96,6 +96,9 @@ ext {
 
 test {
     outputs.dir snippetsDir
+    // 앱은 main() 에서 시간대를 Asia/Seoul 로 정하지만 테스트는 main() 을 거치지 않아 기계 시간대를 따른다.
+    // ci 프로파일은 serverTimezone=UTC 로 읽어서, KST 기계에서는 SQL 픽스처의 시각이 9시간 밀려 CI(UTC)와 결과가 달랐다
+    systemProperty 'user.timezone', 'UTC'
     useJUnitPlatform()
     jvmArgs '-Dnet.bytebuddy.experimental=true'
     testLogging {
