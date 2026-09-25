@@ -15,6 +15,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.sports.server.command.game.exception.GameErrorMessages;
+import java.util.Map;
+import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -369,5 +372,57 @@ public class GameAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.get(0).lineupPlayerId()).isEqualTo(lineupPlayerId),
                 () -> assertThat(actual.get(0).isCaptain()).isEqualTo(false)
         );
+    }
+
+    // 시작 시각은 NOT NULL 컬럼이다. 요청에서 빠지면 null 로 덮어써 DB 제약 위반(500)이 났다
+    @Test
+    void 경기를_수정할_때_시작_시각을_빼면_어떤_값이_빠졌는지_알려준다() {
+        // given
+        Map<String, Object> request = new HashMap<>();
+        request.put("name", "경기 이름");
+        request.put("round", 16);
+        request.put("videoId", "videoId");
+        request.put("thirdPlaceMatch", false);
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .put("/leagues/{leagueId}/{gameId}", 1L, 1L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getList("fieldErrors.field", String.class)).isEqualTo(List.of("startTime"));
+    }
+
+    // int 라 빠지면 0 이 되어 "해당 라운드는 존재하지 않습니다" 로 실패했다. 3·4위전은 라운드를 안 쓰므로 필수가 아니다
+    @Test
+    void 경기를_수정할_때_라운드를_빼면_라운드를_입력하라고_알려준다() {
+        // given
+        Map<String, Object> request = new HashMap<>();
+        request.put("name", "경기 이름");
+        request.put("startTime", "2024-09-11T12:00:00");
+        request.put("videoId", "videoId");
+        request.put("thirdPlaceMatch", false);
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .put("/leagues/{leagueId}/{gameId}", 1L, 1L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(GameErrorMessages.ROUND_REQUIRED_EXCEPTION);
     }
 }
