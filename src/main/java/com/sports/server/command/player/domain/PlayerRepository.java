@@ -11,15 +11,9 @@ public interface PlayerRepository extends Repository<Player, Long> {
 
     void delete(Player player);
 
-    boolean existsByStudentNumber(String studentNumber);
-
     List<Player> findAllById(Iterable<Long> ids);
 
-    Optional<Player> findByStudentNumber(String studentNumber);
-
     Optional<Player> findByStudentNumberAndOrganizationId(String studentNumber, Long organizationId);
-
-    List<Player> findByStudentNumberIn(List<String> studentNumbers);
 
     List<Player> findByStudentNumberInAndOrganizationId(List<String> studentNumbers, Long organizationId);
 }
