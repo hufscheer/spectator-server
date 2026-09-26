@@ -40,13 +40,6 @@ public class GameStatusScheduler {
                 });
     }
 
-    public void updateLeagueStatisticsIfNeeded(Long gameId, GameState state, Round round) {
-        if (GameState.FINISHED != state || Round.FINAL != round) {
-            return;
-        }
-        manualUpdateLeagueStatisticsForFinalGames(List.of(gameId));
-    }
-
     public void updateLeagueStatisticsIfNeeded(Game game) {
         if (GameState.FINISHED != game.getState() || Round.FINAL != game.getRound()) {
             return;
