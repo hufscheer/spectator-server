@@ -20,6 +20,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=20
+          --tmpfs /var/lib/mysql
     env:
       SPRING_PROFILES_ACTIVE: ci
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
@@ -35,6 +36,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+          cache: 'gradle'
 
       - name: MySQL 서비스 상태 확인
         run: |
