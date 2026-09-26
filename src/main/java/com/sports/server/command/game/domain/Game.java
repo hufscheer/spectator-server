@@ -210,12 +210,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
-    public void updateGameQuarter(Quarter quarter) {
-        if (quarter != null) {
-            this.gameQuarter = quarter.name();
-        }
-    }
-
     public void updateRound(Round round) {
         this.round = round;
     }
@@ -254,11 +248,6 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
 
     public void updateState(GameState state) {
         this.state = state;
-    }
-
-    public void play() {
-        this.state = GameState.PLAYING;
-        updateQuarter(league.getSportType().firstQuarter());
     }
 
     public void end() {
