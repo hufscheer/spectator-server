@@ -9,7 +9,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -93,6 +95,57 @@ public class LeagueAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    // 날짜는 NOT NULL 컬럼이다. 요청에서 빠지면 null 로 덮어써 DB 제약 위반(500)이 났다
+    @Test
+    void 대회를_수정할_때_시작일을_빼면_어떤_값이_빠졌는지_알려준다() {
+        // given
+        Map<String, Object> request = new HashMap<>();
+        request.put("name", "라임즙 많이 먹기 대회");
+        request.put("maxRound", 16);
+        request.put("endAt", "2024-12-13T00:00:00");
+        request.put("thirdPlaceMatchEnabled", false);
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .put("/leagues/{leagueId}", 1L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getList("fieldErrors.field", String.class)).isEqualTo(List.of("startAt"));
+    }
+
+    // int 라 빠지면 0 이 되어 "해당 라운드는 존재하지 않습니다" 로 실패했다
+    @Test
+    void 대회를_수정할_때_최대_라운드를_빼면_어떤_값이_빠졌는지_알려준다() {
+        // given
+        Map<String, Object> request = new HashMap<>();
+        request.put("name", "라임즙 많이 먹기 대회");
+        request.put("startAt", "2024-12-11T00:00:00");
+        request.put("endAt", "2024-12-13T00:00:00");
+
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .put("/leagues/{leagueId}", 1L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getList("fieldErrors.field", String.class)).isEqualTo(List.of("maxRound"));
     }
 
     @Test
