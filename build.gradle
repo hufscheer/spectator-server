@@ -96,8 +96,14 @@ ext {
 
 test {
     outputs.dir snippetsDir
+    // 앱은 main() 에서 시간대를 Asia/Seoul 로 정하지만 테스트는 main() 을 거치지 않아 기계 시간대를 따른다.
+    // ci 프로파일은 serverTimezone=UTC 로 읽어서, KST 기계에서는 SQL 픽스처의 시각이 9시간 밀려 CI(UTC)와 결과가 달랐다
+    systemProperty 'user.timezone', 'UTC'
     useJUnitPlatform()
     jvmArgs '-Dnet.bytebuddy.experimental=true'
+    // Gradle 기본 512m 에서는 캐시된 스프링 컨텍스트들로 GC 뒤에도 힙이 거의 찬다(최대 510MB, Full GC 9번).
+    // CI 에서 톰캣 스레드가 OutOfMemoryError 로 죽은 적이 있다
+    maxHeapSize = '1g'
     testLogging {
         events "failed" // 실패한 테스트만 로그 출력
         exceptionFormat "full" // Expected vs Actual 포함
