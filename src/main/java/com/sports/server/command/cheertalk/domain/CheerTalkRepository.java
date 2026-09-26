@@ -1,6 +1,5 @@
 package com.sports.server.command.cheertalk.domain;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -10,12 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface CheerTalkRepository extends Repository<CheerTalk, Long> {
     void save(CheerTalk cheerTalk);
-
-    @Query("SELECT COUNT(ct) FROM CheerTalk ct " +
-           "JOIN GameTeam gt ON ct.gameTeamId = gt.id " +
-           "JOIN gt.game g " +
-           "WHERE gt.team.id = :teamId AND g.league.id = :leagueId AND ct.blockStatus = com.sports.server.command.cheertalk.domain.CheerTalkBlockStatus.ACTIVE")
-    Long countCheerTalksByTeamIdAndLeagueId(@Param("teamId") Long teamId, @Param("leagueId") Long leagueId);
 
     @Query("SELECT COUNT(ct) FROM CheerTalk ct " +
            "WHERE ct.gameTeamId IN :gameTeamIds AND ct.isAiSeed = true")

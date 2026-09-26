@@ -36,34 +36,4 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
         league.addTopScorer(this);
         player.addLeagueTopScorer(this);
     }
-
-    public void updateRanking(Integer ranking) {
-        this.ranking = ranking;
-    }
-
-    public void updateGoalCount(Integer goalCount) {
-        this.goalCount = goalCount;
-    }
-
-    public void updateScorer(Player newPlayer) {
-        if (this.player != null) {
-            this.player.removeLeagueTopScorer(this);
-        }
-
-        this.player = newPlayer;
-        if (newPlayer != null) {
-            newPlayer.addLeagueTopScorer(this);
-        }
-    }
-
-    public void updateLeague(League newLeague) {
-        if (this.league != null) {
-            this.league.removeTopScorer(this);
-        }
-
-        this.league = newLeague;
-        if (newLeague != null) {
-            newLeague.addTopScorer(this);
-        }
-    }
 }
