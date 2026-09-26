@@ -34,7 +34,6 @@ public class Report extends BaseEntity<Report> {
     private ReportState state;
 
     protected Report() {
-        registerEvent(new ReportEvent(this));
     }
 
     public Report(CheerTalk cheerTalk) {
@@ -42,7 +41,6 @@ public class Report extends BaseEntity<Report> {
         this.cheerTalk = cheerTalk;
         this.reportedAt = LocalDateTime.now();
         this.state = ReportState.UNCHECKED;
-        registerEvent(new ReportEvent(this));
     }
 
     private void validateBlockedCheerTalk(CheerTalk cheerTalk) {
