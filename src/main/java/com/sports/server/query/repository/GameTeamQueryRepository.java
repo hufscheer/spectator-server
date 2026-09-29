@@ -14,6 +14,12 @@ public interface GameTeamQueryRepository extends Repository<GameTeam, Long> {
 
     List<GameTeam> findAllByGame(final Game game);
 
+    // left join 이라 지워진 팀(@Where)은 team 이 null 로 채워진다
+    @Query("select gt from GameTeam gt "
+            + "left join fetch gt.team "
+            + "where gt.game.id = :gameId")
+    List<GameTeam> findAllByGameIdWithTeam(@Param("gameId") Long gameId);
+
     @Query("select gt from GameTeam gt "
             + "join fetch gt.team "
             + "join fetch gt.game "
