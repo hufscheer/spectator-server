@@ -75,7 +75,7 @@ public class GameController {
     @PutMapping("/leagues/{leagueId}/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     public void updateGame(@PathVariable final Long leagueId, @PathVariable final Long gameId,
-                           @RequestBody final GameRequest.Update request, final Member member) {
+                           @Valid @RequestBody final GameRequest.Update request, final Member member) {
         gameService.updateGame(leagueId, gameId, request, member);
     }
 

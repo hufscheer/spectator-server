@@ -10,6 +10,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.QuarterResolver;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -83,10 +84,11 @@ public class GameRequest {
      */
     public record Update(
             String name,
-            int round,
-            LocalDateTime startTime,
+            // 3·4위전이면 쓰지 않아 필수가 아니다. 그 밖에 빠지면 GameService 가 400 을 낸다
+            Integer round,
+            @NotNull LocalDateTime startTime,
             String videoId,
             Boolean thirdPlaceMatch
-    ) implements RoundSelectable {
+    ) {
     }
 }
