@@ -106,8 +106,9 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
     }
 
     public void deleteLogoImageUrl() {
+        String deletedLogoImageUrl = this.logoImageUrl;
         this.logoImageUrl = "";
-        registerEvent(new LogoImageDeletedEvent(logoImageUrl));
+        registerEvent(new LogoImageDeletedEvent(deletedLogoImageUrl));
     }
 
     public void addLeagueTeam(LeagueTeam leagueTeam) {
