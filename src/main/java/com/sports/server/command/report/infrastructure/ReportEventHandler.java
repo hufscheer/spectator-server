@@ -1,7 +1,6 @@
 package com.sports.server.command.report.infrastructure;
 
 import com.sports.server.command.report.application.ReportProcessor;
-import com.sports.server.command.report.domain.Report;
 import com.sports.server.command.report.domain.ReportEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -17,10 +16,7 @@ public class ReportEventHandler {
     @TransactionalEventListener
     @Async("asyncThreadPool")
     public void handle(ReportEvent event) {
-        Report report = event.report();
-        if (report.isUnchecked()) {
-            reportProcessor.check(report.getId());
-        }
+        reportProcessor.check(event.reportId());
     }
 
 // 추후 람다로 이전 시 필요한 메서드들
