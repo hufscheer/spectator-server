@@ -124,6 +124,8 @@ public class TeamService {
         Team team = entityUtils.getEntity(teamId, Team.class);
         PermissionValidator.checkPermission(team, member);
         team.deleteLogoImageUrl();
+        // registerEvent 로 담은 이벤트는 save 때 발행된다
+        teamRepository.save(team);
     }
 
     private void upsertPlayersToTeam(Member member, Team team, List<TeamRequest.TeamPlayerRegister> request) {
