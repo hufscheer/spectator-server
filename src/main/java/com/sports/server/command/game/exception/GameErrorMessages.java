@@ -28,4 +28,5 @@ public class GameErrorMessages {
     public static final String LINEUP_PLAYER_HAS_RECORDS = "기록이 있는 선수는 라인업에서 뺄 수 없어요. 해당 기록부터 삭제해 주세요.";
     public static final String MULTIPLE_CAPTAINS_IN_REQUEST = "팀 라인업에 주장은 한 명만 지정할 수 있습니다.";
     public static final String CAPTAIN_ALREADY_EXISTS_IN_GAME_TEAM = "이미 주장이 등록된 팀입니다. 기존 주장을 먼저 해제한 뒤 추가하세요.";
+    public static final String ROUND_REQUIRED_EXCEPTION = "3·4위전이 아닌 경기는 라운드를 입력해야 합니다.";
 }

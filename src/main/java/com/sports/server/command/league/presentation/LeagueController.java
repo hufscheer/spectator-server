@@ -1,5 +1,6 @@
 package com.sports.server.command.league.presentation;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class LeagueController {
 	@PutMapping("/{leagueId}")
     @ResponseStatus(HttpStatus.OK)
 	public void update(@PathVariable("leagueId") final Long leagueId,
-                       @RequestBody final LeagueRequest.Update request, Member member) {
+                       @Valid @RequestBody final LeagueRequest.Update request, Member member) {
 		leagueService.update(member, request, leagueId);
 	}
 
