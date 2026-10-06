@@ -9,11 +9,13 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 
 public class FixtureMonkeyUtils {
     public static final FixtureMonkey INSTANCE = FixtureMonkey.builder()
             .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+            .defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 0))
             .build();
 
     private static final Random RANDOM = new Random();

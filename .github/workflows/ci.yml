@@ -67,9 +67,12 @@ jobs:
           import glob, xml.etree.ElementTree as ET
           from collections import defaultdict
           t = defaultdict(float); n = 0
-          for f in glob.glob('build/test-results/test/*.xml'):
+          for f in glob.glob('build/test-results/test/TEST-*.xml'):
               r = ET.parse(f).getroot()
-              t[r.get('name').split('$')[0]] += float(r.get('time')); n += int(r.get('tests'))
+              cls = f.split('TEST-', 1)[1][:-4].split('$')[0]
+              suite = float(r.get('time'))
+              t[cls] += suite if suite < 3600 else sum(float(c.get('time')) for c in r.iter('testcase'))
+              n += int(r.get('tests'))
           print(f"SHARD_SUMMARY classes={len(t)} tests={n} sum={sum(t.values()):.1f}s")
           for c, s in sorted(t.items(), key=lambda x: -x[1]):
               print(f"CLASS_TIME {c} {s:.2f}")
@@ -132,9 +135,12 @@ jobs:
           import glob, xml.etree.ElementTree as ET
           from collections import defaultdict
           t = defaultdict(float); n = 0
-          for f in glob.glob('build/test-results/test/*.xml'):
+          for f in glob.glob('build/test-results/test/TEST-*.xml'):
               r = ET.parse(f).getroot()
-              t[r.get('name').split('$')[0]] += float(r.get('time')); n += int(r.get('tests'))
+              cls = f.split('TEST-', 1)[1][:-4].split('$')[0]
+              suite = float(r.get('time'))
+              t[cls] += suite if suite < 3600 else sum(float(c.get('time')) for c in r.iter('testcase'))
+              n += int(r.get('tests'))
           print(f"SHARD_SUMMARY classes={len(t)} tests={n} sum={sum(t.values()):.1f}s")
           for c, s in sorted(t.items(), key=lambda x: -x[1]):
               print(f"CLASS_TIME {c} {s:.2f}")
