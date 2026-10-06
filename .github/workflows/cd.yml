@@ -26,9 +26,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+          cache: 'gradle'
 
+      # 전체 테스트는 PR CI 를 통과해야 develop·main 에 머지된다(브랜치 보호). 여기서 또 돌리면 배포가 6분 넘게 늦어진다.
+      # bootJar 는 asciidoctor → test 에 묶여 있어 테스트를 아예 빼면 /docs/api.html 이 빈 채로 나간다.
+      # 그래서 API 문서를 만드는 문서 테스트(DocumentationTest 를 상속한 *ControllerTest, DB 없음)만 돌린다
       - name: 빌드
-        run: ./gradlew build
+        run: ./gradlew test --tests '*ControllerTest' bootJar
 
       - name: 환경 결정
         id: env
@@ -68,28 +72,6 @@ jobs:
           key: ${{ secrets.KEY }}
           source: "./src/main/resources/be-config/docker/"
           target: "/home/ubuntu/staging"
-          strip_components: 6
-
-      - name: scp monitoring compose (prod)
-        if: steps.env.outputs.TARGET == 'prod'
-        uses: appleboy/scp-action@7e85c2e09aa21988492acd66466b5d68bda49e2b # 2026-08-09 master (drone-scp 1.8.0)
-        with:
-          host: ${{ secrets.WAS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.KEY }}
-          source: "./src/main/resources/be-config/docker/docker-compose.monitoring.yml"
-          target: "/home/ubuntu"
-          strip_components: 6
-
-      - name: scp monitoring configs (prod)
-        if: steps.env.outputs.TARGET == 'prod'
-        uses: appleboy/scp-action@7e85c2e09aa21988492acd66466b5d68bda49e2b # 2026-08-09 master (drone-scp 1.8.0)
-        with:
-          host: ${{ secrets.WAS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.KEY }}
-          source: "./src/main/resources/be-config/monitoring/"
-          target: "/home/ubuntu/monitoring"
           strip_components: 6
 
       - name: 배포 (prod, blue/green)
