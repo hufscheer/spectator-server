@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
@@ -350,5 +351,18 @@ public class TeamServiceTest extends ServiceTest {
         // then
         Team team = entityUtils.getEntity(teamId, Team.class);
         assertThat(team.getLogoImageUrl()).isEqualTo("");
+    }
+
+    @Test
+    void 팀_이미지를_삭제하면_S3_원본도_지운다(){
+        // given
+        Long teamId = 1L;
+        teamService.update(manager, new TeamRequest.Update(null, imageUrl, null, null, null), teamId);
+
+        // when
+        teamService.deleteLogoImage(manager, teamId);
+
+        // then
+        verify(s3Service).deleteFile("image_url.png");
     }
 }

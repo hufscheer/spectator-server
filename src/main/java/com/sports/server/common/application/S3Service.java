@@ -4,9 +4,11 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +16,8 @@ import java.io.InputStream;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,9 +37,50 @@ public class S3Service {
 
     private final String backupPrefix = "backup/";
 
+    /**
+     * 사전 서명 URL 로 올릴 수 있는 형식과, 그 형식으로 서명에 묶을 Content-Type.
+     *
+     * <p>목록은 운영 버킷에 실제로 올라와 있는 형식이다(2026-09-23, 442건 전수). SVG 는 뺐다 —
+     * 이미지이면서 스크립트를 담을 수 있어서, 이미지 도메인에서 직접 열면 그 도메인으로 스크립트가
+     * 돈다. {@code LogoImageNormalizer} 도 SVG 는 못 읽어 정규화도 안 된다.
+     */
+    private static final Map<String, String> IMAGE_CONTENT_TYPES = Map.of(
+            "png", "image/png",
+            "jpg", "image/jpeg",
+            "jpeg", "image/jpeg",
+            "gif", "image/gif",
+            "webp", "image/webp",
+            "avif", "image/avif"
+    );
+
+    /**
+     * 이미지 한 장을 올릴 사전 서명 PUT URL 을 만든다.
+     *
+     * <p>확장자만 막아서는 부족하다. 서명에 Content-Type 이 없으면 {@code uuid.png} 를
+     * {@code text/html} 로 올릴 수 있고, S3 는 저장된 타입대로 내보내므로 브라우저가 HTML 로 그린다.
+     * 그래서 확장자에서 정한 Content-Type 을 서명에 묶는다 — 클라이언트가 다른 타입으로 올리면
+     * S3 가 서명 불일치로 거절한다.
+     */
     public String generatePresignedUrl(String extension) {
-        String filePath = getFilePath(extension);
-        return amazonS3.generatePresignedUrl(bucketName, filePath, getExpiredDate(), HttpMethod.PUT).toString();
+        String normalized = normalizeExtension(extension);
+        String contentType = IMAGE_CONTENT_TYPES.get(normalized);
+        if (contentType == null) {
+            throw new BadRequestException("이미지 파일만 올릴 수 있습니다. (png, jpg, jpeg, gif, webp, avif)");
+        }
+
+        GeneratePresignedUrlRequest request =
+                new GeneratePresignedUrlRequest(bucketName, getFilePath(normalized), HttpMethod.PUT)
+                        .withExpiration(getExpiredDate())
+                        .withContentType(contentType);
+        return amazonS3.generatePresignedUrl(request).toString();
+    }
+
+    /** 아이폰 사진은 {@code IMG_0001.JPG} 처럼 대문자로 온다. 운영 버킷에도 JPG·PNG 가 있다 */
+    private String normalizeExtension(String extension) {
+        if (extension == null) {
+            return "";
+        }
+        return extension.strip().toLowerCase(Locale.ROOT);
     }
 
     public void deleteFile(String key) {

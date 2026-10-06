@@ -4,6 +4,7 @@ import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.report.domain.Report;
+import com.sports.server.command.report.domain.ReportEvent;
 import com.sports.server.command.report.domain.ReportRepository;
 import com.sports.server.command.report.domain.ReportState;
 import com.sports.server.command.report.dto.ReportRequest;
@@ -13,6 +14,7 @@ import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +27,13 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final ReportFactory reportFactory;
     private final EntityUtils entityUtils;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void report(final ReportRequest request) {
         Report report = reportFactory.create(request);
         reportRepository.save(report);
+        // 이미 있던 신고도 다시 검사를 요청한다. 검사할지는 ReportProcessor 가 상태를 보고 정한다
+        eventPublisher.publishEvent(new ReportEvent(report.getId()));
     }
 
     public void cancel(final Long leagueId, final Long cheerTalkId, final Member manager) {

@@ -42,9 +42,6 @@ dependencies {
     implementation 'org.flywaydb:flyway-core:9.1.3'
     implementation 'org.flywaydb:flyway-mysql:9.1.3'
 
-    // comment - bad word filter
-    implementation 'io.github.vaneproject:badwordfiltering:1.0.0'
-
     // in-memory cache (rate limit, dedup, masking response)
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
@@ -75,13 +72,15 @@ dependencies {
 
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.security:spring-security-test'
 
     // jwt
     implementation 'com.auth0:java-jwt:4.4.0'
 
     // aws
-    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+    implementation('com.amazonaws:aws-java-sdk-s3:1.12.395') {
+        // 스프링은 같은 패키지를 spring-jcl 로 준다. spring-cloud-starter-aws 를 쓸 때도 빠져 있었다
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
 
     // image normalization (team logo aspect ratio fix)
     implementation 'net.coobird:thumbnailator:0.4.20'
@@ -96,8 +95,14 @@ ext {
 
 test {
     outputs.dir snippetsDir
+    // 앱은 main() 에서 시간대를 Asia/Seoul 로 정하지만 테스트는 main() 을 거치지 않아 기계 시간대를 따른다.
+    // ci 프로파일은 serverTimezone=UTC 로 읽어서, KST 기계에서는 SQL 픽스처의 시각이 9시간 밀려 CI(UTC)와 결과가 달랐다
+    systemProperty 'user.timezone', 'UTC'
     useJUnitPlatform()
     jvmArgs '-Dnet.bytebuddy.experimental=true'
+    // Gradle 기본 512m 에서는 캐시된 스프링 컨텍스트들로 GC 뒤에도 힙이 거의 찬다(최대 510MB, Full GC 9번).
+    // CI 에서 톰캣 스레드가 OutOfMemoryError 로 죽은 적이 있다
+    maxHeapSize = '1g'
     testLogging {
         events "failed" // 실패한 테스트만 로그 출력
         exceptionFormat "full" // Expected vs Actual 포함

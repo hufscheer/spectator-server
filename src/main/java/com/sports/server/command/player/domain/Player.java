@@ -1,6 +1,5 @@
 package com.sports.server.command.player.domain;
 
-import com.sports.server.command.league.domain.League;
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.organization.domain.Organization;
 import com.sports.server.command.team.domain.TeamPlayer;
@@ -60,36 +59,6 @@ public class Player extends BaseEntity<Player> implements ManagedEntity {
 
     public void addLeagueTopScorer(LeagueTopScorer leagueTopScorer) {
         this.leagueTopScorers.add(leagueTopScorer);
-    }
-
-    public void removeLeagueTopScorer(LeagueTopScorer leagueTopScorer) {
-        this.leagueTopScorers.remove(leagueTopScorer);
-    }
-
-
-    public LeagueTopScorer findLeagueTopScorer(League league) {
-        return this.leagueTopScorers.stream()
-                .filter(lts -> lts.getLeague().equals(league))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public boolean isTopScorerInLeague(League league) {
-        return findLeagueTopScorer(league) != null;
-    }
-
-    public LeagueTopScorer addAsTopScorerToLeague(League league, Integer ranking, Integer goalCount) {
-        LeagueTopScorer leagueTopScorer = new LeagueTopScorer(league, this, ranking, goalCount);
-        this.leagueTopScorers.add(leagueTopScorer);
-        return leagueTopScorer;
-    }
-
-    public void updateTopScorerInfo(League league, Integer ranking, Integer goalCount) {
-        LeagueTopScorer leagueTopScorer = findLeagueTopScorer(league);
-        if (leagueTopScorer != null) {
-            leagueTopScorer.updateRanking(ranking);
-            leagueTopScorer.updateGoalCount(goalCount);
-        }
     }
 
     @Override

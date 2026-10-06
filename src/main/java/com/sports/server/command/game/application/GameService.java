@@ -4,8 +4,6 @@ import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
-import com.sports.server.command.league.domain.Quarter;
-import com.sports.server.command.league.domain.QuarterResolver;
 import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
@@ -17,7 +15,6 @@ import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.application.PermissionValidator;
 import java.time.LocalDateTime;
-import org.springframework.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
 import com.sports.server.command.league.domain.Round;
@@ -80,11 +77,6 @@ public class GameService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<Game> findGamesByIds(List<Long> gameIds) {
-        return gameRepository.findAllByIdIn(gameIds);
-    }
-
     @Transactional
     public List<Game> determineResultsAndGet(List<Long> gameIds) {
         List<Game> games = gameRepository.findByIdsWithLeague(gameIds);
@@ -101,7 +93,11 @@ public class GameService {
         // 요청이 3·4위전 여부를 생략하면 지금 값을 그대로 둔다. 이름만 고쳤다고 라운드가 바뀌면 안 된다
         boolean wasThirdPlaceMatch = game.getRound() == Round.THIRD_PLACE_MATCH;
         boolean thirdPlaceMatch = Optional.ofNullable(request.thirdPlaceMatch()).orElse(wasThirdPlaceMatch);
-        league.validateRound(request.round(), thirdPlaceMatch);
+        if (!thirdPlaceMatch && request.round() == null) {
+            throw new BadRequestException(GameErrorMessages.ROUND_REQUIRED_EXCEPTION);
+        }
+        // 3·4위전이면 라운드 번호는 보지 않는다
+        league.validateRound(thirdPlaceMatch ? 0 : request.round(), thirdPlaceMatch);
         // 생성과 달리 전환은 검증이 없어, 결승 진출 2팀짜리 3·4위전을 만들 수 있었다
         if (thirdPlaceMatch && !wasThirdPlaceMatch && game.getGameTeams().size() == Game.MINIMUM_TEAMS) {
             bracketService.validateThirdPlaceContenders(league, game.getTeam1().getTeam().getId(),

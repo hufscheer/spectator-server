@@ -15,7 +15,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.flywaydb.core.internal.util.StringUtils;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -101,7 +100,7 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     public void updateInfo(String name, LocalDateTime startAt, LocalDateTime endAt, Round maxRound,
                            boolean thirdPlaceMatchEnabled, Boolean bracketEnabled) {
-        if (StringUtils.hasText(name)) {
+        if (name != null && !name.trim().isEmpty()) {
             this.name = name;
         }
         this.startAt = startAt;
@@ -146,10 +145,6 @@ public class League extends BaseEntity<League> implements ManagedEntity {
 
     public void addTopScorer(LeagueTopScorer topScorer) {
         this.topScorers.add(topScorer);
-    }
-
-    public void removeTopScorer(LeagueTopScorer topScorer) {
-        this.topScorers.remove(topScorer);
     }
 
     public void addLeagueTeam(LeagueTeam leagueTeam) {

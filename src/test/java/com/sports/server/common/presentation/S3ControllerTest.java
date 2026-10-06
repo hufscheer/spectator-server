@@ -32,7 +32,7 @@ public class S3ControllerTest extends DocumentationTest {
         result.andExpect(status().isOk())
                 .andDo(restDocsHandler.document(
                         queryParameters(
-                                parameterWithName("extension").description("업로드할 파일의 확장자 (예: jpg, png)")
+                                parameterWithName("extension").description("업로드할 이미지 확장자. png·jpg·jpeg·gif·webp·avif 만 받고 대소문자는 가리지 않는다. 그 외는 400. 발급된 URL 은 확장자에 맞는 Content-Type 이 서명에 묶여 있어, PUT 할 때 같은 Content-Type 을 보내야 한다 (jpg·jpeg → image/jpeg)")
                         ),
                         requestCookies(
                                 cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")

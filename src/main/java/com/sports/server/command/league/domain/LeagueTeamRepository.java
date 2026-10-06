@@ -1,6 +1,5 @@
 package com.sports.server.command.league.domain;
 
-import com.sports.server.command.league.dto.LeagueTeamStats;
 import com.sports.server.command.team.domain.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -42,9 +41,4 @@ public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
            "AND gt2.game.league.id = :leagueId AND ct.blockStatus = com.sports.server.command.cheertalk.domain.CheerTalkBlockStatus.ACTIVE), 0) " +
            "WHERE lt.league.id = :leagueId")
     void updateTotalTalkCounts(@Param("leagueId") Long leagueId);
-
-    @Query("SELECT new com.sports.server.command.league.dto.LeagueTeamStats(" +
-           "lt.id, CAST(lt.totalCheerCount AS long), CAST(lt.totalTalkCount AS long)) " +
-           "FROM LeagueTeam lt WHERE lt.league.id = :leagueId")
-    List<LeagueTeamStats> findLeagueTeamStatsWithCounts(@Param("leagueId") Long leagueId);
 }
