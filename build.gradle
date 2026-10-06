@@ -85,6 +85,10 @@ dependencies {
     // image normalization (team logo aspect ratio fix)
     implementation 'net.coobird:thumbnailator:0.4.20'
 
+    // NL 파일 추출 (xlsx 셀 읽기, PDF 텍스트 레이어 추출)
+    implementation 'org.dhatim:fastexcel-reader:0.20.2'
+    implementation 'org.apache.pdfbox:pdfbox:3.0.8'
+
     // fixture
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.21")
 }

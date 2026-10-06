@@ -52,3 +52,8 @@ gemini:
     url: gemini-url
     prompt: prompt
     nl-prompt: nl-prompt
+
+nl:
+  extract:
+    model: google/gemini-3.8-flash
+    prompt: 이미지나 PDF 에 보이는 선수 명단을 한 줄에 한 명씩, 칸은 탭으로 구분해 그대로 옮겨 적어라. 설명은 붙이지 마라.

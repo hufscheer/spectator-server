@@ -1,5 +1,7 @@
 package com.sports.server.common.advice;
 
+import static com.sports.server.command.nl.exception.NlErrorMessages.EXTRACT_FILE_TOO_LARGE;
+
 import com.sports.server.command.player.dto.PlayerConflictResponse;
 import com.sports.server.command.player.exception.PlayerStudentNumberConflictException;
 import com.sports.server.common.application.AlertService;
@@ -22,6 +24,8 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.stream.Collectors;
@@ -73,6 +77,20 @@ public class ControllerExceptionAdvice {
         logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(e.getParameterName() + " 파라미터가 필요합니다."));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    protected ResponseEntity<ErrorResponse> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(EXTRACT_FILE_TOO_LARGE));
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    protected ResponseEntity<ErrorResponse> handleMissingRequestPart(MissingServletRequestPartException e, HttpServletRequest request) {
+        logClientError(request, HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(e.getRequestPartName() + " 파트가 필요합니다."));
     }
 
     @ExceptionHandler(BindException.class)
