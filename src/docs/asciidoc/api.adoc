@@ -534,6 +534,14 @@ operation::nl-controller-test/학번_중복_여부를_확인한다[snippets='htt
 
 operation::nl-controller-test/선수를_등록한다[snippets='http-request,request-cookies,request-fields,http-response,response-fields']
 
+=== 명단 파일 텍스트 추출
+
+사진·엑셀(xlsx)·CSV·PDF 를 올리면 명단을 텍스트로만 바꿔 돌려준다. 이 텍스트를 입력창에 넣고 확인·수정한 뒤 기존 파싱/처리 API 를 그대로 호출한다. 파일은 저장하지 않는다. 회원당 10분에 10회까지 호출할 수 있고, 넘으면 429 를 돌려준다.
+
+오류(400): 지원하지 않는 형식, 구형 xls, 빈 파일, 10MB 초과, 명단을 읽지 못함. AI 호출 실패는 503 이다.
+
+operation::nl-controller-test/파일에서_명단_텍스트를_추출한다[snippets='http-request,request-cookies,request-parts,http-response,response-fields']
+
 == 이미지 업로드 API
 
 === 사전 서명 URL 발급

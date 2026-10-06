@@ -4,7 +4,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -13,6 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sports.server.command.nl.domain.PlayerStatus;
 import com.sports.server.command.nl.dto.NlCheckDuplicatesResponse;
 import com.sports.server.command.nl.dto.NlExecuteResponse;
+import com.sports.server.command.nl.dto.NlExtractResponse;
+import com.sports.server.command.nl.dto.NlSourceType;
 import com.sports.server.command.nl.dto.NlProcessResponse.Summary;
 import com.sports.server.command.nl.dto.NlParseResponse;
 import com.sports.server.command.nl.dto.NlProcessResponse;
@@ -25,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -299,6 +305,38 @@ public class NlControllerTest extends DocumentationTest {
                                 fieldWithPath("result.created").type(JsonFieldType.NUMBER).description("신규 생성된 선수 수"),
                                 fieldWithPath("result.assigned").type(JsonFieldType.NUMBER).description("팀에 배정된 선수 수"),
                                 fieldWithPath("result.skipped").type(JsonFieldType.NUMBER).description("건너뛴 선수 수")
+                        )
+                ));
+    }
+
+    @Test
+    void 파일에서_명단_텍스트를_추출한다() throws Exception {
+        // given
+        given(nlFileExtractService.extract(any(), any())).willReturn(
+                new NlExtractResponse("홍길동\t202600001\t10\n김철수\t202600002\t7", NlSourceType.SPREADSHEET, false));
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "roster.xlsx", "application/octet-stream", new byte[]{'P', 'K', 3, 4});
+
+        // when
+        ResultActions result = mockMvc.perform(multipart("/nl/extract")
+                .file(file)
+                .cookie(new Cookie(COOKIE_NAME, "temp-cookie"))
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        requestCookies(
+                                cookieWithName(COOKIE_NAME).description("로그인을 통해 얻은 토큰")
+                        ),
+                        requestParts(
+                                partWithName("file").description("명단 파일 (사진 JPG·PNG·WEBP·HEIC, 엑셀 xlsx, CSV, PDF / 최대 10MB)")
+                        ),
+                        responseFields(
+                                fieldWithPath("text").type(JsonFieldType.STRING).description("추출된 명단 텍스트 (한 줄에 한 명, 칸은 탭 구분, 최대 500줄)"),
+                                fieldWithPath("sourceType").type(JsonFieldType.STRING).description("파일 종류 (IMAGE, SPREADSHEET, CSV, PDF)"),
+                                fieldWithPath("truncated").type(JsonFieldType.BOOLEAN).description("500줄을 넘어 잘렸는지 여부")
                         )
                 ));
     }

@@ -10,11 +10,18 @@ spring:
     baseline-on-migrate: true
   lifecycle:
     timeout-per-shutdown-phase: 30s
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
 
 server:
   port: 8080
   shutdown: graceful
   tomcat:
+    # 업로드가 한도(10MB)를 넘으면 톰캣이 본문을 다 읽지 않고 연결을 끊어 클라이언트가 400 JSON 대신 reset 을 본다.
+    # 이 크기까지는 버리며 읽어 줘서 400 응답이 전달되게 한다
+    max-swallow-size: 20MB
     mbeanregistry:
       enabled: true
 

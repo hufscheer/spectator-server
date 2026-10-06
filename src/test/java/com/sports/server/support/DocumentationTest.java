@@ -17,6 +17,7 @@ import com.sports.server.command.game.application.CheerCountRateLimiter;
 import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.league.application.LeagueService;
 import com.sports.server.command.league.presentation.LeagueController;
+import com.sports.server.command.nl.application.NlFileExtractService;
 import com.sports.server.command.nl.application.NlService;
 import com.sports.server.command.nl.presentation.NlController;
 import com.sports.server.command.member.domain.Member;
@@ -178,6 +179,9 @@ public class DocumentationTest {
 
     @MockBean
     protected NlService nlService;
+
+    @MockBean
+    protected NlFileExtractService nlFileExtractService;
 
     @MockBean
     protected OrganizationQueryService organizationQueryService;
