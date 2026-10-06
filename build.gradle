@@ -120,6 +120,36 @@ test {
     }
 }
 
+// CI 에서 테스트 클래스를 여러 잡으로 나눠 동시에 돌린다: ./gradlew test -PtestShards=3 -PtestShard=0
+// .github/test-timings.txt(클래스 이름과 초)가 있으면 시간이 고르게 나뉘게 담고, 기록이 없는 클래스는 이름 해시로 나눈다.
+// @Nested 클래스(Outer$Inner)는 바깥 클래스와 같은 잡에 둔다
+if (project.hasProperty('testShards')) {
+    int shards = (project.property('testShards') as String).toInteger()
+    int shard = (project.property('testShard') as String).toInteger()
+    Map<String, Integer> assigned = [:]
+    def timingsFile = file('.github/test-timings.txt')
+    if (timingsFile.exists()) {
+        double[] load = new double[shards]
+        timingsFile.readLines()
+                .findAll { it.trim() && !it.startsWith('#') }
+                .collect { it.trim().split(/\s+/) }
+                .sort { a, b -> ((b[1] as double) <=> (a[1] as double)) ?: (a[0] <=> b[0]) }
+                .each { row ->
+                    int lightest = (0..<shards).min { load[it] }
+                    assigned[row[0]] = lightest
+                    load[lightest] += row[1] as double
+                }
+    }
+    test {
+        exclude { FileTreeElement element ->
+            if (element.directory || !element.name.endsWith('.class')) return false
+            String outer = element.relativePath.pathString.replaceAll(/(\$.*)?\.class$/, '').replace('/', '.')
+            int target = assigned.containsKey(outer) ? assigned[outer] : Math.floorMod(outer.hashCode(), shards)
+            target != shard
+        }
+    }
+}
+
 jacoco {
     toolVersion = "0.8.12"
 }

@@ -59,3 +59,83 @@ jobs:
       - name: API 문서 누락 검사
         if: success()
         run: bash scripts/check-api-docs.sh
+
+      - name: 클래스별 시간
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import glob, xml.etree.ElementTree as ET
+          from collections import defaultdict
+          t = defaultdict(float); n = 0
+          for f in glob.glob('build/test-results/test/*.xml'):
+              r = ET.parse(f).getroot()
+              t[r.get('name').split('$')[0]] += float(r.get('time')); n += int(r.get('tests'))
+          print(f"SHARD_SUMMARY classes={len(t)} tests={n} sum={sum(t.values()):.1f}s")
+          for c, s in sorted(t.items(), key=lambda x: -x[1]):
+              print(f"CLASS_TIME {c} {s:.2f}")
+          EOF
+
+  shard:
+    name: shard ${{ matrix.shard }}/${{ matrix.shards }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { shards: 2, shard: 0 }
+          - { shards: 2, shard: 1 }
+          - { shards: 3, shard: 0 }
+          - { shards: 3, shard: 1 }
+          - { shards: 3, shard: 2 }
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test_container_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ppassword --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=20
+          --tmpfs /var/lib/mysql
+    env:
+      SPRING_PROFILES_ACTIVE: ci
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/test_container_test?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    steps:
+      - name: 저장소 Checkout
+        uses: actions/checkout@v3
+
+      - name: 자바 17 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+
+      - name: MySQL 서비스 상태 확인
+        run: |
+          timeout 60 bash -c 'until echo > /dev/tcp/127.0.0.1/3306; do sleep 2; done'
+
+      - name: 빌드 (분할)
+        run: ./gradlew --no-daemon test -PtestShards=${{ matrix.shards }} -PtestShard=${{ matrix.shard }} --stacktrace --quiet
+
+      - name: 클래스별 시간
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import glob, xml.etree.ElementTree as ET
+          from collections import defaultdict
+          t = defaultdict(float); n = 0
+          for f in glob.glob('build/test-results/test/*.xml'):
+              r = ET.parse(f).getroot()
+              t[r.get('name').split('$')[0]] += float(r.get('time')); n += int(r.get('tests'))
+          print(f"SHARD_SUMMARY classes={len(t)} tests={n} sum={sum(t.values()):.1f}s")
+          for c, s in sorted(t.items(), key=lambda x: -x[1]):
+              print(f"CLASS_TIME {c} {s:.2f}")
+          EOF
