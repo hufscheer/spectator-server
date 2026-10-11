@@ -2,6 +2,7 @@ package com.sports.server.command.team.domain;
 
 import org.springframework.data.repository.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface TeamRepository extends Repository<Team, Long> {
@@ -12,4 +13,6 @@ public interface TeamRepository extends Repository<Team, Long> {
     List<Team> findAllById(Iterable<Long> ids);
 
     List<Team> findAll();
+
+    long countByIdIn(Collection<Long> ids);
 }

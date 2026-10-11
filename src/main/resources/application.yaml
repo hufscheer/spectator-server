@@ -25,6 +25,11 @@ server:
     mbeanregistry:
       enabled: true
 
+push:
+  fcm:
+    enabled: false
+    credentials-json: ${FIREBASE_SERVICE_ACCOUNT_JSON:}
+
 management:
   server:
     port: 9090
