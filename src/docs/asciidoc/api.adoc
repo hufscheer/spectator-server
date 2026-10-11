@@ -547,3 +547,51 @@ operation::nl-controller-test/파일에서_명단_텍스트를_추출한다[snip
 === 사전 서명 URL 발급
 
 operation::s3-controller-test/이미지_업로드용_사전_서명_url을_발급한다[snippets='http-request,query-parameters,request-cookies,http-response']
+
+== 푸시 알림 API
+
+관객은 로그인이 없어 기기 단위로 구독한다. 기기를 등록하면 받은 `deviceKey` 로 팔로우를 관리한다.
+알림은 팔로우한 팀이나 경기에서 경기 시작, 골(축구), 경기 종료가 있을 때 FCM 으로 간다.
+알림 `data` 는 `url`(앱 내 경로), `gameId`, `type`(`GAME_START`, `GOAL`, `GAME_END`) 이다.
+
+=== 기기 등록
+
+같은 토큰으로 다시 등록하면 같은 `deviceKey` 를 돌려준다. 같은 클라이언트가 10분에 20번을 넘기면 429 를 돌려준다.
+
+operation::push-device-controller-test/푸시_기기를_등록한다[snippets='http-request,request-fields,http-response,response-fields']
+
+==== 오류 응답
+
+토큰이 비었거나 플랫폼이 `IOS`, `ANDROID`, `WEB` 이 아니면 400, 요청이 너무 많으면 429 이다.
+
+operation::push-device-controller-test/토큰이_비어_있으면_등록할_수_없다[snippets='http-request,http-response']
+
+operation::push-device-controller-test/알_수_없는_플랫폼이면_등록할_수_없다[snippets='http-request,http-response']
+
+operation::push-device-controller-test/등록_요청이_너무_많으면_429를_돌려준다[snippets='http-request,http-response']
+
+=== 토큰 갱신
+
+operation::push-device-controller-test/푸시_토큰을_갱신한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+==== 오류 응답
+
+등록되지 않은 `deviceKey` 면 404 이다. 팔로우 조회·교체·기기 해제도 같다.
+
+operation::push-device-controller-test/없는_기기의_토큰을_갱신하면_404를_돌려준다[snippets='http-request,http-response']
+
+=== 팔로우 조회
+
+operation::push-device-controller-test/팔로우_목록을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 팔로우 교체
+
+팀과 경기는 각각 30개까지 담을 수 있고, 존재하지 않는 ID 가 있으면 400 이다.
+
+operation::push-device-controller-test/팔로우_목록을_통째로_교체한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+operation::push-device-controller-test/팔로우_목록에_null이_섞이면_거부한다[snippets='http-request,http-response']
+
+=== 기기 해제
+
+operation::push-device-controller-test/푸시_기기를_해제한다[snippets='http-request,path-parameters,http-response']

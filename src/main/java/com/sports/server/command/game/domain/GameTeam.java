@@ -65,6 +65,18 @@ public class GameTeam extends BaseEntity<GameTeam> {
         return game.getSportType();
     }
 
+    public boolean hasTeam() {
+        return team != null;
+    }
+
+    public Long getTeamId() {
+        return team.getId();
+    }
+
+    public String getTeamName() {
+        return team.getName();
+    }
+
     public void registerStarter(final LineupPlayer lineupPlayer) {
         lineupPlayer.changeStateToStarter();
     }

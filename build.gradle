@@ -82,6 +82,9 @@ dependencies {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
 
+    // FCM HTTP v1 인증 (firebase-admin 은 무거워서 쓰지 않는다)
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.54.0'
+
     // image normalization (team logo aspect ratio fix)
     implementation 'net.coobird:thumbnailator:0.4.20'
 

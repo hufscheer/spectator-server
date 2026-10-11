@@ -18,6 +18,8 @@
 | [organizations](organizations.md) | 4 |  | BASE TABLE |
 | [pending_cheer_talks](pending_cheer_talks.md) | 4 |  | BASE TABLE |
 | [players](players.md) | 4 |  | BASE TABLE |
+| [push_devices](push_devices.md) | 7 |  | BASE TABLE |
+| [push_follows](push_follows.md) | 4 |  | BASE TABLE |
 | [reports](reports.md) | 4 |  | BASE TABLE |
 | [team_players](team_players.md) | 4 |  | BASE TABLE |
 | [teams](teams.md) | 7 |  | BASE TABLE |
