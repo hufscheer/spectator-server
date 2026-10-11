@@ -101,7 +101,7 @@ class PushNotificationTimelineTest extends ServiceTest {
 
             // then
             PushMessage message = sentMessage();
-            assertThat(message.title()).isEqualTo("경기 시작");
+            assertThat(message.title()).isEqualTo("⚽ 경기 시작");
             assertThat(message.body()).isEqualTo("팀A vs 팀B · 테스트 리그 4강");
             assertThat(message.data()).containsEntry("url", "/org/1/soccer/games/1")
                     .containsEntry("gameId", "1")
@@ -117,6 +117,7 @@ class PushNotificationTimelineTest extends ServiceTest {
                     0, SportType.BASKETBALL, BasketballQuarter.FIRST_QUARTER.name(), GameProgressType.QUARTER_START));
 
             // then
+            assertThat(sentMessage().title()).isEqualTo("🏀 경기 시작");
             assertThat(sentMessage().data()).containsEntry("url", "/org/1/basketball/games/4");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
                     .containsExactly(BASKETBALL_FOLLOWER_TOKEN);
@@ -205,7 +206,7 @@ class PushNotificationTimelineTest extends ServiceTest {
 
             // then
             PushMessage message = sentMessage();
-            assertThat(message.title()).isEqualTo("경기 종료");
+            assertThat(message.title()).isEqualTo("⚽ 경기 종료");
             assertThat(message.body()).isEqualTo("팀A 2 : 1 팀B · 팀A 승리");
             assertThat(message.data()).containsEntry("type", "GAME_END");
         }
