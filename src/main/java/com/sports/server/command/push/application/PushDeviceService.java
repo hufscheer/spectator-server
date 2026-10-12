@@ -3,10 +3,13 @@ package com.sports.server.command.push.application;
 import static com.sports.server.command.push.exception.PushErrorMessages.DEVICE_NOT_FOUND;
 import static com.sports.server.command.push.exception.PushErrorMessages.FOLLOW_GAME_NOT_FOUND;
 import static com.sports.server.command.push.exception.PushErrorMessages.FOLLOW_TEAM_NOT_FOUND;
+import static com.sports.server.command.push.exception.PushErrorMessages.FOLLOW_ORGANIZATION_NOT_FOUND;
 import static com.sports.server.command.push.exception.PushErrorMessages.GAME_FOLLOW_LIMIT_EXCEEDED;
+import static com.sports.server.command.push.exception.PushErrorMessages.ORGANIZATION_FOLLOW_LIMIT_EXCEEDED;
 import static com.sports.server.command.push.exception.PushErrorMessages.TEAM_FOLLOW_LIMIT_EXCEEDED;
 
 import com.sports.server.command.game.domain.GameRepository;
+import com.sports.server.command.organization.domain.OrganizationRepository;
 import com.sports.server.command.push.domain.FollowTargetType;
 import com.sports.server.command.push.domain.PushDevice;
 import com.sports.server.command.push.domain.PushDeviceRepository;
@@ -36,11 +39,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class PushDeviceService {
 
     private static final int MAX_FOLLOWS_PER_TYPE = 30;
+    private static final int MAX_ORGANIZATION_FOLLOWS = 5;
 
     private final PushDeviceRepository pushDeviceRepository;
     private final PushFollowRepository pushFollowRepository;
     private final TeamRepository teamRepository;
     private final GameRepository gameRepository;
+    private final OrganizationRepository organizationRepository;
     private final PushDeviceRegisterRateLimiter registerRateLimiter;
 
     public PushDeviceResponse register(String clientId, PushDeviceRegisterRequest request) {
@@ -70,7 +75,8 @@ public class PushDeviceService {
         List<PushFollow> follows = pushFollowRepository.findAllByDeviceId(device.getId());
         return new PushFollowsResponse(
                 targetIdsOf(follows, FollowTargetType.TEAM),
-                targetIdsOf(follows, FollowTargetType.GAME)
+                targetIdsOf(follows, FollowTargetType.GAME),
+                targetIdsOf(follows, FollowTargetType.ORGANIZATION)
         );
     }
 
@@ -86,18 +92,22 @@ public class PushDeviceService {
         PushDevice device = getDevice(deviceKey);
         Set<Long> teamIds = new LinkedHashSet<>(request.teamIds());
         Set<Long> gameIds = new LinkedHashSet<>(request.gameIds());
-        validateFollows(teamIds, gameIds);
+        Set<Long> organizationIds = new LinkedHashSet<>(request.organizationIds());
+        validateFollows(teamIds, gameIds, organizationIds);
 
         pushFollowRepository.deleteAllByDeviceId(device.getId());
-        pushFollowRepository.saveAll(followsOf(device, teamIds, gameIds));
+        pushFollowRepository.saveAll(followsOf(device, teamIds, gameIds, organizationIds));
     }
 
-    private void validateFollows(Set<Long> teamIds, Set<Long> gameIds) {
+    private void validateFollows(Set<Long> teamIds, Set<Long> gameIds, Set<Long> organizationIds) {
         if (teamIds.size() > MAX_FOLLOWS_PER_TYPE) {
             throw new BadRequestException(TEAM_FOLLOW_LIMIT_EXCEEDED);
         }
         if (gameIds.size() > MAX_FOLLOWS_PER_TYPE) {
             throw new BadRequestException(GAME_FOLLOW_LIMIT_EXCEEDED);
+        }
+        if (organizationIds.size() > MAX_ORGANIZATION_FOLLOWS) {
+            throw new BadRequestException(ORGANIZATION_FOLLOW_LIMIT_EXCEEDED);
         }
         if (teamRepository.countByIdIn(teamIds) != teamIds.size()) {
             throw new BadRequestException(FOLLOW_TEAM_NOT_FOUND);
@@ -105,14 +115,20 @@ public class PushDeviceService {
         if (gameRepository.countByIdIn(gameIds) != gameIds.size()) {
             throw new BadRequestException(FOLLOW_GAME_NOT_FOUND);
         }
+        if (organizationRepository.countByIdIn(organizationIds) != organizationIds.size()) {
+            throw new BadRequestException(FOLLOW_ORGANIZATION_NOT_FOUND);
+        }
     }
 
-    private List<PushFollow> followsOf(PushDevice device, Collection<Long> teamIds, Collection<Long> gameIds) {
+    private List<PushFollow> followsOf(PushDevice device, Collection<Long> teamIds, Collection<Long> gameIds,
+                                      Collection<Long> organizationIds) {
         Stream<PushFollow> teams = teamIds.stream()
                 .map(id -> new PushFollow(device.getId(), FollowTargetType.TEAM, id));
         Stream<PushFollow> games = gameIds.stream()
                 .map(id -> new PushFollow(device.getId(), FollowTargetType.GAME, id));
-        return Stream.concat(teams, games).toList();
+        Stream<PushFollow> organizations = organizationIds.stream()
+                .map(id -> new PushFollow(device.getId(), FollowTargetType.ORGANIZATION, id));
+        return Stream.of(teams, games, organizations).flatMap(stream -> stream).toList();
     }
 
     public void unregister(String deviceKey) {

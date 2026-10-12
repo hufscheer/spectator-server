@@ -3,6 +3,7 @@ package com.sports.server.command.push.presentation;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -140,7 +141,7 @@ public class PushDeviceControllerTest extends DocumentationTest {
     void 팔로우_목록을_조회한다() throws Exception {
         // given
         given(pushDeviceService.findFollows(DEVICE_KEY))
-                .willReturn(new PushFollowsResponse(List.of(1L, 2L), List.of(10L)));
+                .willReturn(new PushFollowsResponse(List.of(1L, 2L), List.of(10L), List.of(1L)));
 
         // when
         ResultActions result = mockMvc.perform(get("/push/devices/{deviceKey}/follows", DEVICE_KEY));
@@ -151,7 +152,9 @@ public class PushDeviceControllerTest extends DocumentationTest {
                         pathParameters(parameterWithName("deviceKey").description("기기 비밀 키")),
                         responseFields(
                                 fieldWithPath("teamIds").type(JsonFieldType.ARRAY).description("팔로우 중인 팀 ID"),
-                                fieldWithPath("gameIds").type(JsonFieldType.ARRAY).description("팔로우 중인 경기 ID")
+                                fieldWithPath("gameIds").type(JsonFieldType.ARRAY).description("팔로우 중인 경기 ID"),
+                                fieldWithPath("organizationIds").type(JsonFieldType.ARRAY)
+                                        .description("팔로우 중인 학교(조직) ID. 경기 시작·종료 알림만 받는다")
                         )
                 ));
     }
@@ -159,7 +162,7 @@ public class PushDeviceControllerTest extends DocumentationTest {
     @Test
     void 팔로우_목록을_통째로_교체한다() throws Exception {
         // given
-        PushFollowsRequest request = new PushFollowsRequest(List.of(1L, 2L), List.of(10L));
+        PushFollowsRequest request = new PushFollowsRequest(List.of(1L, 2L), List.of(10L), List.of(1L));
 
         // when
         ResultActions result = mockMvc.perform(put("/push/devices/{deviceKey}/follows", DEVICE_KEY)
@@ -174,9 +177,23 @@ public class PushDeviceControllerTest extends DocumentationTest {
                                 fieldWithPath("teamIds").type(JsonFieldType.ARRAY)
                                         .description("팔로우할 팀 ID (최대 30개)"),
                                 fieldWithPath("gameIds").type(JsonFieldType.ARRAY)
-                                        .description("팔로우할 경기 ID (최대 30개)")
+                                        .description("팔로우할 경기 ID (최대 30개)"),
+                                fieldWithPath("organizationIds").type(JsonFieldType.ARRAY).optional()
+                                        .description("팔로우할 학교(조직) ID (최대 5개, 생략하면 빈 목록). 경기 시작·종료 알림만 받는다")
                         )
                 ));
+    }
+
+    @Test
+    void 학교_목록을_생략해도_교체한다() throws Exception {
+        // when
+        ResultActions result = mockMvc.perform(put("/push/devices/{deviceKey}/follows", DEVICE_KEY)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"teamIds\": [1], \"gameIds\": []}"));
+
+        // then
+        result.andExpect(status().isNoContent());
+        verify(pushDeviceService).replaceFollows(DEVICE_KEY, new PushFollowsRequest(List.of(1L), List.of(), null));
     }
 
     @Test

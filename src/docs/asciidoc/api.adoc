@@ -586,9 +586,12 @@ operation::push-device-controller-test/팔로우_목록을_조회한다[snippets
 
 === 팔로우 교체
 
-팀과 경기는 각각 30개까지 담을 수 있고, 존재하지 않는 ID 가 있으면 400 이다.
+팀과 경기는 각각 30개, 학교(`organizationIds`)는 5개까지 담을 수 있고, 존재하지 않는 ID 가 있으면 400 이다.
+학교를 팔로우한 기기는 경기 시작·종료 알림만 받고 골 알림은 받지 않는다. `organizationIds` 를 생략하면 빈 목록으로 본다.
 
 operation::push-device-controller-test/팔로우_목록을_통째로_교체한다[snippets='http-request,path-parameters,request-fields,http-response']
+
+operation::push-device-controller-test/학교_목록을_생략해도_교체한다[snippets='http-request,http-response']
 
 operation::push-device-controller-test/팔로우_목록에_null이_섞이면_거부한다[snippets='http-request,http-response']
 

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,9 +32,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql(scripts = "/push-notification-fixture.sql")
@@ -44,6 +48,8 @@ class PushNotificationTimelineTest extends ServiceTest {
     private static final String GAME_FOLLOWER_TOKEN = "token-game-follower";
     private static final String BOTH_FOLLOWER_TOKEN = "token-both-follower";
     private static final String BASKETBALL_FOLLOWER_TOKEN = "token-basketball-follower";
+    private static final String ORGANIZATION_FOLLOWER_TOKEN = "token-organization-follower";
+    private static final String ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN = "token-organization-and-team-follower";
 
     private static final long SOCCER_PRE_GAME = 1L;
     private static final long SOCCER_SECOND_HALF = 2L;
@@ -75,6 +81,9 @@ class PushNotificationTimelineTest extends ServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private Member manager;
 
     @BeforeEach
@@ -87,6 +96,8 @@ class PushNotificationTimelineTest extends ServiceTest {
                 List.of(SOCCER_PRE_GAME, SOCCER_SECOND_HALF, SOCCER_FIRST_HALF_ENDED, SOCCER_LEADING_TWO_TO_ONE));
         follow(BOTH_FOLLOWER_TOKEN, PushPlatform.WEB, List.of(1L, 2L), List.of(SOCCER_PRE_GAME));
         follow(BASKETBALL_FOLLOWER_TOKEN, PushPlatform.IOS, List.of(3L), List.of());
+        follow(ORGANIZATION_FOLLOWER_TOKEN, PushPlatform.IOS, List.of(), List.of(), List.of(1L));
+        follow(ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN, PushPlatform.ANDROID, List.of(1L), List.of(), List.of(1L));
     }
 
     @Nested
@@ -107,7 +118,20 @@ class PushNotificationTimelineTest extends ServiceTest {
                     .containsEntry("gameId", "1")
                     .containsEntry("type", "GAME_START");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
-                    .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN);
+                    .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
+                            ORGANIZATION_FOLLOWER_TOKEN, ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
+        }
+
+        @Test
+        void 팀과_학교를_모두_팔로우한_기기에도_한_번만_보낸다() {
+            // when
+            timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
+                    0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
+
+            // then
+            assertThat(sentRecipients()).extracting(PushRecipient::token)
+                    .filteredOn(ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN::equals)
+                    .hasSize(1);
         }
 
         @Test
@@ -120,7 +144,8 @@ class PushNotificationTimelineTest extends ServiceTest {
             assertThat(sentMessage().title()).isEqualTo("🏀 경기 시작");
             assertThat(sentMessage().data()).containsEntry("url", "/org/1/basketball/games/4");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
-                    .containsExactly(BASKETBALL_FOLLOWER_TOKEN);
+                    .containsExactlyInAnyOrder(BASKETBALL_FOLLOWER_TOKEN, ORGANIZATION_FOLLOWER_TOKEN,
+                            ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
         }
 
         @Test
@@ -148,8 +173,10 @@ class PushNotificationTimelineTest extends ServiceTest {
             assertThat(message.title()).isEqualTo("⚽ 팀A 골!");
             assertThat(message.body()).isEqualTo("팀A 2 : 1 팀B (후반전 10')");
             assertThat(message.data()).containsEntry("type", "GOAL");
+            // 학교만 팔로우한 기기는 골을 받지 않는다
             assertThat(sentRecipients()).extracting(PushRecipient::token)
-                    .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN);
+                    .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
+                            ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
         }
 
         @Test
@@ -195,6 +222,121 @@ class PushNotificationTimelineTest extends ServiceTest {
     }
 
     @Nested
+    @DisplayName("농구 쿼터 종료")
+    class QuarterEnd {
+
+        @Test
+        void 현재_점수와_쿼터_이름으로_알린다() {
+            // given
+            jdbcTemplate.update("UPDATE game_teams SET score = 21 WHERE id = 11");
+            jdbcTemplate.update("UPDATE game_teams SET score = 18 WHERE id = 12");
+
+            startBasketballQuarter(BasketballQuarter.FIRST_QUARTER);
+
+            // when
+            endBasketballQuarter(BasketballQuarter.FIRST_QUARTER);
+
+            // then
+            PushMessage message = sentMessage();
+            assertThat(message.title()).isEqualTo("🏀 1쿼터 종료");
+            assertThat(message.body()).isEqualTo("팀C 21 : 18 팀D");
+            assertThat(message.data()).containsEntry("url", "/org/1/basketball/games/6")
+                    .containsEntry("type", "QUARTER_END");
+        }
+
+        @Test
+        void 팀이나_경기를_팔로우한_기기에만_보내고_학교_팔로워에는_보내지_않는다() {
+            // given
+            follow("token-basketball-game-follower", PushPlatform.IOS, List.of(), List.of(BASKETBALL_PLAYING));
+
+            startBasketballQuarter(BasketballQuarter.FIRST_QUARTER);
+
+            // when
+            endBasketballQuarter(BasketballQuarter.FIRST_QUARTER);
+
+            // then
+            assertThat(sentRecipients()).extracting(PushRecipient::token)
+                    .containsExactlyInAnyOrder(BASKETBALL_FOLLOWER_TOKEN, "token-basketball-game-follower");
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = BasketballQuarter.class, names = {"SECOND_QUARTER", "THIRD_QUARTER"})
+        void 두_번째와_세_번째_쿼터_종료도_알린다(BasketballQuarter quarter) {
+            // given
+            advanceBasketballTo(quarter);
+
+            // when
+            endBasketballQuarter(quarter);
+
+            // then
+            assertThat(sentMessage().title()).isEqualTo("🏀 " + quarter.getDisplayName() + " 종료");
+        }
+
+        @Test
+        void 사쿼터_종료는_보내지_않는다() {
+            // given
+            advanceBasketballTo(BasketballQuarter.FOURTH_QUARTER);
+
+            // when
+            endBasketballQuarter(BasketballQuarter.FOURTH_QUARTER);
+
+            // then
+            verify(pushSender, never()).send(any(), anyList());
+        }
+
+        // 연장전은 쿼터 종료를 따로 기록할 수 없고(canHaveQuarterEnd=false) 경기 종료로만 끝난다
+        @ParameterizedTest
+        @EnumSource(value = BasketballQuarter.class, names = {"FOURTH_QUARTER", "OVERTIME"})
+        void 마지막_쿼터에서_경기를_끝내면_경기_종료_알림_하나만_보낸다(BasketballQuarter quarter) {
+            // given
+            advanceBasketballTo(quarter);
+
+            // when
+            timelineService.register(manager, BASKETBALL_PLAYING, new TimelineRequest.RegisterProgress(
+                    10, SportType.BASKETBALL, quarter.name(), GameProgressType.GAME_END));
+
+            // then
+            assertThat(sentMessage().title()).isEqualTo("🏀 경기 종료");
+        }
+
+        @Test
+        void 축구의_전반전_종료는_보내지_않는다() {
+            timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
+                    0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
+            clearInvocations(pushSender);
+
+            // when
+            timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
+                    45, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_END));
+
+            // then
+            verify(pushSender, never()).send(any(), anyList());
+        }
+
+        // 앞 쿼터를 차례로 시작·종료한 뒤 목표 쿼터를 시작한다. 앞 쿼터 종료 알림은 비워서 센다
+        private void advanceBasketballTo(BasketballQuarter target) {
+            for (BasketballQuarter quarter : BasketballQuarter.values()) {
+                startBasketballQuarter(quarter);
+                if (quarter == target) {
+                    break;
+                }
+                endBasketballQuarter(quarter);
+            }
+            clearInvocations(pushSender);
+        }
+
+        private void startBasketballQuarter(BasketballQuarter quarter) {
+            timelineService.register(manager, BASKETBALL_PLAYING, new TimelineRequest.RegisterProgress(
+                    0, SportType.BASKETBALL, quarter.name(), GameProgressType.QUARTER_START));
+        }
+
+        private void endBasketballQuarter(BasketballQuarter quarter) {
+            timelineService.register(manager, BASKETBALL_PLAYING, new TimelineRequest.RegisterProgress(
+                    10, SportType.BASKETBALL, quarter.name(), GameProgressType.QUARTER_END));
+        }
+    }
+
+    @Nested
     @DisplayName("경기 종료")
     class GameEnd {
 
@@ -209,6 +351,9 @@ class PushNotificationTimelineTest extends ServiceTest {
             assertThat(message.title()).isEqualTo("⚽ 경기 종료");
             assertThat(message.body()).isEqualTo("팀A 2 : 1 팀B · 팀A 승리");
             assertThat(message.data()).containsEntry("type", "GAME_END");
+            assertThat(sentRecipients()).extracting(PushRecipient::token)
+                    .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
+                            ORGANIZATION_FOLLOWER_TOKEN, ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
         }
 
         @Test
@@ -229,7 +374,7 @@ class PushNotificationTimelineTest extends ServiceTest {
         @Test
         void 팔로우한_기기가_없으면_보내지_않는다() {
             // given
-            List<Long> followerIds = pushDeviceRepository.findFollowers(List.of(1L, 2L), SOCCER_LEADING_TWO_TO_ONE)
+            List<Long> followerIds = pushDeviceRepository.findFollowersIncludingOrganization(List.of(1L, 2L), SOCCER_LEADING_TWO_TO_ONE, 1L)
                     .stream().map(PushDevice::getId).toList();
             pushDeviceService.removeAll(followerIds);
 
@@ -259,8 +404,13 @@ class PushNotificationTimelineTest extends ServiceTest {
     }
 
     private void follow(String token, PushPlatform platform, List<Long> teamIds, List<Long> gameIds) {
+        follow(token, platform, teamIds, gameIds, List.of());
+    }
+
+    private void follow(String token, PushPlatform platform, List<Long> teamIds, List<Long> gameIds,
+                        List<Long> organizationIds) {
         String deviceKey = pushDeviceService.register(token, new PushDeviceRegisterRequest(token, platform)).deviceKey();
-        pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(teamIds, gameIds));
+        pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(teamIds, gameIds, organizationIds));
     }
 
     private PushMessage sentMessage() {

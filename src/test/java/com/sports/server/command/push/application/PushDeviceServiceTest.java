@@ -239,6 +239,61 @@ class PushDeviceServiceTest extends ServiceTest {
         }
 
         @Test
+        void 학교도_함께_저장하고_조회한다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+
+            // when
+            pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(1L), List.of(1L), List.of(1L)));
+
+            // then
+            PushFollowsResponse follows = pushDeviceService.findFollows(deviceKey);
+            assertThat(follows.teamIds()).containsExactly(1L);
+            assertThat(follows.gameIds()).containsExactly(1L);
+            assertThat(follows.organizationIds()).containsExactly(1L);
+        }
+
+        @Test
+        void 학교_목록이_null이면_학교_팔로우_없이_교체한다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+            pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(), List.of(), List.of(1L)));
+
+            // when
+            pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(1L), List.of(), null));
+
+            // then
+            PushFollowsResponse follows = pushDeviceService.findFollows(deviceKey);
+            assertThat(follows.teamIds()).containsExactly(1L);
+            assertThat(follows.organizationIds()).isEmpty();
+        }
+
+        @Test
+        void 학교가_6개면_거부한다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+            List<Long> organizationIds = LongStream.rangeClosed(1, 6).boxed().toList();
+
+            // when & then
+            assertThatThrownBy(() -> pushDeviceService.replaceFollows(deviceKey,
+                    new PushFollowsRequest(List.of(), List.of(), organizationIds)))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage(PushErrorMessages.ORGANIZATION_FOLLOW_LIMIT_EXCEEDED);
+        }
+
+        @Test
+        void 없는_학교면_거부한다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+
+            // when & then
+            assertThatThrownBy(() -> pushDeviceService.replaceFollows(deviceKey,
+                    new PushFollowsRequest(List.of(), List.of(), List.of(999L))))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage(PushErrorMessages.FOLLOW_ORGANIZATION_NOT_FOUND);
+        }
+
+        @Test
         void 없는_기기면_404() {
             assertThatThrownBy(() -> pushDeviceService.replaceFollows("unknown", new PushFollowsRequest(List.of(), List.of())))
                     .isInstanceOf(NotFoundException.class);
