@@ -8,6 +8,6 @@ import java.util.Map;
 
 public record NlParseRequest(
         List<Map<String, String>> history,
-        @NotBlank @Size(max = 5000) String message
+        @NotBlank @Size(max = NlMessageLimit.MAX_LENGTH) String message
 ) {
 }

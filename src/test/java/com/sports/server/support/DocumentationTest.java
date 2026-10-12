@@ -17,12 +17,15 @@ import com.sports.server.command.game.application.CheerCountRateLimiter;
 import com.sports.server.command.game.presentation.GameController;
 import com.sports.server.command.league.application.LeagueService;
 import com.sports.server.command.league.presentation.LeagueController;
+import com.sports.server.command.nl.application.NlFileExtractService;
 import com.sports.server.command.nl.application.NlService;
 import com.sports.server.command.nl.presentation.NlController;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.member.domain.MemberRepository;
 import com.sports.server.command.player.application.PlayerService;
 import com.sports.server.command.player.presentation.PlayerController;
+import com.sports.server.command.push.application.PushDeviceService;
+import com.sports.server.command.push.presentation.PushDeviceController;
 import com.sports.server.command.report.application.ReportService;
 import com.sports.server.command.report.presentation.ReportController;
 import com.sports.server.command.team.application.TeamService;
@@ -74,6 +77,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 OrganizationQueryController.class,
                 S3Controller.class,
                 BracketController.class,
+                PushDeviceController.class,
         })
 @Import({
         TimeLogTemplate.class,
@@ -180,10 +184,16 @@ public class DocumentationTest {
     protected NlService nlService;
 
     @MockBean
+    protected NlFileExtractService nlFileExtractService;
+
+    @MockBean
     protected OrganizationQueryService organizationQueryService;
 
     @MockBean
     protected S3Service s3Service;
+
+    @MockBean
+    protected PushDeviceService pushDeviceService;
 
     @MockBean
     protected com.sports.server.common.application.AlertService alertService;

@@ -110,6 +110,10 @@ public class League extends BaseEntity<League> implements ManagedEntity {
         this.bracketEnabled = bracketEnabled;
     }
 
+    public Long getOrganizationId() {
+        return organization.getId();
+    }
+
     @Override
     public boolean isManagedBy(Member manager) {
         return manager.getId() == 1 || this.administrator.equals(manager);

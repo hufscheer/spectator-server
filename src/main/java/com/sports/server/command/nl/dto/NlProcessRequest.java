@@ -11,6 +11,6 @@ public record NlProcessRequest(
         @NotNull Long leagueId,
         @NotNull Long teamId,
         List<Map<String, String>> history,
-        @NotBlank @Size(max = 5000) String message
+        @NotBlank @Size(max = NlMessageLimit.MAX_LENGTH) String message
 ) {
 }

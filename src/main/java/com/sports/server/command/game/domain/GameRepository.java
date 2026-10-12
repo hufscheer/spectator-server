@@ -2,6 +2,7 @@ package com.sports.server.command.game.domain;
 
 import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Lock;
@@ -20,6 +21,8 @@ public interface GameRepository extends Repository<Game, Long> {
     Optional<Game> findByIdForUpdate(long id);
 
     Game save(Game game);
+
+    long countByIdIn(Collection<Long> ids);
 
     void delete(Game game);
 

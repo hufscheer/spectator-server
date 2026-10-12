@@ -347,6 +347,10 @@ public class Game extends BaseEntity<Game> implements ManagedEntity {
         }
     }
 
+    public Long getOrganizationId() {
+        return league.getOrganizationId();
+    }
+
     public SportType getSportType() {
         return league.getSportType();
     }
