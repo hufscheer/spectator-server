@@ -5,6 +5,7 @@ import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.push.domain.PushMessage;
 import com.sports.server.command.push.domain.PushType;
+import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.OwnGoalTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
@@ -39,6 +40,13 @@ public class PushMessageFactory {
         String body = String.format("%s (%s %d')", scoreLine(game, score1, score2),
                 timeline.getRecordedQuarter().getDisplayName(), timeline.getRecordedAt());
         return message(PushType.GOAL, game, title, body);
+    }
+
+    // 경기 종료와 같이 경기의 현재 점수를 쓴다. 진행 기록에는 점수 스냅샷이 없다
+    public PushMessage quarterEnd(Game game, GameProgressTimeline timeline) {
+        String body = scoreLine(game, game.getTeam1().getScore(), game.getTeam2().getScore());
+        return message(PushType.QUARTER_END, game,
+                iconOf(game) + " " + timeline.getRecordedQuarter().getDisplayName() + " 종료", body);
     }
 
     public PushMessage gameEnd(Game game) {

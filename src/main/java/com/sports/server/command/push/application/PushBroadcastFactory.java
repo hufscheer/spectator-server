@@ -2,12 +2,16 @@ package com.sports.server.command.push.application;
 
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
+import com.sports.server.command.league.domain.BasketballQuarter;
 import com.sports.server.command.league.domain.CommonQuarter;
+import com.sports.server.command.league.domain.Quarter;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.push.domain.PushBroadcast;
+import com.sports.server.command.push.domain.PushDevice;
 import com.sports.server.command.push.domain.PushDeviceRepository;
 import com.sports.server.command.push.domain.PushMessage;
 import com.sports.server.command.push.domain.PushRecipient;
+import com.sports.server.command.push.domain.PushType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.OwnGoalTimeline;
@@ -16,6 +20,7 @@ import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class PushBroadcastFactory {
+
+    private static final Set<Quarter> NOTIFIABLE_QUARTER_ENDS = Set.of(
+            BasketballQuarter.FIRST_QUARTER, BasketballQuarter.SECOND_QUARTER, BasketballQuarter.THIRD_QUARTER);
 
     private final TimelineRepository timelineRepository;
     private final PushDeviceRepository pushDeviceRepository;
@@ -40,7 +48,7 @@ public class PushBroadcastFactory {
 
     private Optional<PushBroadcast> broadcastOf(Timeline timeline) {
         return messageOf(timeline)
-                .map(message -> new PushBroadcast(message, followersOf(timeline.getGame())));
+                .map(message -> new PushBroadcast(message, followersOf(timeline.getGame(), message)));
     }
 
     private Optional<PushMessage> messageOf(Timeline timeline) {
@@ -70,7 +78,17 @@ public class PushBroadcastFactory {
         if (progress.getGameProgressType() == GameProgressType.GAME_END) {
             return Optional.of(messageFactory.gameEnd(game));
         }
+        if (isBasketballQuarterEnd(game, progress)) {
+            return Optional.of(messageFactory.quarterEnd(game, progress));
+        }
         return Optional.empty();
+    }
+
+    // 4쿼터와 연장전 종료는 곧바로 경기 종료가 이어지므로 알리지 않는다. 축구는 전반 종료를 알리지 않는다
+    private boolean isBasketballQuarterEnd(Game game, GameProgressTimeline progress) {
+        return game.getSportType() == SportType.BASKETBALL
+                && progress.getGameProgressType() == GameProgressType.QUARTER_END
+                && NOTIFIABLE_QUARTER_ENDS.contains(progress.getRecordedQuarter());
     }
 
     private boolean isGameStart(GameProgressTimeline progress) {
@@ -84,9 +102,13 @@ public class PushBroadcastFactory {
                 && game.getGameTeams().stream().allMatch(GameTeam::hasTeam);
     }
 
-    private List<PushRecipient> followersOf(Game game) {
+    // 학교를 팔로우한 기기는 경기 시작·종료만 받고 골·쿼터 종료는 받지 않는다
+    private List<PushRecipient> followersOf(Game game, PushMessage message) {
         List<Long> teamIds = game.getGameTeams().stream().map(GameTeam::getTeamId).toList();
-        return pushDeviceRepository.findFollowers(teamIds, game.getId()).stream()
+        List<PushDevice> followers = !message.isType(PushType.GAME_START) && !message.isType(PushType.GAME_END)
+                ? pushDeviceRepository.findFollowers(teamIds, game.getId())
+                : pushDeviceRepository.findFollowersIncludingOrganization(teamIds, game.getId(), game.getOrganizationId());
+        return followers.stream()
                 .map(PushRecipient::from)
                 .toList();
     }

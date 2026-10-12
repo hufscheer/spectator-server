@@ -19,6 +19,10 @@ public record PushMessage(
         ));
     }
 
+    public boolean isType(PushType type) {
+        return type.name().equals(data.get(TYPE_KEY));
+    }
+
     public String url() {
         return data.get(URL_KEY);
     }

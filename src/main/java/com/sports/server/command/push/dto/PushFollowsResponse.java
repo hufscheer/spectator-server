@@ -4,6 +4,7 @@ import java.util.List;
 
 public record PushFollowsResponse(
         List<Long> teamIds,
-        List<Long> gameIds
+        List<Long> gameIds,
+        List<Long> organizationIds
 ) {
 }
