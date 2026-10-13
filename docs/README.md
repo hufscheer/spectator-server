@@ -4,6 +4,7 @@
 |------|------|
 | [schema/](./schema) | **DB 스키마 문서** (tbls 자동 생성) — 폴더를 열면 전체 ER 다이어그램과 테이블 목록이 바로 렌더링됩니다. 테이블별 페이지에서 해당 테이블 중심의 부분 ERD를 볼 수 있습니다. |
 | [ERD.md](./ERD.md) | 수동 작성 ERD + 설계 노트 (FK 삭제 정책, 유니크 제약, 조직 계층 변천사) |
+| [api-compatibility.md](./api-compatibility.md) | **API 호환성 규칙** — 앱 구버전이 깨지지 않게 API 를 바꾸는 절차 (expand → contract, 최소 지원 빌드) |
 
 ## DB 스키마 문서 갱신 방법
 

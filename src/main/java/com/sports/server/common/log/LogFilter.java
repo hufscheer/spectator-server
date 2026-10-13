@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 @Slf4j
 @RequiredArgsConstructor
 public class LogFilter implements Filter {
