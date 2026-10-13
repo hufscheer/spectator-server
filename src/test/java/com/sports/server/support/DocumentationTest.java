@@ -34,6 +34,7 @@ import com.sports.server.command.timeline.application.TimelineService;
 import com.sports.server.command.timeline.presentation.TimelineController;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.common.log.TimeLogTemplate;
+import com.sports.server.common.presentation.AppVersionController;
 import com.sports.server.common.presentation.S3Controller;
 import com.sports.server.query.application.*;
 import com.sports.server.query.presentation.*;
@@ -78,10 +79,12 @@ import org.springframework.test.web.servlet.MockMvc;
                 S3Controller.class,
                 BracketController.class,
                 PushDeviceController.class,
+                AppVersionController.class,
         })
 @Import({
         TimeLogTemplate.class,
         RestDocsConfig.class,
+        io.micrometer.core.instrument.simple.SimpleMeterRegistry.class,
 })
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc(addFilters = false)
