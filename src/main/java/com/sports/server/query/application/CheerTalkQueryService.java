@@ -147,7 +147,7 @@ public class CheerTalkQueryService {
 						return new CheerTalkResponse.ForManager(
 								ct.getId(), info.gameId(), info.leagueId(), ct.getContent(),
 								ct.getGameTeamId(), ct.getCreatedAt(), ct.isBlocked(),
-								info.gameName(), info.leagueName()
+								info.gameName(), info.leagueName(), ct.getAuthorKey()
 						);
 					})
 					.toList();

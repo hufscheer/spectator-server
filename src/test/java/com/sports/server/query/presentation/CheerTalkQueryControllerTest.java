@@ -43,10 +43,10 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForSpectator> response = new CursorPageResponse<>(List.of(
 			new CheerTalkResponse.ForSpectator(
-				2L, "응원해요", 1L, createdAt, false, "경기1", "리그1"
+				2L, "응원해요", 1L, createdAt, false, "경기1", "리그1", "0123456789abcdef"
 			),
 			new CheerTalkResponse.ForSpectator(
-				3L, "파이팅", 2L, createdAt, false, "경기1", "리그1"
+				3L, "파이팅", 2L, createdAt, false, "경기1", "리그1", null
 			)
 		), null, false);
 
@@ -80,7 +80,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 					fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 						fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("게임의 이름"),
-						fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("리그의 이름")
+						fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("리그의 이름"),
+						fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 				)
 			));
 	}
@@ -94,10 +95,10 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> response = new CursorPageResponse<>(List.of(
 			new CheerTalkResponse.ForManager(
-				2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"
+				2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름", null
 			),
 			new CheerTalkResponse.ForManager(
-				3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름"
+				3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름", null
 			)
 		), null, false);
 
@@ -136,7 +137,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 						fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 						fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 						fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
-						fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+						fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+						fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 					)
 			));
 	}
@@ -150,10 +152,10 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> response = new CursorPageResponse<>(List.of(
 			new CheerTalkResponse.ForManager(
-				2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"
+				2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름", null
 			),
 			new CheerTalkResponse.ForManager(
-				3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름"
+				3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름", null
 			)
 		), null, false);
 
@@ -192,7 +194,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 						fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 						fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 						fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
-						fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+						fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+						fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 					)
 				)
 			);
@@ -206,9 +209,9 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> responses = new CursorPageResponse<>(List.of(
 			new CheerTalkResponse.ForManager(2L, 1L, 1L, "미안하다이거보여주려고어그로끌었다", 1L, createdAt, true, "제 1경기 학츄핑 vs 하츄핑",
-				"매봉역 배 타코 빨리 먹기 대작전"),
+				"매봉역 배 타코 빨리 먹기 대작전", null),
 			new CheerTalkResponse.ForManager(3L, 1L, 1L, "이학을국회로", 1L, createdAt, true, "제 2경기 학츄핑 vs 시진핑",
-				"매봉역 배 타코 빨리 먹기 대작전")), null, false);
+				"매봉역 배 타코 빨리 먹기 대작전", null)), null, false);
 
 		doReturn(responses).when(cheerTalkQueryService)
 			.getBlockedCheerTalksByAdmin(any(PageRequestDto.class), any(Member.class));
@@ -241,6 +244,7 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 						fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 						fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
 						fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+						fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)"),
 						fieldWithPath("content[].gameTeamId").type(JsonFieldType.NUMBER)
 							.description("응원톡에 해당하는 게임팀의 ID"),
 						fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부")
@@ -257,8 +261,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> response = new CursorPageResponse<>(List.of(
-			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"),
-			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름", null),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름", null)
 		), null, false);
 
 		given(cheerTalkQueryService.getReportedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto), any(Member.class)))
@@ -297,7 +301,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 					fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 					fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
-					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+					fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 				)
 			));
 	}
@@ -311,8 +316,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> response = new CursorPageResponse<>(List.of(
-			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"),
-			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름", null),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름", null)
 		), null, false);
 
 		given(cheerTalkQueryService.getUnblockedCheerTalksByLeagueId(eq(leagueId), eq(pageRequestDto), any(Member.class)))
@@ -351,7 +356,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 					fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 					fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
-					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+					fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 				)
 			));
 	}
@@ -364,8 +370,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> response = new CursorPageResponse<>(List.of(
-			new CheerTalkResponse.ForManager(2L, 1L, 1L, "나쁜말", 1L, createdAt, true, "게임 이름", "리그 이름"),
-			new CheerTalkResponse.ForManager(3L, 1L, 1L, "또나쁜말", 2L, createdAt, true, "게임 이름", "리그 이름")
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "나쁜말", 1L, createdAt, true, "게임 이름", "리그 이름", null),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "또나쁜말", 2L, createdAt, true, "게임 이름", "리그 이름", null)
 		), null, false);
 
 		doReturn(response).when(cheerTalkQueryService)
@@ -404,7 +410,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 					fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 					fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
-					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+					fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 				)
 			));
 	}
@@ -418,8 +425,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> response = new CursorPageResponse<>(List.of(
-			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름"),
-			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름")
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "응원해요", 1L, createdAt, false, "게임 이름", "리그 이름", null),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "파이팅", 2L, createdAt, false, "게임 이름", "리그 이름", null)
 		), null, false);
 
 		given(cheerTalkQueryService.getReportedCheerTalksByGameId(eq(gameId), eq(pageRequestDto), any(Member.class)))
@@ -458,7 +465,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 					fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 					fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
-					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+					fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 				)
 			));
 	}
@@ -471,8 +479,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 21, 11, 46, 0);
 		CursorPageResponse<CheerTalkResponse.ForManager> response = new CursorPageResponse<>(List.of(
-			new CheerTalkResponse.ForManager(2L, 1L, 1L, "나쁜말", 1L, createdAt, true, "게임 이름", "리그 이름"),
-			new CheerTalkResponse.ForManager(3L, 1L, 1L, "또나쁜말", 2L, createdAt, true, "게임 이름", "리그 이름")
+			new CheerTalkResponse.ForManager(2L, 1L, 1L, "나쁜말", 1L, createdAt, true, "게임 이름", "리그 이름", null),
+			new CheerTalkResponse.ForManager(3L, 1L, 1L, "또나쁜말", 2L, createdAt, true, "게임 이름", "리그 이름", null)
 		), null, false);
 
 		doReturn(response).when(cheerTalkQueryService)
@@ -511,7 +519,8 @@ public class CheerTalkQueryControllerTest extends DocumentationTest {
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성된 날짜 및 시각"),
 					fieldWithPath("content[].isBlocked").type(JsonFieldType.BOOLEAN).description("응원톡의 블락 여부"),
 					fieldWithPath("content[].gameName").type(JsonFieldType.STRING).description("응원톡이 등록된 게임의 이름"),
-					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름")
+					fieldWithPath("content[].leagueName").type(JsonFieldType.STRING).description("응원톡이 등록된 리그의 이름"),
+					fieldWithPath("content[].authorKey").type(JsonFieldType.STRING).optional().description("작성자 익명 키(방문자 ID SHA-256 앞 16자리 hex, 없으면 null)")
 				)
 			));
 	}
