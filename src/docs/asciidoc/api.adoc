@@ -598,3 +598,14 @@ operation::push-device-controller-test/팔로우_목록에_null이_섞이면_거
 === 기기 해제
 
 operation::push-device-controller-test/푸시_기기를_해제한다[snippets='http-request,path-parameters,http-response']
+
+== 앱 버전 API
+
+=== 앱 최소 버전 정책 조회
+
+인증 없이 호출하는 공개 API 다. 앱은 자신의 빌드 번호가 `minimumBuild` 보다 작으면 업데이트를 안내하고 `storeUrl` 로 보낸다.
+값은 서버 설정(`app.version.{ios,android}.minimum-build`, `store-url`)에서 오며, 설정이 없으면 `minimumBuild` 는 0, `storeUrl` 은 null 이다.
+
+앱은 모든 요청에 `X-App-Platform`(`ios`|`android`), `X-App-Version`(예: `0.1.0`), `X-App-Build`(정수) 헤더를 보낸다. 서버는 로그와 지표에만 기록하고, 형식이 틀리거나 없어도 오류로 다루지 않는다.
+
+operation::app-version-controller-test/앱_최소_버전_정책을_조회한다[snippets='http-request,http-response,response-fields']

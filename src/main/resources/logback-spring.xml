@@ -12,6 +12,9 @@
         <file>./log/today-${BY_DATE}.log</file>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeMdcKeyName>CORRELATION_ID</includeMdcKeyName>
+            <includeMdcKeyName>APP_PLATFORM</includeMdcKeyName>
+            <includeMdcKeyName>APP_VERSION</includeMdcKeyName>
+            <includeMdcKeyName>APP_BUILD</includeMdcKeyName>
             <timeZone>Asia/Seoul</timeZone>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
