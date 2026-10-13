@@ -38,7 +38,7 @@ public class CheerTalkService {
 
         GameTeam gameTeam = getGameTeam(cheerTalkRequest.gameTeamId());
 
-        CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), gameTeam.getId());
+        CheerTalk cheerTalk = new CheerTalk(cheerTalkRequest.content(), gameTeam.getId(), clientId);
         cheerTalkRepository.save(cheerTalk);
 
         eventPublisher.publishEvent(new CheerTalkCreateEvent(cheerTalk, gameTeam.getGame().getId()));

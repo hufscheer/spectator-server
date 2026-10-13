@@ -217,34 +217,37 @@
 <!-- cheer_talks -->
 <g id="node3" class="node">
 <title>cheer_talks</title>
-<polygon fill="#efefef" stroke="none" points="1442.53,-2296.2 1442.53,-2331.8 1662.98,-2331.8 1662.98,-2296.2 1442.53,-2296.2"/>
-<polygon fill="none" stroke="black" points="1442.53,-2296.2 1442.53,-2331.8 1662.98,-2331.8 1662.98,-2296.2 1442.53,-2296.2"/>
-<text text-anchor="start" x="1449.53" y="-2309.6" font-family="Arial Bold" font-size="18.00">cheer_talks</text>
-<text text-anchor="start" x="1531.49" y="-2309.6" font-family="Arial" font-size="14.00">    </text>
-<text text-anchor="start" x="1562.61" y="-2309.6" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="black" points="1442.53,-2265.4 1442.53,-2296.2 1662.98,-2296.2 1662.98,-2265.4 1442.53,-2265.4"/>
-<text text-anchor="start" x="1449.53" y="-2277.6" font-family="Arial" font-size="14.00">id </text>
-<text text-anchor="start" x="1464.32" y="-2277.6" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="black" points="1442.53,-2234.6 1442.53,-2265.4 1662.98,-2265.4 1662.98,-2234.6 1442.53,-2234.6"/>
-<text text-anchor="start" x="1449.53" y="-2246.8" font-family="Arial" font-size="14.00">game_team_id </text>
-<text text-anchor="start" x="1546.04" y="-2246.8" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="black" points="1442.53,-2203.8 1442.53,-2234.6 1662.98,-2234.6 1662.98,-2203.8 1442.53,-2203.8"/>
-<text text-anchor="start" x="1449.53" y="-2216" font-family="Arial" font-size="14.00">content </text>
-<text text-anchor="start" x="1499.35" y="-2216" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
-<polygon fill="none" stroke="black" points="1442.53,-2173 1442.53,-2203.8 1662.98,-2203.8 1662.98,-2173 1442.53,-2173"/>
-<text text-anchor="start" x="1449.53" y="-2185.2" font-family="Arial" font-size="14.00">created_at </text>
-<text text-anchor="start" x="1519.58" y="-2185.2" font-family="Arial" font-size="14.00" fill="#666666">[datetime]</text>
-<polygon fill="none" stroke="black" points="1442.53,-2142.2 1442.53,-2173 1662.98,-2173 1662.98,-2142.2 1442.53,-2142.2"/>
-<text text-anchor="start" x="1449.53" y="-2154.4" font-family="Arial" font-size="14.00">block_status </text>
-<text text-anchor="start" x="1531.24" y="-2154.4" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
-<polygon fill="none" stroke="black" points="1442.53,-2111.4 1442.53,-2142.2 1662.98,-2142.2 1662.98,-2111.4 1442.53,-2111.4"/>
-<text text-anchor="start" x="1449.53" y="-2123.6" font-family="Arial" font-size="14.00">is_ai_seed </text>
-<text text-anchor="start" x="1520.36" y="-2123.6" font-family="Arial" font-size="14.00" fill="#666666">[tinyint(1)]</text>
+<polygon fill="#efefef" stroke="none" points="1442.53,-2311.6 1442.53,-2347.2 1662.98,-2347.2 1662.98,-2311.6 1442.53,-2311.6"/>
+<polygon fill="none" stroke="black" points="1442.53,-2311.6 1442.53,-2347.2 1662.98,-2347.2 1662.98,-2311.6 1442.53,-2311.6"/>
+<text text-anchor="start" x="1449.53" y="-2325" font-family="Arial Bold" font-size="18.00">cheer_talks</text>
+<text text-anchor="start" x="1531.49" y="-2325" font-family="Arial" font-size="14.00">    </text>
+<text text-anchor="start" x="1562.61" y="-2325" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="black" points="1442.53,-2280.8 1442.53,-2311.6 1662.98,-2311.6 1662.98,-2280.8 1442.53,-2280.8"/>
+<text text-anchor="start" x="1449.53" y="-2293" font-family="Arial" font-size="14.00">id </text>
+<text text-anchor="start" x="1464.32" y="-2293" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="black" points="1442.53,-2250 1442.53,-2280.8 1662.98,-2280.8 1662.98,-2250 1442.53,-2250"/>
+<text text-anchor="start" x="1449.53" y="-2262.2" font-family="Arial" font-size="14.00">game_team_id </text>
+<text text-anchor="start" x="1546.04" y="-2262.2" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="black" points="1442.53,-2219.2 1442.53,-2250 1662.98,-2250 1662.98,-2219.2 1442.53,-2219.2"/>
+<text text-anchor="start" x="1449.53" y="-2231.4" font-family="Arial" font-size="14.00">content </text>
+<text text-anchor="start" x="1499.35" y="-2231.4" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="none" stroke="black" points="1442.53,-2188.4 1442.53,-2219.2 1662.98,-2219.2 1662.98,-2188.4 1442.53,-2188.4"/>
+<text text-anchor="start" x="1449.53" y="-2200.6" font-family="Arial" font-size="14.00">created_at </text>
+<text text-anchor="start" x="1519.58" y="-2200.6" font-family="Arial" font-size="14.00" fill="#666666">[datetime]</text>
+<polygon fill="none" stroke="black" points="1442.53,-2157.6 1442.53,-2188.4 1662.98,-2188.4 1662.98,-2157.6 1442.53,-2157.6"/>
+<text text-anchor="start" x="1449.53" y="-2169.8" font-family="Arial" font-size="14.00">block_status </text>
+<text text-anchor="start" x="1531.24" y="-2169.8" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
+<polygon fill="none" stroke="black" points="1442.53,-2126.8 1442.53,-2157.6 1662.98,-2157.6 1662.98,-2126.8 1442.53,-2126.8"/>
+<text text-anchor="start" x="1449.53" y="-2139" font-family="Arial" font-size="14.00">is_ai_seed </text>
+<text text-anchor="start" x="1520.36" y="-2139" font-family="Arial" font-size="14.00" fill="#666666">[tinyint(1)]</text>
+<polygon fill="none" stroke="black" points="1442.53,-2096 1442.53,-2126.8 1662.98,-2126.8 1662.98,-2096 1442.53,-2096"/>
+<text text-anchor="start" x="1449.53" y="-2108.2" font-family="Arial" font-size="14.00">author_key </text>
+<text text-anchor="start" x="1522.69" y="-2108.2" font-family="Arial" font-size="14.00" fill="#666666">[varchar(16)]</text>
 </g>
 <!-- cheer_talk_bot_filter_history&#45;&gt;cheer_talks -->
 <g id="edge5" class="edge">
 <title>cheer_talk_bot_filter_history:cheer_talk_id&#45;&gt;cheer_talks:id</title>
-<path fill="none" stroke="black" d="M1737.35,-2869.44C1816.88,-2860.26 1760.99,-2741.17 1725.97,-2657.4 1657.38,-2493.33 1511.6,-2538.86 1442.53,-2375 1426.27,-2336.42 1399.66,-2280.8 1441.53,-2280.8"/>
+<path fill="none" stroke="black" d="M1737.36,-2869.43C1816.97,-2860.22 1762.16,-2740.67 1725.97,-2657.4 1656.99,-2498.68 1511.98,-2548.92 1442.53,-2390.4 1425.73,-2352.05 1399.66,-2296.2 1441.53,-2296.2"/>
 <polygon fill="black" stroke="black" points="1737.29,-2869.44 1727.06,-2865.49 1731.96,-2869.73 1727.64,-2869.96 1727.64,-2869.96 1727.64,-2869.96 1731.96,-2869.73 1727.55,-2874.48 1737.29,-2869.44"/>
 <text text-anchor="start" x="1733.97" y="-2880" font-family="Arial" font-size="10.00">FOREIGN KEY (cheer_talk_id) REFERENCES cheer_talks (id)</text>
 </g>
@@ -281,9 +284,9 @@
 <!-- cheer_talks&#45;&gt;game_teams -->
 <g id="edge6" class="edge">
 <title>cheer_talks:game_team_id&#45;&gt;game_teams:id</title>
-<path fill="none" stroke="black" d="M1431.4,-2249.35C1364.84,-2240.25 1408.32,-2137.37 1442.53,-2068.2 1469.04,-2014.62 1522.34,-2039.51 1548.98,-1986 1567.64,-1948.52 1591.85,-1891.8 1549.98,-1891.8"/>
-<polygon fill="black" stroke="black" points="1431.22,-2249.34 1440.91,-2254.47 1436.54,-2249.68 1440.87,-2249.96 1440.87,-2249.96 1440.87,-2249.96 1436.54,-2249.68 1441.49,-2245.49 1431.22,-2249.34"/>
-<text text-anchor="start" x="1141.67" y="-2260" font-family="Arial" font-size="10.00">FOREIGN KEY (game_team_id) REFERENCES game_teams (id)</text>
+<path fill="none" stroke="black" d="M1431.11,-2264.82C1350.91,-2255.31 1398.4,-2132.15 1442.53,-2052.8 1469.68,-2003.99 1521.69,-2034.73 1548.98,-1986 1569.44,-1949.47 1591.85,-1891.8 1549.98,-1891.8"/>
+<polygon fill="black" stroke="black" points="1431.21,-2264.82 1440.95,-2269.87 1436.54,-2265.12 1440.87,-2265.36 1440.87,-2265.36 1440.87,-2265.36 1436.54,-2265.12 1441.45,-2260.89 1431.21,-2264.82"/>
+<text text-anchor="start" x="1141.67" y="-2275.4" font-family="Arial" font-size="10.00">FOREIGN KEY (game_team_id) REFERENCES game_teams (id)</text>
 </g>
 <!-- game_teams&#45;&gt;games -->
 <g id="edge7" class="edge">
@@ -711,7 +714,7 @@
 <!-- reports&#45;&gt;cheer_talks -->
 <g id="edge28" class="edge">
 <title>reports:cheer_talk_id&#45;&gt;cheer_talks:id</title>
-<path fill="none" stroke="black" d="M1819.27,-2822.09C1752.39,-2798.22 1805.18,-2530.84 1777.76,-2457.2 1745.19,-2369.77 1757.27,-2280.8 1663.98,-2280.8"/>
+<path fill="none" stroke="black" d="M1819.28,-2822.09C1752.53,-2798.17 1806.74,-2530.24 1777.76,-2457.2 1745.44,-2375.76 1751.6,-2296.2 1663.98,-2296.2"/>
 <polygon fill="black" stroke="black" points="1819.33,-2822.1 1828.45,-2828.18 1824.59,-2822.98 1828.86,-2823.69 1828.86,-2823.69 1828.86,-2823.69 1824.59,-2822.98 1829.93,-2819.31 1819.33,-2822.1"/>
 <text text-anchor="start" x="1616.38" y="-2807.8" font-family="Arial" font-size="10.00">FOREIGN KEY (cheer_talk_id) REFERENCES cheer_talks (id)</text>
 </g>

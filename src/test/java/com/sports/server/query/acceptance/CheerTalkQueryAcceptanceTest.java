@@ -50,8 +50,10 @@ class CheerTalkQueryAcceptanceTest extends AcceptanceTest {
                                     LocalDateTime.of(2023, 1, 2, 16, 0, 0),
                                     true,
                                     "축구 대전",
-                                    "삼건물 대회"
+                                    "삼건물 대회",
+                                    null
                             )),
+                    () -> assertThat(actual.get(1).authorKey()).isEqualTo("abcdef0123456789"),
                     () -> assertThat(actual)
                             .map(CheerTalkResponse.ForSpectator::cheerTalkId)
                             .containsExactly(14L, 15L, 16L, 17L, 18L, 19L, 20L, 21L, 22L, 23L)
