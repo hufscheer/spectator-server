@@ -12,7 +12,8 @@ public class CheerTalkResponse {
             LocalDateTime createdAt,
             Boolean isBlocked,
             String gameName,
-            String leagueName
+            String leagueName,
+            String authorKey
     ) {
         public ForSpectator(CheerTalk cheerTalk) {
             this(
@@ -22,7 +23,8 @@ public class CheerTalkResponse {
                     cheerTalk.getCreatedAt(),
                     cheerTalk.isBlocked(),
                     null,
-                    null
+                    null,
+                    cheerTalk.getAuthorKey()
             );
         }
 
@@ -34,7 +36,8 @@ public class CheerTalkResponse {
                     cheerTalk.getCreatedAt(),
                     cheerTalk.isBlocked(),
                     null,
-                    null
+                    null,
+                    cheerTalk.getAuthorKey()
             );
         }
 
@@ -46,7 +49,8 @@ public class CheerTalkResponse {
                     cheerTalk.getCreatedAt(),
                     cheerTalk.isBlocked(),
                     game.getName(),
-                    game.getLeague().getName()
+                    game.getLeague().getName(),
+                    cheerTalk.getAuthorKey()
             );
         }
 
@@ -67,7 +71,8 @@ public class CheerTalkResponse {
             LocalDateTime createdAt,
             Boolean isBlocked,
             String gameName,
-            String leagueName
+            String leagueName,
+            String authorKey
     ) {
         public ForManager(CheerTalk cheerTalk, Game game) {
             this(
@@ -79,7 +84,8 @@ public class CheerTalkResponse {
                     cheerTalk.getCreatedAt(),
                     cheerTalk.isBlocked(),
                     game.getName(),
-                    game.getLeague().getName()
+                    game.getLeague().getName(),
+                    cheerTalk.getAuthorKey()
             );
         }
     }

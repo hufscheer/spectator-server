@@ -7,12 +7,19 @@ import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.HexFormat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,6 +33,9 @@ public class CheerTalkServiceTest extends ServiceTest {
 
     @Autowired
     private EntityUtils entityUtils;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private Long managerId;
     private Long leagueId;
@@ -62,5 +72,22 @@ public class CheerTalkServiceTest extends ServiceTest {
         //when & then
         assertThatCode(() -> cheerTalkService.register(VISITOR_ID, cheerTalkRequest))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 방문자가_응원톡을_작성하면_방문자_ID의_SHA256_앞_16자리가_작성자_키로_저장된다() throws Exception {
+        //given
+        String visitorId = "123e4567-e89b-42d3-a456-426614174000";
+        String expected = HexFormat.of()
+                .formatHex(MessageDigest.getInstance("SHA-256").digest(visitorId.getBytes(StandardCharsets.UTF_8)))
+                .substring(0, 16);
+
+        //when
+        cheerTalkService.register(visitorId, new CheerTalkRequest("작성자 키 확인", 1L));
+
+        //then
+        String saved = jdbcTemplate.queryForObject(
+                "SELECT author_key FROM cheer_talks WHERE content = ?", String.class, "작성자 키 확인");
+        assertThat(saved).isEqualTo(expected).hasSize(16);
     }
 }

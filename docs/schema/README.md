@@ -6,7 +6,7 @@
 | ---- | ------- | ------- | ---- |
 | [bracket_matches](bracket_matches.md) | 7 |  | BASE TABLE |
 | [cheer_talk_bot_filter_history](cheer_talk_bot_filter_history.md) | 7 |  | BASE TABLE |
-| [cheer_talks](cheer_talks.md) | 6 |  | BASE TABLE |
+| [cheer_talks](cheer_talks.md) | 7 |  | BASE TABLE |
 | [game_teams](game_teams.md) | 7 |  | BASE TABLE |
 | [games](games.md) | 11 |  | BASE TABLE |
 | [league_statistics](league_statistics.md) | 6 |  | BASE TABLE |

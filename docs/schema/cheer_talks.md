@@ -13,6 +13,7 @@ CREATE TABLE `cheer_talks` (
   `created_at` datetime NOT NULL,
   `block_status` varchar(50) NOT NULL DEFAULT 'ACTIVE',
   `is_ai_seed` tinyint(1) NOT NULL DEFAULT '0',
+  `author_key` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_CHEER_TALKS_ON_GAME_TEAMS` (`game_team_id`),
   CONSTRAINT `FK_CHEER_TALKS_ON_GAME_TEAMS` FOREIGN KEY (`game_team_id`) REFERENCES `game_teams` (`id`) ON DELETE SET NULL
@@ -31,6 +32,7 @@ CREATE TABLE `cheer_talks` (
 | created_at | datetime |  | false |  |  |  |  |
 | block_status | varchar(50) | ACTIVE | false |  |  |  |  |
 | is_ai_seed | tinyint(1) | 0 | false |  |  |  |  |
+| author_key | varchar(16) |  | true |  |  |  |  |
 
 ## Constraints
 
