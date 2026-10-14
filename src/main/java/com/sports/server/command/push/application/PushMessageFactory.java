@@ -3,6 +3,8 @@ package com.sports.server.command.push.application;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameResult;
 import com.sports.server.command.game.domain.GameTeam;
+import com.sports.server.command.league.domain.Quarter;
+import com.sports.server.command.league.domain.SoccerQuarter;
 import com.sports.server.command.push.domain.PushMessage;
 import com.sports.server.command.push.domain.PushType;
 import com.sports.server.command.timeline.domain.GameProgressTimeline;
@@ -16,11 +18,13 @@ public class PushMessageFactory {
 
     private static final String URL_FORMAT = "/org/%d/%s/games/%d";
 
+    // 축구는 경기 시작을 전반 시작으로 알린다
     public PushMessage gameStart(Game game) {
-        String body = String.format("%s vs %s · %s %s",
-                game.getTeam1().getTeamName(), game.getTeam2().getTeamName(),
-                game.getLeague().getName(), game.getRound().getDescription());
-        return message(PushType.GAME_START, game, iconOf(game) + " 경기 시작", body);
+        String title = switch (game.getSportType()) {
+            case SOCCER -> "⚽ 전반 시작";
+            case BASKETBALL -> "🏀 경기 시작";
+        };
+        return message(PushType.GAME_START, game, title, matchLine(game));
     }
 
     public PushMessage goal(Game game, ScoreTimeline timeline) {
@@ -46,21 +50,36 @@ public class PushMessageFactory {
     public PushMessage quarterEnd(Game game, GameProgressTimeline timeline) {
         String body = scoreLine(game, game.getTeam1().getScore(), game.getTeam2().getScore());
         return message(PushType.QUARTER_END, game,
-                iconOf(game) + " " + timeline.getRecordedQuarter().getDisplayName() + " 종료", body);
+                iconOf(game) + " " + quarterLabel(timeline.getRecordedQuarter()) + " 종료", body);
     }
 
-    // 현재는 축구 후반전 시작에만 쓴다. 점수는 쿼터 종료와 같이 경기의 현재 점수를 쓴다
+    // 현재는 축구 후반전 시작에만 쓴다. 경기 시작처럼 대진과 대회명을 보인다
     public PushMessage quarterStart(Game game, GameProgressTimeline timeline) {
-        String body = scoreLine(game, game.getTeam1().getScore(), game.getTeam2().getScore());
         return message(PushType.QUARTER_START, game,
-                iconOf(game) + " " + timeline.getRecordedQuarter().getDisplayName() + " 시작", body);
+                iconOf(game) + " " + quarterLabel(timeline.getRecordedQuarter()) + " 시작", matchLine(game));
     }
 
+    // 승리한 팀은 제목에, 최종 점수는 본문에 둔다
     public PushMessage gameEnd(Game game) {
-        String body = scoreLine(game, game.getTeam1().getScore(), game.getTeam2().getScore())
-                + pkSuffix(game)
-                + winnerSuffix(game);
-        return message(PushType.GAME_END, game, iconOf(game) + " 경기 종료", body);
+        String body = scoreLine(game, game.getTeam1().getScore(), game.getTeam2().getScore()) + pkSuffix(game);
+        return message(PushType.GAME_END, game, iconOf(game) + " 경기 종료" + winnerSuffix(game), body);
+    }
+
+    // 알림 문구는 화면의 쿼터 이름(전반전·후반전)보다 짧게 쓴다
+    private String quarterLabel(Quarter quarter) {
+        if (quarter == SoccerQuarter.FIRST_HALF) {
+            return "전반";
+        }
+        if (quarter == SoccerQuarter.SECOND_HALF) {
+            return "후반";
+        }
+        return quarter.getDisplayName();
+    }
+
+    private String matchLine(Game game) {
+        return String.format("%s vs %s · %s %s",
+                game.getTeam1().getTeamName(), game.getTeam2().getTeamName(),
+                game.getLeague().getName(), game.getRound().getDescription());
     }
 
     // 알림 목록에서 종목을 바로 알아보게 제목 앞에 붙인다
