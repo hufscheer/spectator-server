@@ -30,14 +30,4 @@ public interface PushDeviceRepository extends Repository<PushDevice, Long> {
             + "WHERE (f.targetType = com.sports.server.command.push.domain.FollowTargetType.TEAM AND f.targetId IN :teamIds) "
             + "OR (f.targetType = com.sports.server.command.push.domain.FollowTargetType.GAME AND f.targetId = :gameId))")
     List<PushDevice> findFollowers(@Param("teamIds") Collection<Long> teamIds, @Param("gameId") Long gameId);
-
-    // 학교를 팔로우한 기기까지 더한 수신자. 경기 시작·종료 알림에만 쓴다
-    @Query("SELECT d FROM PushDevice d WHERE d.id IN ("
-            + "SELECT f.deviceId FROM PushFollow f "
-            + "WHERE (f.targetType = com.sports.server.command.push.domain.FollowTargetType.TEAM AND f.targetId IN :teamIds) "
-            + "OR (f.targetType = com.sports.server.command.push.domain.FollowTargetType.GAME AND f.targetId = :gameId) "
-            + "OR (f.targetType = com.sports.server.command.push.domain.FollowTargetType.ORGANIZATION AND f.targetId = :organizationId))")
-    List<PushDevice> findFollowersIncludingOrganization(@Param("teamIds") Collection<Long> teamIds,
-                                                        @Param("gameId") Long gameId,
-                                                        @Param("organizationId") Long organizationId);
 }

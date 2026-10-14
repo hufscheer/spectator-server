@@ -66,6 +66,10 @@ class PushNotificationTimelineTest extends ServiceTest {
     @MockBean
     private PushSender pushSender;
 
+    // setUp 이 테스트마다 같은 토큰으로 기기를 등록해서, 실제 제한기(토큰당 10분 20회)는 테스트가 늘면 걸린다
+    @MockBean
+    private PushDeviceRegisterRateLimiter pushDeviceRegisterRateLimiter;
+
     @Autowired
     private TimelineService timelineService;
 
@@ -105,7 +109,7 @@ class PushNotificationTimelineTest extends ServiceTest {
     class GameStart {
 
         @Test
-        void 첫_쿼터가_시작되면_팀이나_경기를_팔로우한_기기에_한_번씩_보낸다() {
+        void 첫_쿼터가_시작되면_팀이나_경기를_팔로우한_기기에만_한_번씩_보낸다() {
             // when
             timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
                     0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
@@ -119,11 +123,11 @@ class PushNotificationTimelineTest extends ServiceTest {
                     .containsEntry("type", "GAME_START");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
                     .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
-                            ORGANIZATION_FOLLOWER_TOKEN, ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
+                            ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
         }
 
         @Test
-        void 팀과_학교를_모두_팔로우한_기기에도_한_번만_보낸다() {
+        void 팀과_학교를_모두_팔로우한_기기에는_팀_팔로워로_한_번만_보낸다() {
             // when
             timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
                     0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
@@ -144,18 +148,65 @@ class PushNotificationTimelineTest extends ServiceTest {
             assertThat(sentMessage().title()).isEqualTo("🏀 경기 시작");
             assertThat(sentMessage().data()).containsEntry("url", "/org/1/basketball/games/4");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
-                    .containsExactlyInAnyOrder(BASKETBALL_FOLLOWER_TOKEN, ORGANIZATION_FOLLOWER_TOKEN,
-                            ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
+                    .containsExactly(BASKETBALL_FOLLOWER_TOKEN);
         }
 
         @Test
-        void 첫_쿼터가_아닌_쿼터_시작은_보내지_않는다() {
+        void 연장전_시작은_보내지_않는다() {
+            // given
+            timelineService.register(manager, SOCCER_SECOND_HALF, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_END));
+            clearInvocations(pushSender);
+
             // when
-            timelineService.register(manager, SOCCER_FIRST_HALF_ENDED, new TimelineRequest.RegisterProgress(
-                    0, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_START));
+            timelineService.register(manager, SOCCER_SECOND_HALF, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.EXTRA_TIME.name(), GameProgressType.QUARTER_START));
 
             // then
             verify(pushSender, never()).send(any(), anyList());
+        }
+    }
+
+    @Nested
+    @DisplayName("학교 팔로우")
+    class OrganizationFollow {
+
+        @Test
+        void 학교만_팔로우한_기기에는_경기_시작과_종료도_보내지_않는다() {
+            // when
+            timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
+                    0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
+            timelineService.register(manager, SOCCER_LEADING_TWO_TO_ONE, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END));
+
+            // then
+            ArgumentCaptor<List<PushRecipient>> captor = recipientsCaptor();
+            verify(pushSender, times(2)).send(any(), captor.capture());
+            assertThat(captor.getAllValues()).flatExtracting(recipients -> recipients)
+                    .extracting(PushRecipient::token)
+                    .doesNotContain(ORGANIZATION_FOLLOWER_TOKEN);
+        }
+    }
+
+    @Nested
+    @DisplayName("축구 후반 시작")
+    class SecondHalfStart {
+
+        @Test
+        void 현재_점수와_함께_알리고_학교_팔로워에는_보내지_않는다() {
+            // when
+            timelineService.register(manager, SOCCER_FIRST_HALF_ENDED, new TimelineRequest.RegisterProgress(
+                    45, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_START));
+
+            // then
+            PushMessage message = sentMessage();
+            assertThat(message.title()).isEqualTo("⚽ 후반전 시작");
+            assertThat(message.body()).isEqualTo("팀A 0 : 0 팀B");
+            assertThat(message.data()).containsEntry("url", "/org/1/soccer/games/3")
+                    .containsEntry("type", "QUARTER_START");
+            assertThat(sentRecipients()).extracting(PushRecipient::token)
+                    .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
+                            ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
         }
     }
 
@@ -222,7 +273,7 @@ class PushNotificationTimelineTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("농구 쿼터 종료")
+    @DisplayName("쿼터 종료")
     class QuarterEnd {
 
         @Test
@@ -300,14 +351,31 @@ class PushNotificationTimelineTest extends ServiceTest {
         }
 
         @Test
-        void 축구의_전반전_종료는_보내지_않는다() {
+        void 축구의_전반전_종료는_현재_점수와_함께_학교_팔로워를_제외하고_알린다() {
             timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
                     0, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_START));
             clearInvocations(pushSender);
+            jdbcTemplate.update("UPDATE game_teams SET score = 2 WHERE id = 1");
+            jdbcTemplate.update("UPDATE game_teams SET score = 1 WHERE id = 2");
 
             // when
             timelineService.register(manager, SOCCER_PRE_GAME, new TimelineRequest.RegisterProgress(
                     45, SportType.SOCCER, SoccerQuarter.FIRST_HALF.name(), GameProgressType.QUARTER_END));
+
+            // then
+            PushMessage message = sentMessage();
+            assertThat(message.title()).isEqualTo("⚽ 전반전 종료");
+            assertThat(message.body()).isEqualTo("팀A 2 : 1 팀B");
+            assertThat(message.data()).containsEntry("type", "QUARTER_END");
+            assertThat(sentRecipients()).extracting(PushRecipient::token)
+                    .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
+                            ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
+        }
+
+        @Test
+        void 축구의_후반전_종료는_보내지_않는다() {
+            timelineService.register(manager, SOCCER_SECOND_HALF, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_END));
 
             // then
             verify(pushSender, never()).send(any(), anyList());
@@ -353,7 +421,7 @@ class PushNotificationTimelineTest extends ServiceTest {
             assertThat(message.data()).containsEntry("type", "GAME_END");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
                     .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
-                            ORGANIZATION_FOLLOWER_TOKEN, ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
+                            ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
         }
 
         @Test
@@ -374,7 +442,7 @@ class PushNotificationTimelineTest extends ServiceTest {
         @Test
         void 팔로우한_기기가_없으면_보내지_않는다() {
             // given
-            List<Long> followerIds = pushDeviceRepository.findFollowersIncludingOrganization(List.of(1L, 2L), SOCCER_LEADING_TWO_TO_ONE, 1L)
+            List<Long> followerIds = pushDeviceRepository.findFollowers(List.of(1L, 2L), SOCCER_LEADING_TWO_TO_ONE)
                     .stream().map(PushDevice::getId).toList();
             pushDeviceService.removeAll(followerIds);
 
@@ -417,6 +485,11 @@ class PushNotificationTimelineTest extends ServiceTest {
         ArgumentCaptor<PushMessage> captor = ArgumentCaptor.forClass(PushMessage.class);
         verify(pushSender).send(captor.capture(), anyList());
         return captor.getValue();
+    }
+
+    @SuppressWarnings("unchecked")
+    private ArgumentCaptor<List<PushRecipient>> recipientsCaptor() {
+        return ArgumentCaptor.forClass(List.class);
     }
 
     @SuppressWarnings("unchecked")
