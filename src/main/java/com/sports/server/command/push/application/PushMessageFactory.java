@@ -49,6 +49,13 @@ public class PushMessageFactory {
                 iconOf(game) + " " + timeline.getRecordedQuarter().getDisplayName() + " 종료", body);
     }
 
+    // 현재는 축구 후반전 시작에만 쓴다. 점수는 쿼터 종료와 같이 경기의 현재 점수를 쓴다
+    public PushMessage quarterStart(Game game, GameProgressTimeline timeline) {
+        String body = scoreLine(game, game.getTeam1().getScore(), game.getTeam2().getScore());
+        return message(PushType.QUARTER_START, game,
+                iconOf(game) + " " + timeline.getRecordedQuarter().getDisplayName() + " 시작", body);
+    }
+
     public PushMessage gameEnd(Game game) {
         String body = scoreLine(game, game.getTeam1().getScore(), game.getTeam2().getScore())
                 + pkSuffix(game)
