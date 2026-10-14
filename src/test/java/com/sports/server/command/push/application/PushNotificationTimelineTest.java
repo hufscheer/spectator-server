@@ -116,7 +116,7 @@ class PushNotificationTimelineTest extends ServiceTest {
 
             // then
             PushMessage message = sentMessage();
-            assertThat(message.title()).isEqualTo("⚽ 경기 시작");
+            assertThat(message.title()).isEqualTo("⚽ 전반 시작");
             assertThat(message.body()).isEqualTo("팀A vs 팀B · 테스트 리그 4강");
             assertThat(message.data()).containsEntry("url", "/org/1/soccer/games/1")
                     .containsEntry("gameId", "1")
@@ -193,15 +193,15 @@ class PushNotificationTimelineTest extends ServiceTest {
     class SecondHalfStart {
 
         @Test
-        void 현재_점수와_함께_알리고_학교_팔로워에는_보내지_않는다() {
+        void 대진과_대회명으로_알리고_학교_팔로워에는_보내지_않는다() {
             // when
             timelineService.register(manager, SOCCER_FIRST_HALF_ENDED, new TimelineRequest.RegisterProgress(
                     45, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_START));
 
             // then
             PushMessage message = sentMessage();
-            assertThat(message.title()).isEqualTo("⚽ 후반전 시작");
-            assertThat(message.body()).isEqualTo("팀A 0 : 0 팀B");
+            assertThat(message.title()).isEqualTo("⚽ 후반 시작");
+            assertThat(message.body()).isEqualTo("팀A vs 팀B · 테스트 리그 4강");
             assertThat(message.data()).containsEntry("url", "/org/1/soccer/games/3")
                     .containsEntry("type", "QUARTER_START");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
@@ -364,7 +364,7 @@ class PushNotificationTimelineTest extends ServiceTest {
 
             // then
             PushMessage message = sentMessage();
-            assertThat(message.title()).isEqualTo("⚽ 전반전 종료");
+            assertThat(message.title()).isEqualTo("⚽ 전반 종료");
             assertThat(message.body()).isEqualTo("팀A 2 : 1 팀B");
             assertThat(message.data()).containsEntry("type", "QUARTER_END");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
@@ -416,8 +416,8 @@ class PushNotificationTimelineTest extends ServiceTest {
 
             // then
             PushMessage message = sentMessage();
-            assertThat(message.title()).isEqualTo("⚽ 경기 종료");
-            assertThat(message.body()).isEqualTo("팀A 2 : 1 팀B · 팀A 승리");
+            assertThat(message.title()).isEqualTo("⚽ 경기 종료 · 팀A 승리");
+            assertThat(message.body()).isEqualTo("팀A 2 : 1 팀B");
             assertThat(message.data()).containsEntry("type", "GAME_END");
             assertThat(sentRecipients()).extracting(PushRecipient::token)
                     .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
@@ -431,7 +431,9 @@ class PushNotificationTimelineTest extends ServiceTest {
                     90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END));
 
             // then
-            assertThat(sentMessage().body()).isEqualTo("팀A 1 : 1 팀B");
+            PushMessage message = sentMessage();
+            assertThat(message.title()).isEqualTo("⚽ 경기 종료");
+            assertThat(message.body()).isEqualTo("팀A 1 : 1 팀B");
         }
     }
 
