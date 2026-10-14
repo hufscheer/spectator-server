@@ -587,7 +587,9 @@ operation::push-device-controller-test/팔로우_목록을_조회한다[snippets
 === 팔로우 교체
 
 팀과 경기는 각각 30개, 학교(`organizationIds`)는 5개까지 담을 수 있고, 존재하지 않는 ID 가 있으면 400 이다.
-학교를 팔로우한 기기는 경기 시작·종료 알림만 받고 골 알림은 받지 않는다. `organizationIds` 를 생략하면 빈 목록으로 본다.
+알림은 팀이나 경기를 팔로우한 기기에만 간다. 학교 팔로우는 저장만 되고 알림을 받지 않는다(팀 알림만 운영). `organizationIds` 를 생략하면 빈 목록으로 본다.
+
+보내는 알림: 경기 시작, 경기 종료(최종 스코어), 축구 득점, 축구 전반전 종료와 후반전 시작(현재 스코어), 농구 1~3쿼터 종료(현재 스코어).
 
 operation::push-device-controller-test/팔로우_목록을_통째로_교체한다[snippets='http-request,path-parameters,request-fields,http-response']
 
