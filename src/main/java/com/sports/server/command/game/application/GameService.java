@@ -56,8 +56,8 @@ public class GameService {
         }
 
         Game game = saveGame(league, administrator, request);
-        registerGameTeamAndLineup(game, request.team1());
-        registerGameTeamAndLineup(game, request.team2());
+        registerGameTeamAndLineup(game, league.getSportType(), request.team1());
+        registerGameTeamAndLineup(game, league.getSportType(), request.team2());
         bracketService.linkGame(league, game, request.team1().teamId(), request.team2().teamId());
 
         return game.getId();
@@ -139,8 +139,9 @@ public class GameService {
         return gameRepository.save(game);
     }
 
-    private void registerGameTeamAndLineup(Game game, GameRequest.TeamLineupRequest teamLineupInfo) {
+    private void registerGameTeamAndLineup(Game game, SportType sportType, GameRequest.TeamLineupRequest teamLineupInfo) {
         validateSingleCaptain(teamLineupInfo);
+        validateStarterLimit(sportType, teamLineupInfo);
 
         Team team = entityUtils.getEntity(teamLineupInfo.teamId(), Team.class);
         GameTeam gameTeam = GameTeam.of(game, team);
@@ -163,6 +164,16 @@ public class GameService {
                 .count();
         if (captainCount > 1) {
             throw new BadRequestException(GameErrorMessages.MULTIPLE_CAPTAINS_IN_REQUEST);
+        }
+    }
+
+    private void validateStarterLimit(SportType sportType, GameRequest.TeamLineupRequest teamLineupInfo) {
+        long starterCount = teamLineupInfo.lineupPlayers().stream()
+                .filter(lp -> lp.state() == LineupPlayerState.STARTER)
+                .count();
+        if (starterCount > sportType.getStarterLimit()) {
+            throw new BadRequestException(
+                    String.format(GameErrorMessages.STARTER_LIMIT_EXCEEDED, sportType.getStarterLimit()));
         }
     }
 

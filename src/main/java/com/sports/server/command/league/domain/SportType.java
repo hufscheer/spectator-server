@@ -3,7 +3,7 @@ package com.sports.server.command.league.domain;
 import java.util.Arrays;
 
 public enum SportType {
-    SOCCER {
+    SOCCER(11) {
         @Override
         public Quarter resolveQuarter(String value) {
             return SoccerQuarter.tryResolve(value)
@@ -41,7 +41,7 @@ public enum SportType {
             return true;
         }
     },
-    BASKETBALL {
+    BASKETBALL(5) {
         @Override
         public Quarter resolveQuarter(String value) {
             return BasketballQuarter.tryResolve(value)
@@ -77,6 +77,16 @@ public enum SportType {
             return quarterByOrder(current.getOrder() + 1);
         }
     };
+
+    private final int starterLimit;
+
+    SportType(int starterLimit) {
+        this.starterLimit = starterLimit;
+    }
+
+    public int getStarterLimit() {
+        return starterLimit;
+    }
 
     public abstract Quarter resolveQuarter(String value);
 

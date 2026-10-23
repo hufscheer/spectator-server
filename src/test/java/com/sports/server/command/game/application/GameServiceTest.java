@@ -17,6 +17,7 @@ import com.sports.server.command.league.exception.LeagueErrorMessages;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +54,9 @@ public class GameServiceTest extends ServiceTest {
 
     @Autowired
     private GameFixtureRepository gameFixtureRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @MockBean
     private Clock clock;
@@ -208,6 +213,60 @@ public class GameServiceTest extends ServiceTest {
             assertThatThrownBy(() -> gameService.register(leagueId, invalidRequest, manager))
                     .isInstanceOf(CustomException.class)
                     .hasMessage("팀 라인업에 주장은 한 명만 지정할 수 있습니다.");
+        }
+
+        @Test
+        void 축구_선발이_정원을_넘으면_예외가_발생한다() {
+            // given: 12명 모두 선발 (state 생략도 선발이다)
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            GameRequest.Register request = registerWithStarters(12, null);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.register(1L, request, manager))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("선발 선수는 11명까지 등록할 수 있어요.");
+        }
+
+        @Test
+        void 축구_선발이_정원과_같으면_등록된다() {
+            // given: 팀 A 의 선수를 11명으로 늘린다
+            for (long i = 0; i < 6; i++) {
+                jdbcTemplate.update("INSERT INTO players (id, name, student_number) VALUES (?, ?, ?)",
+                        100 + i, "추가선수" + i, "20250" + i);
+                jdbcTemplate.update("INSERT INTO team_players (id, team_id, player_id, jersey_number) VALUES (?, 1, ?, ?)",
+                        100 + i, 100 + i, 50 + i);
+            }
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            GameRequest.Register request = registerWithStarters(11, LineupPlayerState.STARTER);
+
+            // when
+            Long gameId = gameService.register(1L, request, manager);
+
+            // then
+            Game game = entityUtils.getEntity(gameId, Game.class);
+            assertThat(game.getTeam1().getLineupPlayers()).hasSize(11);
+        }
+
+        @Test
+        void 농구_선발이_정원을_넘으면_예외가_발생한다() {
+            // given
+            jdbcTemplate.update("UPDATE leagues SET sport_type = 'BASKETBALL' WHERE id = 1");
+            Member manager = entityUtils.getEntity(1L, Member.class);
+            GameRequest.Register request = registerWithStarters(6, LineupPlayerState.STARTER);
+
+            // when & then
+            assertThatThrownBy(() -> gameService.register(1L, request, manager))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("선발 선수는 5명까지 등록할 수 있어요.");
+        }
+
+        private GameRequest.Register registerWithStarters(int count, LineupPlayerState state) {
+            List<GameRequest.LineupPlayerRequest> lineup = new java.util.ArrayList<>();
+            for (long i = 1; i <= count; i++) {
+                lineup.add(new GameRequest.LineupPlayerRequest(i <= 5 ? i : 94 + i, state, false, null));
+            }
+            return new GameRequest.Register(nameOfGame, 16, "FIRST_HALF", "SCHEDULED",
+                    LocalDateTime.now(), null, new GameRequest.TeamLineupRequest(1L, lineup), team2, false);
         }
     }
 
