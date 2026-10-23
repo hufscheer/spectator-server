@@ -53,6 +53,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 null, 1L, SCORE_TYPE,
                                                 13,
                                                 "선수10",
+                                                10L,
                                                 1L,
                                                 TEAM_B,
                                                 TEAM_B_IMAGE_URL,
@@ -80,6 +81,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 null, 1L, SOCCER_REPLACEMENT_TYPE,
                                                 10,
                                                 "선수2",
+                                                2L,
                                                 1L,
                                                 TEAM_A,
                                                 TEAM_A_IMAGE_URL,
@@ -107,6 +109,7 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                                 null, 1L, BASKETBALL_REPLACEMENT_TYPE,
                                                 5,
                                                 "선수4",
+                                                4L,
                                                 1L,
                                                 TEAM_A,
                                                 TEAM_A_IMAGE_URL,
@@ -160,6 +163,8 @@ public class TimelineQueryControllerTest extends DocumentationTest {
                                         .description("기록된 시간"),
                                 fieldWithPath("timelines[].records[].playerName").type(JsonFieldType.STRING)
                                         .description("기록의 대상 선수 이름"),
+                                fieldWithPath("timelines[].records[].lineupPlayerId").type(JsonFieldType.NUMBER)
+                                        .description("기록의 대상 라인업 선수 ID (선수가 없는 기록은 null)"),
                                 fieldWithPath("timelines[].records[].gameTeamId").type(JsonFieldType.NUMBER)
                                         .description("기록의 대상 게임 팀 ID"),
                                 fieldWithPath("timelines[].records[].teamName").type(JsonFieldType.STRING)

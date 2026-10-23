@@ -90,6 +90,7 @@ class RecordResponseTest {
             assertAll(
                     () -> assertThat(actual.type()).isEqualTo("OWN_GOAL"),
                     () -> assertThat(actual.playerName()).isEqualTo(scorer.getPlayer().getName()),
+                    () -> assertThat(actual.lineupPlayerId()).isEqualTo(scorer.getId()),
                     () -> assertThat(actual.gameTeamId()).isEqualTo(team2.getId()),
                     () -> assertThat(actual.teamName()).isEqualTo("팀B"),
                     () -> assertThat(actual.teamImageUrl()).isEqualTo("http://example.com/logo_b.png"),

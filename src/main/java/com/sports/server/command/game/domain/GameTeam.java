@@ -1,5 +1,6 @@
 package com.sports.server.command.game.domain;
 
+import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.domain.BaseEntity;
@@ -78,6 +79,10 @@ public class GameTeam extends BaseEntity<GameTeam> {
     }
 
     public void registerStarter(final LineupPlayer lineupPlayer) {
+        // 이미 선발이면 기존 "이미 선발" 예외가 나야 하므로 후보일 때만 정원을 본다
+        if (lineupPlayer.getState() == LineupPlayerState.CANDIDATE) {
+            validateStarterCapacity();
+        }
         lineupPlayer.changeStateToStarter();
     }
 
@@ -117,6 +122,17 @@ public class GameTeam extends BaseEntity<GameTeam> {
     public void addLineupPlayer(final LineupPlayer lineupPlayer) {
         if (!this.lineupPlayers.contains(lineupPlayer)) {
             this.lineupPlayers.add(lineupPlayer);
+        }
+    }
+
+    // 선발이 늘어나는 쓰기에서만 부른다. 이미 정원을 넘긴 팀의 조회, 후보 전환, 삭제는 막지 않는다
+    public void validateStarterCapacity() {
+        int limit = getSportType().getStarterLimit();
+        long starterCount = this.lineupPlayers.stream()
+                .filter(lp -> lp.getState() == LineupPlayerState.STARTER)
+                .count();
+        if (starterCount >= limit) {
+            throw new BadRequestException(String.format(GameErrorMessages.STARTER_LIMIT_EXCEEDED, limit));
         }
     }
 

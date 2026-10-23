@@ -4,6 +4,7 @@ import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerRepository;
+import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.domain.Position;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
@@ -70,6 +71,9 @@ public class LineupPlayerService {
                 .orElseThrow(() -> new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION));
 
         validateLineupAddition(gameTeam, teamPlayer, request.isCaptain());
+        if (request.state() == LineupPlayerState.STARTER) {
+            gameTeam.validateStarterCapacity();
+        }
 
         Position position = request.position();
         if (position != null) {

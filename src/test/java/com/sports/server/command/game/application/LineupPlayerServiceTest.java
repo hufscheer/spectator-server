@@ -17,6 +17,7 @@ import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql(scripts = "/game-fixture.sql")
@@ -30,6 +31,18 @@ public class LineupPlayerServiceTest extends ServiceTest {
 
     @Autowired
     private TeamPlayerRepository teamPlayerRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    // 게임팀 1(축구)은 선발 4명이다. 선발 수가 total 이 되도록 이미 라인업에 없는 선수(6~10, 16~)로 채운다
+    private void fillStarters(int total) {
+        for (int i = 0; i < total - 4; i++) {
+            jdbcTemplate.update(
+                    "INSERT INTO lineup_players (id, game_team_id, player_id, jersey_number, is_captain, state, is_playing) "
+                            + "VALUES (?, 1, ?, ?, false, 'STARTER', true)", 100 + i, i < 5 ? 6 + i : 11 + i, 50 + i);
+        }
+    }
 
     @Test
     void 선수를_주장으로_등록한다() {
@@ -198,6 +211,95 @@ public class LineupPlayerServiceTest extends ServiceTest {
         // when & then: 다른 경기 id 로는 건드릴 수 없다
         assertThatThrownBy(() -> lineupPlayerService.changePlayerPosition(2L, lineupPlayerId, Position.LW))
                 .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void 선발이_정원만큼_찬_팀에서_후보를_선발로_바꾸면_예외가_발생한다() {
+        // given: 축구 정원 11명
+        fillStarters(11);
+
+        // when & then
+        assertThatThrownBy(() -> lineupPlayerService.changePlayerStateToStarter(1L, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("선발 선수는 11명까지 등록할 수 있어요.");
+    }
+
+    @Test
+    void 선발이_정원보다_한_명_모자란_팀에서는_후보를_선발로_바꿀_수_있다() {
+        // given
+        fillStarters(10);
+
+        // when
+        lineupPlayerService.changePlayerStateToStarter(1L, 1L);
+
+        // then
+        assertThat(entityUtils.getEntity(1L, LineupPlayer.class).getState()).isEqualTo(LineupPlayerState.STARTER);
+    }
+
+    @Test
+    void 이미_선발인_선수를_선발로_바꾸면_정원과_관계없이_이미_선발_예외가_발생한다() {
+        // given
+        fillStarters(11);
+
+        // when & then
+        assertThatThrownBy(() -> lineupPlayerService.changePlayerStateToStarter(1L, 2L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("이미 선발로 등록된 선수입니다.");
+    }
+
+    @Test
+    void 선발이_정원만큼_찬_팀에_선발을_추가하면_예외가_발생한다() {
+        // given
+        fillStarters(11);
+        GameRequest.LineupPlayerRequest request = new GameRequest.LineupPlayerRequest(
+                1L, LineupPlayerState.STARTER, false, null
+        );
+
+        // when & then
+        assertThatThrownBy(() -> lineupPlayerService.addPlayerToLineup(1L, request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("선발 선수는 11명까지 등록할 수 있어요.");
+    }
+
+    @Test
+    void 선발이_정원만큼_찬_팀에도_후보는_추가할_수_있다() {
+        // given
+        fillStarters(11);
+
+        // when
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.CANDIDATE, false, null));
+
+        // then
+        assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getState())
+                .isEqualTo(LineupPlayerState.CANDIDATE);
+    }
+
+    @Test
+    void 선발이_정원보다_한_명_모자란_팀에는_선발을_추가할_수_있다() {
+        // given
+        fillStarters(10);
+
+        // when
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, null));
+
+        // then
+        assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getState())
+                .isEqualTo(LineupPlayerState.STARTER);
+    }
+
+    @Test
+    void 정원을_넘긴_팀에서도_선발을_후보로_바꾸고_삭제할_수_있다() {
+        // given: 이미 12명이 선발인 기존 데이터
+        fillStarters(12);
+
+        // when
+        lineupPlayerService.changePlayerStateToCandidate(1L, 2L);
+        lineupPlayerService.removePlayerFromLineup(1L, 3L);
+
+        // then
+        assertThat(entityUtils.getEntity(2L, LineupPlayer.class).getState()).isEqualTo(LineupPlayerState.CANDIDATE);
     }
 }
 
