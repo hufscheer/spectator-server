@@ -159,7 +159,10 @@ public class TimelineService {
 
         if (isGameEnd) {
             gameStatusScheduler.rollbackLeagueStatisticsIfNeeded(game);
+            return;
         }
+        // 자정 자동 종료된 경기는 경기 종료 타임라인 없이 FINISHED 라, 종료 상태로 마지막 득점을 지울 수 있다
+        gameStatusScheduler.refreshTopScorersIfFinished(game);
     }
 
     private void deleteMiddleTimeline(Game game, Timeline target, List<Timeline> subsequents) {

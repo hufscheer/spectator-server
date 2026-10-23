@@ -10,6 +10,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
+import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.util.StudentNumber;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,6 +53,7 @@ public class LeagueQueryService {
     private final LeagueTeamQueryRepository leagueTeamQueryRepository;
     private final PlayerInfoProvider playerInfoProvider;
     private final LeagueTopScorerRepository leagueTopScorerRepository;
+    private final TeamRepository teamRepository;
 
     public List<LeagueResponse> findLeagues(LeagueQueryRequestDto queryRequestDto) {
         List<League> leagues = leagueQueryRepository.findLeagues(queryRequestDto);
@@ -242,8 +245,19 @@ public class LeagueQueryService {
     }
 
     public List<TopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {
-        return leagueTopScorerRepository.findByLeagueId(leagueId).stream()
-                .map(TopScorerResponse::from).toList();
+        List<LeagueTopScorer> topScorers = leagueTopScorerRepository.findByLeagueId(leagueId);
+        List<Long> teamIds = topScorers.stream()
+                .map(LeagueTopScorer::getTeamId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        // 삭제된 팀은 찾아지지 않아 팀 정보가 비어 나간다
+        Map<Long, Team> teamById = teamRepository.findAllById(teamIds).stream()
+                .collect(toMap(Team::getId, Function.identity()));
+
+        return topScorers.stream()
+                .map(topScorer -> TopScorerResponse.of(topScorer, teamById.get(topScorer.getTeamId())))
+                .toList();
     }
 
     public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {

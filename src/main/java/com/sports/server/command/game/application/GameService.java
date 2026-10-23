@@ -5,6 +5,7 @@ import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
+import com.sports.server.command.league.application.LeagueTopScorerService;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
@@ -43,6 +44,7 @@ public class GameService {
     private final GameTeamRepository gameTeamRepository;
     private final LeagueTeamRepository leagueTeamRepository;
     private final BracketService bracketService;
+    private final LeagueTopScorerService leagueTopScorerService;
 
     @Transactional
     public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
@@ -72,7 +74,6 @@ public class GameService {
             game.updateResult();
         });
         return overdueGames.stream()
-                .filter(game -> Round.FINAL == game.getRound())
                 .map(Game::getId)
                 .toList();
     }
@@ -117,9 +118,14 @@ public class GameService {
         PermissionValidator.checkPermission(league, administrator);
 
         Game game = entityUtils.getEntity(gameId, Game.class);
+        boolean wasFinished = game.getState() == GameState.FINISHED;
         bracketService.unlinkGame(game);
         timelineRepository.deleteByGame(game);
         gameRepository.delete(game);
+        // 종료된 경기의 득점은 득점왕에 들어가 있으니, 경기를 지우면 다시 센다
+        if (wasFinished) {
+            leagueTopScorerService.updateTopScorersForLeague(leagueId);
+        }
     }
 
     @Transactional

@@ -46,6 +46,8 @@ public class LeagueTopScorerService {
         Map<Long, Player> playerMap = players.stream()
                 .collect(Collectors.toMap(Player::getId, identity()));
 
+        Map<Long, Long> teamIdByPlayerId = playerInfoProvider.getLeagueScorerTeamIds(leagueId, playerIds);
+
         List<LeagueTopScorer> topScorersToBeSaved = new ArrayList<>();
 
         for (PlayerGoalCountWithRank scorerData : topScorers) {
@@ -58,15 +60,12 @@ public class LeagueTopScorerService {
                     league,
                     player,
                     scorerData.rank().intValue(),
-                    scorerData.goalCount().intValue()
+                    scorerData.goalCount().intValue(),
+                    teamIdByPlayerId.get(scorerData.playerId())
             );
             topScorersToBeSaved.add(topScorer);
         }
 
         leagueTopScorerRepository.saveAll(topScorersToBeSaved);
-    }
-
-    public void clearTopScorersForLeague(Long leagueId) {
-        leagueTopScorerRepository.deleteByLeagueId(leagueId);
     }
 }

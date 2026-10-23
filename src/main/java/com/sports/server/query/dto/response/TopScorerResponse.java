@@ -2,6 +2,7 @@ package com.sports.server.query.dto.response;
 
 import com.sports.server.command.league.domain.LeagueTopScorer;
 import com.sports.server.command.player.domain.Player;
+import com.sports.server.command.team.domain.Team;
 import com.sports.server.common.util.StudentNumber;
 
 public record TopScorerResponse(
@@ -9,9 +10,12 @@ public record TopScorerResponse(
         String playerName,
         String admissionYear,
         Integer ranking,
-        Integer goalCount
+        Integer goalCount,
+        Long teamId,
+        String teamName,
+        String logoImageUrl
 ) {
-    public static TopScorerResponse from(LeagueTopScorer leagueTopScorer) {
+    public static TopScorerResponse of(LeagueTopScorer leagueTopScorer, Team team) {
         String studentNumber = leagueTopScorer.getPlayer().getStudentNumber();
         String admissionYear = StudentNumber.extractAdmissionYear(studentNumber);
 
@@ -20,7 +24,10 @@ public record TopScorerResponse(
                 leagueTopScorer.getPlayer().getName(),
                 admissionYear,
                 leagueTopScorer.getRanking(),
-                leagueTopScorer.getGoalCount()
+                leagueTopScorer.getGoalCount(),
+                team == null ? null : team.getId(),
+                team == null ? null : team.getName(),
+                team == null ? null : team.getLogoImageUrl()
         );
     }
 
@@ -33,7 +40,10 @@ public record TopScorerResponse(
                 player.getName(),
                 admissionYear,
                 null,
-                totalGoals
+                totalGoals,
+                null,
+                null,
+                null
         );
     }
 
@@ -45,7 +55,10 @@ public record TopScorerResponse(
                 playerName,
                 admissionYear,
                 ranking,
-                totalGoals
+                totalGoals,
+                null,
+                null,
+                null
         );
     }
 
