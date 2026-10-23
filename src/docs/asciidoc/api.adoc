@@ -63,6 +63,8 @@ operation::cheer-talk-controller-test/리그_응원톡을_가리기_취소한다
 3·4위전 경기는 `round` 대신 `thirdPlaceMatch: true` 로 지정한다. 3·4위전은 브래킷 트리 밖 라운드라 참가 팀 수(`round`)로는 결승과 구분되지 않기 때문이다.
 이 경우 서버가 참가팀이 준결승 패배 두 팀인지 검증하며, 준결승이 끝나지 않았거나 무승부로 남아 패자가 가려지지 않으면 검증을 건너뛰어 매니저가 직접 고를 수 있게 한다.
 
+팀마다 선발(`state` 를 생략하면 선발로 본다) 선수는 종목별 정원(축구 11명, 농구 5명)을 넘길 수 없고, 넘기면 400 을 반환한다.
+
 operation::game-controller-test/게임을_등록한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
 
 ==== 3·4위전 생성 조건을 만족하지 않는 경우
@@ -141,6 +143,8 @@ operation::game-query-controller-test/라인업을_조회한다[snippets='http-r
 
 === 게임팀에 라인업 선수 추가
 
+선발 선수는 종목별 정원(축구 11명, 농구 5명)을 넘길 수 없다. 선발로 추가하거나 후보를 선발로 바꿀 때 정원이 차 있으면 400 을 반환한다. 후보 추가, 후보로 변경, 삭제는 정원과 무관하다.
+
 operation::game-controller-test/게임팀_라인업에_선수를_추가한다[snippets='http-request,path-parameters,request-cookies,request-fields,http-response']
 
 === 게임팀에서 라인업 선수 삭제
@@ -152,6 +156,8 @@ operation::game-controller-test/게임팀_라인업에서_선수를_삭제한다
 
 
 === 라인업 선수 선발로 변경
+
+선발 정원(축구 11명, 농구 5명)이 이미 찬 팀에서는 후보를 선발로 바꿀 수 없다(400).
 
 operation::game-controller-test/라인업_선수의_상태를_선발로_변경한다[snippets='http-request,path-parameters,request-cookies,http-response']
 
