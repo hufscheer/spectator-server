@@ -329,6 +329,43 @@ public class LeagueQueryControllerTest extends DocumentationTest {
     }
 
     @Test
+    void 리그_도움왕을_조회한다() throws Exception {
+        // given
+        Long leagueId = 1L;
+
+        List<TopAssistResponse> responses = List.of(
+                new TopAssistResponse(1L, "진승희", "20", 1, 4, 1L, "경영 야생마", "https://example.com/logos/wildhorse.png"),
+                new TopAssistResponse(2L, "이동규", "20", 2, 2, 2L, "서어 뻬데뻬", "https://example.com/logos/pedro.png"),
+                new TopAssistResponse(3L, "이현제", "20", 2, 2, null, null, null)
+        );
+
+        given(leagueQueryService.findTop20AssistsByLeagueId(leagueId))
+                .willReturn(responses);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/leagues/{leagueId}/top-assists", leagueId)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(restDocsHandler.document(
+                        pathParameters(
+                                parameterWithName("leagueId").description("리그의 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
+                                fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 입학 년도"),
+                                fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("도움 순위"),
+                                fieldWithPath("[].assistCount").type(JsonFieldType.NUMBER).description("도움 수 (종료된 경기만)"),
+                                fieldWithPath("[].teamId").type(JsonFieldType.NUMBER).description("선수가 도움한 팀 ID (대회에서 가장 많이 도움한 팀, 같으면 마지막으로 도움한 팀). 팀이 삭제됐으면 null").optional(),
+                                fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("선수가 도움한 팀 이름. 팀이 삭제됐으면 null").optional(),
+                                fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING).description("선수가 도움한 팀 로고 이미지 URL. 팀이 삭제됐거나 로고가 없으면 null").optional()
+                        )
+                ));
+    }
+
+    @Test
     void 리그를_하나_조회한다() throws Exception {
         // given
         Long leagueId = 1L;

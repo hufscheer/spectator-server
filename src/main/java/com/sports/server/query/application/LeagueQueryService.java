@@ -16,6 +16,7 @@ import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.util.StudentNumber;
 
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
+import com.sports.server.query.dto.PlayerAssistCountWithRank;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueCheerTalkCountResponse;
@@ -257,6 +258,20 @@ public class LeagueQueryService {
 
         return topScorers.stream()
                 .map(topScorer -> TopScorerResponse.of(topScorer, teamById.get(topScorer.getTeamId())))
+                .toList();
+    }
+
+    public List<TopAssistResponse> findTop20AssistsByLeagueId(Long leagueId) {
+        List<PlayerAssistCountWithRank> topAssists = playerInfoProvider.getLeagueTopAssists(leagueId, 20);
+        List<Long> playerIds = topAssists.stream().map(PlayerAssistCountWithRank::playerId).toList();
+        Map<Long, Long> teamIdByPlayerId = playerInfoProvider.getLeagueAssistTeamIds(leagueId, playerIds);
+        // 삭제된 팀은 찾아지지 않아 팀 정보가 비어 나간다
+        Map<Long, Team> teamById = teamRepository.findAllById(teamIdByPlayerId.values().stream().distinct().toList())
+                .stream()
+                .collect(toMap(Team::getId, Function.identity()));
+
+        return topAssists.stream()
+                .map(assist -> TopAssistResponse.of(assist, teamById.get(teamIdByPlayerId.get(assist.playerId()))))
                 .toList();
     }
 

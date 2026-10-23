@@ -5,6 +5,8 @@ import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.command.timeline.domain.OwnGoalTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.query.dto.PlayerAssistCountWithRank;
+import com.sports.server.query.dto.PlayerTeamAssistCount;
 import com.sports.server.query.dto.PlayerTeamGoalCount;
 import com.sports.server.query.dto.TeamTopScorerResult;
 import java.util.List;
@@ -91,5 +93,33 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
             "GROUP BY sc.player.id, sc.gameTeam.team.id")
     List<PlayerTeamGoalCount> countLeagueGoalsByPlayerAndTeam(@Param("leagueId") Long leagueId,
                                                               @Param("playerIds") List<Long> playerIds);
+
+    @Query("SELECT new com.sports.server.query.dto.PlayerAssistCountWithRank(" +
+            "       p.id, " +
+            "       p.studentNumber, " +
+            "       p.name, " +
+            "       COUNT(st.id), " +
+            "       RANK() OVER (ORDER BY COUNT(st.id) DESC)) " +
+            "FROM ScoreTimeline st " +
+            "JOIN st.assistLineupPlayer ap " +
+            "JOIN ap.player p " +
+            "JOIN st.game g " +
+            "WHERE g.league.id = :leagueId " +
+            "AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
+            "GROUP BY p.id, p.studentNumber, p.name " +
+            "ORDER BY COUNT(st.id) DESC, p.name ASC")
+    List<PlayerAssistCountWithRank> findTopAssistsByLeagueId(@Param("leagueId") Long leagueId, Pageable pageable);
+
+    @Query("SELECT new com.sports.server.query.dto.PlayerTeamAssistCount(" +
+            "       ap.player.id, ap.gameTeam.team.id, COUNT(st.id), MAX(st.id)) " +
+            "FROM ScoreTimeline st " +
+            "JOIN st.assistLineupPlayer ap " +
+            "JOIN st.game g " +
+            "WHERE g.league.id = :leagueId " +
+            "AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
+            "AND ap.player.id IN :playerIds " +
+            "GROUP BY ap.player.id, ap.gameTeam.team.id")
+    List<PlayerTeamAssistCount> countLeagueAssistsByPlayerAndTeam(@Param("leagueId") Long leagueId,
+                                                                  @Param("playerIds") List<Long> playerIds);
 
 }

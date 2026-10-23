@@ -292,6 +292,13 @@ operation::league-query-controller-test/리그_통계를_조회한다[snippets='
 
 operation::league-query-controller-test/리그_득점왕을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 리그 도움왕 조회
+
+종료된 경기의 득점에 기록된 도움만 센다(진행 중인 경기 제외). 득점 1건당 도움 1이고, 축구와 농구 모두 센다. 상위 20명이고, 동점은 같은 순위이며 이름순이다.
+`teamId`, `teamName`, `logoImageUrl` 은 그 선수가 대회에서 가장 많이 도움한 팀이다(같으면 마지막으로 도움한 팀). 팀이 삭제됐으면 null 이다.
+
+operation::league-query-controller-test/리그_도움왕을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
+
 === 연도별 득점왕 조회
 
 operation::league-query-controller-test/연도별_득점왕을_조회한다[snippets='http-request,query-parameters,http-response,response-fields']
