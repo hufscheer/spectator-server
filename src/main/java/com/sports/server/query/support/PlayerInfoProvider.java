@@ -2,6 +2,8 @@ package com.sports.server.query.support;
 
 import com.sports.server.command.team.domain.PlayerGoalCount;
 import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
+import com.sports.server.query.dto.PlayerAssistCountWithRank;
+import com.sports.server.query.dto.PlayerTeamAssistCount;
 import com.sports.server.query.dto.PlayerTeamGoalCount;
 import com.sports.server.query.dto.TeamTopScorerResult;
 import com.sports.server.query.repository.TimelineQueryRepository;
@@ -72,6 +74,32 @@ public class PlayerInfoProvider {
                 ))
                 .values().stream()
                 .collect(Collectors.toMap(PlayerTeamGoalCount::playerId, PlayerTeamGoalCount::teamId));
+    }
+
+    public List<PlayerAssistCountWithRank> getLeagueTopAssists(Long leagueId, int size) {
+        Pageable sizeRequest = PageRequest.of(0, size);
+        return timelineQueryRepository.findTopAssistsByLeagueId(leagueId, sizeRequest);
+    }
+
+    /**
+     * 대회에서 선수마다 대표 팀을 하나 고른다. 그 대회에서 가장 많이 도움한 팀이고,
+     * 도움이 같으면 마지막으로 도움한 팀이다. 종료된 경기만 센다.
+     */
+    public Map<Long, Long> getLeagueAssistTeamIds(Long leagueId, List<Long> playerIds) {
+        if (playerIds == null || playerIds.isEmpty()) return Collections.emptyMap();
+
+        Comparator<PlayerTeamAssistCount> representative = Comparator
+                .comparing(PlayerTeamAssistCount::assistCount)
+                .thenComparing(PlayerTeamAssistCount::lastAssistTimelineId);
+
+        return timelineQueryRepository.countLeagueAssistsByPlayerAndTeam(leagueId, playerIds).stream()
+                .collect(Collectors.toMap(
+                        PlayerTeamAssistCount::playerId,
+                        Function.identity(),
+                        BinaryOperator.maxBy(representative)
+                ))
+                .values().stream()
+                .collect(Collectors.toMap(PlayerTeamAssistCount::playerId, PlayerTeamAssistCount::teamId));
     }
 
     public Map<Long, List<PlayerGoalCountWithRank>> getTeamsTopScorers(List<Long> teamIds, int size) {
