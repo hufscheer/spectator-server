@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.domain.LeagueProgress;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
@@ -442,7 +443,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         Integer size = 10;
 
         // when
-        List<TopScorerResponse> scorers = leagueQueryService.findTopScorersByYear(year, size);
+        List<TopScorerResponse> scorers = leagueQueryService.findTopScorersByYear(year, null, null, size);
 
         // then
         assertAll(
@@ -462,7 +463,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         Integer topScorerLimit = 5;
 
         // when
-        LeagueRecentSummaryResponse response = leagueQueryService.findRecentSummary(year, recordLimit, topScorerLimit);
+        LeagueRecentSummaryResponse response = leagueQueryService.findRecentSummary(year, null, null, recordLimit, topScorerLimit);
 
         // then
         assertAll(
@@ -484,6 +485,94 @@ public class LeagueQueryServiceTest extends ServiceTest {
                         .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
                         .containsExactly(4, 2)
         );
+    }
+
+    @Nested
+    @DisplayName("학교와 종목으로 득점왕과 최근 기록을 거를 때")
+    @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
+    @Sql(scripts = "/recent-summary-filter-fixture.sql")
+    class FilterByOrganizationAndSportType {
+
+        @Test
+        void 필터가_없으면_모든_학교와_종목을_합쳐_가장_최근_연도로_조회한다() {
+            // when
+            LeagueRecentSummaryResponse response = leagueQueryService.findRecentSummary(null, null, null, 5, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.records())
+                            .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
+                            .containsExactly("B농구대회", "A축구대회"),
+                    () -> assertThat(response.topScorers())
+                            .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                            .containsExactly("B농구선수", "A축구선수")
+            );
+        }
+
+        @Test
+        void 다른_학교와_다른_종목의_기록과_득점은_빠진다() {
+            // when
+            LeagueRecentSummaryResponse response = leagueQueryService.findRecentSummary(2025, 1L, SportType.SOCCER, 5, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.records())
+                            .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
+                            .containsExactly("A축구대회"),
+                    () -> assertThat(response.topScorers())
+                            .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                            .containsExactly("A축구선수")
+            );
+        }
+
+        @Test
+        void 같은_학교라도_다른_종목의_득점은_빠진다() {
+            // when
+            LeagueRecentSummaryResponse response = leagueQueryService.findRecentSummary(2025, 2L, SportType.BASKETBALL, 5, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.records())
+                            .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
+                            .containsExactly("B농구대회"),
+                    () -> assertThat(response.topScorers())
+                            .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                            .containsExactly("B농구선수")
+            );
+        }
+
+        @Test
+        void 연도_미입력시_필터에_맞는_가장_최근_종료_대회의_연도를_쓴다() {
+            // when: 학교B 축구는 2024년 대회뿐이라, 전체 기준 최근 연도(2025)가 아니라 2024가 된다
+            LeagueRecentSummaryResponse response = leagueQueryService.findRecentSummary(null, 2L, SportType.SOCCER, 5, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.records())
+                            .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
+                            .containsExactly("B축구대회"),
+                    () -> assertThat(response.topScorers())
+                            .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                            .containsExactly("B축구선수")
+            );
+        }
+
+        @Test
+        void 연도별_득점왕도_학교와_종목으로_거른다() {
+            // when
+            List<TopScorerResponse> all = leagueQueryService.findTopScorersByYear(2025, null, null, 5);
+            List<TopScorerResponse> schoolA = leagueQueryService.findTopScorersByYear(2025, 1L, SportType.SOCCER, 5);
+            List<TopScorerResponse> schoolBSoccer = leagueQueryService.findTopScorersByYear(2025, 2L, SportType.SOCCER, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(all).extracting(TopScorerResponse::playerName)
+                            .containsExactly("B농구선수", "A축구선수"),
+                    () -> assertThat(schoolA).extracting(TopScorerResponse::playerName)
+                            .containsExactly("A축구선수"),
+                    () -> assertThat(schoolBSoccer).isEmpty()
+            );
+        }
     }
 
     @Nested

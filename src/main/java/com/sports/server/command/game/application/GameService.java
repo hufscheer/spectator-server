@@ -5,7 +5,6 @@ import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
-import com.sports.server.command.league.application.LeagueTopScorerService;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
@@ -29,6 +28,7 @@ import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +44,7 @@ public class GameService {
     private final GameTeamRepository gameTeamRepository;
     private final LeagueTeamRepository leagueTeamRepository;
     private final BracketService bracketService;
-    private final LeagueTopScorerService leagueTopScorerService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long register(final Long leagueId, final GameRequest.Register request, final Member administrator) {
@@ -124,7 +124,7 @@ public class GameService {
         gameRepository.delete(game);
         // 종료된 경기의 득점은 득점왕에 들어가 있으니, 경기를 지우면 다시 센다
         if (wasFinished) {
-            leagueTopScorerService.updateTopScorersForLeague(leagueId);
+            eventPublisher.publishEvent(new LeagueTopScorerRecalculationEvent(leagueId));
         }
     }
 

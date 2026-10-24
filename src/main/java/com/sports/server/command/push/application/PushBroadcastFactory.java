@@ -35,7 +35,7 @@ public class PushBroadcastFactory {
 
     private static final Set<Quarter> NOTIFIABLE_QUARTER_ENDS = Set.of(
             BasketballQuarter.FIRST_QUARTER, BasketballQuarter.SECOND_QUARTER, BasketballQuarter.THIRD_QUARTER,
-            SoccerQuarter.FIRST_HALF);
+            BasketballQuarter.FOURTH_QUARTER, SoccerQuarter.FIRST_HALF, SoccerQuarter.SECOND_HALF);
 
     private final TimelineRepository timelineRepository;
     private final PushDeviceRepository pushDeviceRepository;
@@ -88,8 +88,9 @@ public class PushBroadcastFactory {
         return Optional.empty();
     }
 
-    // 농구 4쿼터와 연장전, 축구 후반전과 연장전 종료는 곧바로 경기 종료가 이어지므로 알리지 않는다.
-    // 축구는 전반 종료만 알린다
+    // 4쿼터와 후반전 종료를 직접 기록하는 건 연장전이 이어질 때뿐이라 알린다.
+    // 정상 종료의 쿼터 종료는 이벤트 없이 자동으로 들어가 경기 종료 알림과 겹치지 않는다.
+    // 연장전 종료는 곧바로 경기 종료가 이어질 수 있어 알리지 않는다
     private boolean isNotifiableQuarterEnd(GameProgressTimeline progress) {
         return progress.getGameProgressType() == GameProgressType.QUARTER_END
                 && NOTIFIABLE_QUARTER_ENDS.contains(progress.getRecordedQuarter());
