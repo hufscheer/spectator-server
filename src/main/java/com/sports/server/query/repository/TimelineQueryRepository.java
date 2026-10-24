@@ -5,6 +5,7 @@ import com.sports.server.command.team.domain.PlayerGoalCountWithRank;
 import com.sports.server.command.timeline.domain.OwnGoalTimeline;
 import com.sports.server.command.timeline.domain.ScoreTimeline;
 import com.sports.server.command.timeline.domain.Timeline;
+import com.sports.server.query.dto.PlayerTeamGoalCount;
 import com.sports.server.query.dto.TeamTopScorerResult;
 import java.util.List;
 
@@ -73,9 +74,22 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
             "JOIN sc.player p " +
             "JOIN st.game g " +
             "WHERE g.league.id = :leagueId " +
+            "AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
             "GROUP BY p.id, p.studentNumber, p.name " +
             "HAVING SUM(st.score) > 0 " +
             "ORDER BY SUM(st.score) DESC, p.name ASC")
     List<PlayerGoalCountWithRank> findTopScorersByLeagueId(@Param("leagueId") Long leagueId, Pageable pageable);
+
+    @Query("SELECT new com.sports.server.query.dto.PlayerTeamGoalCount(" +
+            "       sc.player.id, sc.gameTeam.team.id, SUM(st.score), MAX(st.id)) " +
+            "FROM ScoreTimeline st " +
+            "JOIN st.scorer sc " +
+            "JOIN st.game g " +
+            "WHERE g.league.id = :leagueId " +
+            "AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
+            "AND sc.player.id IN :playerIds " +
+            "GROUP BY sc.player.id, sc.gameTeam.team.id")
+    List<PlayerTeamGoalCount> countLeagueGoalsByPlayerAndTeam(@Param("leagueId") Long leagueId,
+                                                              @Param("playerIds") List<Long> playerIds);
 
 }

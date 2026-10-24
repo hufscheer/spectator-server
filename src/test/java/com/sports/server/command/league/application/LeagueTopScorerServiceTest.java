@@ -115,13 +115,13 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
                     .filter(scorer -> scorer.getPlayer().getId().equals(1L))
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("선수1이 득점왕 목록에 없습니다."));
-            assertThat(player1TopScorer.getGoalCount()).isEqualTo(2); // 리그1에서만 2골
+            assertThat(player1TopScorer.getGoalCount()).isEqualTo(1); // 리그1의 종료된 경기(game2)에서만 1골
 
             LeagueTopScorer player2TopScorer = topScorers.stream()
                     .filter(scorer -> scorer.getPlayer().getId().equals(2L))
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("선수2가 득점왕 목록에 없습니다."));
-            assertThat(player2TopScorer.getGoalCount()).isEqualTo(2); // 리그1에서만 2골
+            assertThat(player2TopScorer.getGoalCount()).isEqualTo(1); // 리그1의 종료된 경기(game2)에서만 1골
         }
 
         @Test
@@ -130,7 +130,7 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
             Long leagueId = 1L;
             Long gameId = 1L;
             Long team1Id = 1L;
-            Long team1PlayerId = 1L; // 선수1: 리그1(game1, game2)에서 이미 2골
+            Long team1PlayerId = 1L; // 선수1: 리그1에서 game1(진행 중)과 game2(종료)에 1골씩, 집계에는 종료된 game2 의 1골만 들어간다
 
             Member manager = memberRepository.findMemberByEmail("john.doe@example.com").orElseThrow();
             TimelineRequest.RegisterSoccerScore ownGoalRequest = new TimelineRequest.RegisterSoccerScore(
@@ -146,7 +146,7 @@ public class LeagueTopScorerServiceTest extends ServiceTest {
                     .filter(scorer -> scorer.getPlayer().getId().equals(1L))
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("선수1이 득점왕 목록에 없습니다."));
-            assertThat(player1TopScorer.getGoalCount()).isEqualTo(2); // 자책골은 반영되지 않아 그대로 2골
+            assertThat(player1TopScorer.getGoalCount()).isEqualTo(1); // 자책골은 반영되지 않아 그대로 1골
         }
     }
 }

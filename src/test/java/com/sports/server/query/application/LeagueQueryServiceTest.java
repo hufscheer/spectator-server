@@ -26,11 +26,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 
 @Sql(scripts = "/league-fixture.sql")
 public class LeagueQueryServiceTest extends ServiceTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     LeagueQueryService leagueQueryService;
@@ -403,7 +407,31 @@ public class LeagueQueryServiceTest extends ServiceTest {
                 () -> assertThat(scorers.get(0).playerName()).isEqualTo("진승희"),
                 () -> assertThat(scorers.get(0).goalCount()).isEqualTo(5),
                 () -> assertThat(scorers.get(1).playerName()).isEqualTo("이동규"),
-                () -> assertThat(scorers.get(1).goalCount()).isEqualTo(3)
+                () -> assertThat(scorers.get(1).goalCount()).isEqualTo(3),
+                () -> assertThat(scorers.get(0).teamId()).isEqualTo(3L),
+                () -> assertThat(scorers.get(0).teamName()).isEqualTo("미컴 축구생각"),
+                () -> assertThat(scorers.get(0).logoImageUrl()).isEqualTo("https://example.com/logos/micom.png"),
+                () -> assertThat(scorers.get(2).teamId()).isEqualTo(1L),
+                () -> assertThat(scorers.get(2).teamName()).isEqualTo("경영 야생마")
+        );
+    }
+
+    @Test
+    void 리그의_상위_득점자의_팀이_삭제됐으면_팀_정보는_비어_있다() {
+        // given
+        Long leagueId = 1L;
+        jdbcTemplate.update("UPDATE teams SET is_deleted = TRUE WHERE id = 3");
+
+        // when
+        List<TopScorerResponse> scorers = leagueQueryService.findTop20ScorersByLeagueId(leagueId);
+
+        // then
+        assertAll(
+                () -> assertThat(scorers).hasSize(3),
+                () -> assertThat(scorers.get(0).teamId()).isNull(),
+                () -> assertThat(scorers.get(0).teamName()).isNull(),
+                () -> assertThat(scorers.get(0).logoImageUrl()).isNull(),
+                () -> assertThat(scorers.get(2).teamId()).isEqualTo(1L)
         );
     }
 

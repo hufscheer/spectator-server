@@ -287,6 +287,9 @@ operation::league-query-controller-test/리그_통계를_조회한다[snippets='
 
 === 리그 득점왕 조회
 
+대회 안의 경기가 종료될 때마다 순위를 다시 계산한다. 종료된 경기의 득점만 센다(진행 중인 경기, 자책골 제외).
+`teamId`, `teamName`, `logoImageUrl` 은 그 선수가 대회에서 가장 많이 득점한 팀이다(같으면 마지막으로 득점한 팀). 팀이 삭제됐으면 null 이다.
+
 operation::league-query-controller-test/리그_득점왕을_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 연도별 득점왕 조회

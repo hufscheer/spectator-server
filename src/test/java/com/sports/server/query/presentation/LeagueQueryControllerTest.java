@@ -297,9 +297,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         
         List<TopScorerResponse> responses = List.of(
-                new TopScorerResponse(1L, "진승희", "20", 1, 5),
-                new TopScorerResponse(2L, "이동규", "20", 2, 3),
-                new TopScorerResponse(3L, "이현제", "20", 3, 2)
+                new TopScorerResponse(1L, "진승희", "20", 1, 5, 1L, "경영 야생마", "https://example.com/logos/wildhorse.png"),
+                new TopScorerResponse(2L, "이동규", "20", 2, 3, 2L, "서어 뻬데뻬", "https://example.com/logos/pedro.png"),
+                new TopScorerResponse(3L, "이현제", "20", 3, 2, 1L, "경영 야생마", "https://example.com/logos/wildhorse.png")
         );
         
         given(leagueQueryService.findTop20ScorersByLeagueId(leagueId))
@@ -320,7 +320,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 입학 년도"),
                                 fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위"),
-                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("득점 수")
+                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("득점 수"),
+                                fieldWithPath("[].teamId").type(JsonFieldType.NUMBER).description("선수가 득점한 팀 ID (대회에서 가장 많이 득점한 팀, 같으면 마지막으로 득점한 팀). 팀이 삭제됐으면 null").optional(),
+                                fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("선수가 득점한 팀 이름. 팀이 삭제됐으면 null").optional(),
+                                fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING).description("선수가 득점한 팀 로고 이미지 URL. 팀이 삭제됐거나 로고가 없으면 null").optional()
                         )
                 ));
     }
@@ -642,11 +645,11 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Integer year = 2024;
         
         List<TopScorerResponse> responses = List.of(
-                new TopScorerResponse(1L, "김득점", "22", 1, 15),
-                new TopScorerResponse(2L, "이골잡이", "21", 2, 12),
-                new TopScorerResponse(3L, "박슈터", "23", 3, 10),
-                new TopScorerResponse(4L, "최킬러", "22", 4, 8),
-                new TopScorerResponse(5L, "정스트라이커", "21", 5, 7)
+                new TopScorerResponse(1L, "김득점", "22", 1, 15, null, null, null),
+                new TopScorerResponse(2L, "이골잡이", "21", 2, 12, null, null, null),
+                new TopScorerResponse(3L, "박슈터", "23", 3, 10, null, null, null),
+                new TopScorerResponse(4L, "최킬러", "22", 4, 8, null, null, null),
+                new TopScorerResponse(5L, "정스트라이커", "21", 5, 7, null, null, null)
         );
         
         given(leagueQueryService.findTopScorersByYear(year, 5))
@@ -670,7 +673,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
                                 fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위").optional(),
-                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수 (해당 연도 모든 리그 합산)")
+                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수 (해당 연도 모든 리그 합산)"),
+                                fieldWithPath("[].teamId").type(JsonFieldType.NUMBER).description("선수가 득점한 팀 ID (연도별 조회에서는 아직 항상 null)").optional(),
+                                fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("선수가 득점한 팀 이름 (연도별 조회에서는 아직 항상 null)").optional(),
+                                fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING).description("선수가 득점한 팀 로고 이미지 URL (연도별 조회에서는 아직 항상 null)").optional()
                         )
                 ));
     }

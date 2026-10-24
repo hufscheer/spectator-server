@@ -400,7 +400,7 @@ public class GameServiceTest extends ServiceTest {
             gameFixtureRepository.save(oldFinalGame);
 
             // when
-            List<Long> finalGameIds = gameService.updateGameStatusToFinish(now);
+            List<Long> finishedGameIds = gameService.updateGameStatusToFinish(now);
 
             // then
             assertAll(
@@ -414,7 +414,8 @@ public class GameServiceTest extends ServiceTest {
                             .isEqualTo(GameState.FINISHED),
                     () -> assertThat(gameFixtureRepository.findByName("오래된 경기2").orElseThrow().getGameQuarter())
                             .isEqualTo("POST_GAME"),
-                    () -> assertThat(finalGameIds).containsExactly(oldFinalGame.getId()));
+                    () -> assertThat(finishedGameIds).containsExactlyInAnyOrder(
+                            oldGame1.getId(), oldGame2.getId(), oldFinalGame.getId()));
         }
     }
 
