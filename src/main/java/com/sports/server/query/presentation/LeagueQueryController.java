@@ -83,18 +83,22 @@ public class LeagueQueryController {
     @GetMapping("/top-scorers")
     public ResponseEntity<List<TopScorerResponse>> findTopScorersByYear(
             @RequestParam(defaultValue = "2025") Integer year,
+            @RequestParam(required = false) final Long organizationId,
+            @RequestParam(required = false) final SportType sportType,
             @RequestParam(defaultValue = "5") Integer limit
     ) {
-        return ResponseEntity.ok(leagueQueryService.findTopScorersByYear(year,limit));
+        return ResponseEntity.ok(leagueQueryService.findTopScorersByYear(year, organizationId, sportType, limit));
     }
 
     @GetMapping("/recent-summary")
     public ResponseEntity<LeagueRecentSummaryResponse> findRecentSummary(
             @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) final Long organizationId,
+            @RequestParam(required = false) final SportType sportType,
             @RequestParam(defaultValue = "5") Integer recordLimit,
             @RequestParam(defaultValue = "5") Integer topScorerLimit
     ) {
-        return ResponseEntity.ok(leagueQueryService.findRecentSummary(year, recordLimit, topScorerLimit));
+        return ResponseEntity.ok(leagueQueryService.findRecentSummary(year, organizationId, sportType, recordLimit, topScorerLimit));
     }
 
     @GetMapping("/recent/games")

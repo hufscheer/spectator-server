@@ -18,6 +18,11 @@ import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.support.ServiceTest;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,6 +105,30 @@ class LeagueTopScorerRecalculationTest extends ServiceTest {
         assertThat(goalCountOf(topScorers, PLAYER_2)).isEqualTo(1);
         assertThat(goalCountOf(topScorers, PLAYER_3)).isEqualTo(1);
         assertThat(rankingOf(topScorers, PLAYER_2)).isEqualTo(rankingOf(topScorers, PLAYER_3));
+    }
+
+    @Test
+    void 같은_대회의_두_경기가_동시에_끝나도_두_경기의_득점이_모두_합산된다() throws Exception {
+        // given
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        // when
+        try {
+            CompletableFuture<Void> first = CompletableFuture.runAsync(() -> endGameAfter(start, GAME_1), executor);
+            CompletableFuture<Void> second = CompletableFuture.runAsync(() -> endGameAfter(start, GAME_2), executor);
+            start.countDown();
+            CompletableFuture.allOf(first, second).get(30, TimeUnit.SECONDS);
+        } finally {
+            executor.shutdownNow();
+        }
+
+        // then 먼저 끝난 쪽의 재집계가 나중 경기를 놓치거나 행이 겹치면 안 된다
+        List<LeagueTopScorer> topScorers = leagueTopScorerRepository.findByLeagueId(LEAGUE_ID);
+        assertThat(topScorers).hasSize(3);
+        assertThat(goalCountOf(topScorers, PLAYER_1)).isEqualTo(3);
+        assertThat(goalCountOf(topScorers, PLAYER_2)).isEqualTo(1);
+        assertThat(goalCountOf(topScorers, PLAYER_3)).isEqualTo(1);
     }
 
     @Test
@@ -225,6 +254,16 @@ class LeagueTopScorerRecalculationTest extends ServiceTest {
     private void endGame(Long gameId) {
         timelineService.register(manager, gameId, new TimelineRequest.RegisterProgress(
                 90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END));
+    }
+
+    private void endGameAfter(CountDownLatch start, Long gameId) {
+        try {
+            start.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        }
+        endGame(gameId);
     }
 
     private void cancelGameEnd(Long gameId) {

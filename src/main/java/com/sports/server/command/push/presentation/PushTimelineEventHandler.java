@@ -16,7 +16,7 @@ public class PushTimelineEventHandler {
     private final PushNotificationService pushNotificationService;
 
     @TransactionalEventListener
-    @Async("asyncThreadPool")
+    @Async("pushThreadPool")
     public void handle(TimelineCreatedEvent event) {
         try {
             pushNotificationService.notifyTimelineCreated(event);

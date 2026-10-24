@@ -7,11 +7,12 @@ import java.util.Objects;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameState;
 import com.sports.server.command.league.application.LeagueStatisticsService;
-import com.sports.server.command.league.application.LeagueTopScorerService;
 import com.sports.server.command.league.application.LeagueService;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.command.league.domain.LeagueTopScorerRecalculationEvent;
 import com.sports.server.command.league.domain.Round;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,7 @@ public class GameStatusScheduler {
 
     private final GameService gameService;
     private final LeagueStatisticsService leagueStatisticsService;
-    private final LeagueTopScorerService leagueTopScorerService;
+    private final ApplicationEventPublisher eventPublisher;
     private final LeagueService leagueService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
@@ -45,7 +46,7 @@ public class GameStatusScheduler {
                 .filter(Objects::nonNull)
                 .map(League::getId)
                 .distinct()
-                .forEach(leagueTopScorerService::updateTopScorersForLeague);
+                .forEach(this::recalculateTopScorers);
     }
 
     public void updateLeagueStatisticsIfNeeded(Game game) {
@@ -64,14 +65,19 @@ public class GameStatusScheduler {
             leagueService.updateTotalCheerCountsAndTotalTalkCount(game.getLeague().getId());
         }
         // 종료가 취소된 경기는 득점왕 집계에서 빠진다. 비우지 않고 남은 종료 경기로 다시 센다
-        leagueTopScorerService.updateTopScorersForLeague(game.getLeague().getId());
+        recalculateTopScorers(game.getLeague().getId());
     }
 
     public void refreshTopScorersIfFinished(Game game) {
         if (GameState.FINISHED != game.getState() || game.getLeague() == null) {
             return;
         }
-        leagueTopScorerService.updateTopScorersForLeague(game.getLeague().getId());
+        recalculateTopScorers(game.getLeague().getId());
+    }
+
+    // 종료가 커밋된 뒤에 센다. 트랜잭션 밖에서 부르면 바로 센다
+    private void recalculateTopScorers(Long leagueId) {
+        eventPublisher.publishEvent(new LeagueTopScorerRecalculationEvent(leagueId));
     }
 
     public void manualUpdateLeagueStatisticsForFinalGames(List<Long> gameIds) {

@@ -239,6 +239,62 @@ class PushDeviceServiceTest extends ServiceTest {
         }
 
         @Test
+        void 팔로우한_뒤_삭제된_팀은_조회에서_빠지고_교체할_때_조용히_버린다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+            pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(1L), List.of()));
+            jdbcTemplate.update("UPDATE teams SET is_deleted = 1 WHERE id = 1");
+            assertThat(pushDeviceService.findFollows(deviceKey).teamIds()).isEmpty();
+
+            // when
+            pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(1L, 2L), List.of()));
+
+            // then
+            assertThat(pushDeviceService.findFollows(deviceKey).teamIds()).containsExactly(2L);
+            Long deviceId = pushDeviceRepository.findByDeviceKey(deviceKey).orElseThrow().getId();
+            assertThat(pushFollowRepository.findAllByDeviceId(deviceId)).hasSize(1);
+        }
+
+        @Test
+        void 팔로우한_적_없는_삭제된_팀은_다른_팀과_함께여도_거부한다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+            jdbcTemplate.update("UPDATE teams SET is_deleted = 1 WHERE id = 1");
+
+            // when & then
+            assertThatThrownBy(() -> pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(1L, 2L), List.of())))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage(PushErrorMessages.FOLLOW_TEAM_NOT_FOUND);
+        }
+
+        @Test
+        void 팔로우한_뒤_삭제된_경기는_조회에서_빠지고_교체할_때_조용히_버린다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+            pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(), List.of(1L)));
+            jdbcTemplate.update("DELETE FROM games WHERE id = 1");
+            assertThat(pushDeviceService.findFollows(deviceKey).gameIds()).isEmpty();
+
+            // when
+            pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(), List.of(1L, 2L)));
+
+            // then
+            assertThat(pushDeviceService.findFollows(deviceKey).gameIds()).containsExactly(2L);
+        }
+
+        @Test
+        void 팔로우한_적_없는_삭제된_경기는_거부한다() {
+            // given
+            String deviceKey = register("token-1", PushPlatform.IOS);
+            jdbcTemplate.update("DELETE FROM games WHERE id = 1");
+
+            // when & then
+            assertThatThrownBy(() -> pushDeviceService.replaceFollows(deviceKey, new PushFollowsRequest(List.of(), List.of(1L, 2L))))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage(PushErrorMessages.FOLLOW_GAME_NOT_FOUND);
+        }
+
+        @Test
         void 학교도_함께_저장하고_조회한다() {
             // given
             String deviceKey = register("token-1", PushPlatform.IOS);

@@ -24,6 +24,9 @@ public interface GameRepository extends Repository<Game, Long> {
 
     long countByIdIn(Collection<Long> ids);
 
+    @Query("SELECT g.id FROM Game g WHERE g.id IN :ids")
+    List<Long> findExistingIds(@Param("ids") Collection<Long> ids);
+
     void delete(Game game);
 
     @Query(
