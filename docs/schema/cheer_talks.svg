@@ -95,8 +95,8 @@
 <text text-anchor="start" x="50.2" y="-931.8" font-family="Arial" font-size="14.00">filtered_at </text>
 <text text-anchor="start" x="115.57" y="-931.8" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
 <polygon fill="none" stroke="black" points="43.2,-888.8 43.2,-919.6 391.62,-919.6 391.62,-888.8 43.2,-888.8"/>
-<text text-anchor="start" x="50.2" y="-901" font-family="Arial" font-size="14.00">cheer_talk_filter_result </text>
-<text text-anchor="start" x="194.94" y="-901" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
+<text text-anchor="start" x="50.2" y="-901" font-family="Arial" font-size="14.00">cheer_talk_bot_filter_result </text>
+<text text-anchor="start" x="222.19" y="-901" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
 <polygon fill="none" stroke="black" points="43.2,-858 43.2,-888.8 391.62,-888.8 391.62,-858 43.2,-858"/>
 <text text-anchor="start" x="50.2" y="-870.2" font-family="Arial" font-size="14.00">bot_type </text>
 <text text-anchor="start" x="107.8" y="-870.2" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
