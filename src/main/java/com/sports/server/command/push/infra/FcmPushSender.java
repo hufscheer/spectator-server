@@ -7,6 +7,7 @@ import com.sports.server.command.push.domain.PushMessage;
 import com.sports.server.command.push.domain.PushRecipient;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ public class FcmPushSender implements PushSender {
     private static final Duration RETRY_BACKOFF = Duration.ofMillis(500);
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration BROADCAST_TIMEOUT = Duration.ofMinutes(2);
+    private static final Duration BLOCK_MARGIN = Duration.ofSeconds(5);
     private static final String UNREGISTERED = "UNREGISTERED";
     private static final String INVALID_ARGUMENT = "INVALID_ARGUMENT";
     private static final String INVALID_TOKEN_MESSAGE = "registration token";
@@ -33,22 +35,38 @@ public class FcmPushSender implements PushSender {
     private final WebClient webClient;
     private final FcmProperties properties;
     private final FcmAccessTokenProvider accessTokenProvider;
+    private final Duration broadcastTimeout;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public FcmPushSender(WebClient webClient, FcmProperties properties, FcmAccessTokenProvider accessTokenProvider) {
+        this(webClient, properties, accessTokenProvider, BROADCAST_TIMEOUT);
+    }
+
+    FcmPushSender(WebClient webClient, FcmProperties properties, FcmAccessTokenProvider accessTokenProvider,
+                  Duration broadcastTimeout) {
         this.webClient = webClient;
         this.properties = properties;
         this.accessTokenProvider = accessTokenProvider;
+        this.broadcastTimeout = broadcastTimeout;
     }
 
     @Override
     public List<Long> send(PushMessage message, List<PushRecipient> recipients) {
         String accessToken = accessTokenProvider.accessToken();
 
+        AtomicInteger attempted = new AtomicInteger();
+        // 시간이 다 되면 예외로 버리지 않고 거기까지 모은 무효 기기를 돌려줘 정리할 수 있게 한다
         List<Long> invalidDeviceIds = Flux.fromIterable(recipients)
-                .flatMap(recipient -> sendTo(recipient, message, accessToken), CONCURRENCY)
+                .flatMap(recipient -> {
+                    attempted.incrementAndGet();
+                    return sendTo(recipient, message, accessToken);
+                }, CONCURRENCY)
+                .take(broadcastTimeout)
                 .collectList()
-                .block(BROADCAST_TIMEOUT);
+                .block(broadcastTimeout.plus(BLOCK_MARGIN));
+        if (attempted.get() < recipients.size()) {
+            log.warn("FCM 전송 시간이 다 돼 중단합니다: 시도={}, 전체={}", attempted.get(), recipients.size());
+        }
         return invalidDeviceIds == null ? List.of() : invalidDeviceIds;
     }
 
