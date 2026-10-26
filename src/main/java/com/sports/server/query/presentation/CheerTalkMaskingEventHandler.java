@@ -32,9 +32,9 @@ public class CheerTalkMaskingEventHandler {
         String destination = DESTINATION + event.gameId();
 
         CheerTalkMaskedResponse cheerTalkMaskedResponse = cheerTalkMaskingService.maskingCheerTalk(
-                cheerTalk.getContent(), cheerTalk.getId());
+                cheerTalk.getContent(), cheerTalk.getId(), event.gameId());
 
-        if (!cheerTalkMaskedResponse.containsBadWord()) {
+        if (!cheerTalkMaskedResponse.containsBadWord() || cheerTalkMaskedResponse.blocked()) {
             return;
         }
 

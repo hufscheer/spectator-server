@@ -1,56 +1,49 @@
 package com.sports.server.command.cheertalk.application;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.sports.server.command.cheertalk.application.mapper.CheerTalkFilterResponseMapper;
-import com.sports.server.command.cheertalk.application.mapper.CheerTalkFilterResponseMapperFinder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sports.server.command.cheertalk.domain.BotType;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
+import com.sports.server.command.cheertalk.domain.CheerTalkBlockedByBotEvent;
 import com.sports.server.command.cheertalk.domain.CheerTalkBotFilterHistory;
 import com.sports.server.command.cheertalk.domain.CheerTalkBotFilterHistoryRepository;
 import com.sports.server.command.cheertalk.domain.CheerTalkBotFilterResult;
-import com.sports.server.command.cheertalk.dto.CheerTalkFilterResponse;
-import com.sports.server.command.cheertalk.infra.CheerTalkBotClient;
 import com.sports.server.common.application.EntityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CheerTalkBotFilterService {
 
-    private final CheerTalkBotClient korUnsmileClient;
-    private final CheerTalkFilterResponseMapperFinder mapperFinder;
     private final CheerTalkBotFilterHistoryRepository historyRepository;
+    private final CheerTalkService cheerTalkService;
     private final EntityUtils entityUtils;
+    private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
-     * ai 모델 이용한 응원톡 필터링 로직
-     * @return CheerTalkBotFilterResult(CLEAN or ABUSIVE)
+     * 마스킹 모델이 내용을 바꾼 응원톡을 한 트랜잭션에서 마스킹 내용으로 바꾸고, 이력을 남기고, 차단한다.
      */
-    public CheerTalkBotFilterResult filterByBot(String content, Long cheerTalkId) {
-        long startTime = System.currentTimeMillis();
-
+    @Transactional
+    public void blockMasked(Long cheerTalkId, Long gameId, String original, String masked,
+                            BotType botType, int latencyMs) {
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
+        cheerTalk.updateContent(masked);
 
-        JsonNode rawResponse = korUnsmileClient.detectAbusiveContent(content);
-        int latencyMs = (int) (System.currentTimeMillis() - startTime);
+        ObjectNode rawJson = objectMapper.createObjectNode();
+        rawJson.put("original", original);
+        rawJson.put("masked", masked);
+        historyRepository.save(new CheerTalkBotFilterHistory(
+                cheerTalk, CheerTalkBotFilterResult.ABUSIVE, botType, rawJson, latencyMs));
 
-        BotType botType = korUnsmileClient.supports();
-        CheerTalkFilterResponseMapper mapper = mapperFinder.find(botType);
+        cheerTalkService.blockByBot(cheerTalkId);
+        eventPublisher.publishEvent(new CheerTalkBlockedByBotEvent(cheerTalkId, gameId));
 
-        CheerTalkFilterResponse response = mapper.map(rawResponse, latencyMs);
-
-        CheerTalkBotFilterHistory history = new CheerTalkBotFilterHistory(
-                cheerTalk,
-                response.result(),
-                response.botType(),
-                response.rawResponse(),
-                response.latencyMs()
-        );
-        historyRepository.save(history);
-
-        return response.result();
+        log.info("AI 모델 필터링으로 응원톡 차단: cheerTalkId={}", cheerTalkId);
     }
 }

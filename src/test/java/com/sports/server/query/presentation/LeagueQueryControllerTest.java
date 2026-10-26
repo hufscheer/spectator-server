@@ -1,5 +1,6 @@
 package com.sports.server.query.presentation;
 
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.query.dto.response.LeagueCheerTalkCountResponse;
@@ -297,9 +298,9 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueId = 1L;
         
         List<TopScorerResponse> responses = List.of(
-                new TopScorerResponse(1L, "진승희", "20", 1, 5),
-                new TopScorerResponse(2L, "이동규", "20", 2, 3),
-                new TopScorerResponse(3L, "이현제", "20", 3, 2)
+                new TopScorerResponse(1L, "진승희", "20", 1, 5, 1L, "경영 야생마", "https://example.com/logos/wildhorse.png"),
+                new TopScorerResponse(2L, "이동규", "20", 2, 3, 2L, "서어 뻬데뻬", "https://example.com/logos/pedro.png"),
+                new TopScorerResponse(3L, "이현제", "20", 3, 2, 1L, "경영 야생마", "https://example.com/logos/wildhorse.png")
         );
         
         given(leagueQueryService.findTop20ScorersByLeagueId(leagueId))
@@ -320,7 +321,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 입학 년도"),
                                 fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위"),
-                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("득점 수")
+                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("득점 수"),
+                                fieldWithPath("[].teamId").type(JsonFieldType.NUMBER).description("선수가 득점한 팀 ID (대회에서 가장 많이 득점한 팀, 같으면 마지막으로 득점한 팀). 팀이 삭제됐으면 null").optional(),
+                                fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("선수가 득점한 팀 이름. 팀이 삭제됐으면 null").optional(),
+                                fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING).description("선수가 득점한 팀 로고 이미지 URL. 팀이 삭제됐거나 로고가 없으면 null").optional()
                         )
                 ));
     }
@@ -642,19 +646,21 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Integer year = 2024;
         
         List<TopScorerResponse> responses = List.of(
-                new TopScorerResponse(1L, "김득점", "22", 1, 15),
-                new TopScorerResponse(2L, "이골잡이", "21", 2, 12),
-                new TopScorerResponse(3L, "박슈터", "23", 3, 10),
-                new TopScorerResponse(4L, "최킬러", "22", 4, 8),
-                new TopScorerResponse(5L, "정스트라이커", "21", 5, 7)
+                new TopScorerResponse(1L, "김득점", "22", 1, 15, null, null, null),
+                new TopScorerResponse(2L, "이골잡이", "21", 2, 12, null, null, null),
+                new TopScorerResponse(3L, "박슈터", "23", 3, 10, null, null, null),
+                new TopScorerResponse(4L, "최킬러", "22", 4, 8, null, null, null),
+                new TopScorerResponse(5L, "정스트라이커", "21", 5, 7, null, null, null)
         );
         
-        given(leagueQueryService.findTopScorersByYear(year, 5))
+        given(leagueQueryService.findTopScorersByYear(year, 1L, SportType.SOCCER, 5))
                 .willReturn(responses);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/top-scorers")
                 .queryParam("year", String.valueOf(year))
+                .queryParam("organizationId", "1")
+                .queryParam("sportType", "SOCCER")
                 .queryParam("limit", "5")
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -663,6 +669,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("year").description("조회할 연도 (default 값 2025)"),
+                                parameterWithName("organizationId").description("조직 ID 필터 (선택사항, 학교 등)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (선택사항, SOCCER, BASKETBALL)").optional(),
                                 parameterWithName("limit").description("조회할 선수 수 (default 값 5)")
                         ),
                         responseFields(
@@ -670,7 +678,10 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].playerName").type(JsonFieldType.STRING).description("선수 이름"),
                                 fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("선수 학번"),
                                 fieldWithPath("[].ranking").type(JsonFieldType.NUMBER).description("득점 순위").optional(),
-                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수 (해당 연도 모든 리그 합산)")
+                                fieldWithPath("[].goalCount").type(JsonFieldType.NUMBER).description("총 득점 수 (해당 연도 모든 리그 합산)"),
+                                fieldWithPath("[].teamId").type(JsonFieldType.NUMBER).description("선수가 득점한 팀 ID (연도별 조회에서는 아직 항상 null)").optional(),
+                                fieldWithPath("[].teamName").type(JsonFieldType.STRING).description("선수가 득점한 팀 이름 (연도별 조회에서는 아직 항상 null)").optional(),
+                                fieldWithPath("[].logoImageUrl").type(JsonFieldType.STRING).description("선수가 득점한 팀 로고 이미지 URL (연도별 조회에서는 아직 항상 null)").optional()
                         )
                 ));
     }
@@ -689,11 +700,13 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 )
         );
 
-        given(leagueQueryService.findRecentSummary(null, 2, 2))
+        given(leagueQueryService.findRecentSummary(null, 1L, SportType.SOCCER, 2, 2))
                 .willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/leagues/recent-summary")
+                .queryParam("organizationId", "1")
+                .queryParam("sportType", "SOCCER")
                 .queryParam("recordLimit", "2")
                 .queryParam("topScorerLimit", "2")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -703,6 +716,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 .andDo(restDocsHandler.document(
                         queryParameters(
                                 parameterWithName("year").description("조회할 연도 (선택사항, 미입력 시 최근 종료 대회의 연도)").optional(),
+                                parameterWithName("organizationId").description("조직 ID 필터 (선택사항, 학교 등)").optional(),
+                                parameterWithName("sportType").description("종목 필터 (선택사항, SOCCER, BASKETBALL)").optional(),
                                 parameterWithName("recordLimit").description("대회 기록 최대 개수 (default 값 5)"),
                                 parameterWithName("topScorerLimit").description("득점왕 최대 개수 (default 값 5)")
                         ),

@@ -114,7 +114,7 @@ class CheerTalkMaskingManualTest extends ServiceTest {
         System.out.println();
 
         // when
-        cheerTalkMaskingService.maskingCheerTalk(originalContent, cheerTalkId);
+        cheerTalkMaskingService.maskingCheerTalk(originalContent, cheerTalkId, 1L);
 
         // then
         CheerTalk updatedCheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);

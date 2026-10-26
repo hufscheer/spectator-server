@@ -6,6 +6,7 @@ import com.sports.server.command.push.domain.PushMessage;
 import com.sports.server.command.push.domain.PushPlatform;
 import com.sports.server.command.push.domain.PushRecipient;
 import com.sports.server.command.push.domain.PushType;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +142,28 @@ class FcmPushSenderTest {
     }
 
     @Nested
+    @DisplayName("전송 시간이 다 되면")
+    class BroadcastTimeout {
+
+        @Test
+        void 거기까지_모은_무효_기기를_돌려준다() {
+            // given
+            PushRecipient slow = new PushRecipient(12L, "token-12", PushPlatform.IOS, "efgh5678");
+            // 첫 기기는 무효로 답하고, 둘째 기기는 끝내 답하지 않는다
+            AtomicInteger calls = new AtomicInteger();
+            RecordedExchange exchange = new RecordedExchange(request ->
+                    calls.incrementAndGet() == 1 ? failure(HttpStatus.NOT_FOUND, UNREGISTERED_BODY) : Mono.never());
+            FcmPushSender sender = sender(exchange, Duration.ofMillis(500));
+
+            // when
+            List<Long> invalid = sender.send(message, List.of(recipient, slow));
+
+            // then
+            assertThat(invalid).containsExactly(11L);
+        }
+    }
+
+    @Nested
     @DisplayName("요청 본문은")
     class Body {
 
@@ -187,9 +210,16 @@ class FcmPushSenderTest {
     }
 
     private FcmPushSender sender(RecordedExchange exchange) {
+        return sender(exchange, null);
+    }
+
+    private FcmPushSender sender(RecordedExchange exchange, Duration broadcastTimeout) {
         WebClient webClient = WebClient.builder().exchangeFunction(exchange).build();
         FcmProperties properties = new FcmProperties(true, PROJECT_ID, "{}", null);
-        return new FcmPushSender(webClient, properties, () -> "access-token");
+        if (broadcastTimeout == null) {
+            return new FcmPushSender(webClient, properties, () -> "access-token");
+        }
+        return new FcmPushSender(webClient, properties, () -> "access-token", broadcastTimeout);
     }
 
     private static Mono<ClientResponse> ok() {

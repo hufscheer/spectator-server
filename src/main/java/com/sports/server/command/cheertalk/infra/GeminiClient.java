@@ -1,6 +1,7 @@
 package com.sports.server.command.cheertalk.infra;
 
 import com.sports.server.command.cheertalk.application.MaskingClient;
+import com.sports.server.command.cheertalk.domain.BotType;
 import com.sports.server.command.cheertalk.dto.GeminiResponse;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,11 @@ public class GeminiClient implements MaskingClient {
         this.sanitizer = sanitizer;
         this.apiKey = apiKey;
         this.prompt = prompt;
+    }
+
+    @Override
+    public BotType botType() {
+        return BotType.GEMINI;
     }
 
     @Override

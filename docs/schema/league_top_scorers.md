@@ -12,11 +12,14 @@ CREATE TABLE `league_top_scorers` (
   `player_id` bigint NOT NULL,
   `ranking` int NOT NULL,
   `goal_count` int NOT NULL DEFAULT '0',
+  `team_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_LEAGUE_TOP_SCORERS_ON_LEAGUES` (`league_id`),
   KEY `FK_LEAGUE_TOP_SCORERS_ON_PLAYERS` (`player_id`),
+  KEY `FK_LEAGUE_TOP_SCORERS_ON_TEAMS` (`team_id`),
   CONSTRAINT `FK_LEAGUE_TOP_SCORERS_ON_LEAGUES` FOREIGN KEY (`league_id`) REFERENCES `leagues` (`id`),
-  CONSTRAINT `FK_LEAGUE_TOP_SCORERS_ON_PLAYERS` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`)
+  CONSTRAINT `FK_LEAGUE_TOP_SCORERS_ON_PLAYERS` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`),
+  CONSTRAINT `FK_LEAGUE_TOP_SCORERS_ON_TEAMS` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
@@ -31,6 +34,7 @@ CREATE TABLE `league_top_scorers` (
 | player_id | bigint |  | false |  |  | [players](players.md) |  |
 | ranking | int |  | false |  |  |  |  |
 | goal_count | int | 0 | false |  |  |  |  |
+| team_id | bigint |  | true |  |  | [teams](teams.md) |  |
 
 ## Constraints
 
@@ -38,6 +42,7 @@ CREATE TABLE `league_top_scorers` (
 | ---- | ---- | ---------- |
 | FK_LEAGUE_TOP_SCORERS_ON_LEAGUES | FOREIGN KEY | FOREIGN KEY (league_id) REFERENCES leagues (id) |
 | FK_LEAGUE_TOP_SCORERS_ON_PLAYERS | FOREIGN KEY | FOREIGN KEY (player_id) REFERENCES players (id) |
+| FK_LEAGUE_TOP_SCORERS_ON_TEAMS | FOREIGN KEY | FOREIGN KEY (team_id) REFERENCES teams (id) |
 | PRIMARY | PRIMARY KEY | PRIMARY KEY (id) |
 
 ## Indexes
@@ -46,6 +51,7 @@ CREATE TABLE `league_top_scorers` (
 | ---- | ---------- |
 | FK_LEAGUE_TOP_SCORERS_ON_LEAGUES | KEY FK_LEAGUE_TOP_SCORERS_ON_LEAGUES (league_id) USING BTREE |
 | FK_LEAGUE_TOP_SCORERS_ON_PLAYERS | KEY FK_LEAGUE_TOP_SCORERS_ON_PLAYERS (player_id) USING BTREE |
+| FK_LEAGUE_TOP_SCORERS_ON_TEAMS | KEY FK_LEAGUE_TOP_SCORERS_ON_TEAMS (team_id) USING BTREE |
 | PRIMARY | PRIMARY KEY (id) USING BTREE |
 
 ## Relations

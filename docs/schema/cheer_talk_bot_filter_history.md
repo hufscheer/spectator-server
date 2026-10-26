@@ -10,7 +10,7 @@ CREATE TABLE `cheer_talk_bot_filter_history` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `cheer_talk_id` bigint DEFAULT NULL,
   `filtered_at` datetime(6) NOT NULL,
-  `cheer_talk_filter_result` varchar(50) NOT NULL,
+  `cheer_talk_bot_filter_result` varchar(50) NOT NULL,
   `bot_type` varchar(50) NOT NULL,
   `raw_bot_response` json NOT NULL,
   `latency_ms` int DEFAULT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE `cheer_talk_bot_filter_history` (
 | id | bigint |  | false | auto_increment |  |  |  |
 | cheer_talk_id | bigint |  | true |  |  | [cheer_talks](cheer_talks.md) |  |
 | filtered_at | datetime(6) |  | false |  |  |  |  |
-| cheer_talk_filter_result | varchar(50) |  | false |  |  |  |  |
+| cheer_talk_bot_filter_result | varchar(50) |  | false |  |  |  |  |
 | bot_type | varchar(50) |  | false |  |  |  |  |
 | raw_bot_response | json |  | false |  |  |  |  |
 | latency_ms | int |  | true |  |  |  |  |

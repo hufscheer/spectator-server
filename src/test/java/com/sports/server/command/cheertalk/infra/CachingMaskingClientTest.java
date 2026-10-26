@@ -1,5 +1,6 @@
 package com.sports.server.command.cheertalk.infra;
 
+import com.sports.server.command.cheertalk.domain.BotType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,14 @@ class CachingMaskingClientTest {
                 List.of("ㅍㅇㅌ", "ㅎㅇㅌ", "ㅎㅇ", "ㄱㄱ", "ㄱㅅ", "ㅊㅋ", "ㄷㄷ", "ㄹㅇ", "ㅇㅈ", "ㄴㄴ", "ㅇㅇ")
         );
         client = new CachingMaskingClient(delegate, preFilter, 5L, 100L);
+    }
+
+    @Test
+    @DisplayName("botType은 delegate의 botType을 그대로 반환한다")
+    void botType_delegate_위임() {
+        when(delegate.botType()).thenReturn(BotType.OPENROUTER);
+
+        assertThat(client.botType()).isEqualTo(BotType.OPENROUTER);
     }
 
     @Test

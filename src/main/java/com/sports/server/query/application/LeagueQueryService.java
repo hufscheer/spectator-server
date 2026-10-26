@@ -10,6 +10,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
+import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.util.StudentNumber;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,6 +53,7 @@ public class LeagueQueryService {
     private final LeagueTeamQueryRepository leagueTeamQueryRepository;
     private final PlayerInfoProvider playerInfoProvider;
     private final LeagueTopScorerRepository leagueTopScorerRepository;
+    private final TeamRepository teamRepository;
 
     public List<LeagueResponse> findLeagues(LeagueQueryRequestDto queryRequestDto) {
         List<League> leagues = leagueQueryRepository.findLeagues(queryRequestDto);
@@ -71,24 +74,25 @@ public class LeagueQueryService {
         }).toList();
     }
 
-    public LeagueRecentSummaryResponse findRecentSummary(Integer year, Integer recordLimit, Integer topScorerLimit) {
+    public LeagueRecentSummaryResponse findRecentSummary(Integer year, Long organizationId, SportType sportType,
+                                                         Integer recordLimit, Integer topScorerLimit) {
         int safeRecordLimit = Math.max(recordLimit, 0);
         int safeTopScorerLimit = Math.max(topScorerLimit, 0);
 
         LocalDateTime now = LocalDateTime.now();
-        int targetYear = getTargetYear(year, now);
+        int targetYear = getTargetYear(year, organizationId, sportType, now);
         LocalDateTime yearStart = LocalDateTime.of(targetYear, 1, 1, 0, 0);
         LocalDateTime yearEnd = yearStart.plusYears(1);
 
         List<LeagueRecentSummaryResponse.LeagueRecord> records = safeRecordLimit == 0
                 ? Collections.emptyList()
-                : leagueQueryRepository.findRecentFinishedLeagues(yearStart, yearEnd, now, PageRequest.of(0, safeRecordLimit)).stream()
+                : leagueQueryRepository.findRecentFinishedLeagues(yearStart, yearEnd, now, organizationId, sportType, PageRequest.of(0, safeRecordLimit)).stream()
                 .map(LeagueRecentRecordResult::toResponse)
                 .toList();
 
         List<PlayerGoalCountWithRank> topScorerResults = safeTopScorerLimit == 0
                 ? Collections.emptyList()
-                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(targetYear, PageRequest.of(0, safeTopScorerLimit));
+                : leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(targetYear, organizationId, sportType, PageRequest.of(0, safeTopScorerLimit));
 
         Map<Long, String> unitByPlayerId = getUnitByPlayerId(topScorerResults.stream()
                 .map(PlayerGoalCountWithRank::playerId)
@@ -108,11 +112,11 @@ public class LeagueQueryService {
         return new LeagueRecentSummaryResponse(records, topScorers);
     }
 
-    private int getTargetYear(Integer year, LocalDateTime now) {
+    private int getTargetYear(Integer year, Long organizationId, SportType sportType, LocalDateTime now) {
         if (year != null) {
             return year;
         }
-        return leagueQueryRepository.findRecentFinishedLeagueYears(now, PageRequest.of(0, 1)).stream()
+        return leagueQueryRepository.findRecentFinishedLeagueYears(now, organizationId, sportType, PageRequest.of(0, 1)).stream()
                 .findFirst()
                 .orElse(now.getYear());
     }
@@ -242,12 +246,23 @@ public class LeagueQueryService {
     }
 
     public List<TopScorerResponse> findTop20ScorersByLeagueId(Long leagueId) {
-        return leagueTopScorerRepository.findByLeagueId(leagueId).stream()
-                .map(TopScorerResponse::from).toList();
+        List<LeagueTopScorer> topScorers = leagueTopScorerRepository.findByLeagueId(leagueId);
+        List<Long> teamIds = topScorers.stream()
+                .map(LeagueTopScorer::getTeamId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        // 삭제된 팀은 찾아지지 않아 팀 정보가 비어 나간다
+        Map<Long, Team> teamById = teamRepository.findAllById(teamIds).stream()
+                .collect(toMap(Team::getId, Function.identity()));
+
+        return topScorers.stream()
+                .map(topScorer -> TopScorerResponse.of(topScorer, teamById.get(topScorer.getTeamId())))
+                .toList();
     }
 
-    public List<TopScorerResponse> findTopScorersByYear(Integer year, Integer limit) {
-        List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, PageRequest.of(0, limit));
+    public List<TopScorerResponse> findTopScorersByYear(Integer year, Long organizationId, SportType sportType, Integer limit) {
+        List<PlayerGoalCountWithRank> results = leagueTopScorerRepository.findTopPlayersByYearWithTotalGoals(year, organizationId, sportType, PageRequest.of(0, limit));
 
         return results.stream()
                 .map(result -> TopScorerResponse.of(result.playerId(), result.studentNumber(), result.playerName(), result.goalCount().intValue(), result.rank().intValue()))

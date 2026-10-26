@@ -89,12 +89,12 @@ VALUES (1, 1, 2, 1, 2),
        (7, 2, 4, 4, 2);
 
 
-INSERT INTO league_top_scorers (id, league_id, player_id, ranking, goal_count)
-VALUES (1, 1, 1, 1, 5),
-       (2, 1, 2, 2, 3),
-       (3, 1, 3, 3, 2),
-       (4, 2, 4, 1, 4),
-       (5, 2, 5, 2, 2);
+INSERT INTO league_top_scorers (id, league_id, player_id, ranking, goal_count, team_id)
+VALUES (1, 1, 1, 1, 5, 3),
+       (2, 1, 2, 2, 3, 3),
+       (3, 1, 3, 3, 2, 1),
+       (4, 2, 4, 1, 4, 4),
+       (5, 2, 5, 2, 2, 4);
 
 
 INSERT INTO cheer_talks (id, created_at, content, block_status, game_team_id)

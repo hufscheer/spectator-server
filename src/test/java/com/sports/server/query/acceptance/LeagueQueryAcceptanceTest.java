@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.league.domain.LeagueProgress;
+import com.sports.server.command.league.domain.SportType;
 import com.sports.server.query.dto.response.*;
 import com.sports.server.support.AcceptanceTest;
 import io.restassured.RestAssured;
@@ -228,6 +229,56 @@ public class LeagueQueryAcceptanceTest extends AcceptanceTest {
                         .extracting(LeagueRecentSummaryResponse.TopScorer::totalGoals)
                         .containsExactly(4, 2)
         );
+    }
+
+    @Nested
+    @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
+    @Sql(scripts = "/recent-summary-filter-fixture.sql")
+    class FindRecentSummaryByOrganizationAndSportType {
+
+        @Test
+        void 학교와_종목을_주면_그_학교_그_종목의_기록과_득점왕만_준다() {
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .param("organizationId", 2)
+                    .param("sportType", SportType.SOCCER.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues/recent-summary")
+                    .then().log().all()
+                    .extract();
+
+            // then
+            LeagueRecentSummaryResponse actual = toResponse(response, LeagueRecentSummaryResponse.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual.records())
+                            .extracting(LeagueRecentSummaryResponse.LeagueRecord::name)
+                            .containsExactly("B축구대회"),
+                    () -> assertThat(actual.topScorers())
+                            .extracting(LeagueRecentSummaryResponse.TopScorer::playerName)
+                            .containsExactly("B축구선수")
+            );
+        }
+
+        @Test
+        void 연도별_득점왕도_학교와_종목으로_거른다() {
+            // when
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .param("year", 2025)
+                    .param("organizationId", 1)
+                    .param("sportType", SportType.SOCCER.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .get("/leagues/top-scorers")
+                    .then().log().all()
+                    .extract();
+
+            // then
+            List<TopScorerResponse> actual = toResponses(response, TopScorerResponse.class);
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(actual).extracting(TopScorerResponse::playerName).containsExactly("A축구선수")
+            );
+        }
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.sports.server.command.cheertalk.infra;
 
 import com.sports.server.command.cheertalk.application.MaskingClient;
+import com.sports.server.command.cheertalk.domain.BotType;
 import com.sports.server.common.infra.openrouter.OpenRouterChatCaller;
 import com.sports.server.common.infra.openrouter.OpenRouterChatResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,11 @@ public class OpenRouterMaskingClient implements MaskingClient {
     }
 
     @Override
+    public BotType botType() {
+        return BotType.OPENROUTER;
+    }
+
+    @Override
     public String mask(String content) {
         String fullInput = systemPrompt + "\n" + content;
         Map<String, Object> body = Map.of(
@@ -53,7 +59,7 @@ public class OpenRouterMaskingClient implements MaskingClient {
             }
             return sanitizer.sanitize(content, response.getText());
         } catch (Exception e) {
-            log.error("OpenRouter masking failed: {}", e.getMessage());
+            log.warn("OpenRouter masking failed: {}", e.getMessage());
             return null;
         }
     }

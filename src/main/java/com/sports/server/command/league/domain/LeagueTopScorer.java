@@ -27,11 +27,16 @@ public class LeagueTopScorer extends BaseEntity<LeagueTopScorer> {
     @Column(name = "goal_count", nullable = false)
     private Integer goalCount;
 
-    public LeagueTopScorer(League league, Player player, Integer ranking, Integer goalCount) {
+    // 팀은 소프트 삭제라 연관으로 두면 삭제된 팀을 깨울 때 조회가 터진다. id 만 두고 읽을 때 따로 찾는다
+    @Column(name = "team_id")
+    private Long teamId;
+
+    public LeagueTopScorer(League league, Player player, Integer ranking, Integer goalCount, Long teamId) {
         this.league = league;
         this.player = player;
         this.ranking = ranking;
         this.goalCount = goalCount;
+        this.teamId = teamId;
 
         league.addTopScorer(this);
         player.addLeagueTopScorer(this);

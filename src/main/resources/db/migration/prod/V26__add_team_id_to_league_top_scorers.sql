@@ -1,0 +1,3 @@
+ALTER TABLE league_top_scorers ADD COLUMN team_id BIGINT NULL;
+ALTER TABLE league_top_scorers
+    ADD CONSTRAINT FK_LEAGUE_TOP_SCORERS_ON_TEAMS FOREIGN KEY (team_id) REFERENCES teams (id);
