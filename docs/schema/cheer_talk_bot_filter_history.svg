@@ -27,8 +27,8 @@
 <text text-anchor="start" x="53.2" y="-555.2" font-family="Arial" font-size="14.00">filtered_at </text>
 <text text-anchor="start" x="118.57" y="-555.2" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
 <polygon fill="none" stroke="black" points="46.2,-512.2 46.2,-543 394.62,-543 394.62,-512.2 46.2,-512.2"/>
-<text text-anchor="start" x="53.2" y="-524.4" font-family="Arial" font-size="14.00">cheer_talk_filter_result </text>
-<text text-anchor="start" x="197.94" y="-524.4" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
+<text text-anchor="start" x="53.2" y="-524.4" font-family="Arial" font-size="14.00">cheer_talk_bot_filter_result </text>
+<text text-anchor="start" x="225.19" y="-524.4" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
 <polygon fill="none" stroke="black" points="46.2,-481.4 46.2,-512.2 394.62,-512.2 394.62,-481.4 46.2,-481.4"/>
 <text text-anchor="start" x="53.2" y="-493.6" font-family="Arial" font-size="14.00">bot_type </text>
 <text text-anchor="start" x="110.8" y="-493.6" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>

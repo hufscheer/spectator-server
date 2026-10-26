@@ -202,8 +202,8 @@
 <text text-anchor="start" x="404.08" y="-2836" font-family="Arial" font-size="14.00">filtered_at </text>
 <text text-anchor="start" x="469.45" y="-2836" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
 <polygon fill="none" stroke="black" points="397.08,-2793 397.08,-2823.8 745.5,-2823.8 745.5,-2793 397.08,-2793"/>
-<text text-anchor="start" x="404.08" y="-2805.2" font-family="Arial" font-size="14.00">cheer_talk_filter_result </text>
-<text text-anchor="start" x="548.81" y="-2805.2" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
+<text text-anchor="start" x="404.08" y="-2805.2" font-family="Arial" font-size="14.00">cheer_talk_bot_filter_result </text>
+<text text-anchor="start" x="576.06" y="-2805.2" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>
 <polygon fill="none" stroke="black" points="397.08,-2762.2 397.08,-2793 745.5,-2793 745.5,-2762.2 397.08,-2762.2"/>
 <text text-anchor="start" x="404.08" y="-2774.4" font-family="Arial" font-size="14.00">bot_type </text>
 <text text-anchor="start" x="461.68" y="-2774.4" font-family="Arial" font-size="14.00" fill="#666666">[varchar(50)]</text>

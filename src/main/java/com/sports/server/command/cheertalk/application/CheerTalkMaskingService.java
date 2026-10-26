@@ -9,15 +9,19 @@ import org.springframework.stereotype.Service;
 public class CheerTalkMaskingService {
 
     private final MaskingClient maskingClient;
-    private final CheerTalkContentUpdater cheerTalkContentUpdater;
+    private final CheerTalkBotFilterService cheerTalkBotFilterService;
 
-    public CheerTalkMaskedResponse maskingCheerTalk(String content, Long cheerTalkId) {
+    public CheerTalkMaskedResponse maskingCheerTalk(String content, Long cheerTalkId, Long gameId) {
+        long startTime = System.currentTimeMillis();
         String maskedResponse = maskingClient.mask(content);
+        int latencyMs = (int) (System.currentTimeMillis() - startTime);
+
         if (content.equals(maskedResponse)) {
-            return new CheerTalkMaskedResponse(false, maskedResponse);
+            return new CheerTalkMaskedResponse(false, maskedResponse, false);
         }
 
-        cheerTalkContentUpdater.updateContent(cheerTalkId, maskedResponse);
-        return new CheerTalkMaskedResponse(true, maskedResponse);
+        cheerTalkBotFilterService.blockMasked(
+                cheerTalkId, gameId, content, maskedResponse, maskingClient.botType(), latencyMs);
+        return new CheerTalkMaskedResponse(true, maskedResponse, true);
     }
 }

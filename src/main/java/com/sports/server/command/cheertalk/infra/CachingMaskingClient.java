@@ -3,6 +3,7 @@ package com.sports.server.command.cheertalk.infra;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.sports.server.command.cheertalk.application.MaskingClient;
+import com.sports.server.command.cheertalk.domain.BotType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
@@ -36,6 +37,11 @@ public class CachingMaskingClient implements MaskingClient {
                 .maximumSize(maxSize)
                 .expireAfterWrite(Duration.ofMinutes(ttlMinutes))
                 .build();
+    }
+
+    @Override
+    public BotType botType() {
+        return delegate.botType();
     }
 
     @Override
