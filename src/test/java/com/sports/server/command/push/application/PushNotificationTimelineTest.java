@@ -323,8 +323,9 @@ class PushNotificationTimelineTest extends ServiceTest {
             assertThat(sentMessage().title()).isEqualTo("🏀 " + quarter.getDisplayName() + " 종료");
         }
 
+        // 4쿼터 종료를 직접 기록하는 건 연장전이 이어질 때뿐이다
         @Test
-        void 사쿼터_종료는_보내지_않는다() {
+        void 사쿼터_종료는_보낸다() {
             // given
             advanceBasketballTo(BasketballQuarter.FOURTH_QUARTER);
 
@@ -332,7 +333,7 @@ class PushNotificationTimelineTest extends ServiceTest {
             endBasketballQuarter(BasketballQuarter.FOURTH_QUARTER);
 
             // then
-            verify(pushSender, never()).send(any(), anyList());
+            assertThat(sentMessage().title()).isEqualTo("🏀 4쿼터 종료");
         }
 
         // 연장전은 쿼터 종료를 따로 기록할 수 없고(canHaveQuarterEnd=false) 경기 종료로만 끝난다
@@ -373,9 +374,34 @@ class PushNotificationTimelineTest extends ServiceTest {
         }
 
         @Test
-        void 축구의_후반전_종료는_보내지_않는다() {
+        void 축구의_후반전_종료는_스코어와_함께_보낸다() {
+            // given
+            jdbcTemplate.update("UPDATE game_teams SET score = 2 WHERE id = 3");
+            jdbcTemplate.update("UPDATE game_teams SET score = 2 WHERE id = 4");
+
+            // when
             timelineService.register(manager, SOCCER_SECOND_HALF, new TimelineRequest.RegisterProgress(
                     90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_END));
+
+            // then
+            PushMessage message = sentMessage();
+            assertThat(message.title()).isEqualTo("⚽ 후반 종료");
+            assertThat(message.body()).isEqualTo("팀A 2 : 2 팀B");
+            assertThat(message.data()).containsEntry("type", "QUARTER_END");
+        }
+
+        @Test
+        void 축구의_연장전_종료는_보내지_않는다() {
+            // given
+            timelineService.register(manager, SOCCER_SECOND_HALF, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.QUARTER_END));
+            timelineService.register(manager, SOCCER_SECOND_HALF, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.EXTRA_TIME.name(), GameProgressType.QUARTER_START));
+            clearInvocations(pushSender);
+
+            // when
+            timelineService.register(manager, SOCCER_SECOND_HALF, new TimelineRequest.RegisterProgress(
+                    120, SportType.SOCCER, SoccerQuarter.EXTRA_TIME.name(), GameProgressType.QUARTER_END));
 
             // then
             verify(pushSender, never()).send(any(), anyList());
@@ -422,6 +448,17 @@ class PushNotificationTimelineTest extends ServiceTest {
             assertThat(sentRecipients()).extracting(PushRecipient::token)
                     .containsExactlyInAnyOrder(TEAM_FOLLOWER_TOKEN, GAME_FOLLOWER_TOKEN, BOTH_FOLLOWER_TOKEN,
                             ORGANIZATION_AND_TEAM_FOLLOWER_TOKEN);
+        }
+
+        // 정상 종료는 후반 종료 기록이 알림 없이 자동으로 들어간다
+        @Test
+        void 후반전에서_바로_끝내면_후반_종료_알림_없이_경기_종료_하나만_보낸다() {
+            // when
+            timelineService.register(manager, SOCCER_LEADING_TWO_TO_ONE, new TimelineRequest.RegisterProgress(
+                    90, SportType.SOCCER, SoccerQuarter.SECOND_HALF.name(), GameProgressType.GAME_END));
+
+            // then
+            assertThat(sentMessage().title()).startsWith("⚽ 경기 종료");
         }
 
         @Test

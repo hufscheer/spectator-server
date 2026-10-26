@@ -24,9 +24,12 @@ import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.NotFoundException;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -73,11 +76,20 @@ public class PushDeviceService {
     public PushFollowsResponse findFollows(String deviceKey) {
         PushDevice device = getDevice(deviceKey);
         List<PushFollow> follows = pushFollowRepository.findAllByDeviceId(device.getId());
+        // 팔로우한 대상이 나중에 지워질 수 있어, 남아 있는 것만 돌려준다
         return new PushFollowsResponse(
-                targetIdsOf(follows, FollowTargetType.TEAM),
-                targetIdsOf(follows, FollowTargetType.GAME),
-                targetIdsOf(follows, FollowTargetType.ORGANIZATION)
+                existingOf(targetIdsOf(follows, FollowTargetType.TEAM), teamRepository::findExistingIds),
+                existingOf(targetIdsOf(follows, FollowTargetType.GAME), gameRepository::findExistingIds),
+                existingOf(targetIdsOf(follows, FollowTargetType.ORGANIZATION), organizationRepository::findExistingIds)
         );
+    }
+
+    private List<Long> existingOf(List<Long> ids, Function<Collection<Long>, List<Long>> finder) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        Set<Long> existing = new HashSet<>(finder.apply(ids));
+        return ids.stream().filter(existing::contains).toList();
     }
 
     private List<Long> targetIdsOf(List<PushFollow> follows, FollowTargetType type) {
@@ -93,13 +105,48 @@ public class PushDeviceService {
         Set<Long> teamIds = new LinkedHashSet<>(request.teamIds());
         Set<Long> gameIds = new LinkedHashSet<>(request.gameIds());
         Set<Long> organizationIds = new LinkedHashSet<>(request.organizationIds());
-        validateFollows(teamIds, gameIds, organizationIds);
+        validateLimits(teamIds, gameIds, organizationIds);
+
+        // 팔로우한 뒤 지워진 대상은 조용히 빼고 저장한다. 낡은 아이디 때문에 기기가 영영 잠기면 안 된다.
+        // 팔로우한 적도 없고 존재하지도 않는 아이디는 그대로 400 이다
+        List<PushFollow> current = pushFollowRepository.findAllByDeviceId(device.getId());
+        Set<Long> existingTeamIds = keepExisting(teamIds, followedIdsOf(current, FollowTargetType.TEAM),
+                teamRepository::findExistingIds, FOLLOW_TEAM_NOT_FOUND);
+        Set<Long> existingGameIds = keepExisting(gameIds, followedIdsOf(current, FollowTargetType.GAME),
+                gameRepository::findExistingIds, FOLLOW_GAME_NOT_FOUND);
+        Set<Long> existingOrganizationIds = keepExisting(organizationIds,
+                followedIdsOf(current, FollowTargetType.ORGANIZATION),
+                organizationRepository::findExistingIds, FOLLOW_ORGANIZATION_NOT_FOUND);
 
         pushFollowRepository.deleteAllByDeviceId(device.getId());
-        pushFollowRepository.saveAll(followsOf(device, teamIds, gameIds, organizationIds));
+        pushFollowRepository.saveAll(
+                followsOf(device, existingTeamIds, existingGameIds, existingOrganizationIds));
     }
 
-    private void validateFollows(Set<Long> teamIds, Set<Long> gameIds, Set<Long> organizationIds) {
+    private Set<Long> followedIdsOf(List<PushFollow> follows, FollowTargetType type) {
+        return follows.stream()
+                .filter(follow -> follow.getTargetType() == type)
+                .map(PushFollow::getTargetId)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Long> keepExisting(Set<Long> requested, Set<Long> followed,
+                                   Function<Collection<Long>, List<Long>> finder, String notFoundMessage) {
+        if (requested.isEmpty()) {
+            return requested;
+        }
+        Set<Long> existing = new HashSet<>(finder.apply(requested));
+        boolean unknownNewTarget = requested.stream()
+                .anyMatch(id -> !existing.contains(id) && !followed.contains(id));
+        if (unknownNewTarget) {
+            throw new BadRequestException(notFoundMessage);
+        }
+        return requested.stream()
+                .filter(existing::contains)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private void validateLimits(Set<Long> teamIds, Set<Long> gameIds, Set<Long> organizationIds) {
         if (teamIds.size() > MAX_FOLLOWS_PER_TYPE) {
             throw new BadRequestException(TEAM_FOLLOW_LIMIT_EXCEEDED);
         }
@@ -108,15 +155,6 @@ public class PushDeviceService {
         }
         if (organizationIds.size() > MAX_ORGANIZATION_FOLLOWS) {
             throw new BadRequestException(ORGANIZATION_FOLLOW_LIMIT_EXCEEDED);
-        }
-        if (teamRepository.countByIdIn(teamIds) != teamIds.size()) {
-            throw new BadRequestException(FOLLOW_TEAM_NOT_FOUND);
-        }
-        if (gameRepository.countByIdIn(gameIds) != gameIds.size()) {
-            throw new BadRequestException(FOLLOW_GAME_NOT_FOUND);
-        }
-        if (organizationRepository.countByIdIn(organizationIds) != organizationIds.size()) {
-            throw new BadRequestException(FOLLOW_ORGANIZATION_NOT_FOUND);
         }
     }
 

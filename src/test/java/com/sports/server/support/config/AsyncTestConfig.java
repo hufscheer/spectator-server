@@ -18,7 +18,7 @@ public class AsyncTestConfig {
 
         @Override
         public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-            if (beanName.equals("asyncThreadPool")) {
+            if (beanName.equals("asyncThreadPool") || beanName.equals("pushThreadPool")) {
                 return new SyncTaskExecutor();
             }
             return bean;

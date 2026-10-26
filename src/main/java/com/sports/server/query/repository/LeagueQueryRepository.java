@@ -45,10 +45,14 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
                     + "JOIN LeagueStatistics ls ON ls.league = l "
                     + "WHERE l.endAt < :now "
                     + "AND ls.firstWinnerTeam IS NOT NULL "
+                    + "AND (:organizationId IS NULL OR l.organization.id = :organizationId) "
+                    + "AND (:sportType IS NULL OR l.sportType = :sportType) "
                     + "ORDER BY l.startAt DESC, l.id DESC"
     )
     List<Integer> findRecentFinishedLeagueYears(
             @Param("now") LocalDateTime now,
+            @Param("organizationId") Long organizationId,
+            @Param("sportType") SportType sportType,
             Pageable pageable
     );
 
@@ -80,12 +84,16 @@ public interface LeagueQueryRepository extends Repository<League, Long>, LeagueQ
                     + "AND l.startAt < :yearEnd "
                     + "AND l.endAt < :now "
                     + "AND ls.firstWinnerTeam IS NOT NULL "
+                    + "AND (:organizationId IS NULL OR l.organization.id = :organizationId) "
+                    + "AND (:sportType IS NULL OR l.sportType = :sportType) "
                     + "ORDER BY l.startAt DESC, l.id DESC"
     )
     List<LeagueRecentRecordResult> findRecentFinishedLeagues(
             @Param("yearStart") LocalDateTime yearStart,
             @Param("yearEnd") LocalDateTime yearEnd,
             @Param("now") LocalDateTime now,
+            @Param("organizationId") Long organizationId,
+            @Param("sportType") SportType sportType,
             Pageable pageable
     );
 }
