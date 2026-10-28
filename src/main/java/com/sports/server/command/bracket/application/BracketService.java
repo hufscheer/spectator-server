@@ -78,13 +78,14 @@ public class BracketService {
     }
 
     /**
-     * 대진표가 없으면 준결승이 어느 경기인지 알 수 없어 참가팀을 검증할 수 없다.
-     * 건너뛰면 준결승을 한 경기도 안 치른 대회에서 아무 두 팀으로 3·4위전이 만들어진다.
+     * 대진표가 없으면 준결승이 어느 경기인지 알 수 없어 참가팀을 검증하지 않고 통과시킨다.
+     * 매니저 데스크탑에서 대진표 UI 를 없애기로 해 대진표 없는 대회가 기본이 됐고, 그런 대회도 3·4위전을 만들 수 있어야 한다.
+     * 그래서 대진표가 없으면 준결승 패자가 아닌 두 팀으로도 3·4위전이 만들어진다.
      */
     public void validateThirdPlaceContenders(final League league, final Long teamId1, final Long teamId2) {
         List<BracketMatch> matches = bracketMatchRepository.findAllByLeagueId(league.getId());
         if (matches.isEmpty()) {
-            throw new BadRequestException(BracketErrorMessages.THIRD_PLACE_REQUIRES_BRACKET);
+            return;
         }
         Bracket.from(matches).validateThirdPlaceContenders(teamId1, teamId2);
     }
