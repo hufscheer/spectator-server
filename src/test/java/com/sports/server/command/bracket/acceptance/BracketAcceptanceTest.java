@@ -243,7 +243,7 @@ public class BracketAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 대진표가_없으면_3_4위전_경기를_만들_수_없다() {
+    void 대진표가_없으면_진출팀_검증_없이_3_4위전_경기가_생성된다() {
         // given (리그 7: 3·4위전 옵션만 켜져 있고 대진표가 없다)
         Long leagueId = 7L;
         configureMockJwtForEmail(MOCK_EMAIL);
@@ -258,9 +258,43 @@ public class BracketAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("message"))
-                .isEqualTo(BracketErrorMessages.THIRD_PLACE_REQUIRES_BRACKET);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long gameId = Long.parseLong(response.body().asString().trim());
+        assertThat(RestAssured.given().get("/games/{gameId}", gameId)
+                .then().extract().jsonPath().getBoolean("thirdPlaceMatch")).isTrue();
+    }
+
+    @Test
+    void 대진표가_없으면_일반_경기를_진출팀_검증_없이_3_4위전으로_바꿀_수_있다() {
+        // given (리그 7: 대진표가 없다)
+        Long leagueId = 7L;
+        configureMockJwtForEmail(MOCK_EMAIL);
+
+        Long gameId = Long.parseLong(RestAssured.given()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new GameRequest.Register("4강", 4, "경기전", "SCHEDULED",
+                        LocalDateTime.of(2025, 8, 12, 18, 0), null,
+                        new GameRequest.TeamLineupRequest(1L, List.of()),
+                        new GameRequest.TeamLineupRequest(2L, List.of()),
+                        false))
+                .post("/leagues/{leagueId}/games", leagueId)
+                .then().extract().body().asString().trim());
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new GameRequest.Update("3·4위전", 4,
+                        LocalDateTime.of(2025, 8, 12, 18, 0), null, true))
+                .put("/leagues/{leagueId}/{gameId}", leagueId, gameId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(RestAssured.given().get("/games/{gameId}", gameId)
+                .then().extract().jsonPath().getBoolean("thirdPlaceMatch")).isTrue();
     }
 
     @Test
