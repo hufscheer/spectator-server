@@ -87,6 +87,9 @@ dependencies {
 
     // image normalization (team logo aspect ratio fix)
     implementation 'net.coobird:thumbnailator:0.4.20'
+    // 정규화본을 WebP 로 쓴다. ImageIO 에는 WebP 인코더가 없다. libwebp 를 묶은 네이티브(JNI)라
+    // glibc 용 .so 지만 eclipse-temurin:17-jre-alpine(musl, amd64)에서도 그대로 로드된다(2026-11-07 컨테이너 실측)
+    implementation 'com.github.usefulness:webp-imageio:0.11.0'
 
     // NL 파일 추출 (xlsx 셀 읽기, PDF 텍스트 레이어 추출)
     implementation 'org.dhatim:fastexcel-reader:0.20.2'

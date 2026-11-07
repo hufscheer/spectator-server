@@ -13,6 +13,7 @@ import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.util.LogoImageNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -202,10 +203,22 @@ public class TeamService {
             return null;
         }
         String convertedUrl = changeLogoImageUrlToBeSaved(requestLogoImageUrl);
-        if (convertedUrl.equals(team.getLogoImageUrl())) {
+        if (convertedUrl.equals(team.getLogoImageUrl()) || isNormalizedVersionOf(convertedUrl, team.getLogoImageUrl())) {
             return null;
         }
         return convertedUrl;
+    }
+
+    /**
+     * 정규화가 끝나면 팀 로고는 새 키({@code normalized/...})로 바뀌고 원본은 지워진다. 화면이 업로드 직후 받은
+     * 원본 주소를 다시 보내도 같은 로고이니 바꾸지 않는다. 바꾸면 지워진 원본을 가리키게 된다.
+     */
+    private boolean isNormalizedVersionOf(String requestedUrl, String currentUrl) {
+        if (currentUrl == null || !requestedUrl.startsWith(replacePrefix)) {
+            return false;
+        }
+        String requestedKey = requestedUrl.substring(replacePrefix.length());
+        return currentUrl.equals(replacePrefix + LogoImageNormalizer.normalizedKeyOf(requestedKey));
     }
 
     private Unit findUnit(String unitName, Long organizationId) {
