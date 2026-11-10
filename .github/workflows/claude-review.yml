@@ -1,0 +1,135 @@
+# Claude 1차 리뷰. 사람 리뷰(Jin409)를 대신하지 않고, 머지는 그대로 사람 리뷰 후 squash 머지.
+# 액션 문서: https://github.com/anthropics/claude-code-action (docs/usage.md, docs/solutions.md)
+#
+# 언제 도는가
+#   - PR 이 열릴 때(opened), 드래프트가 리뷰 준비로 바뀔 때(ready_for_review) 1회. 커밋마다(synchronize)는 돌지 않는다.
+#   - PR 코멘트에 @claude 가 있고 작성자가 OWNER, MEMBER, COLLABORATOR 일 때.
+#     issue_comment 는 기본 브랜치(main)의 워크플로 파일로 돌기 때문에, 이 파일이 main 에 릴리스된 뒤부터 동작한다.
+# 건너뛰는 PR: 드래프트, Dependabot, 릴리스(release/*, "release:"), main -> develop sync.
+# 비밀키(ANTHROPIC_API_KEY)가 없으면 review 잡은 실패하지 않고 skipped 로 끝난다.
+# 끄는 법: Actions 탭에서 이 워크플로를 Disable 하거나, 레포 secret ANTHROPIC_API_KEY 를 지운다.
+name: Claude Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+jobs:
+  gate:
+    if: >-
+      (github.event_name == 'pull_request'
+        && !github.event.pull_request.draft
+        && github.event.pull_request.user.login != 'dependabot[bot]'
+        && !startsWith(github.event.pull_request.head.ref, 'release/')
+        && !startsWith(github.event.pull_request.title, 'release:')
+        && github.event.pull_request.head.ref != 'main'
+        && !startsWith(github.event.pull_request.head.ref, 'sync/')
+        && !startsWith(github.event.pull_request.head.ref, 'chore/sync-main')
+        && !contains(github.event.pull_request.title, 'main → develop'))
+      || (github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
+        && contains(github.event.comment.body, '@claude')
+        && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      has_key: ${{ steps.check.outputs.has_key }}
+    steps:
+      - name: ANTHROPIC_API_KEY 등록 여부 확인
+        id: check
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::ANTHROPIC_API_KEY secret 이 없어 Claude 리뷰를 건너뜁니다."
+          fi
+
+  review:
+    needs: gate
+    if: needs.gate.outputs.has_key == 'true'
+    # 잡 단위로 둔다. 워크플로 단위로 두면 @claude 가 없는 코멘트 실행이 대기 중인 리뷰를 밀어낸다.
+    concurrency:
+      group: claude-review-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    # 1건당 비용 상한: 시간 15분, 턴 30, 금액 $2 (claude_args 의 --max-budget-usd)
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          # 코멘트 트리거는 기본 브랜치가 체크아웃되므로 PR 머리 커밋을 직접 받는다.
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || '' }}
+
+      - uses: anthropics/claude-code-action@4fa93a88de49bbef68b10eb15aabedf28ca0e1ed # v1.0.271
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Claude GitHub App 대신 이 잡의 GITHUB_TOKEN(contents: read, pull-requests: write)으로 코멘트만 단다.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: |
+            --model claude-opus-5-5
+            --effort medium
+            --max-turns 30
+            --max-budget-usd 2
+            --allowedTools "Read,Grep,Glob,mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
+            --disallowedTools "Edit,Write,NotebookEdit,WebFetch,WebSearch"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ env.PR_NUMBER }}
+            EVENT: ${{ github.event_name }}
+            REQUEST: ${{ github.event.comment.body }}
+
+            당신은 이 레포(훕치치 백엔드, Spring Boot 3.1 / Java 17 / JPA / QueryDSL / Flyway / MySQL, CQRS: command 와 query 패키지)의 1차 리뷰어입니다.
+            PR 코드는 현재 작업 디렉터리에 체크아웃되어 있습니다. 코드를 고치거나 커밋하지 말고 GitHub 코멘트로만 답하세요.
+
+            REQUEST 가 비어 있으면 PR 전체를 리뷰합니다. 비어 있지 않으면 그 코멘트의 @claude 요청에 답하되, 아래 규칙은 똑같이 지킵니다.
+
+            진행 순서
+            1. `gh pr view ${{ env.PR_NUMBER }}` 와 `gh pr diff ${{ env.PR_NUMBER }}` 로 변경을 파악합니다.
+            2. 판단에 필요한 주변 코드는 Read, Grep, Glob 으로 확인합니다. 확인하지 않은 동작을 단정하지 않습니다.
+            3. 결함은 해당 줄에 `mcp__github_inline_comment__create_inline_comment` (confirmed: true) 로 하나씩 답니다.
+            4. 마지막에 `gh pr comment ${{ env.PR_NUMBER }} --body "..."` 로 요약 코멘트를 1개만 답니다.
+               결함이 없으면 "근거가 확실한 결함은 찾지 못했습니다." 한 줄과 확인한 범위만 적습니다.
+            리뷰 내용을 최종 메시지로만 남기지 말고 반드시 GitHub 코멘트로 남기세요.
+
+            무엇을 먼저 보는가 (근거가 확실한 결함부터, 각 지적에 file:line 과 왜 문제인지, 고칠 방향 한 줄)
+            - 정확성: 잘못된 조건, null 처리, 경계값, 응답 필드 누락, 기존 동작 회귀.
+            - 권한 검사: 매니저가 League, Game, Team, Player(ManagedEntity) 를 바꾸거나 매니저 전용으로 읽는 서비스 메서드는
+              `PermissionValidator.checkPermission(entity, manager)` 로 `isManagedBy` 를 확인해야 합니다. 빠졌으면 지적합니다.
+            - 트랜잭션과 이벤트: `@TransactionalEventListener` + `@Async` 핸들러는 원 트랜잭션이 끝난 뒤 다른 스레드에서 돕니다.
+              이벤트에 JPA 엔티티를 담으면 detached 라 변경이 저장되지 않고 지연 로딩이 실패합니다.
+              `ReportEvent(Long reportId)` 처럼 ID 나 값만 담고 핸들러에서 다시 조회하는지 봅니다.
+            - soft delete: Team, League 는 `@SQLDelete` + `@Where(is_deleted = 0)` 입니다. 지워진 팀을 가리키는 game_teams,
+              league_teams 연관을 지연 로딩하면 EntityNotFoundException(500) 이 납니다. 이 연관을 새로 따라가면 null 처리나
+              left join fetch 를 하는지 봅니다.
+            - N+1: query 패키지(QueryDSL, Spring Data)와 서비스의 반복문 안 지연 로딩이나 쿼리 호출, 빠진 fetch join,
+              컬렉션 fetch join 과 페이징을 함께 써서 생기는 메모리 페이징.
+            - Flyway (`src/main/resources/db/migration/prod` 가 실제 적용 위치, `archive` 는 보관용):
+              이미 머지된 V 파일 수정은 체크섬이 바뀌어 배포가 실패하므로 반드시 지적합니다.
+              새 파일은 prod 의 마지막 버전 다음 번호여야 하고, 열린 다른 PR 과 번호가 겹칠 수 있다고 알립니다.
+              운영 데이터가 있는 MySQL 테이블이므로 기본값 없는 NOT NULL 추가, 기존 데이터와 맞지 않는 제약,
+              큰 테이블 잠금, 되돌릴 수 없는 삭제나 이름 변경은 영향과 함께 짚습니다.
+            - 비밀 하드코딩: 공개 레포입니다. API 키, 토큰, 비밀번호, 접속 주소를 코드나 설정에 직접 쓰면 지적합니다.
+              비밀은 be-config 서브모듈과 환경 변수(`${...}`)로만 받습니다.
+            - REST Docs: `presentation` 의 `*Controller` 에 엔드포인트를 추가하거나 요청, 응답 필드를 바꾸면 같은 패키지 경로의
+              `*ControllerTest`(`DocumentationTest` 상속)에 테스트가 있고 `src/docs/asciidoc/api.adoc` 에 `operation::` 항목이
+              있어야 합니다. CI 의 `scripts/check-api-docs.sh` 는 테스트가 아예 없는 경우는 못 잡습니다.
+
+            쓰는 방식
+            - 한국어 존댓말로 간결하게 씁니다. em dash 와 가운뎃점은 쓰지 않습니다.
+            - 확신이 없으면 결함으로 단정하지 말고 "확인 필요" 로 표시하고 무엇을 확인하면 되는지 적습니다.
+            - 이름, 포맷 같은 취향 차이는 요약 코멘트에 한 줄씩, 많아야 3개만 적습니다.
+            - 생성물은 보지 않습니다: build/, docs/schema/, src/main/resources/static/docs/, gradle/wrapper/gradle-wrapper.jar.
