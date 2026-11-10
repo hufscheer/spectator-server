@@ -31,7 +31,7 @@ reviews:
     - '!build/**'
     # tbls 로 생성하는 DB 스키마 문서 (scripts/generate-schema-docs.sh)
     - '!docs/schema/**'
-    # asciidoctor 로 생성하는 REST Docs HTML (build.gradle copyDocument)
+    # asciidoctor 로 생성한 REST Docs HTML 사본 (build.gradle 의 bootJar 가 같은 경로로 jar 에 복사)
     - '!src/main/resources/static/docs/**'
     - '!gradle/wrapper/gradle-wrapper.jar'
 
