@@ -33,9 +33,15 @@ class SoftDeletedLeagueQueryTest extends ServiceTest {
 
     @Test
     void 삭제된_리그도_리그_id로_연관_행을_조회한다() {
-        assertThat(leagueTopScorerRepository.findByLeagueId(DELETED_LEAGUE_ID)).hasSize(1);
-        assertThat(leagueTeamRepository.findByLeagueId(DELETED_LEAGUE_ID)).hasSize(4);
-        assertThat(leagueTeamQueryRepository.findByLeagueId(DELETED_LEAGUE_ID)).hasSize(4);
+        assertThat(leagueTopScorerRepository.findByLeagueId(DELETED_LEAGUE_ID))
+                .hasSize(1)
+                .allSatisfy(lts -> assertThat(lts.getLeague().getId()).isEqualTo(DELETED_LEAGUE_ID));
+        assertThat(leagueTeamRepository.findByLeagueId(DELETED_LEAGUE_ID))
+                .hasSize(4)
+                .allSatisfy(lt -> assertThat(lt.getLeague().getId()).isEqualTo(DELETED_LEAGUE_ID));
+        assertThat(leagueTeamQueryRepository.findByLeagueId(DELETED_LEAGUE_ID))
+                .hasSize(4)
+                .allSatisfy(lt -> assertThat(lt.getLeague().getId()).isEqualTo(DELETED_LEAGUE_ID));
         assertThat(leagueStatisticsRepository.findByLeagueId(DELETED_LEAGUE_ID)).isNotNull();
         assertThat(bracketMatchRepository.existsByLeagueIdAndGameIsNotNull(DELETED_LEAGUE_ID)).isTrue();
         assertThat(bracketMatchRepository.existsByLeagueIdAndRoundAndGameIsNotNull(
