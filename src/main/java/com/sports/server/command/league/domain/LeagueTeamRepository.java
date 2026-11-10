@@ -23,7 +23,8 @@ public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
     @Query("SELECT lt.team.id FROM LeagueTeam lt WHERE lt.league.id = :leagueId")
     List<Long> findTeamIdsByLeagueId(@Param("leagueId") Long leagueId);
 
-    List<LeagueTeam> findByLeagueId(Long id);
+    @Query("SELECT lt FROM LeagueTeam lt WHERE lt.league.id = :leagueId")
+    List<LeagueTeam> findByLeagueId(@Param("leagueId") Long leagueId);
 
     @Modifying
     @Query("UPDATE LeagueTeam lt SET lt.totalCheerCount = " +
