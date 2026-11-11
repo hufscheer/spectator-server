@@ -9,11 +9,8 @@ import org.springframework.data.repository.query.Param;
 public interface BracketMatchQueryRepository extends Repository<BracketMatch, Long> {
 
     @Query("select distinct bm from BracketMatch bm "
-            + "left join fetch bm.team1 "
-            + "left join fetch bm.team2 "
             + "left join fetch bm.game g "
             + "left join fetch g.gameTeams gt "
-            + "left join fetch gt.team "
             + "where fk(bm.league) = :leagueId")
     List<BracketMatch> findAllByLeagueIdWithTeamsAndGames(@Param("leagueId") Long leagueId);
 }
