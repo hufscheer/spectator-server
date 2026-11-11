@@ -3,11 +3,23 @@ spring:
     active: local
   jpa:
     open-in-view: false
+    properties:
+      # Hibernate 7 은 클래스패스에 Jackson 2 가 있으면(aws sdk, logstash encoder 가 끌어옴) JSON 컬럼에 Jackson 2 를 먼저 쓴다.
+      # 엔티티의 JsonNode 는 Jackson 3 타입이라 Jackson 3 매퍼로 고정한다
+      hibernate.type.json_format_mapper: jackson3
     hibernate:
       ddl-auto: none
   flyway:
     enabled: true
     baseline-on-migrate: true
+  # Boot 4 는 Jackson 3 을 쓴다. Jackson 3 기본값은 필드를 알파벳순으로 쓰고, 원시 타입 필드에 null 이 오면 400 을 낸다.
+  # 응답과 요청 해석을 Boot 3 과 같게 두려고 Jackson 2 기본값을 쓴다
+  jackson:
+    use-jackson2-defaults: true
+    mapper:
+      # Jackson 2 기본값은 생성자 파라미터 이름 감지를 끈다. Boot 3 은 ParameterNamesModule 로 이것을 켜 두었고,
+      # @JsonCreator 없는 생성자로 받는 요청 DTO(TimelineRequest 의 하위 타입 등)가 여기에 기댄다
+      detect-parameter-names: true
   lifecycle:
     timeout-per-shutdown-phase: 30s
   servlet:

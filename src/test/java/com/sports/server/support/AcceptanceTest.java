@@ -11,6 +11,11 @@ import com.sports.server.common.application.S3Service;
 import com.sports.server.support.config.AsyncTestConfig;
 import com.sports.server.support.isolation.DatabaseIsolation;
 import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.mapper.ObjectMapperType;
+import io.restassured.path.json.config.JsonParserType;
+import io.restassured.path.json.config.JsonPathConfig;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.awt.image.BufferedImage;
@@ -21,7 +26,7 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
@@ -38,19 +43,19 @@ public class AcceptanceTest {
     @LocalServerPort
     protected int port;
 
-    @MockBean
+    @MockitoBean
     protected ReportCheckClient reportCheckClient;
 
-    @MockBean
+    @MockitoBean
     protected ReportProcessor reportProcessor;
 
     @Value("${cookie.name}")
     protected String COOKIE_NAME;
 
-    @MockBean
+    @MockitoBean
     protected JwtUtil jwtUtil;
 
-    @MockBean
+    @MockitoBean
     protected S3Service s3Service;
 
     protected String mockToken = "mockToken";
@@ -61,6 +66,8 @@ public class AcceptanceTest {
     protected void setUp(
     ) {
         RestAssured.port = port;
+        RestAssured.config = RestAssuredConfig.config()
+                .objectMapperConfig(ObjectMapperConfig.objectMapperConfig().defaultObjectMapperType(ObjectMapperType.JACKSON_3));
 
         given(reportCheckClient.check(any()))
                 .willReturn(ResponseEntity.ok().build());
@@ -84,18 +91,24 @@ public class AcceptanceTest {
     protected <T> List<T> toResponses(ExtractableResponse<Response> response,
                                       Class<T> dtoType) {
         return response.jsonPath()
+                .using(JACKSON_3_JSON_PATH)
                 .getList(".", dtoType);
     }
+
+    private static final JsonPathConfig JACKSON_3_JSON_PATH =
+            JsonPathConfig.jsonPathConfig().defaultParserType(JsonParserType.JACKSON_3);
 
     protected <T> List<T> toCursorPageContent(ExtractableResponse<Response> response,
                                                Class<T> dtoType) {
         return response.jsonPath()
+                .using(JACKSON_3_JSON_PATH)
                 .getList("content", dtoType);
     }
 
     protected <T> T toResponse(ExtractableResponse<Response> response,
                                Class<T> dtoType) {
         return response.jsonPath()
+                .using(JACKSON_3_JSON_PATH)
                 .getObject(".", dtoType);
     }
 

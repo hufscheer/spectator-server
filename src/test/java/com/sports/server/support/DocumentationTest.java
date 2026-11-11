@@ -1,6 +1,6 @@
 package com.sports.server.support;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.sports.server.auth.application.AuthService;
 import com.sports.server.auth.presentation.AuthController;
 import com.sports.server.auth.resolver.AuthMemberResolver;
@@ -45,10 +45,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -85,6 +85,7 @@ import org.springframework.test.web.servlet.MockMvc;
         TimeLogTemplate.class,
         RestDocsConfig.class,
         io.micrometer.core.instrument.simple.SimpleMeterRegistry.class,
+        com.sports.server.query.support.StudentNumberDisclosurePolicy.class,
 })
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc(addFilters = false)
@@ -102,104 +103,107 @@ public class DocumentationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     protected CheerTalkService cheerTalkService;
 
-    @MockBean
+    @MockitoBean
     protected GameQueryService gameQueryService;
 
-    @MockBean
+    @MockitoBean
     protected GameTeamQueryService gameTeamQueryService;
 
-    @MockBean
+    @MockitoBean
     protected LineupPlayerQueryService lineupPlayerQueryService;
 
-    @MockBean
+    @MockitoBean
     protected GameTeamService gameTeamService;
 
-    @MockBean
+    @MockitoBean
     protected CheerCountRateLimiter cheerCountRateLimiter;
 
-    @MockBean
+    @MockitoBean
     protected ReportService reportService;
 
-    @MockBean
+    @MockitoBean
     protected CheerTalkQueryService cheerTalkQueryService;
 
-    @MockBean
+    @MockitoBean
     protected LeagueQueryService leagueQueryService;
 
-    @MockBean
+    @MockitoBean
     protected BracketService bracketService;
 
-    @MockBean
+    @MockitoBean
     protected BracketQueryService bracketQueryService;
 
-    @MockBean
+    @MockitoBean
     protected TimelineQueryService timelineQueryService;
 
-    @MockBean
+    @MockitoBean
     protected LineupPlayerService lineupPlayerService;
 
-    @MockBean
+    @MockitoBean
     protected AuthService authService;
 
-    @MockBean
+    @MockitoBean
     protected PlayerService playerService;
 
-    @MockBean
+    @MockitoBean
     protected PlayerQueryService playerQueryService;
 
-    @MockBean
+    @MockitoBean
     protected TeamService teamService;
 
-    @MockBean
+    @MockitoBean
     protected TeamQueryService teamQueryService;
 
-    @MockBean
+    @MockitoBean
     protected JwtUtil jwtUtil;
 
-    @MockBean
+    @MockitoBean
     protected AuthenticationEntryPoint authenticationEntryPoint;
 
-    @MockBean
+    @MockitoBean
     protected MemberRepository memberRepository;
 
-    @MockBean
+    @MockitoBean
     private AuthMemberResolver authMemberResolver;
 
-    @MockBean
+    @MockitoBean
     protected TimelineService timelineService;
 
-    @MockBean
+    @MockitoBean
     protected LeagueService leagueService;
 
-    @MockBean
+    @MockitoBean
     protected MemberQueryService memberQueryService;
 
-    @MockBean
+    @MockitoBean
     protected GameService gameService;
 
-    @MockBean
+    @MockitoBean
     protected GameStatusScheduler gameStatusScheduler;
 
-    @MockBean
+    @MockitoBean
     protected NlService nlService;
 
-    @MockBean
+    @MockitoBean
     protected NlFileExtractService nlFileExtractService;
 
-    @MockBean
+    @MockitoBean
     protected OrganizationQueryService organizationQueryService;
 
-    @MockBean
+    @MockitoBean
     protected S3Service s3Service;
 
-    @MockBean
+    @MockitoBean
     protected PushDeviceService pushDeviceService;
 
-    @MockBean
+    @MockitoBean
     protected com.sports.server.common.application.AlertService alertService;
+
+    @MockitoBean
+    protected com.sports.server.common.application.OrganizationAccessValidator organizationAccessValidator;
 
     @BeforeEach
     void setUp() {

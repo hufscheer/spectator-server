@@ -3,9 +3,11 @@ package com.sports.server.command.timeline.mapper;
 import com.sports.server.command.game.domain.Game;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
+import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.timeline.domain.*;
 import com.sports.server.command.timeline.dto.TimelineRequest;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.exception.BadRequestException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,12 +75,13 @@ public class TimelineMapper {
 
     private SoccerReplacementTimeline toReplacementTimeline(Game game,
                                                             TimelineRequest.RegisterReplacement replacementRequest) {
+        validateSportType(game, replacementRequest);
         return new SoccerReplacementTimeline(
                 game,
                 replacementRequest.resolveQuarter(),
                 replacementRequest.getRecordedAt(),
-                getPlayer(replacementRequest.getOriginLineupPlayerId()),
-                getPlayer(replacementRequest.getReplacementLineupPlayerId())
+                getPlayerOf(game, replacementRequest.getOriginLineupPlayerId()),
+                getPlayerOf(game, replacementRequest.getReplacementLineupPlayerId())
         );
     }
 
@@ -116,6 +119,7 @@ public class TimelineMapper {
 
     private BasketballReplacementTimeline toBasketballReplacementTimeline(Game game,
                                                                           TimelineRequest.RegisterReplacement request) {
+        validateSportType(game, request);
         LineupPlayer origin = getPlayer(request.getOriginLineupPlayerId());
         LineupPlayer replacement = getPlayer(request.getReplacementLineupPlayerId());
         game.issueBasketballReplacement(origin);
@@ -136,6 +140,21 @@ public class TimelineMapper {
                 foulRequest.getRecordedAt(),
                 getPlayer(foulRequest.getOffenderLineupPlayerId())
         );
+    }
+
+    // 본문 종목이 경기 종목과 다르면 다른 종목의 교체 규칙으로 기록되므로 막는다. 생략하면 지금처럼 동작한다
+    private void validateSportType(Game game, TimelineRequest request) {
+        if (request.getSportType() != null && request.getSportType() != game.getSportType()) {
+            throw new BadRequestException(GameErrorMessages.TIMELINE_SPORT_TYPE_MISMATCH_EXCEPTION);
+        }
+    }
+
+    private LineupPlayer getPlayerOf(Game game, Long playerId) {
+        LineupPlayer player = getPlayer(playerId);
+        if (!player.isInGame(game)) {
+            throw new BadRequestException(GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);
+        }
+        return player;
     }
 
     private LineupPlayer getPlayer(Long playerId) {

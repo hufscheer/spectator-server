@@ -20,6 +20,7 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.exception.ForbiddenException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import com.sports.server.support.fixture.GameFixtureRepository;
@@ -35,7 +36,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +59,7 @@ public class GameServiceTest extends ServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @MockBean
+    @MockitoBean
     private Clock clock;
 
     private GameRequest.Register requestDto;
@@ -370,6 +371,53 @@ public class GameServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> entityUtils.getEntity(gameId, Game.class)).isInstanceOf(NotFoundException.class);
+    }
+
+    // 회원 3은 리그 2의 관리자다. 리그 1의 경기(1)는 다른 대회 것이고, 리그 2의 경기(25)는 회원 1이 관리한다
+    @Test
+    void 다른_대회의_경기를_내_대회_경로로_수정하면_404이고_경기는_그대로다() {
+        Member managerOfLeague2 = entityUtils.getEntity(3L, Member.class);
+        String nameBefore = entityUtils.getEntity(1L, Game.class).getName();
+        GameRequest.Update update = new GameRequest.Update("탈취", 8, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "v",
+                false);
+
+        assertThatThrownBy(() -> gameService.updateGame(2L, 1L, update, managerOfLeague2))
+                .isInstanceOf(NotFoundException.class);
+
+        assertThat(entityUtils.getEntity(1L, Game.class).getName()).isEqualTo(nameBefore);
+    }
+
+    @Test
+    void 내_대회의_경기라도_경기_관리자가_아니면_수정할_수_없다() {
+        Member managerOfLeague2 = entityUtils.getEntity(3L, Member.class);
+        String nameBefore = entityUtils.getEntity(25L, Game.class).getName();
+        GameRequest.Update update = new GameRequest.Update("탈취", 4, LocalDateTime.of(2024, 9, 11, 12, 0, 0), "v",
+                false);
+
+        assertThatThrownBy(() -> gameService.updateGame(2L, 25L, update, managerOfLeague2))
+                .isInstanceOf(ForbiddenException.class);
+
+        assertThat(entityUtils.getEntity(25L, Game.class).getName()).isEqualTo(nameBefore);
+    }
+
+    @Test
+    void 다른_대회의_경기를_내_대회_경로로_삭제하면_404이고_경기는_남는다() {
+        Member managerOfLeague2 = entityUtils.getEntity(3L, Member.class);
+
+        assertThatThrownBy(() -> gameService.deleteGame(2L, 1L, managerOfLeague2))
+                .isInstanceOf(NotFoundException.class);
+
+        assertThat(entityUtils.getEntity(1L, Game.class)).isNotNull();
+    }
+
+    @Test
+    void 내_대회의_경기라도_경기_관리자가_아니면_삭제할_수_없다() {
+        Member managerOfLeague2 = entityUtils.getEntity(3L, Member.class);
+
+        assertThatThrownBy(() -> gameService.deleteGame(2L, 25L, managerOfLeague2))
+                .isInstanceOf(ForbiddenException.class);
+
+        assertThat(entityUtils.getEntity(25L, Game.class)).isNotNull();
     }
 
     @Nested

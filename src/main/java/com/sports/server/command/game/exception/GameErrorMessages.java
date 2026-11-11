@@ -23,6 +23,7 @@ public class GameErrorMessages {
 
     public static final String TEAM_NOT_IN_LEAGUE_TEAM = "해당 리그팀에 속하지 않은 팀입니다.";
     public static final String PLAYER_FROM_ANOTHER_TEAM_REGISTER_EXCEPTION = "다른 팀의 선수를 라인업에 등록할 수 없습니다.";
+    public static final String TIMELINE_SPORT_TYPE_MISMATCH_EXCEPTION = "요청한 종목이 경기 종목과 다릅니다.";
     public static final String LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION = "해당 라인업 선수는 요청한 게임팀에 속해있지 않습니다.";
     public static final String ALREADY_REGISTERED_IN_LINEUP = "이미 라인업에 등록된 선수입니다.";
     public static final String LINEUP_PLAYER_HAS_RECORDS = "기록이 있는 선수는 라인업에서 뺄 수 없어요. 해당 기록부터 삭제해 주세요.";
