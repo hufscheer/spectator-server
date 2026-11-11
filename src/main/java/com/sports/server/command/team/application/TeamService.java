@@ -8,7 +8,7 @@ import com.sports.server.command.team.domain.*;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.command.team.exception.TeamErrorMessages;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.application.PermissionValidator;
+import com.sports.server.common.application.OrganizationAccessValidator;
 import com.sports.server.common.application.S3Service;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
@@ -43,6 +43,7 @@ public class TeamService {
     private final EntityUtils entityUtils;
     private final S3Service s3Service;
     private final ApplicationEventPublisher eventPublisher;
+    private final OrganizationAccessValidator organizationAccessValidator;
 
     public void register(final Member member, final TeamRequest.Register request) {
         String imgUrl = changeLogoImageUrlToBeSaved(request.logoImageUrl());
@@ -71,7 +72,7 @@ public class TeamService {
 
     public void update(final Member member, final TeamRequest.Update request, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-        PermissionValidator.checkPermission(team, member);
+        organizationAccessValidator.checkTeam(team, member);
 
         Unit unit = Optional.ofNullable(request.unit())
                 .map(unitName -> findUnit(unitName, team.getUnit().getOrganization().getId()))
@@ -89,13 +90,13 @@ public class TeamService {
 
     public void delete(final Member member, final Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-        PermissionValidator.checkPermission(team, member);
+        organizationAccessValidator.checkTeam(team, member);
         teamRepository.delete(team);
     }
 
     public void addPlayersToTeam(final Member member, final Long teamId, final List<TeamRequest.TeamPlayerRegister> request) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-        PermissionValidator.checkPermission(team, member);
+        organizationAccessValidator.checkTeam(team, member);
 
         List<Player> players = fetchAndValidatePlayers(request);
         validatePlayersOrganization(players, member);
@@ -114,7 +115,7 @@ public class TeamService {
     public void deleteTeamPlayer(final Member member, final Long teamPlayerId) {
         TeamPlayer teamPlayer = entityUtils.getEntity(teamPlayerId, TeamPlayer.class);
         Team team = teamPlayer.getTeam();
-        PermissionValidator.checkPermission(team, member);
+        organizationAccessValidator.checkTeam(team, member);
 
         Player player = teamPlayer.getPlayer();
         team.removeTeamPlayer(player);
@@ -123,7 +124,7 @@ public class TeamService {
 
     public void deleteLogoImage(final Member member, Long teamId) {
         Team team = entityUtils.getEntity(teamId, Team.class);
-        PermissionValidator.checkPermission(team, member);
+        organizationAccessValidator.checkTeam(team, member);
         team.deleteLogoImageUrl();
         // registerEvent 로 담은 이벤트는 save 때 발행된다
         teamRepository.save(team);
@@ -186,7 +187,7 @@ public class TeamService {
     }
 
     private void validatePlayersOrganization(List<Player> players, Member member) {
-        players.forEach(player -> PermissionValidator.checkPermission(player, member));
+        players.forEach(player -> organizationAccessValidator.checkPlayer(player, member));
     }
 
     private Map<Long, TeamRequest.TeamPlayerRegister> buildRequestMap(
@@ -227,10 +228,10 @@ public class TeamService {
     }
 
     private String changeLogoImageUrlToBeSaved(String logoImageUrl) {
-        if (!logoImageUrl.contains(originPrefix)) {
+        if (!logoImageUrl.startsWith(originPrefix)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 이미지 url 입니다.");
         }
-        return logoImageUrl.replace(originPrefix, replacePrefix);
+        return replacePrefix + logoImageUrl.substring(originPrefix.length());
     }
 
     private String extractS3Key(String url) {
