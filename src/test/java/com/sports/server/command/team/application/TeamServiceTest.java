@@ -161,6 +161,49 @@ public class TeamServiceTest extends ServiceTest {
         }
 
         @Test
+        void origin_prefix가_앞이_아니라_중간에_들어있는_이미지_url로_수정할_경우_예외가_발생하고_로고는_그대로다(){
+            // given
+            String url = "https://evil.example/x#" + imageUrl;
+            TeamRequest.Update request = new TeamRequest.Update(null, url, null, null, null);
+
+            // when & then
+            assertThatThrownBy(() -> teamService.update(manager, request, 1L))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessage("잘못된 이미지 url 입니다.");
+            assertThat(entityUtils.getEntity(1L, Team.class).getLogoImageUrl())
+                    .isEqualTo("https://example.com/logos/wildhorse.png");
+        }
+
+        @Test
+        void 다른_팀이_쓰는_로고_주소로_바꾼_뒤_자기_로고를_지워도_그_객체는_지워지지_않는다(){
+            // given: 팀 2가 쓰는 로고를 팀 1이 자기 로고로 저장한다
+            jdbcTemplate.update("UPDATE teams SET logo_image_url = ? WHERE id = 2", replacePrefix + "shared.png");
+            teamService.update(manager, new TeamRequest.Update(null, originPrefix + "shared.png", null, null, null), 1L);
+            String sharedUrl = entityUtils.getEntity(1L, Team.class).getLogoImageUrl();
+            assertThat(sharedUrl).isEqualTo(entityUtils.getEntity(2L, Team.class).getLogoImageUrl());
+            org.mockito.Mockito.clearInvocations(s3Service);
+
+            // when
+            teamService.deleteLogoImage(manager, 1L);
+
+            // then
+            verify(s3Service, never()).deleteFile(anyString());
+            assertThat(entityUtils.getEntity(2L, Team.class).getLogoImageUrl()).isEqualTo(sharedUrl);
+        }
+
+        @Test
+        void 아무도_쓰지_않는_자기_로고를_지우면_객체가_지워진다(){
+            // given
+            jdbcTemplate.update("UPDATE teams SET logo_image_url = ? WHERE id = 1", replacePrefix + "mine.png");
+
+            // when
+            teamService.deleteLogoImage(manager, 1L);
+
+            // then
+            verify(s3Service).deleteFile("mine.png");
+        }
+
+        @Test
         void 존재하지_않는_팀의_수정을_시도할_경우_예외가_발생한다(){
             // given
             Long teamId = 999L;

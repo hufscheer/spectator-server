@@ -85,6 +85,7 @@ import org.springframework.test.web.servlet.MockMvc;
         TimeLogTemplate.class,
         RestDocsConfig.class,
         io.micrometer.core.instrument.simple.SimpleMeterRegistry.class,
+        com.sports.server.query.support.StudentNumberDisclosurePolicy.class,
 })
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc(addFilters = false)
@@ -200,6 +201,9 @@ public class DocumentationTest {
 
     @MockitoBean
     protected com.sports.server.common.application.AlertService alertService;
+
+    @MockitoBean
+    protected com.sports.server.common.application.OrganizationAccessValidator organizationAccessValidator;
 
     @BeforeEach
     void setUp() {

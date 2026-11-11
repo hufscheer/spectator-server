@@ -131,7 +131,7 @@ public class Team extends BaseEntity<Team> implements ManagedEntity {
 
     @Override
     public boolean isManagedBy(Member manager) {
-        if (manager.isAdministrator()) {
+        if (manager.isSuperUser()) {
             return true;
         }
         return manager.getOrganization() != null

@@ -97,7 +97,7 @@ public class AuthServiceTest extends ServiceTest {
         void 매니저가_권한이_없는_경우_예외가_발생한다() {
 
             // given
-            String email = "jane@example.com";
+            String email = "user4@example.com";
             String password = "1234";
             LoginRequest loginRequest = new LoginRequest(email, password);
 

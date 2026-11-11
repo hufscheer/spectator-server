@@ -68,6 +68,7 @@ public class SecurityConfig {
                                 paths.matcher(HttpMethod.DELETE, "/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}"),
                                 paths.matcher(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/starter"),
                                 paths.matcher(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/candidate"),
+                                paths.matcher(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/position"),
                                 paths.matcher(HttpMethod.PUT, "/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register"),
                                 paths.matcher(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke"),
                                 paths.matcher(HttpMethod.POST, "/admin/**"),

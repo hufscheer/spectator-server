@@ -56,7 +56,7 @@ class LineupPlayerRemovalTest extends ServiceTest {
     @Test
     void 기록이_없으면_뺄_수_있다() {
         // when
-        lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, CANDIDATE_2);
+        lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, CANDIDATE_2, manager);
 
         // then
         assertThat(lineupPlayerRepository.findById(CANDIDATE_2)).isEmpty();
@@ -68,7 +68,7 @@ class LineupPlayerRemovalTest extends ServiceTest {
         registerGoal(STARTER_1, null);
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, STARTER_1))
+        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, STARTER_1, manager))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(GameErrorMessages.LINEUP_PLAYER_HAS_RECORDS);
     }
@@ -79,7 +79,7 @@ class LineupPlayerRemovalTest extends ServiceTest {
         registerGoal(STARTER_1, CANDIDATE_1);
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, CANDIDATE_1))
+        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, CANDIDATE_1, manager))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(GameErrorMessages.LINEUP_PLAYER_HAS_RECORDS);
     }
@@ -90,7 +90,7 @@ class LineupPlayerRemovalTest extends ServiceTest {
         registerReplacement(STARTER_1, CANDIDATE_1);
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, STARTER_1))
+        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, STARTER_1, manager))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(GameErrorMessages.LINEUP_PLAYER_HAS_RECORDS);
     }
@@ -101,7 +101,7 @@ class LineupPlayerRemovalTest extends ServiceTest {
         registerReplacement(STARTER_1, CANDIDATE_1);
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, CANDIDATE_1))
+        assertThatThrownBy(() -> lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, CANDIDATE_1, manager))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(GameErrorMessages.LINEUP_PLAYER_HAS_RECORDS);
     }
@@ -114,7 +114,7 @@ class LineupPlayerRemovalTest extends ServiceTest {
         timelineService.deleteTimeline(manager, GAME_ID, goalId);
 
         // when
-        lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, STARTER_2);
+        lineupPlayerService.removePlayerFromLineup(GAME_TEAM_ID, STARTER_2, manager);
 
         // then
         assertThat(lineupPlayerRepository.findById(STARTER_2)).isEmpty();
