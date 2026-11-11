@@ -9,11 +9,14 @@ import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.command.bracket.domain.BracketMatch;
 import com.sports.server.query.dto.response.BracketResponse;
+import com.sports.server.query.support.StudentNumberDisclosure;
+import com.sports.server.query.support.StudentNumberDisclosurePolicy;
 import com.sports.server.query.repository.BracketMatchQueryRepository;
 import com.sports.server.query.repository.TeamQueryRepository;
 import com.sports.server.support.ServiceTest;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
+import java.util.Optional;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -86,7 +89,7 @@ class DeletedTeamLazyLoadQueryTest extends ServiceTest {
         @Test
         void 리그팀의_팀이_지워져도_예외_없이_끝난다() {
             // 리그팀 3 = 대회 1 의 팀 3
-            assertThatCode(() -> leagueQueryService.findPlayersByLeagueTeam(3L))
+            assertThatCode(() -> leagueQueryService.findPlayersByLeagueTeam(3L, anonymous()))
                     .doesNotThrowAnyException();
         }
     }
@@ -145,7 +148,7 @@ class DeletedTeamLazyLoadQueryTest extends ServiceTest {
 
         @Test
         void 선수_상세_GET_players_playerId_는_지워진_팀을_teams_에서_뺀다() {
-            assertThat(playerQueryService.getPlayerDetail(1L).teams()).isEmpty();
+            assertThat(playerQueryService.getPlayerDetail(1L, anonymous()).teams()).isEmpty();
         }
     }
 
@@ -262,5 +265,10 @@ class DeletedTeamLazyLoadQueryTest extends ServiceTest {
             assertThat(team.name()).isEqualTo(name);
             assertThat(team.logoImageUrl()).isEqualTo(logo);
         }
+    }
+
+    // 학번 공개 여부와 무관한 테스트라 비로그인으로 부른다
+    private static StudentNumberDisclosure anonymous() {
+        return new StudentNumberDisclosurePolicy(null).forViewer(Optional.empty());
     }
 }

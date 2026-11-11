@@ -35,4 +35,10 @@ public interface TeamRepository extends Repository<Team, Long> {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Query(value = "UPDATE teams SET logo_image_url = :to WHERE logo_image_url = :from", nativeQuery = true)
     int replaceLogoImageUrl(@Param("from") String from, @Param("to") String to);
+
+    /**
+     * 그 로고 주소를 쓰는 팀이 있는지. 지운(소프트 삭제) 팀도 센다. 로고 삭제 때 같은 객체를 쓰는 다른 팀이 있으면 지우지 않기 위해 쓴다.
+     */
+    @Query(value = "SELECT COUNT(*) FROM teams WHERE logo_image_url = :logoImageUrl", nativeQuery = true)
+    long countByLogoImageUrl(@Param("logoImageUrl") String logoImageUrl);
 }

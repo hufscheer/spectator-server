@@ -12,6 +12,7 @@ import com.sports.server.query.dto.response.TeamResponse;
 import com.sports.server.query.repository.PlayerDynamicRepository;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import com.sports.server.query.support.PlayerInfoProvider;
+import com.sports.server.query.support.StudentNumberDisclosure;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,14 +64,14 @@ public class PlayerQueryService {
                     Long playerId = player.getId();
                     List<TeamResponse> teams = playerTeamsMap.getOrDefault(playerId, Collections.emptyList());
                     int totalGoals = playerTotalGoalCountInfo.getOrDefault(playerId, 0);
-                    return PlayerResponse.of(player, null, totalGoals, teams);
+                    return PlayerResponse.of(player, null, totalGoals, teams, true);
                 })
                 .toList();
 
         return new CursorPageResponse<>(content, nextCursor, hasNext);
     }
 
-    public PlayerResponse getPlayerDetail(Long playerId){
+    public PlayerResponse getPlayerDetail(Long playerId, StudentNumberDisclosure disclosure){
         Player player = entityUtils.getEntity(playerId, Player.class);
 
         List<TeamPlayer> teamPlayers = teamPlayerRepository.findAllByPlayerId(playerId);
@@ -78,7 +79,7 @@ public class PlayerQueryService {
                 .map(teamPlayer -> new TeamResponse(teamPlayer.getTeam()))
                 .toList();
 
-        return PlayerResponse.of(player, null, countPlayerTotalGoal(playerId), teams);
+        return PlayerResponse.of(player, null, countPlayerTotalGoal(playerId), teams, disclosure.canReveal(player));
     }
 
     private int countPlayerTotalGoal(Long playerId){

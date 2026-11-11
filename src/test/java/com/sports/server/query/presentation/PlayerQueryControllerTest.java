@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -38,9 +39,9 @@ public class PlayerQueryControllerTest extends DocumentationTest {
         );
 
         CursorPageResponse<PlayerResponse> response = new CursorPageResponse<>(List.of(
-                new PlayerResponse(1L, null, "선수1", "202500001", null, 0, teamResponses1),
-                new PlayerResponse(2L, null, "선수2", "202500002", null, 5, teamResponses2),
-                new PlayerResponse(3L, null, "선수3", "202500003", null, 10, Collections.emptyList())
+                new PlayerResponse(1L, null, "선수1", "202500001", "25", null, 0, teamResponses1),
+                new PlayerResponse(2L, null, "선수2", "202500002", "25", null, 5, teamResponses2),
+                new PlayerResponse(3L, null, "선수3", "202500003", "25", null, 10, Collections.emptyList())
         ), null, false);
 
         given(playerQueryService.getAllPlayers(any(), any(), any(), any()))
@@ -72,7 +73,8 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("content").type(JsonFieldType.ARRAY).description("선수 목록"),
                                 fieldWithPath("content[].playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
                                 fieldWithPath("content[].name").type(JsonFieldType.STRING).description("선수의 이름"),
-                                fieldWithPath("content[].studentNumber").type(JsonFieldType.STRING).description("선수의 학번"),
+                                fieldWithPath("content[].studentNumber").type(JsonFieldType.STRING).description("선수의 학번(로그인한 매니저 학교의 선수라 전체)"),
+                                fieldWithPath("content[].admissionYear").type(JsonFieldType.STRING).description("입학연도 두 자리(학번의 3, 4번째 자리). 학번이 없거나 형식이 맞지 않으면 없다"),
                                 fieldWithPath("content[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 전체 골 개수"),
                                 fieldWithPath("content[].teams").type(JsonFieldType.ARRAY).description("선수의 모든 소속팀 목록"),
                                 fieldWithPath("content[].teams[].id").type(JsonFieldType.NUMBER).description("소속팀의 ID"),
@@ -95,8 +97,8 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                 new TeamResponse(1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER"),
                 new TeamResponse(2L, "국제통상학과 무역풍", "s3:logoImageUrl1", "사회과학대학", "#92A8D1", "SOCCER")
         );
-        PlayerResponse response = new PlayerResponse(playerId, null, "선수1", "202500001", null,  0, teamResponses);
-        given(playerQueryService.getPlayerDetail(playerId))
+        PlayerResponse response = new PlayerResponse(playerId, null, "선수1", "202500001", "25", null,  0, teamResponses);
+        given(playerQueryService.getPlayerDetail(eq(playerId), any()))
                 .willReturn(response);
 
         // when
@@ -113,7 +115,8 @@ public class PlayerQueryControllerTest extends DocumentationTest {
                         responseFields(
                                 fieldWithPath("playerId").type(JsonFieldType.NUMBER).description("선수의 ID"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("선수의 이름"),
-                                fieldWithPath("studentNumber").type(JsonFieldType.STRING).description("선수의 학번"),
+                                fieldWithPath("studentNumber").type(JsonFieldType.STRING).description("관리 권한이 있는 매니저에게는 전체 학번, 그 밖(비로그인, 다른 학교 매니저)에는 앞 4자리만 남기고 나머지를 '*' 로 가린 값. 학번이 없거나 4자리 이하면 없다"),
+                                fieldWithPath("admissionYear").type(JsonFieldType.STRING).description("입학연도 두 자리(학번의 3, 4번째 자리). 학번이 없거나 형식이 맞지 않으면 없다"),
                                 fieldWithPath("totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 전체 골 개수"),
                                 fieldWithPath("teams").type(JsonFieldType.ARRAY).description("선수의 모든 소속팀 목록"),
                                 fieldWithPath("teams[].id").type(JsonFieldType.NUMBER).description("소속팀의 ID"),

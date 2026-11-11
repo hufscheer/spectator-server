@@ -1,6 +1,7 @@
 package com.sports.server.common.config;
 
 import com.sports.server.auth.resolver.AuthMemberResolver;
+import com.sports.server.auth.resolver.OptionalAuthMemberResolver;
 import com.sports.server.command.member.domain.MemberRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new AuthMemberResolver(memberRepository));
+        resolvers.add(new OptionalAuthMemberResolver(memberRepository));
     }
 }

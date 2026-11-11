@@ -48,6 +48,7 @@ public class CheerTalkService {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, manager);
 
+        validateBelongsToLeague(leagueId, entityUtils.getEntity(cheerTalkId, CheerTalk.class));
         blockById(cheerTalkId);
     }
 
@@ -78,10 +79,19 @@ public class CheerTalkService {
         PermissionValidator.checkPermission(league, manager);
 
         CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
+        validateBelongsToLeague(leagueId, cheerTalk);
 
         Optional<Report> report = reportRepository.findByCheerTalk(cheerTalk);
         report.ifPresent(Report::cancel);
         cheerTalk.unblock();
+    }
+
+    private void validateBelongsToLeague(final Long leagueId, final CheerTalk cheerTalk) {
+        GameTeam gameTeam = gameTeamRepository.findByIdWithGame(cheerTalk.getGameTeamId())
+                .orElseThrow(() -> new NotFoundException(ExceptionMessages.CHEER_TALK_NOT_IN_LEAGUE));
+        if (!gameTeam.getGame().getLeague().getId().equals(leagueId)) {
+            throw new NotFoundException(ExceptionMessages.CHEER_TALK_NOT_IN_LEAGUE);
+        }
     }
 
     private GameTeam getGameTeam(Long gameTeamId) {
