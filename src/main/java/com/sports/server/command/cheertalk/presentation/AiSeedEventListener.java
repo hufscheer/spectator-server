@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -34,7 +35,8 @@ public class AiSeedEventListener {
     private final TimelineRepository timelineRepository;
     private final TaskScheduler taskScheduler;
 
-    @Transactional(readOnly = true)
+    // 커밋 뒤(AFTER_COMMIT)에 불리므로 원래 트랜잭션에 합류할 수 없다. 지연 로딩을 위해 새 읽기 전용 트랜잭션을 연다
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     @TransactionalEventListener
     public void handle(TimelineCreatedEvent event) {
         switch (event.type()) {

@@ -1,7 +1,7 @@
 package com.sports.server.command.cheertalk.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import com.sports.server.command.cheertalk.domain.BotType;
 import com.sports.server.command.cheertalk.domain.CheerTalk;
 import com.sports.server.command.cheertalk.domain.CheerTalkBlockedByBotEvent;

@@ -3,9 +3,6 @@ package com.sports.server.query.acceptance;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.sports.server.command.cheertalk.application.CheerTalkService;
 import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.query.dto.response.CheerTalkResponse;
@@ -18,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -47,9 +44,7 @@ class CheerTalkEventHandlerTest extends AcceptanceTest {
     void 응원톡을_작성하면_소켓_응답을_받는다() throws Exception {
         //given
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
-        ObjectMapper objectMapper = messageConverter.getObjectMapper();
-        objectMapper.registerModules(new JavaTimeModule(), new ParameterNamesModule());
+        JacksonJsonMessageConverter messageConverter = new JacksonJsonMessageConverter();
         stompClient.setMessageConverter(messageConverter);
         StompSession stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
                 })
