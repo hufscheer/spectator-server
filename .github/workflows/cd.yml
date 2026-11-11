@@ -76,7 +76,7 @@ jobs:
 
       - name: 배포 (prod, blue/green)
         if: steps.env.outputs.TARGET == 'prod'
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.WAS_HOST }}
           username: ubuntu
@@ -125,7 +125,7 @@ jobs:
 
       - name: 배포 (dev)
         if: steps.env.outputs.TARGET == 'dev'
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.WAS_HOST_DEV }}
           username: ubuntu
