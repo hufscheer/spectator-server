@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.groupingBy;
 import com.sports.server.command.game.domain.GameTeam;
 import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.query.dto.response.LineupPlayerResponse;
+import com.sports.server.query.repository.GameQueryRepository;
 import com.sports.server.query.repository.LineupPlayerQueryRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineupPlayerQueryService {
 
     private final LineupPlayerQueryRepository lineupPlayerQueryRepository;
+    private final GameQueryRepository gameQueryRepository;
 
     public List<LineupPlayerResponse.All> getLineup(final Long gameId) {
+        gameQueryRepository.getActiveGame(gameId);
         Map<GameTeam, List<LineupPlayer>> groupByTeam = lineupPlayerQueryRepository.findPlayersByGameId(gameId)
                 .stream()
                 .collect(groupingBy(LineupPlayer::getGameTeam));
@@ -36,6 +39,7 @@ public class LineupPlayerQueryService {
     }
 
     public List<LineupPlayerResponse.Playing> getPlayingLineup(final Long gameId) {
+        gameQueryRepository.getActiveGame(gameId);
         Map<GameTeam, List<LineupPlayer>> groupByTeam = lineupPlayerQueryRepository.findPlayingPlayersByGameId(gameId)
                 .stream()
                 .collect(groupingBy(LineupPlayer::getGameTeam));
