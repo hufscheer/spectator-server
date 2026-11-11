@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface LeagueTeamQueryRepository extends Repository<LeagueTeam, Long> {
-    @Query("SELECT lt FROM LeagueTeam lt WHERE lt.league.id = :leagueId")
+    @Query("SELECT lt FROM LeagueTeam lt WHERE fk(lt.league) = :leagueId")
     List<LeagueTeam> findByLeagueId(@Param("leagueId") Long leagueId);
 }
