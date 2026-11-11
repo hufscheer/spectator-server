@@ -1,0 +1,15 @@
+# gitleaks 설정: 기본 규칙을 그대로 쓰고, 확인된 오탐만 좁게 허용한다.
+# 허용 항목을 늘릴 때는 경로와 줄 내용을 함께 묶어(condition = "AND") 범위를 좁게 유지한다.
+title = "spectator-server gitleaks config"
+
+[extend]
+useDefault = true
+
+# 푸시 기기 키는 서버가 만드는 UUID 라 비밀이 아니다. 테스트 고정값이 generic-api-key 에 걸린다.
+[[allowlists]]
+description = "PushDeviceControllerTest 의 테스트용 기기 키(UUID)"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^src/test/java/com/sports/server/command/push/presentation/PushDeviceControllerTest\.java$''']
+regexTarget = "line"
+regexes = ['''DEVICE_KEY = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";''']

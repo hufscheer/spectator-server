@@ -1,0 +1,46 @@
+# 의존성 자동 업데이트. 기본 브랜치(develop)를 대상으로 주 1회 PR 을 연다.
+# 마이너와 패치는 묶어서 PR 수를 줄이고, 메이저는 개별 PR 로 받는다.
+# 보안 업데이트 PR 은 이 설정의 schedule 과 상관없이 바로 열린다.
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+    ignore:
+      # Spring Boot 4.x 메이저 업그레이드는 별도 작업으로 진행한다.
+      - dependency-name: "org.springframework.boot*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # Spring Boot 마이너(3.1 -> 3.x)는 영향이 커서 다른 라이브러리와 따로 받는다.
+      spring-boot:
+        patterns:
+          - "org.springframework.boot*"
+          - "io.spring.dependency-management*"
+        update-types: ["minor", "patch"]
+      gradle-minor-and-patch:
+        patterns:
+          - "*"
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+    groups:
+      actions-minor-and-patch:
+        patterns:
+          - "*"
+        update-types: ["minor", "patch"]
