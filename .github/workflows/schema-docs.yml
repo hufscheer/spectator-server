@@ -35,7 +35,7 @@ jobs:
       MIG_DIR: src/main/resources/db/migration/prod
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Apply migrations in version order
         run: |

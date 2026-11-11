@@ -29,7 +29,7 @@ jobs:
       SPRING_DATASOURCE_PASSWORD: password
     steps:
       - name: 저장소 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: 자바 17 설정
         uses: actions/setup-java@v3
