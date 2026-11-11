@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
@@ -38,19 +38,19 @@ public class AcceptanceTest {
     @LocalServerPort
     protected int port;
 
-    @MockBean
+    @MockitoBean
     protected ReportCheckClient reportCheckClient;
 
-    @MockBean
+    @MockitoBean
     protected ReportProcessor reportProcessor;
 
     @Value("${cookie.name}")
     protected String COOKIE_NAME;
 
-    @MockBean
+    @MockitoBean
     protected JwtUtil jwtUtil;
 
-    @MockBean
+    @MockitoBean
     protected S3Service s3Service;
 
     protected String mockToken = "mockToken";
