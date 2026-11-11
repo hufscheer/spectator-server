@@ -7,7 +7,11 @@ import com.sports.server.query.application.LeagueQueryService;
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.query.dto.response.*;
 
+import com.sports.server.query.support.StudentNumberDisclosure;
+import com.sports.server.query.support.StudentNumberDisclosurePolicy;
+
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +23,7 @@ public class LeagueQueryController {
 
     private final LeagueQueryService leagueQueryService;
     private final BracketQueryService bracketQueryService;
+    private final StudentNumberDisclosurePolicy disclosurePolicy;
 
     @GetMapping
     public ResponseEntity<List<LeagueResponse>> findLeagues(
@@ -56,8 +61,11 @@ public class LeagueQueryController {
     }
 
     @GetMapping("/teams/{leagueTeamId}/players")
-    public ResponseEntity<List<PlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId) {
-        return ResponseEntity.ok(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId));
+    public ResponseEntity<List<PlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId,
+                                                                        Optional<Member> member) {
+        StudentNumberDisclosure disclosure = disclosurePolicy.forViewer(member);
+        List<PlayerResponse> response = leagueQueryService.findPlayersByLeagueTeam(leagueTeamId, disclosure);
+        return StudentNumberDisclosure.respond(response, disclosure);
     }
 
     @GetMapping("/manager")

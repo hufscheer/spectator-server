@@ -5,6 +5,7 @@ import static com.sports.server.command.game.domain.QGameTeam.gameTeam;
 import static com.sports.server.command.league.domain.QLeagueTeam.leagueTeam;
 import static com.sports.server.command.team.domain.QTeam.team;
 
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,7 +34,7 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
                 .join(leagueTeam.team, team).fetchJoin()
                 .join(team.unit).fetchJoin()
                 .where(
-                        leagueTeam.league.eq(league),
+                        Expressions.numberTemplate(Long.class, "fk({0})", leagueTeam.league).eq(league.getId()),
                         teamsPlayedInRound(league, roundNumber, thirdPlaceMatch)
                 )
                 .orderBy(team.name.asc())
@@ -62,12 +63,12 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
             return null;
         }
 
-        return leagueTeam.team.id.in(
-                JPAExpressions.select(gameTeam.team.id)
+        return Expressions.numberTemplate(Long.class, "fk({0})", leagueTeam.team).in(
+                JPAExpressions.select(Expressions.numberTemplate(Long.class, "cast(fk({0}) as long)", gameTeam.team))
                         .from(gameTeam)
                         .join(gameTeam.game, game)
                         .where(
-                                game.league.eq(league),
+                                Expressions.numberTemplate(Long.class, "fk({0})", game.league).eq(league.getId()),
                                 game.round.eq(round)
                         )
         );
@@ -91,7 +92,7 @@ public class TeamQueryDynamicRepositoryImpl implements TeamQueryDynamicRepositor
         Long count = jpaQueryFactory
                 .select(leagueTeam.count())
                 .from(leagueTeam)
-                .where(leagueTeam.league.eq(league))
+                .where(Expressions.numberTemplate(Long.class, "fk({0})", leagueTeam.league).eq(league.getId()))
                 .fetchOne();
         return count != null ? count : 0L;
     }

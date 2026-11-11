@@ -90,7 +90,7 @@ public class GameService {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
 
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = getGameOfLeague(leagueId, gameId, administrator);
         // 요청이 3·4위전 여부를 생략하면 지금 값을 그대로 둔다. 이름만 고쳤다고 라운드가 바뀌면 안 된다
         boolean wasThirdPlaceMatch = game.getRound() == Round.THIRD_PLACE_MATCH;
         boolean thirdPlaceMatch = Optional.ofNullable(request.thirdPlaceMatch()).orElse(wasThirdPlaceMatch);
@@ -112,12 +112,22 @@ public class GameService {
         bracketService.relinkGame(league, game);
     }
 
+    // 경로의 대회 권한만으로는 다른 대회 경기를 건드릴 수 있어, 경기가 그 대회 것인지와 경기 소유를 함께 본다
+    private Game getGameOfLeague(Long leagueId, Long gameId, Member administrator) {
+        Game game = entityUtils.getEntity(gameId, Game.class);
+        if (!game.getLeague().getId().equals(leagueId)) {
+            throw new NotFoundException(GameErrorMessages.GAME_NOT_FOUND_EXCEPTION);
+        }
+        PermissionValidator.checkOwnership(game, administrator);
+        return game;
+    }
+
     @Transactional
     public void deleteGame(Long leagueId, Long gameId, final Member administrator) {
         League league = entityUtils.getEntity(leagueId, League.class);
         PermissionValidator.checkPermission(league, administrator);
 
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = getGameOfLeague(leagueId, gameId, administrator);
         boolean wasFinished = game.getState() == GameState.FINISHED;
         bracketService.unlinkGame(game);
         timelineRepository.deleteByGame(game);

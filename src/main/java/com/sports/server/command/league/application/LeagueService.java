@@ -15,6 +15,8 @@ import com.sports.server.auth.exception.AuthorizationErrorMessages;
 import com.sports.server.command.league.dto.LeagueRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.OrganizationAccessValidator;
+import com.sports.server.common.exception.ForbiddenException;
 import com.sports.server.common.exception.UnauthorizedException;
 
 import lombok.RequiredArgsConstructor;
@@ -33,10 +35,13 @@ public class LeagueService {
 	private final LeagueTeamRepository leagueTeamRepository;
 	private final TeamRepository teamRepository;
 	private final BracketService bracketService;
+	private final OrganizationAccessValidator organizationAccessValidator;
 
 	public void register(final Member administrator, final LeagueRequest.Register request) {
-		League league = leagueRepository.save(request.toEntity(administrator));
+		League league = request.toEntity(administrator);
 		List<Team> teams = findValidatedTeams(request.teamIds());
+		validateTeamsOrganization(administrator, teams);
+		leagueRepository.save(league);
 		saveLeagueTeams(league, teams);
 		if (request.bracket() != null) {
 			bracketService.create(league, teams, request.bracket());
@@ -67,6 +72,7 @@ public class LeagueService {
 
 		List<Long> teamIdsToAdd = request.teamIds();
 		List<Team> teams = findValidatedTeams(teamIdsToAdd);
+		validateTeamsOrganization(administrator, teams);
 
 		List<Long> existingTeamIds = leagueTeamRepository.findTeamIdsByLeagueIdAndTeamIdIn(leagueId, teamIdsToAdd);
 		List<Team> teamsToAdd = teams.stream()
@@ -109,6 +115,14 @@ public class LeagueService {
 				.toList();
 
 		leagueTeamRepository.saveAll(leagueTeams);
+	}
+
+	private void validateTeamsOrganization(Member administrator, List<Team> teams) {
+		boolean hasForbidden = teams.stream()
+				.anyMatch(team -> !organizationAccessValidator.canManage(administrator, team));
+		if (hasForbidden) {
+			throw new ForbiddenException(AuthorizationErrorMessages.PERMISSION_DENIED);
+		}
 	}
 
 	private void validateTeamsSportType(League league, List<Team> teams) {

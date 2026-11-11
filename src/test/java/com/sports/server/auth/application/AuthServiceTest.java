@@ -1,7 +1,7 @@
 package com.sports.server.auth.application;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.sports.server.auth.dto.LoginResponse;
@@ -97,7 +97,7 @@ public class AuthServiceTest extends ServiceTest {
         void 매니저가_권한이_없는_경우_예외가_발생한다() {
 
             // given
-            String email = "jane@example.com";
+            String email = "user4@example.com";
             String password = "1234";
             LoginRequest loginRequest = new LoginRequest(email, password);
 

@@ -117,12 +117,14 @@ public class PlayerQueryAcceptanceTest extends AcceptanceTest {
     @Test
     void 선수를_상세_조회한다(){
         // given
+        configureMockJwtForEmail("john@example.com");
         Long playerId = player1.getId();
         PlayerResponse expected = new PlayerResponse(player1, null);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
+                .cookie(COOKIE_NAME, mockToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .get("/players/{playerId}", playerId)
                 .then().log().all()

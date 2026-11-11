@@ -122,8 +122,7 @@ public class CheerTalkQueryService {
 	}
 
 	private Game getGame(Long gameId) {
-		return gameQueryRepository.findById(gameId)
-				.orElseThrow(() -> new NotFoundException("존재하지 않는 경기입니다."));
+		return gameQueryRepository.getActiveGame(gameId);
 	}
 
 	private CursorPageResponse<CheerTalkResponse.ForManager> toForManagerPageResponse(List<CheerTalk> cheerTalks, int size) {
