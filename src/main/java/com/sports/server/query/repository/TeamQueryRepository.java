@@ -28,6 +28,6 @@ public interface TeamQueryRepository extends Repository<Team, Long> {
             """, nativeQuery = true)
     List<Team> findAllInBracketIncludingDeleted(@Param("leagueId") Long leagueId);
 
-    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player WHERE tp.team.id = :teamId")
+    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player WHERE fk(tp.team) = :teamId")
     List<TeamPlayer> findTeamPlayersByTeamId(@Param("teamId") Long teamId);
 }

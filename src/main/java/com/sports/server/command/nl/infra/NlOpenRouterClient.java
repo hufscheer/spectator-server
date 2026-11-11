@@ -1,6 +1,6 @@
 package com.sports.server.command.nl.infra;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.sports.server.command.nl.application.NlClient;
 import com.sports.server.command.nl.dto.NlParseResult;
 import com.sports.server.common.exception.CustomException;

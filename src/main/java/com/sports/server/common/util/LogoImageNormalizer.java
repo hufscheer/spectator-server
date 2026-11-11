@@ -67,7 +67,7 @@ public final class LogoImageNormalizer {
     public static byte[] normalize(byte[] source) {
         BufferedImage decoded = decode(source);
         if (decoded.getWidth() > MAX_DIMENSION || decoded.getHeight() > MAX_DIMENSION) {
-            throw new CustomException(HttpStatus.PAYLOAD_TOO_LARGE, "이미지 해상도가 허용 한도(4096×4096)를 초과합니다.");
+            throw new CustomException(HttpStatus.CONTENT_TOO_LARGE, "이미지 해상도가 허용 한도(4096×4096)를 초과합니다.");
         }
         BufferedImage resized = resizeContain(decoded);
         BufferedImage centered = centerOnCanvas(resized);
