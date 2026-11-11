@@ -35,7 +35,7 @@ dependencies {
 
     // JPA & Database
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'mysql:mysql-connector-java:8.0.32'
+    implementation 'mysql:mysql-connector-java:8.0.33'
     runtimeOnly 'com.h2database:h2'
 
     // flyway
@@ -43,7 +43,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql:9.1.3'
 
     // in-memory cache (rate limit, dedup, masking response)
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.3.1'
 
     // websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -63,8 +63,8 @@ dependencies {
 
     // TestContainer
     testImplementation "org.testcontainers:testcontainers:1.19.3"
-    testImplementation "org.testcontainers:junit-jupiter:1.19.3"
-    testImplementation "org.testcontainers:mysql:1.19.3"
+    testImplementation "org.testcontainers:junit-jupiter:1.21.4"
+    testImplementation "org.testcontainers:mysql:1.21.4"
 
     // rest docs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
@@ -74,19 +74,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // jwt
-    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'com.auth0:java-jwt:4.6.2'
 
     // aws
-    implementation('com.amazonaws:aws-java-sdk-s3:1.12.395') {
+    implementation('com.amazonaws:aws-java-sdk-s3:1.12.797') {
         // 스프링은 같은 패키지를 spring-jcl 로 준다. spring-cloud-starter-aws 를 쓸 때도 빠져 있었다
         exclude group: 'commons-logging', module: 'commons-logging'
     }
 
     // FCM HTTP v1 인증 (firebase-admin 은 무거워서 쓰지 않는다)
-    implementation 'com.google.auth:google-auth-library-oauth2-http:1.54.0'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.57.0'
 
     // image normalization (team logo aspect ratio fix)
-    implementation 'net.coobird:thumbnailator:0.4.20'
+    implementation 'net.coobird:thumbnailator:0.4.21'
     // 정규화본을 WebP 로 쓴다. ImageIO 에는 WebP 인코더가 없다. libwebp 를 묶은 네이티브(JNI)라
     // glibc 용 .so 지만 eclipse-temurin:17-jre-alpine(musl, amd64)에서도 그대로 로드된다(2026-11-07 컨테이너 실측)
     implementation 'com.github.usefulness:webp-imageio:0.11.0'
@@ -96,7 +96,7 @@ dependencies {
     implementation 'org.apache.pdfbox:pdfbox:3.0.8'
 
     // fixture
-    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.21")
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.2.3")
 }
 
 ext {
