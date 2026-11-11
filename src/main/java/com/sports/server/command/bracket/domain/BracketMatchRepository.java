@@ -13,20 +13,20 @@ public interface BracketMatchRepository extends JpaRepository<BracketMatch, Long
 
     @Query("SELECT bm FROM BracketMatch bm "
             + "LEFT JOIN FETCH bm.team1 LEFT JOIN FETCH bm.team2 LEFT JOIN FETCH bm.game "
-            + "WHERE bm.league.id = :leagueId")
+            + "WHERE fk(bm.league) = :leagueId")
     List<BracketMatch> findAllByLeagueId(@Param("leagueId") Long leagueId);
 
     Optional<BracketMatch> findByGame(Game game);
 
-    @Query("SELECT COUNT(bm) > 0 FROM BracketMatch bm WHERE bm.league.id = :leagueId AND bm.game IS NOT NULL")
+    @Query("SELECT COUNT(bm) > 0 FROM BracketMatch bm WHERE fk(bm.league) = :leagueId AND bm.game IS NOT NULL")
     boolean existsByLeagueIdAndGameIsNotNull(@Param("leagueId") Long leagueId);
 
     @Query("SELECT COUNT(bm) > 0 FROM BracketMatch bm "
-            + "WHERE bm.league.id = :leagueId AND bm.round = :round AND bm.game IS NOT NULL")
+            + "WHERE fk(bm.league) = :leagueId AND bm.round = :round AND bm.game IS NOT NULL")
     boolean existsByLeagueIdAndRoundAndGameIsNotNull(@Param("leagueId") Long leagueId, @Param("round") Round round);
 
     // 파생 delete 는 flush 시점(insert 이후)에 실행되어 재배치 시 유니크 제약에 걸리므로 즉시 실행되는 bulk delete 사용
     @Modifying
-    @Query("DELETE FROM BracketMatch bm WHERE bm.league.id = :leagueId")
+    @Query("DELETE FROM BracketMatch bm WHERE fk(bm.league) = :leagueId")
     void deleteAllByLeagueId(@Param("leagueId") Long leagueId);
 }

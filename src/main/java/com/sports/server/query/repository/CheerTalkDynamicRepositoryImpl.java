@@ -7,6 +7,7 @@ import static com.sports.server.command.league.domain.QLeague.league;
 import static com.sports.server.command.member.domain.QMember.member;
 import static com.sports.server.command.report.domain.QReport.report;
 
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -122,7 +123,7 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
         return queryFactory.selectFrom(cheerTalk)
                 .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
                 .join(game).on(gameTeam.game.id.eq(game.id))
-                .join(league).on(game.league.id.eq(league.id))
+                .join(league).on(Expressions.numberTemplate(Long.class, "fk({0})", game.league).eq(league.id))
                 .join(member).on(league.administrator.id.eq(member.id))
                 .where(member.id.eq(adminId))
                 .where(league.isDeleted.isFalse());
@@ -132,7 +133,7 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
         return queryFactory.selectFrom(cheerTalk)
                 .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
                 .join(game).on(gameTeam.game.id.eq(game.id))
-                .join(league).on(game.league.id.eq(league.id))
+                .join(league).on(Expressions.numberTemplate(Long.class, "fk({0})", game.league).eq(league.id))
                 .where(league.id.eq(leagueId))
                 .where(league.isDeleted.isFalse());
     }
@@ -141,7 +142,7 @@ public class CheerTalkDynamicRepositoryImpl implements CheerTalkDynamicRepositor
         return queryFactory.selectFrom(cheerTalk)
                 .join(gameTeam).on(cheerTalk.gameTeamId.eq(gameTeam.id))
                 .join(game).on(gameTeam.game.id.eq(game.id))
-                .join(league).on(game.league.id.eq(league.id))
+                .join(league).on(Expressions.numberTemplate(Long.class, "fk({0})", game.league).eq(league.id))
                 .where(game.id.eq(gameId))
                 .where(league.isDeleted.isFalse());
     }

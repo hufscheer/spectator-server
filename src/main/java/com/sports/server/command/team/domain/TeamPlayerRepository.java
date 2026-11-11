@@ -7,10 +7,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TeamPlayerRepository extends JpaRepository<TeamPlayer, Long> {
-    @Query("SELECT tp.player.id FROM TeamPlayer tp WHERE tp.team.id = :teamId")
+    @Query("SELECT tp.player.id FROM TeamPlayer tp WHERE fk(tp.team) = :teamId")
     List<Long> findPlayerIdsByTeamId(@Param("teamId") Long teamId);
 
-    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player WHERE tp.team.id = :teamId")
+    @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player WHERE fk(tp.team) = :teamId")
     List<TeamPlayer> findTeamPlayersWithPlayerByTeamId(@Param("teamId") Long teamId);
 
     @Query("SELECT tp FROM TeamPlayer tp JOIN FETCH tp.player WHERE tp.id IN :ids")

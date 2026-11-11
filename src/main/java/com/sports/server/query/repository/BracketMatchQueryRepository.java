@@ -14,6 +14,6 @@ public interface BracketMatchQueryRepository extends Repository<BracketMatch, Lo
             + "left join fetch bm.game g "
             + "left join fetch g.gameTeams gt "
             + "left join fetch gt.team "
-            + "where bm.league.id = :leagueId")
+            + "where fk(bm.league) = :leagueId")
     List<BracketMatch> findAllByLeagueIdWithTeamsAndGames(@Param("leagueId") Long leagueId);
 }

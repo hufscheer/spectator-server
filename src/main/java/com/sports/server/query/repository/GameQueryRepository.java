@@ -21,7 +21,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "JOIN FETCH g.league "
                     + "JOIN FETCH g.gameTeams gt "
                     + "JOIN FETCH gt.team "
-                    + "WHERE g.league.id in :leagueIds "
+                    + "WHERE fk(g.league) in :leagueIds "
                     + "AND g.state = 'PLAYING'"
     )
     List<Game> findPlayingGamesByLeagueIdsWithGameTeams(@Param("leagueIds") List<Long> leagueIds);
@@ -52,7 +52,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "WHERE g.id IN ("
                     + "  SELECT g2.id FROM Game g2 "
                     + "  JOIN g2.gameTeams gt2 "
-                    + "  WHERE gt2.team.id = :teamId"
+                    + "  WHERE fk(gt2.team) = :teamId"
                     + ") "
                     + "ORDER BY g.id DESC")
     List<Game> findGamesByTeamId(@Param("teamId") Long teamId);
@@ -64,7 +64,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
             "WHERE g.id = :gameId")
     Optional<Game> findGameDetailsById(@Param("gameId") Long gameId);
 
-    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE g.league.id IN :leagueIds ORDER BY g.startTime ASC, g.id ASC")
+    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE fk(g.league) IN :leagueIds ORDER BY g.startTime ASC, g.id ASC")
     List<Game> findAllByLeagueIds(@Param("leagueIds") List<Long> leagueIds);
 
     @Query(value = """
