@@ -18,9 +18,12 @@ public interface BracketMatchRepository extends JpaRepository<BracketMatch, Long
 
     Optional<BracketMatch> findByGame(Game game);
 
-    boolean existsByLeagueIdAndGameIsNotNull(Long leagueId);
+    @Query("SELECT COUNT(bm) > 0 FROM BracketMatch bm WHERE bm.league.id = :leagueId AND bm.game IS NOT NULL")
+    boolean existsByLeagueIdAndGameIsNotNull(@Param("leagueId") Long leagueId);
 
-    boolean existsByLeagueIdAndRoundAndGameIsNotNull(Long leagueId, Round round);
+    @Query("SELECT COUNT(bm) > 0 FROM BracketMatch bm "
+            + "WHERE bm.league.id = :leagueId AND bm.round = :round AND bm.game IS NOT NULL")
+    boolean existsByLeagueIdAndRoundAndGameIsNotNull(@Param("leagueId") Long leagueId, @Param("round") Round round);
 
     // 파생 delete 는 flush 시점(insert 이후)에 실행되어 재배치 시 유니크 제약에 걸리므로 즉시 실행되는 bulk delete 사용
     @Modifying
