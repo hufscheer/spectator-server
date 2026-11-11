@@ -1,7 +1,7 @@
 package com.sports.server.auth.application;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.sports.server.auth.dto.LoginResponse;

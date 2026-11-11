@@ -3,6 +3,7 @@ package com.sports.server.query.repository;
 import static com.sports.server.command.game.domain.QGame.game;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sports.server.command.game.domain.GameState;
@@ -40,7 +41,7 @@ public class GamesQueryConditionMapper {
         LocalDateTime cursorStartTime = getCursorStartTime(cursor);
 
         DynamicBooleanBuilder booleanBuilder = DynamicBooleanBuilder.builder()
-                .and(() -> game.league.id.eq(gamesQueryRequestDto.getLeagueId()))
+                .and(() -> Expressions.numberTemplate(Long.class, "fk({0})", game.league).eq(gamesQueryRequestDto.getLeagueId()))
                 .and(() -> game.state.eq(state));
 
         List<Long> leagueTeamIds = gamesQueryRequestDto.getLeagueTeamIds();
