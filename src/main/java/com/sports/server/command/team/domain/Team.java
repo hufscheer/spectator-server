@@ -15,13 +15,13 @@ import java.util.List;
 
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
 @Table(name = "teams")
-@SQLRestriction("is_deleted = 0")
+@Where(clause = "is_deleted = 0")
 @SQLDelete(sql = "UPDATE teams SET is_deleted = 1 WHERE id = ?")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

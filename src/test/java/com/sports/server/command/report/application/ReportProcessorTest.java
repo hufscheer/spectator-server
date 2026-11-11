@@ -14,14 +14,14 @@ import java.util.Optional;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 public class ReportProcessorTest extends ServiceTest {
 
     @Autowired
     private ReportProcessor reportProcessor;
 
-    @MockitoBean
+    @MockBean
     private ReportRepository reportRepository;
 
     @ParameterizedTest

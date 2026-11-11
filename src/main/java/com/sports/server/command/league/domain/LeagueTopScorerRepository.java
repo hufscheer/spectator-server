@@ -14,8 +14,7 @@ public interface LeagueTopScorerRepository extends Repository<LeagueTopScorer, L
 
     void delete(LeagueTopScorer leagueTopScorer);
 
-    @Query("SELECT lts FROM LeagueTopScorer lts WHERE lts.league.id = :leagueId")
-    List<LeagueTopScorer> findByLeagueId(@Param("leagueId") Long leagueId);
+    List<LeagueTopScorer> findByLeagueId(Long leagueId);
 
     // 파생 삭제는 행마다 조회 후 지워서, 다른 트랜잭션이 먼저 지운 행이면 StaleStateException 이 난다
     @Modifying
