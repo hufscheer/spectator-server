@@ -11,7 +11,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -27,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 @Sql(scripts = "/league-fixture.sql")
 public class NlAcceptanceTest extends AcceptanceTest {
 
-    @MockBean
+    @MockitoBean
     private NlClient nlClient;
 
     @BeforeEach
