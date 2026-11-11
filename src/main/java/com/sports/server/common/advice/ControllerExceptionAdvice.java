@@ -8,8 +8,6 @@ import com.sports.server.common.application.AlertService;
 import com.sports.server.common.dto.ErrorResponse;
 import com.sports.server.common.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,7 +27,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
@@ -122,14 +119,6 @@ public class ControllerExceptionAdvice {
         logClientError(request, HttpStatus.NOT_FOUND, e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.of("요청한 엔드포인트를 찾을 수 없습니다."));
-    }
-
-    // 없는 경로는 정적 리소스 핸들러가 이 예외를 던진다. Exception 핸들러로 가면 500과 알림이 되므로
-    // 기본 에러 응답(404)으로 넘긴다
-    @ExceptionHandler(NoResourceFoundException.class)
-    protected void handleNoResourceFoundException(NoResourceFoundException e, HttpServletResponse response)
-            throws IOException {
-        response.sendError(HttpStatus.NOT_FOUND.value());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

@@ -17,7 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
@@ -31,47 +32,47 @@ public class SecurityConfig {
     AuthenticationEntryPoint authEntryPoint;
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, PathPatternRequestMatcher.Builder paths) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(paths.matcher("/manager/login")).permitAll()
-                        .requestMatchers(paths.matcher("/manager/**"),
-                                paths.matcher(HttpMethod.GET, "/members/info"),
-                                paths.matcher(HttpMethod.POST, "/leagues"),
-                                paths.matcher(HttpMethod.PUT, "/leagues/{leagueId}"),
-                                paths.matcher(HttpMethod.PUT, "/leagues/{leagueId}/bracket"),
-                                paths.matcher(HttpMethod.PUT, "/leagues/{leagueId}/{gameId}"),
-                                paths.matcher(HttpMethod.POST, "/leagues/*/teams"),
-                                paths.matcher(HttpMethod.DELETE, "/leagues/*/teams"),
-                                paths.matcher(HttpMethod.POST, "/leagues/{leagueId}/teams"),
-                                paths.matcher(HttpMethod.PUT, "/leagues/{leagueId}/teams/{teamId}"),
-                                paths.matcher(HttpMethod.DELETE, "/leagues/{leagueId}/teams/{teamId}"),
-                                paths.matcher(HttpMethod.POST, "/leagues/{leagueId}/teams/{teamId}/delete-logo"),
-                                paths.matcher(HttpMethod.POST, "/leagues/{leagueId}/games"),
-                                paths.matcher(HttpMethod.DELETE, "/leagues/{leagueId}/{gameId}"),
-                                paths.matcher(HttpMethod.GET, "/cheer-talks/**"),
-                                paths.matcher(HttpMethod.POST, "/games/*/timelines/**"),
-                                paths.matcher(HttpMethod.POST, "/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/**"),
-                                paths.matcher(HttpMethod.POST, "/teams/**"),
-                                paths.matcher(HttpMethod.PUT, "/teams/{teamId}"),
-                                paths.matcher(HttpMethod.DELETE, "/teams/**"),
-                                paths.matcher(HttpMethod.GET, "/players"),
-                                paths.matcher(HttpMethod.POST, "/players"),
-                                paths.matcher(HttpMethod.PATCH, "/players/{playerId}"),
-                                paths.matcher(HttpMethod.DELETE, "/players/{playerId}"),
-                                paths.matcher(HttpMethod.PATCH, "/cheer-talks/**"),
-                                paths.matcher(HttpMethod.POST, "/nl/**"),
-                                paths.matcher(HttpMethod.DELETE, "/game-teams/{gameTeamId}"),
-                                paths.matcher(HttpMethod.POST, "/game-teams/{gameTeamId}/lineup-players"),
-                                paths.matcher(HttpMethod.DELETE, "/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}"),
-                                paths.matcher(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/starter"),
-                                paths.matcher(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/candidate"),
-                                paths.matcher(HttpMethod.PUT, "/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register"),
-                                paths.matcher(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke"),
-                                paths.matcher(HttpMethod.POST, "/admin/**"),
-                                paths.matcher(HttpMethod.PATCH, "/reports/{leagueId}/{cheerTalkId}/cancel")
+                        .requestMatchers(mvc.pattern("/manager/login")).permitAll()
+                        .requestMatchers(mvc.pattern("/manager/**"),
+                                mvc.pattern(HttpMethod.GET, "/members/info"),
+                                mvc.pattern(HttpMethod.POST, "/leagues"),
+                                mvc.pattern(HttpMethod.PUT, "/leagues/{leagueId}"),
+                                mvc.pattern(HttpMethod.PUT, "/leagues/{leagueId}/bracket"),
+                                mvc.pattern(HttpMethod.PUT, "/leagues/{leagueId}/{gameId}"),
+                                mvc.pattern(HttpMethod.POST, "/leagues/*/teams"),
+                                mvc.pattern(HttpMethod.DELETE, "/leagues/*/teams"),
+                                mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams"),
+                                mvc.pattern(HttpMethod.PUT, "/leagues/{leagueId}/teams/{teamId}"),
+                                mvc.pattern(HttpMethod.DELETE, "/leagues/{leagueId}/teams/{teamId}"),
+                                mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/teams/{teamId}/delete-logo"),
+                                mvc.pattern(HttpMethod.POST, "/leagues/{leagueId}/games"),
+                                mvc.pattern(HttpMethod.DELETE, "/leagues/{leagueId}/{gameId}"),
+                                mvc.pattern(HttpMethod.GET, "/cheer-talks/**"),
+                                mvc.pattern(HttpMethod.POST, "/games/*/timelines/**"),
+                                mvc.pattern(HttpMethod.POST, "/games/{gameId}/{gameTeamId}/lineup-players/{lineupPlayerId}/**"),
+                                mvc.pattern(HttpMethod.POST, "/teams/**"),
+                                mvc.pattern(HttpMethod.PUT, "/teams/{teamId}"),
+                                mvc.pattern(HttpMethod.DELETE, "/teams/**"),
+                                mvc.pattern(HttpMethod.GET, "/players"),
+                                mvc.pattern(HttpMethod.POST, "/players"),
+                                mvc.pattern(HttpMethod.PATCH, "/players/{playerId}"),
+                                mvc.pattern(HttpMethod.DELETE, "/players/{playerId}"),
+                                mvc.pattern(HttpMethod.PATCH, "/cheer-talks/**"),
+                                mvc.pattern(HttpMethod.POST, "/nl/**"),
+                                mvc.pattern(HttpMethod.DELETE, "/game-teams/{gameTeamId}"),
+                                mvc.pattern(HttpMethod.POST, "/game-teams/{gameTeamId}/lineup-players"),
+                                mvc.pattern(HttpMethod.DELETE, "/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}"),
+                                mvc.pattern(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/starter"),
+                                mvc.pattern(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/candidate"),
+                                mvc.pattern(HttpMethod.PUT, "/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register"),
+                                mvc.pattern(HttpMethod.PATCH, "/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke"),
+                                mvc.pattern(HttpMethod.POST, "/admin/**"),
+                                mvc.pattern(HttpMethod.PATCH, "/reports/{leagueId}/{cheerTalkId}/cancel")
                         )
                         .authenticated()
                         .anyRequest().permitAll()
@@ -85,8 +86,8 @@ public class SecurityConfig {
 
 
     @Bean
-    PathPatternRequestMatcher.Builder paths() {
-        return PathPatternRequestMatcher.withDefaults();
+    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
     }
 
     @Bean

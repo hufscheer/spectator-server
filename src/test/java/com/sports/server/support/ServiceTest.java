@@ -8,7 +8,7 @@ import com.sports.server.support.config.AsyncTestConfig;
 import com.sports.server.support.isolation.DatabaseIsolation;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 
@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 @DatabaseIsolation
 public class ServiceTest {
 
-    @MockitoBean
+    @MockBean
     protected ReportCheckClient reportCheckClient;
 
     @BeforeEach
