@@ -222,9 +222,30 @@ public class LeagueQueryService {
         entityUtils.getEntity(leagueId, League.class);
         LeagueStatistics statistics = leagueStatisticsQueryRepository.findByLeagueId(leagueId).orElseThrow(() -> new NotFoundException("리그 통계 데이터가 아직 업데이트되지 않았습니다."));
 
-        Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeamQueryRepository.findByLeagueId(leagueId).stream().collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));
+        List<LeagueTeam> leagueTeams = leagueTeamQueryRepository.findByLeagueId(leagueId);
+        Map<Long, LeagueTeam> leagueTeamsInfo = leagueTeams.stream().collect(Collectors.toMap(lt -> lt.getTeam().getId(), lt -> lt));
+        Map<Long, LeagueTeam> leagueTeamById = leagueTeams.stream().collect(Collectors.toMap(LeagueTeam::getId, lt -> lt));
 
-        return LeagueStatisticsResponse.builder().firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeamsInfo)).secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeamsInfo)).mostCheeredTeam(LeagueTeamResponse.ofWithCheerCount(findLeagueTeamFor(statistics.getMostCheeredTeam(), leagueTeamsInfo))).mostCheerTalksTeam(LeagueTeamResponse.ofWithTotalTalkCount(findLeagueTeamFor(statistics.getMostCheerTalksTeam(), leagueTeamsInfo))).build();
+        // 응원 순위는 저장된 합계로 조회 시점에 계산한다(삭제된 팀 제외). 1위 팀 필드도 같은 순위에서 만든다
+        List<LeagueTeamTally> tallies = leagueTeamQueryRepository.findTalliesByLeagueId(leagueId);
+        List<LeagueTeamRanking.Ranked> cheerRanked = LeagueTeamRanking.rank(tallies, LeagueTeamTally::cheerCount);
+        List<LeagueTeamRanking.Ranked> talkRanked = LeagueTeamRanking.rank(tallies, LeagueTeamTally::talkCount);
+
+        return LeagueStatisticsResponse.builder()
+                .firstWinnerTeam(createLeagueTeamResponseForWinner(statistics.getFirstWinnerTeam(), leagueTeamsInfo))
+                .secondWinnerTeam(createLeagueTeamResponseForWinner(statistics.getSecondWinnerTeam(), leagueTeamsInfo))
+                .mostCheeredTeam(LeagueTeamResponse.ofWithCheerCount(firstLeagueTeam(cheerRanked, leagueTeamById)))
+                .mostCheerTalksTeam(LeagueTeamResponse.ofWithTotalTalkCount(firstLeagueTeam(talkRanked, leagueTeamById)))
+                .cheerRanking(cheerRanked.stream().map(LeagueTeamRankingResponse::ofCheerCount).toList())
+                .cheerTalksRanking(talkRanked.stream().map(LeagueTeamRankingResponse::ofCheerTalksCount).toList())
+                .build();
+    }
+
+    private LeagueTeam firstLeagueTeam(List<LeagueTeamRanking.Ranked> ranked, Map<Long, LeagueTeam> leagueTeamById) {
+        return ranked.stream()
+                .findFirst()
+                .map(first -> leagueTeamById.get(first.tally().leagueTeamId()))
+                .orElse(null);
     }
 
     private LeagueTeamResponse createLeagueTeamResponseForWinner(Team team, Map<Long, LeagueTeam> leagueTeamsInfo) {

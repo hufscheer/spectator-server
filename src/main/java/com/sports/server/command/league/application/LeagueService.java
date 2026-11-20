@@ -103,11 +103,6 @@ public class LeagueService {
 		leagueTeamsToRemove.forEach(league::removeLeagueTeam);
 	}
 
-	public void updateTotalCheerCountsAndTotalTalkCount(final Long leagueId) {
-		leagueTeamRepository.updateTotalCheerCounts(leagueId);
-		leagueTeamRepository.updateTotalTalkCounts(leagueId);
-	}
-
 	private void saveLeagueTeams(League league, List<Team> teams){
 		validateTeamsSportType(league, teams);
 		List<LeagueTeam> leagueTeams = teams.stream()

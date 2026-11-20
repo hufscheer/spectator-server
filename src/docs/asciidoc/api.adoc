@@ -284,6 +284,11 @@ operation::league-query-controller-test/리그의_활성_응원톡_수를_조회
 
 === 리그 통계 조회
 
+우승팀과 준우승팀은 결승이 끝난 뒤에만 채워진다(결승 종료를 취소하면 비워진다).
+`cheerRanking`(응원왕)과 `cheerTalksRanking`(댓글왕)은 대회 안 어느 경기든 종료되거나 종료가 취소될 때마다 다시 센다.
+종료된 경기만 세고, 3위까지 공동 순위(1,1,3 방식)로 내며 3위가 동률이면 모두 포함한다. 0인 팀은 제외한다.
+`mostCheeredTeam`, `mostCheerTalksTeam` 은 각 순위의 첫 번째 팀이다(순위가 비면 null).
+
 operation::league-query-controller-test/리그_통계를_조회한다[snippets='http-request,path-parameters,http-response,response-fields']
 
 === 리그 득점왕 조회

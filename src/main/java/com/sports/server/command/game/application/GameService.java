@@ -132,9 +132,9 @@ public class GameService {
         bracketService.unlinkGame(game);
         timelineRepository.deleteByGame(game);
         gameRepository.delete(game);
-        // 종료된 경기의 득점은 득점왕에 들어가 있으니, 경기를 지우면 다시 센다
+        // 종료된 경기의 득점과 응원은 득점왕과 응원 순위에 들어가 있으니, 경기를 지우면 다시 센다
         if (wasFinished) {
-            eventPublisher.publishEvent(new LeagueTopScorerRecalculationEvent(leagueId));
+            eventPublisher.publishEvent(new LeagueRecordRecalculationEvent(leagueId));
         }
     }
 

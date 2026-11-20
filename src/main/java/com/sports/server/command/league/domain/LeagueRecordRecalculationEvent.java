@@ -1,6 +1,6 @@
 package com.sports.server.command.league.domain;
 
-public record LeagueTopScorerRecalculationEvent(
+public record LeagueRecordRecalculationEvent(
         Long leagueId
 ) {
 }
