@@ -2,7 +2,6 @@ package com.sports.server.command.league.domain;
 
 import com.sports.server.command.team.domain.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -26,20 +25,23 @@ public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long> {
     @Query("SELECT lt FROM LeagueTeam lt WHERE fk(lt.league) = :leagueId")
     List<LeagueTeam> findByLeagueId(@Param("leagueId") Long leagueId);
 
-    @Modifying
-    @Query("UPDATE LeagueTeam lt SET lt.totalCheerCount = " +
-           "COALESCE((SELECT CAST(SUM(gt.cheerCount) AS int) " +
-           "FROM GameTeam gt JOIN gt.game g " +
-           "WHERE fk(gt.team) = fk(lt.team) AND fk(g.league) = :leagueId), 0) " +
-           "WHERE fk(lt.league) = :leagueId")
-    void updateTotalCheerCounts(@Param("leagueId") Long leagueId);
+    @Query("SELECT new com.sports.server.command.league.domain.LeagueTeamRef(lt.id, cast(fk(lt.team) as long)) " +
+            "FROM LeagueTeam lt WHERE fk(lt.league) = :leagueId")
+    List<LeagueTeamRef> findRefsByLeagueId(@Param("leagueId") Long leagueId);
 
-    @Modifying
-    @Query("UPDATE LeagueTeam lt SET lt.totalTalkCount = " +
-           "COALESCE((SELECT CAST(COUNT(ct.id) AS int) " +
-           "FROM CheerTalk ct, GameTeam gt2 " +
-           "WHERE ct.gameTeamId = gt2.id AND fk(gt2.team) = fk(lt.team) " +
-           "AND fk(gt2.game.league) = :leagueId AND ct.blockStatus = com.sports.server.command.cheertalk.domain.CheerTalkBlockStatus.ACTIVE), 0) " +
-           "WHERE fk(lt.league) = :leagueId")
-    void updateTotalTalkCounts(@Param("leagueId") Long leagueId);
+    // 종료된 경기만 센다. 잠금 없는 읽기라 진행 중 경기의 응원 카운트 갱신을 막지 않는다
+    @Query("SELECT new com.sports.server.command.league.domain.TeamTotal(" +
+            "cast(fk(gt.team) as long), cast(SUM(gt.cheerCount) as long)) " +
+            "FROM GameTeam gt JOIN gt.game g " +
+            "WHERE fk(g.league) = :leagueId AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
+            "GROUP BY fk(gt.team)")
+    List<TeamTotal> sumCheerCountsOfFinishedGames(@Param("leagueId") Long leagueId);
+
+    @Query("SELECT new com.sports.server.command.league.domain.TeamTotal(" +
+            "cast(fk(gt.team) as long), count(ct.id)) " +
+            "FROM CheerTalk ct JOIN GameTeam gt ON ct.gameTeamId = gt.id JOIN gt.game g " +
+            "WHERE fk(g.league) = :leagueId AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
+            "AND ct.blockStatus = com.sports.server.command.cheertalk.domain.CheerTalkBlockStatus.ACTIVE " +
+            "GROUP BY fk(gt.team)")
+    List<TeamTotal> countActiveCheerTalksOfFinishedGames(@Param("leagueId") Long leagueId);
 }

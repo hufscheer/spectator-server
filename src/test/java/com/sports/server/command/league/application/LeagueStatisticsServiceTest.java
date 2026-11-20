@@ -82,8 +82,8 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
         }
 
         @Test
-        void 최다_응원팀과_최다_대화팀이_올바르게_업데이트된다() {
-            // given
+        void 최다_응원팀과_최다_대화팀은_바꾸지_않는다() {
+            // given 픽스처의 리그1 통계는 최다 응원 팀 1, 최다 응원톡 팀 2
             Long finalGameId = 1L;
             Game finalGame = entityUtils.getEntity(1L, Game.class);
             League league = finalGame.getLeague();
@@ -91,10 +91,10 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
             // when
             leagueStatisticsService.updateLeagueStatisticFromFinalGame(finalGameId);
 
-            // then
+            // then 응원 순위는 LeagueCheerRankingService 가 맡는다
             LeagueStatistics statistics = leagueStatisticsRepository.findByLeagueId(league.getId());
-            assertThat(statistics.getMostCheeredTeam()).isNotNull();
-            assertThat(statistics.getMostCheerTalksTeam()).isNotNull();
+            assertThat(statistics.getMostCheeredTeam().getId()).isEqualTo(1L);
+            assertThat(statistics.getMostCheerTalksTeam().getId()).isEqualTo(2L);
         }
 
         @Test
@@ -128,7 +128,7 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
     class RollbackLeagueStatisticForFinalGameTest {
 
         @Test
-        void 우승_준우승_최다_응원_최다_대화팀_정보가_초기화되고_랭킹이_복구된다() {
+        void 우승_준우승이_초기화되고_랭킹이_복구된다() {
             // given
             Long finalGameId = 1L;
             Game finalGame = entityUtils.getEntity(finalGameId, Game.class);
@@ -146,8 +146,9 @@ public class LeagueStatisticsServiceTest extends ServiceTest {
             LeagueStatistics rolledBack = leagueStatisticsRepository.findByLeagueId(league.getId());
             assertThat(rolledBack.getFirstWinnerTeam()).isNull();
             assertThat(rolledBack.getSecondWinnerTeam()).isNull();
-            assertThat(rolledBack.getMostCheeredTeam()).isNull();
-            assertThat(rolledBack.getMostCheerTalksTeam()).isNull();
+            // 최다 응원, 응원톡 팀은 결승과 무관하게 남는다
+            assertThat(rolledBack.getMostCheeredTeam()).isNotNull();
+            assertThat(rolledBack.getMostCheerTalksTeam()).isNotNull();
 
             LeagueTeam firstWinnerLeagueTeam = leagueTeamRepository.findByLeagueAndTeam(league, firstWinnerBefore).orElseThrow();
             LeagueTeam secondWinnerLeagueTeam = leagueTeamRepository.findByLeagueAndTeam(league, secondWinnerBefore).orElseThrow();

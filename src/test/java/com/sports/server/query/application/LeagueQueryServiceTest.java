@@ -76,7 +76,11 @@ public class LeagueQueryServiceTest extends ServiceTest {
                 () -> assertThat(response.firstWinnerTeam().teamName()).isEqualTo("경영 야생마"),
                 () -> assertThat(response.secondWinnerTeam().teamName()).isEqualTo("서어 뻬데뻬"),
                 () -> assertThat(response.mostCheeredTeam().teamName()).isEqualTo("경영 야생마"),
-                () -> assertThat(response.mostCheerTalksTeam().teamName()).isEqualTo("서어 뻬데뻬")
+                () -> assertThat(response.mostCheerTalksTeam().teamName()).isEqualTo("서어 뻬데뻬"),
+                () -> assertThat(response.cheerRanking()).extracting(r -> r.ranking() + ":" + r.teamName() + ":" + r.cheerCount())
+                        .containsExactly("1:경영 야생마:150", "2:서어 뻬데뻬:100", "3:미컴 축구생각:75"),
+                () -> assertThat(response.cheerTalksRanking()).extracting(r -> r.ranking() + ":" + r.teamName() + ":" + r.cheerTalksCount())
+                        .containsExactly("1:서어 뻬데뻬:3", "2:경영 야생마:1")
         );
     }
 
