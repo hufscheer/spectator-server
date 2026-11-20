@@ -5,6 +5,7 @@ import com.sports.server.command.bracket.application.BracketService;
 import com.sports.server.command.game.domain.*;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.game.exception.GameErrorMessages;
+import com.sports.server.command.league.application.LeagueStatisticsService;
 import com.sports.server.command.league.domain.*;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.player.exception.PlayerErrorMessages;
@@ -44,6 +45,7 @@ public class GameService {
     private final GameTeamRepository gameTeamRepository;
     private final LeagueTeamRepository leagueTeamRepository;
     private final BracketService bracketService;
+    private final LeagueStatisticsService leagueStatisticsService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -129,6 +131,10 @@ public class GameService {
 
         Game game = getGameOfLeague(leagueId, gameId, administrator);
         boolean wasFinished = game.getState() == GameState.FINISHED;
+        // 종료된 결승을 지우면 종료 취소처럼 우승, 준우승과 순위를 되돌린다. 경기를 지우기 전에 불러야 한다
+        if (wasFinished && Round.FINAL == game.getRound()) {
+            leagueStatisticsService.rollbackLeagueStatisticForFinalGame(gameId);
+        }
         bracketService.unlinkGame(game);
         timelineRepository.deleteByGame(game);
         gameRepository.delete(game);

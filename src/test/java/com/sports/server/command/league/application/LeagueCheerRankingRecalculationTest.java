@@ -235,6 +235,27 @@ class LeagueCheerRankingRecalculationTest extends ServiceTest {
         assertThat(response.firstWinnerTeam()).isNull();
     }
 
+    @Test
+    void 종료된_결승을_삭제하면_우승팀과_순위가_비고_응원_순위는_남은_경기로_다시_센다() {
+        // given
+        endGame(GAME_1);
+        endGame(GAME_2);
+        endGame(GAME_3);
+
+        // when
+        gameService.deleteGame(LEAGUE_ID, GAME_3, manager);
+
+        // then 결승 몫(팀A 10, 팀C 5, 응원톡 팀A 5)이 빠진다
+        LeagueStatisticsResponse response = statistics();
+        assertThat(response.firstWinnerTeam()).isNull();
+        assertThat(response.secondWinnerTeam()).isNull();
+        assertThat(cheers(response.cheerRanking())).containsExactly("1:팀A:100", "2:팀C:90", "3:팀D:80");
+        assertThat(talks(response.cheerTalksRanking())).startsWith("1:팀A:3");
+        // league_teams id 1 = 팀A(우승이었음), id 3 = 팀C(준우승이었음)
+        assertThat(jdbcTemplate.queryForList("SELECT ranking FROM league_teams WHERE id IN (1, 3)", Integer.class))
+                .containsOnly(0);
+    }
+
     private LeagueStatisticsResponse statistics() {
         return leagueQueryService.findLeagueStatistic(LEAGUE_ID);
     }
