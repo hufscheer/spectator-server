@@ -9,12 +9,14 @@ import com.sports.server.command.game.domain.LineupPlayer;
 import com.sports.server.command.game.domain.LineupPlayerState;
 import com.sports.server.command.game.dto.GameRequest;
 import com.sports.server.command.game.domain.Position;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.support.ServiceTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,6 +37,13 @@ public class LineupPlayerServiceTest extends ServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private Member owner;
+
+    @BeforeEach
+    void setUpOwner() {
+        owner = entityUtils.getEntity(1L, Member.class);
+    }
+
     // 게임팀 1(축구)은 선발 4명이다. 선발 수가 total 이 되도록 이미 라인업에 없는 선수(6~10, 16~)로 채운다
     private void fillStarters(int total) {
         for (int i = 0; i < total - 4; i++) {
@@ -51,7 +60,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         Long lineupPlayerId = 1L;
 
         // when
-        lineupPlayerService.changePlayerToCaptain(gameId, lineupPlayerId);
+        lineupPlayerService.changePlayerToCaptain(gameId, lineupPlayerId, owner);
 
         // then
         LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -65,7 +74,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         Long lineupPlayerId = 6L;
 
         // when
-        lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId);
+        lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId, owner);
 
         // then
         LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -79,7 +88,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         Long lineupPlayerId = 6L;
 
         // when
-        lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
+        lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId, owner);
 
         // then
         LineupPlayer changedLineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -98,7 +107,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.addPlayerToLineup(gameTeamId, request))
+        assertThatThrownBy(() -> lineupPlayerService.addPlayerToLineup(gameTeamId, request, owner))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 주장이 등록된 팀입니다. 기존 주장을 먼저 해제한 뒤 추가하세요.");
     }
@@ -112,7 +121,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         );
 
         // when
-        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId, request);
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId, request, owner);
 
         // then
         LineupPlayer added = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -128,7 +137,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         );
 
         // when
-        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId, request);
+        Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId, request, owner);
 
         // then
         LineupPlayer added = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -142,7 +151,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
 
         // when
         Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST), owner);
 
         // then
         LineupPlayer added = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
@@ -156,7 +165,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
 
         // when
         Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(gameTeamId,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, null));
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, null), owner);
 
         // then
         assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getPosition()).isNull();
@@ -169,7 +178,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
 
         // when & then
         assertThatThrownBy(() -> lineupPlayerService.addPlayerToLineup(gameTeamId,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.PG)))
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.PG), owner))
                 .isInstanceOf(BadRequestException.class);
     }
 
@@ -178,10 +187,10 @@ public class LineupPlayerServiceTest extends ServiceTest {
         // given
         Long gameId = 1L;
         Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST), owner);
 
         // when
-        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, Position.LW);
+        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, Position.LW, owner);
 
         // then
         assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getPosition())
@@ -193,10 +202,10 @@ public class LineupPlayerServiceTest extends ServiceTest {
         // given
         Long gameId = 1L;
         Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST), owner);
 
         // when
-        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, null);
+        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, null, owner);
 
         // then
         assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getPosition()).isNull();
@@ -206,10 +215,10 @@ public class LineupPlayerServiceTest extends ServiceTest {
     void 다른_경기의_라인업선수는_수정할_수_없다() {
         // given: gameTeamId 1 은 gameId 1 에 속한다
         Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST));
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, Position.ST), owner);
 
         // when & then: 다른 경기 id 로는 건드릴 수 없다
-        assertThatThrownBy(() -> lineupPlayerService.changePlayerPosition(2L, lineupPlayerId, Position.LW))
+        assertThatThrownBy(() -> lineupPlayerService.changePlayerPosition(2L, lineupPlayerId, Position.LW, owner))
                 .isInstanceOf(BadRequestException.class);
     }
 
@@ -219,7 +228,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         fillStarters(11);
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.changePlayerStateToStarter(1L, 1L))
+        assertThatThrownBy(() -> lineupPlayerService.changePlayerStateToStarter(1L, 1L, owner))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("선발 선수는 11명까지 등록할 수 있어요.");
     }
@@ -230,7 +239,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         fillStarters(10);
 
         // when
-        lineupPlayerService.changePlayerStateToStarter(1L, 1L);
+        lineupPlayerService.changePlayerStateToStarter(1L, 1L, owner);
 
         // then
         assertThat(entityUtils.getEntity(1L, LineupPlayer.class).getState()).isEqualTo(LineupPlayerState.STARTER);
@@ -242,7 +251,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         fillStarters(11);
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.changePlayerStateToStarter(1L, 2L))
+        assertThatThrownBy(() -> lineupPlayerService.changePlayerStateToStarter(1L, 2L, owner))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("이미 선발로 등록된 선수입니다.");
     }
@@ -256,7 +265,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> lineupPlayerService.addPlayerToLineup(1L, request))
+        assertThatThrownBy(() -> lineupPlayerService.addPlayerToLineup(1L, request, owner))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("선발 선수는 11명까지 등록할 수 있어요.");
     }
@@ -268,7 +277,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
 
         // when
         Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.CANDIDATE, false, null));
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.CANDIDATE, false, null), owner);
 
         // then
         assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getState())
@@ -282,7 +291,7 @@ public class LineupPlayerServiceTest extends ServiceTest {
 
         // when
         Long lineupPlayerId = lineupPlayerService.addPlayerToLineup(1L,
-                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, null));
+                new GameRequest.LineupPlayerRequest(1L, LineupPlayerState.STARTER, false, null), owner);
 
         // then
         assertThat(entityUtils.getEntity(lineupPlayerId, LineupPlayer.class).getState())
@@ -295,8 +304,8 @@ public class LineupPlayerServiceTest extends ServiceTest {
         fillStarters(12);
 
         // when
-        lineupPlayerService.changePlayerStateToCandidate(1L, 2L);
-        lineupPlayerService.removePlayerFromLineup(1L, 3L);
+        lineupPlayerService.changePlayerStateToCandidate(1L, 2L, owner);
+        lineupPlayerService.removePlayerFromLineup(1L, 3L, owner);
 
         // then
         assertThat(entityUtils.getEntity(2L, LineupPlayer.class).getState()).isEqualTo(LineupPlayerState.CANDIDATE);

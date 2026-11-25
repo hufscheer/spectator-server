@@ -36,7 +36,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -63,11 +63,11 @@ class PushNotificationTimelineTest extends ServiceTest {
     private static final long BASKETBALL_GAME_TEAM = 11L;
     private static final long BASKETBALL_PLAYER_LINEUP = 3L;
 
-    @MockBean
+    @MockitoBean
     private PushSender pushSender;
 
     // setUp 이 테스트마다 같은 토큰으로 기기를 등록해서, 실제 제한기(토큰당 10분 20회)는 테스트가 늘면 걸린다
-    @MockBean
+    @MockitoBean
     private PushDeviceRegisterRateLimiter pushDeviceRegisterRateLimiter;
 
     @Autowired

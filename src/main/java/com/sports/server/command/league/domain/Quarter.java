@@ -1,6 +1,6 @@
 package com.sports.server.command.league.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using = QuarterDeserializer.class)
 public interface Quarter {

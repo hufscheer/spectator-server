@@ -16,16 +16,16 @@ public interface LeagueStatisticsQueryRepository extends Repository<LeagueStatis
             LEFT JOIN FETCH ls.secondWinnerTeam
             LEFT JOIN FETCH ls.mostCheeredTeam
             LEFT JOIN FETCH ls.mostCheerTalksTeam
-            WHERE ls.league.id = :leagueId
+            WHERE fk(ls.league) = :leagueId
             """)
     Optional<LeagueStatistics> findByLeagueId(@Param("leagueId") Long leagueId);
 
     @Query("SELECT ls FROM LeagueStatistics ls JOIN FETCH ls.league " +
-            "WHERE ls.firstWinnerTeam.id IN :teamIds OR ls.secondWinnerTeam.id IN :teamIds")
+            "WHERE fk(ls.firstWinnerTeam) IN :teamIds OR fk(ls.secondWinnerTeam) IN :teamIds")
     List<LeagueStatistics> findTrophiesByTeamIds(@Param("teamIds") List<Long> teamIds);
 
-    @Query("SELECT new com.sports.server.query.repository.LeagueWinnerInfo(ls.league.id, ls.firstWinnerTeam.name) " +
+    @Query("SELECT new com.sports.server.query.repository.LeagueWinnerInfo(cast(fk(ls.league) as long), ls.firstWinnerTeam.name) " +
             "FROM LeagueStatistics ls " +
-            "WHERE ls.league.id IN :leagueIds AND ls.firstWinnerTeam IS NOT NULL")
+            "WHERE fk(ls.league) IN :leagueIds AND ls.firstWinnerTeam IS NOT NULL")
     List<LeagueWinnerInfo> findWinnerTeamInfoByLeagueIds(@Param("leagueIds") List<Long> leagueIds);
 }

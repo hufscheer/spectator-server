@@ -1,7 +1,9 @@
 package com.sports.server.query.repository;
 
 import com.sports.server.command.game.domain.Game;
+import com.sports.server.command.game.exception.GameErrorMessages;
 import com.sports.server.command.league.domain.League;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.query.dto.GameTeamGameInfoDto;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "JOIN FETCH g.league "
                     + "JOIN FETCH g.gameTeams gt "
                     + "JOIN FETCH gt.team "
-                    + "WHERE g.league.id in :leagueIds "
+                    + "WHERE fk(g.league) in :leagueIds "
                     + "AND g.state = 'PLAYING'"
     )
     List<Game> findPlayingGamesByLeagueIdsWithGameTeams(@Param("leagueIds") List<Long> leagueIds);
@@ -52,7 +54,7 @@ public interface GameQueryRepository extends Repository<Game, Long> {
                     + "WHERE g.id IN ("
                     + "  SELECT g2.id FROM Game g2 "
                     + "  JOIN g2.gameTeams gt2 "
-                    + "  WHERE gt2.team.id = :teamId"
+                    + "  WHERE fk(gt2.team) = :teamId"
                     + ") "
                     + "ORDER BY g.id DESC")
     List<Game> findGamesByTeamId(@Param("teamId") Long teamId);
@@ -64,7 +66,16 @@ public interface GameQueryRepository extends Repository<Game, Long> {
             "WHERE g.id = :gameId")
     Optional<Game> findGameDetailsById(@Param("gameId") Long gameId);
 
-    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE g.league.id IN :leagueIds ORDER BY g.startTime ASC, g.id ASC")
+    // 삭제된 대회의 경기는 없는 경기로 본다. 경기 단건 조회(findGameDetailsById)와 같은 기준이다
+    @Query("SELECT g FROM Game g JOIN FETCH g.league l WHERE g.id = :gameId AND l.isDeleted = false")
+    Optional<Game> findByIdWithActiveLeague(@Param("gameId") Long gameId);
+
+    default Game getActiveGame(Long gameId) {
+        return findByIdWithActiveLeague(gameId)
+                .orElseThrow(() -> new NotFoundException(GameErrorMessages.GAME_NOT_FOUND_EXCEPTION));
+    }
+
+    @Query("SELECT g FROM Game g JOIN FETCH g.league WHERE fk(g.league) IN :leagueIds ORDER BY g.startTime ASC, g.id ASC")
     List<Game> findAllByLeagueIds(@Param("leagueIds") List<Long> leagueIds);
 
     @Query(value = """

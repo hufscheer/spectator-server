@@ -17,7 +17,6 @@ import com.sports.server.command.timeline.domain.GameProgressTimelineRepository;
 import com.sports.server.command.timeline.domain.GameProgressType;
 import com.sports.server.command.timeline.domain.Timeline;
 import com.sports.server.command.timeline.domain.TimelineDeletabilityEvaluator;
-import com.sports.server.common.application.EntityUtils;
 import com.sports.server.query.dto.response.AvailableProgressResponse;
 import com.sports.server.query.dto.response.AvailableProgressResponse.ProgressAction;
 import com.sports.server.command.game.domain.GameResult;
@@ -25,6 +24,7 @@ import com.sports.server.query.dto.response.GameTimelineResponse;
 import com.sports.server.query.dto.response.QuarterScoreResponse;
 import com.sports.server.query.dto.response.TimelineResponse;
 import com.sports.server.query.dto.response.WinnerResponse;
+import com.sports.server.query.repository.GameQueryRepository;
 import com.sports.server.query.repository.GameTeamQueryRepository;
 import com.sports.server.query.repository.TimelineQueryRepository;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class TimelineQueryService {
     private final TimelineQueryRepository timelineQueryRepository;
     private final GameProgressTimelineRepository gameProgressTimelineRepository;
     private final GameTeamQueryRepository gameTeamQueryRepository;
-    private final EntityUtils entityUtils;
+    private final GameQueryRepository gameQueryRepository;
     private final BracketMatchRepository bracketMatchRepository;
 
     // 3·4위전이 이미 만들어졌으면 준결승의 경기 종료 기록을 지울 수 없다. 삭제 API 와 같은 판정을 조회에도 반영한다
@@ -55,6 +55,7 @@ public class TimelineQueryService {
     }
 
     public GameTimelineResponse getTimelines(final Long gameId) {
+        gameQueryRepository.getActiveGame(gameId);
         // 기록보다 먼저 경기 팀을 팀과 함께 읽어 둔다. 기록이 가리키는 경기 팀은 같은 영속성 컨텍스트의
         // 이 객체를 쓰므로, 지워진 팀은 프록시를 초기화하다 EntityNotFoundException 이 나지 않고 null 로 보인다
         gameTeamQueryRepository.findAllByGameIdWithTeam(gameId);
@@ -87,7 +88,7 @@ public class TimelineQueryService {
     }
 
     public AvailableProgressResponse getAvailableProgress(Long gameId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = gameQueryRepository.getActiveGame(gameId);
 
         if (game.getState() == GameState.FINISHED) {
             return new AvailableProgressResponse(List.of());
@@ -124,7 +125,7 @@ public class TimelineQueryService {
     }
 
     public List<QuarterScoreResponse> getQuarterScores(Long gameId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = gameQueryRepository.getActiveGame(gameId);
 
         List<Long> gameTeamIds = gameTeamQueryRepository.findAllByGame(game)
                 .stream()

@@ -40,26 +40,26 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
     @Query("SELECT new com.sports.server.command.team.domain.PlayerGoalCount(st.scorer.player.id, SUM(st.score)) " +
             "FROM ScoreTimeline st " +
             "WHERE st.scorer.player.id IN :playerIds " +
-            "AND st.scorer.gameTeam.team.id = :teamId " +
+            "AND fk(st.scorer.gameTeam.team) = :teamId " +
             "GROUP BY st.scorer.player.id")
     List<PlayerGoalCount> countTotalGoalsByPlayerIdInTeam(@Param("playerIds") List<Long> playerIds,
                                                           @Param("teamId") Long teamId);
 
     @Query("""
             SELECT new com.sports.server.query.dto.TeamTopScorerResult(
-                sc.gameTeam.team.id,
+                cast(fk(sc.gameTeam.team) as long),
                 new com.sports.server.command.team.domain.PlayerGoalCountWithRank(
                     p.id, p.studentNumber, p.name, SUM(st.score),
-                    RANK() OVER (PARTITION BY sc.gameTeam.team.id ORDER BY SUM(st.score) DESC)
+                    RANK() OVER (PARTITION BY fk(sc.gameTeam.team) ORDER BY SUM(st.score) DESC)
                 )
             )
             FROM ScoreTimeline st
             JOIN st.scorer sc
             JOIN sc.player p
-            WHERE sc.gameTeam.team.id IN :teamIds
-            GROUP BY sc.gameTeam.team.id, p.id, p.studentNumber, p.name
+            WHERE fk(sc.gameTeam.team) IN :teamIds
+            GROUP BY fk(sc.gameTeam.team), p.id, p.studentNumber, p.name
             HAVING SUM(st.score) > 0
-            ORDER BY sc.gameTeam.team.id, SUM(st.score) DESC, p.name ASC
+            ORDER BY fk(sc.gameTeam.team), SUM(st.score) DESC, p.name ASC
             """)
     List<TeamTopScorerResult> findTopScorersByTeamIds(@Param("teamIds") List<Long> teamIds);
 
@@ -73,7 +73,7 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
             "JOIN st.scorer sc " +
             "JOIN sc.player p " +
             "JOIN st.game g " +
-            "WHERE g.league.id = :leagueId " +
+            "WHERE fk(g.league) = :leagueId " +
             "AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
             "GROUP BY p.id, p.studentNumber, p.name " +
             "HAVING SUM(st.score) > 0 " +
@@ -81,14 +81,14 @@ public interface TimelineQueryRepository extends Repository<Timeline, Long> {
     List<PlayerGoalCountWithRank> findTopScorersByLeagueId(@Param("leagueId") Long leagueId, Pageable pageable);
 
     @Query("SELECT new com.sports.server.query.dto.PlayerTeamGoalCount(" +
-            "       sc.player.id, sc.gameTeam.team.id, SUM(st.score), MAX(st.id)) " +
+            "       sc.player.id, cast(fk(sc.gameTeam.team) as long), SUM(st.score), MAX(st.id)) " +
             "FROM ScoreTimeline st " +
             "JOIN st.scorer sc " +
             "JOIN st.game g " +
-            "WHERE g.league.id = :leagueId " +
+            "WHERE fk(g.league) = :leagueId " +
             "AND g.state = com.sports.server.command.game.domain.GameState.FINISHED " +
             "AND sc.player.id IN :playerIds " +
-            "GROUP BY sc.player.id, sc.gameTeam.team.id")
+            "GROUP BY sc.player.id, fk(sc.gameTeam.team)")
     List<PlayerTeamGoalCount> countLeagueGoalsByPlayerAndTeam(@Param("leagueId") Long leagueId,
                                                               @Param("playerIds") List<Long> playerIds);
 

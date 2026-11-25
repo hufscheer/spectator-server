@@ -1,7 +1,8 @@
 package com.sports.server.command.push.infra;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.sports.server.command.push.application.PushSender;
 import com.sports.server.command.push.domain.PushMessage;
 import com.sports.server.command.push.domain.PushRecipient;
@@ -36,7 +37,7 @@ public class FcmPushSender implements PushSender {
     private final FcmProperties properties;
     private final FcmAccessTokenProvider accessTokenProvider;
     private final Duration broadcastTimeout;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
 
     public FcmPushSender(WebClient webClient, FcmProperties properties, FcmAccessTokenProvider accessTokenProvider) {
         this(webClient, properties, accessTokenProvider, BROADCAST_TIMEOUT);
@@ -114,21 +115,21 @@ public class FcmPushSender implements PushSender {
         if (UNREGISTERED.equals(errorCode)) {
             return true;
         }
-        return INVALID_ARGUMENT.equals(error.path("status").asText())
-                && error.path("message").asText().contains(INVALID_TOKEN_MESSAGE);
+        return INVALID_ARGUMENT.equals(error.path("status").asString())
+                && error.path("message").asString().contains(INVALID_TOKEN_MESSAGE);
     }
 
     private String errorCodeOf(JsonNode error) {
         for (JsonNode detail : error.path("details")) {
             if (detail.hasNonNull("errorCode")) {
-                return detail.get("errorCode").asText();
+                return detail.get("errorCode").asString();
             }
         }
-        return error.path("status").asText();
+        return error.path("status").asString();
     }
 
     private String errorMessageOf(String body) {
-        return parse(body).path("error").path("message").asText(body);
+        return parse(body).path("error").path("message").asString(body);
     }
 
     private JsonNode parse(String body) {

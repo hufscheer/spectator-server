@@ -4,8 +4,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.sports.server.command.team.domain.LogoImageDeletedEvent;
+import com.sports.server.command.team.domain.TeamRepository;
 import com.sports.server.common.application.S3Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +23,8 @@ class LogoImageEventHandlerTest {
     private static final String REPLACE_PREFIX = "https://images.hufscheer.com/";
 
     private final S3Service s3Service = mock(S3Service.class);
-    private final LogoImageEventHandler handler = new LogoImageEventHandler(s3Service);
+    private final TeamRepository teamRepository = mock(TeamRepository.class);
+    private final LogoImageEventHandler handler = new LogoImageEventHandler(s3Service, teamRepository);
 
     @BeforeEach
     void setUp() {
@@ -40,6 +43,16 @@ class LogoImageEventHandlerTest {
     @ValueSource(strings = {"https://example.com/logos/wildhorse.png", "0b1c2d3e.png"})
     void 우리_버킷_주소가_아니면_아무것도_지우지_않는다(String logoImageUrl) {
         handler.handle(new LogoImageDeletedEvent(logoImageUrl));
+
+        verify(s3Service, never()).deleteFile(anyString());
+    }
+
+    @Test
+    void 다른_팀이_같은_로고_주소를_아직_쓰면_지우지_않는다() {
+        String url = REPLACE_PREFIX + "0b1c2d3e.png";
+        when(teamRepository.countByLogoImageUrl(url)).thenReturn(1L);
+
+        handler.handle(new LogoImageDeletedEvent(url));
 
         verify(s3Service, never()).deleteFile(anyString());
     }

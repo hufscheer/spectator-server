@@ -18,6 +18,7 @@ import com.sports.server.command.team.domain.Team;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.command.team.dto.TeamRequest;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.OrganizationAccessValidator;
 import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.ExceptionMessages;
@@ -42,6 +43,7 @@ public class NlService {
     private final EntityUtils entityUtils;
     private final PlayerService playerService;
     private final TeamService teamService;
+    private final OrganizationAccessValidator organizationAccessValidator;
 
     private static final Pattern STUDENT_NUMBER_PATTERN = Pattern.compile("(?<!\\d)\\d{9,10}(?!\\d)");
     private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[가-힣a-zA-Z\\s]{1,50}$");
@@ -331,7 +333,7 @@ public class NlService {
             if (context.teamPlayerIdSet.contains(existingPlayer.getId())) {
                 return null;
             }
-            PermissionValidator.checkPermission(existingPlayer, member);
+            organizationAccessValidator.checkPlayer(existingPlayer, member);
             return existingPlayer.getId();
         }
 

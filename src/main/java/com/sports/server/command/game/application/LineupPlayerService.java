@@ -12,7 +12,9 @@ import com.sports.server.command.player.exception.PlayerErrorMessages;
 import com.sports.server.command.timeline.domain.TimelineRepository;
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
+import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
+import com.sports.server.common.application.PermissionValidator;
 import com.sports.server.common.exception.BadRequestException;
 import com.sports.server.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,32 +31,37 @@ public class LineupPlayerService {
     private final LineupPlayerRepository lineupPlayerRepository;
     private final TimelineRepository timelineRepository;
 
-    public void changePlayerStateToStarter(final Long gameId, final Long lineupPlayerId) {
+    public void changePlayerStateToStarter(final Long gameId, final Long lineupPlayerId, final Member member) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+        PermissionValidator.checkOwnership(game, member);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         game.registerStarter(lineupPlayer);
     }
 
-    public void changePlayerStateToCandidate(final Long gameId, final Long lineupPlayerId) {
+    public void changePlayerStateToCandidate(final Long gameId, final Long lineupPlayerId, final Member member) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+        PermissionValidator.checkOwnership(game, member);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         game.rollbackToCandidate(lineupPlayer);
     }
 
-    public void changePlayerToCaptain(final Long gameId, final Long lineupPlayerId) {
+    public void changePlayerToCaptain(final Long gameId, final Long lineupPlayerId, final Member member) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+        PermissionValidator.checkOwnership(game, member);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         game.changePlayerToCaptain(lineupPlayer);
     }
 
-    public void revokeCaptainFromPlayer(final Long gameId, final Long lineupPlayerId) {
+    public void revokeCaptainFromPlayer(final Long gameId, final Long lineupPlayerId, final Member member) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+        PermissionValidator.checkOwnership(game, member);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         game.revokeCaptainFromPlayer(lineupPlayer);
     }
 
-    public void changePlayerPosition(final Long gameId, final Long lineupPlayerId, final Position position) {
+    public void changePlayerPosition(final Long gameId, final Long lineupPlayerId, final Position position, final Member member) {
         Game game = entityUtils.getEntity(gameId, Game.class);
+        PermissionValidator.checkOwnership(game, member);
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         if (!lineupPlayer.isInGame(game)) {
             throw new BadRequestException(GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);
@@ -65,8 +72,10 @@ public class LineupPlayerService {
         lineupPlayer.updatePosition(position);
     }
 
-    public Long addPlayerToLineup(final Long gameTeamId, final GameRequest.LineupPlayerRequest request) {
+    public Long addPlayerToLineup(final Long gameTeamId, final GameRequest.LineupPlayerRequest request,
+                                  final Member member) {
         GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
+        PermissionValidator.checkOwnership(gameTeam.getGame(), member);
         TeamPlayer teamPlayer = teamPlayerRepository.findById(request.teamPlayerId())
                 .orElseThrow(() -> new NotFoundException(PlayerErrorMessages.TEAM_PLAYER_NOT_FOUND_EXCEPTION));
 
@@ -93,9 +102,10 @@ public class LineupPlayerService {
         return lineupPlayer.getId();
     }
 
-    public void removePlayerFromLineup(final Long gameTeamId, final Long lineupPlayerId) {
+    public void removePlayerFromLineup(final Long gameTeamId, final Long lineupPlayerId, final Member member) {
         LineupPlayer lineupPlayer = entityUtils.getEntity(lineupPlayerId, LineupPlayer.class);
         GameTeam gameTeam = entityUtils.getEntity(gameTeamId, GameTeam.class);
+        PermissionValidator.checkOwnership(gameTeam.getGame(), member);
 
         if (!lineupPlayer.getGameTeam().getId().equals(gameTeamId)) {
             throw new BadRequestException(GameErrorMessages.LINEUP_PLAYER_NOT_IN_GAME_TEAM_EXCEPTION);

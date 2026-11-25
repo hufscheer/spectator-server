@@ -1,6 +1,8 @@
 package com.sports.server.command.report.application;
 
 import com.sports.server.auth.exception.AuthorizationErrorMessages;
+import com.sports.server.command.cheertalk.domain.CheerTalk;
+import com.sports.server.command.game.domain.GameTeamRepository;
 import com.sports.server.command.league.domain.League;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.command.report.domain.Report;
@@ -11,6 +13,7 @@ import com.sports.server.command.report.dto.ReportRequest;
 import com.sports.server.command.report.exception.ReportErrorMessage;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.ExceptionMessages;
 import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final ReportFactory reportFactory;
     private final EntityUtils entityUtils;
+    private final GameTeamRepository gameTeamRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public void report(final ReportRequest request) {
@@ -38,10 +42,21 @@ public class ReportService {
 
     public void cancel(final Long leagueId, final Long cheerTalkId, final Member manager) {
         checkPermission(leagueId, manager);
+        validateBelongsToLeague(leagueId, cheerTalkId);
 
         Report report = reportRepository.findByCheerTalkId(cheerTalkId)
                 .orElseThrow(() -> new NotFoundException(ReportErrorMessage.REPORT_NOT_EXIST));
         report.cancel();
+    }
+
+    private void validateBelongsToLeague(final Long leagueId, final Long cheerTalkId) {
+        CheerTalk cheerTalk = entityUtils.getEntity(cheerTalkId, CheerTalk.class);
+        boolean belongs = gameTeamRepository.findByIdWithGame(cheerTalk.getGameTeamId())
+                .map(gameTeam -> gameTeam.getGame().getLeague().getId().equals(leagueId))
+                .orElse(false);
+        if (!belongs) {
+            throw new NotFoundException(ExceptionMessages.CHEER_TALK_NOT_IN_LEAGUE);
+        }
     }
 
     private void checkPermission(final Long leagueId, final Member manager) {

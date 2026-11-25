@@ -1,10 +1,9 @@
 package com.sports.server.command.league.domain;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-import java.io.IOException;
 
 public class QuarterDeserializer extends StdDeserializer<Quarter> {
 
@@ -13,7 +12,7 @@ public class QuarterDeserializer extends StdDeserializer<Quarter> {
     }
 
     @Override
-    public Quarter deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
-        return QuarterResolver.resolve(p.getText());
+    public Quarter deserialize(JsonParser p, DeserializationContext ctx) {
+        return QuarterResolver.resolve(p.getString());
     }
 }

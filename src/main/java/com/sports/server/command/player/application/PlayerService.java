@@ -12,7 +12,7 @@ import com.sports.server.command.player.exception.PlayerStudentNumberConflictExc
 import com.sports.server.command.team.domain.TeamPlayer;
 import com.sports.server.command.team.domain.TeamPlayerRepository;
 import com.sports.server.common.application.EntityUtils;
-import com.sports.server.common.application.PermissionValidator;
+import com.sports.server.common.application.OrganizationAccessValidator;
 import com.sports.server.common.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ public class PlayerService {
     private final TeamPlayerRepository teamPlayerRepository;
     private final LineupPlayerRepository lineupPlayerRepository;
     private final EntityUtils entityUtils;
+    private final OrganizationAccessValidator organizationAccessValidator;
 
     public Long register(final Member member, final PlayerRequest.Register request) {
         Organization organization = member.getOrganization();
@@ -41,14 +42,17 @@ public class PlayerService {
 
     public void update(final Member member, final Long playerId, final PlayerRequest.Update request) {
         Player player = entityUtils.getEntity(playerId, Player.class);
-        PermissionValidator.checkPermission(player, member);
+        organizationAccessValidator.checkPlayer(player, member);
 
+        // 다른 학교 대회의 관리자나 슈퍼유저가 고칠 수도 있으니 학번 검사는 선수의 학교 기준으로 한다
+        Organization organization = player.getOrganization() != null ? player.getOrganization()
+                : member.getOrganization();
         String newStudentNumber = request.studentNumber();
         if (newStudentNumber != null && !newStudentNumber.equals(player.getStudentNumber())) {
-            validateUniqueStudentNumber(newStudentNumber, member.getOrganization().getId());
+            validateUniqueStudentNumber(newStudentNumber, organization.getId());
         }
 
-        player.update(request.name(), request.studentNumber(), member.getOrganization().getStudentNumberDigits());
+        player.update(request.name(), request.studentNumber(), organization.getStudentNumberDigits());
     }
 
     /**
@@ -63,7 +67,7 @@ public class PlayerService {
      */
     public void delete(final Member member, final Long playerId) {
         Player player = entityUtils.getEntity(playerId, Player.class);
-        PermissionValidator.checkPermission(player, member);
+        organizationAccessValidator.checkPlayer(player, member);
         if (lineupPlayerRepository.existsByPlayer(player)) {
             throw new BadRequestException(PlayerErrorMessages.CANNOT_DELETE_WITH_LINEUPS);
         }

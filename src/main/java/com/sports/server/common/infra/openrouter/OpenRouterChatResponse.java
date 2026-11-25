@@ -1,8 +1,8 @@
 package com.sports.server.common.infra.openrouter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public record OpenRouterChatResponse(List<Choice> choices) {
         String arguments = choices.get(0).message().tool_calls().get(0).function().arguments();
         try {
             return mapper.readValue(arguments, clazz);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return null;
         }
     }

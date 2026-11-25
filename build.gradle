@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.1.4'
-    id 'io.spring.dependency-management' version '1.1.3'
-    id "org.asciidoctor.jvm.convert" version '3.3.2'
+    id 'org.springframework.boot' version '4.1.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id "org.asciidoctor.jvm.convert" version '4.0.5'
     id 'jacoco'
 }
 
@@ -22,25 +22,34 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Boot 4 에서 spring-boot-starter-web 은 deprecated, 같은 내용의 webmvc 로 바뀌었다
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.rest-assured:rest-assured'
+    // Boot 4 는 기술별 테스트 starter 로 나뉜다(@WebMvcTest, @AutoConfigureMockMvc, @DataJpaTest, REST Docs 자동설정)
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-websocket-test'
+    // Boot 4 BOM 은 rest-assured 를 관리하지 않는다. 5.x 는 Boot 4 의 Groovy 5 위에서 깨진다
+    testImplementation 'io.rest-assured:rest-assured:6.3.0'
 
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    // Boot 4 에서 spring-boot-starter-aop 의 새 이름. @Aspect(TimeLogAspect) 를 쓴다
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj'
 
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // WebClient 만 쓴다(OpenRouter, Gemini, FCM, Slack). Boot 4 는 WebClient 를 webflux 와 따로 둔다
+    implementation 'org.springframework.boot:spring-boot-starter-webclient'
 
     // JPA & Database
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'mysql:mysql-connector-java:8.0.32'
+    implementation 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
 
     // flyway
-    implementation 'org.flywaydb:flyway-core:9.1.3'
-    implementation 'org.flywaydb:flyway-mysql:9.1.3'
+    // Boot 4 는 Flyway 자동설정을 starter 로만 켠다. flyway-core 만 두면 마이그레이션이 돌지 않는다
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    implementation 'org.flywaydb:flyway-mysql'
 
     // in-memory cache (rate limit, dedup, masking response)
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
@@ -62,12 +71,14 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
     // TestContainer
-    testImplementation "org.testcontainers:testcontainers:1.19.3"
-    testImplementation "org.testcontainers:junit-jupiter:1.19.3"
-    testImplementation "org.testcontainers:mysql:1.19.3"
+    // Testcontainers 2 에서 모듈 이름에 testcontainers- 접두사가 붙었다
+    testImplementation "org.testcontainers:testcontainers"
+    testImplementation "org.testcontainers:testcontainers-junit-jupiter"
+    testImplementation "org.testcontainers:testcontainers-mysql"
 
     // rest docs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.boot:spring-boot-starter-restdocs'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
     // spring security
@@ -87,6 +98,9 @@ dependencies {
 
     // image normalization (team logo aspect ratio fix)
     implementation 'net.coobird:thumbnailator:0.4.20'
+    // 정규화본을 WebP 로 쓴다. ImageIO 에는 WebP 인코더가 없다. libwebp 를 묶은 네이티브(JNI)라
+    // glibc 용 .so 지만 eclipse-temurin:17-jre-alpine(musl, amd64)에서도 그대로 로드된다(2026-11-07 컨테이너 실측)
+    implementation 'com.github.usefulness:webp-imageio:0.11.0'
 
     // NL 파일 추출 (xlsx 셀 읽기, PDF 텍스트 레이어 추출)
     implementation 'org.dhatim:fastexcel-reader:0.20.2'
@@ -112,7 +126,7 @@ test {
     maxHeapSize = '1g'
     testLogging {
         events "failed" // 실패한 테스트만 로그 출력
-        exceptionFormat "full" // Expected vs Actual 포함
+        exceptionFormat = "full" // Expected vs Actual 포함
         showStandardStreams = false
 
         // 실패한 테스트에서만 Expected vs Actual을 출력
@@ -138,6 +152,11 @@ jacocoTestReport {
         html.required = true
         csv.required = false
     }
+}
+
+// REST Docs 4 의 asciidoctor 확장은 AsciidoctorJ 3 API 로 빌드되어 있다. 플러그인 기본값(2.5)으로는 문서 생성이 AbstractMethodError 로 실패한다
+asciidoctorj {
+    version = '3.0.1'
 }
 
 asciidoctor {

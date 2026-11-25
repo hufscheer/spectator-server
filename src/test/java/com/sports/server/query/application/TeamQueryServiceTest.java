@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Comparator;
+import com.sports.server.query.support.StudentNumberDisclosure;
+import com.sports.server.query.support.StudentNumberDisclosurePolicy;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -202,7 +205,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long teamId = 1L; // 팀A
 
             // when
-            List<PlayerResponse> responses = teamQueryService.getAllTeamPlayers(teamId);
+            List<PlayerResponse> responses = teamQueryService.getAllTeamPlayers(teamId, anonymous());
 
             // then
             assertAll(
@@ -221,8 +224,8 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long basketballTeamId = 51L;
 
             // when
-            List<PlayerResponse> soccerTeamPlayers = teamQueryService.getAllTeamPlayers(soccerTeamId);
-            List<PlayerResponse> basketballTeamPlayers = teamQueryService.getAllTeamPlayers(basketballTeamId);
+            List<PlayerResponse> soccerTeamPlayers = teamQueryService.getAllTeamPlayers(soccerTeamId, anonymous());
+            List<PlayerResponse> basketballTeamPlayers = teamQueryService.getAllTeamPlayers(basketballTeamId, anonymous());
 
             // then
             assertAll(
@@ -250,9 +253,9 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long teamCId = 3L;
 
             // when
-            TeamDetailResponse responseOfTeamA = teamQueryService.getTeamDetail(teamAId);
-            TeamDetailResponse responseOfTeamB = teamQueryService.getTeamDetail(teamBId);
-            TeamDetailResponse responseOfTeamC = teamQueryService.getTeamDetail(teamCId);
+            TeamDetailResponse responseOfTeamA = teamQueryService.getTeamDetail(teamAId, anonymous());
+            TeamDetailResponse responseOfTeamB = teamQueryService.getTeamDetail(teamBId, anonymous());
+            TeamDetailResponse responseOfTeamC = teamQueryService.getTeamDetail(teamCId, anonymous());
 
             // then
             assertAll(
@@ -279,7 +282,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long teamId = 1L; // 팀A
 
             // when
-            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId);
+            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId, anonymous());
 
             // then
             assertAll(
@@ -297,7 +300,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long teamId = 1L;
 
             // when
-            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId);
+            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId, anonymous());
 
             // then
             assertAll(
@@ -320,8 +323,8 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long basketballTeamId = 51L;
 
             // when
-            TeamDetailResponse soccerResponse = teamQueryService.getTeamDetail(soccerTeamId);
-            TeamDetailResponse basketballResponse = teamQueryService.getTeamDetail(basketballTeamId);
+            TeamDetailResponse soccerResponse = teamQueryService.getTeamDetail(soccerTeamId, anonymous());
+            TeamDetailResponse basketballResponse = teamQueryService.getTeamDetail(basketballTeamId, anonymous());
 
             // then
             assertAll(
@@ -342,7 +345,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long teamId = 2L; // 팀B
 
             // when
-            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId);
+            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId, anonymous());
 
             // then
             assertAll(
@@ -358,7 +361,7 @@ public class TeamQueryServiceTest extends ServiceTest {
             Long teamId = 2L; // 팀B
 
             // when
-            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId);
+            TeamDetailResponse response = teamQueryService.getTeamDetail(teamId, anonymous());
 
             // then
             assertAll(
@@ -384,8 +387,8 @@ public class TeamQueryServiceTest extends ServiceTest {
 
             // when
             leagueStatisticsService.updateLeagueStatisticFromFinalGame(finalGameId);
-            TeamDetailResponse responseOfTeamB = teamQueryService.getTeamDetail(teamBId);
-            TeamDetailResponse responseOfTeamC = teamQueryService.getTeamDetail(teamCId);
+            TeamDetailResponse responseOfTeamB = teamQueryService.getTeamDetail(teamBId, anonymous());
+            TeamDetailResponse responseOfTeamC = teamQueryService.getTeamDetail(teamCId, anonymous());
 
             // then
             assertAll(
@@ -596,5 +599,9 @@ public class TeamQueryServiceTest extends ServiceTest {
                     () -> assertThat(manyGameTeam.recentGames()).hasSize(3)
             );
         }
+    }
+
+    private StudentNumberDisclosure anonymous() {
+        return new StudentNumberDisclosurePolicy(null).forViewer(Optional.empty());
     }
 }

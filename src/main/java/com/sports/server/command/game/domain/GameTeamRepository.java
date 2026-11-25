@@ -27,10 +27,10 @@ public interface GameTeamRepository extends Repository<GameTeam, Long> {
             "WHERE gt.game.id IN :gameIds")
     List<GameTeam> findAllByGameIds(@Param("gameIds") List<Long> gameIds);
 
-    @Query("SELECT new com.sports.server.query.application.TeamGameResult(gt.team.id, gt.result, COUNT(gt)) " +
+    @Query("SELECT new com.sports.server.query.application.TeamGameResult(cast(fk(gt.team) as long), gt.result, COUNT(gt)) " +
             "FROM GameTeam gt " +
-            "WHERE gt.team.id IN :teamIds AND gt.result IS NOT NULL " +
-            "GROUP BY gt.team.id, gt.result")
+            "WHERE fk(gt.team) IN :teamIds AND gt.result IS NOT NULL " +
+            "GROUP BY fk(gt.team), gt.result")
     List<TeamGameResult> findGameResultsByTeamIds(@Param("teamIds") List<Long> teamIds);
 
     @Query("SELECT gt FROM GameTeam gt " +

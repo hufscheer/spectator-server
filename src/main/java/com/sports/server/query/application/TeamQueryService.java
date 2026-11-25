@@ -17,6 +17,7 @@ import com.sports.server.query.repository.LeagueStatisticsQueryRepository;
 import com.sports.server.query.repository.TeamQueryDynamicRepository;
 import com.sports.server.query.repository.TeamQueryRepository;
 import com.sports.server.query.support.PlayerInfoProvider;
+import com.sports.server.query.support.StudentNumberDisclosure;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class TeamQueryService {
                 .toList();
     }
 
-    public List<PlayerResponse> getAllTeamPlayers(Long teamId) {
+    public List<PlayerResponse> getAllTeamPlayers(Long teamId, StudentNumberDisclosure disclosure) {
         List<TeamPlayer> teamPlayers = teamQueryRepository.findTeamPlayersByTeamId(teamId);
         List<Long> playerIds = teamPlayerRepository.findPlayerIdsByTeamId(teamId);
 
@@ -96,18 +97,18 @@ public class TeamQueryService {
                 .map(tp -> {
                     Player player = tp.getPlayer();
                     int totalGoalCount = playerTotalGoalCountInfo.getOrDefault(player.getId(), 0);
-                    return PlayerResponse.of(tp, totalGoalCount);
+                    return PlayerResponse.of(tp, totalGoalCount, disclosure.canReveal(player));
                 })
                 .toList();
     }
 
-    public TeamDetailResponse getTeamDetail(Long teamId) {
+    public TeamDetailResponse getTeamDetail(Long teamId, StudentNumberDisclosure disclosure) {
         Team team = entityUtils.getEntity(teamId, Team.class);
 
         TeamDetailResponse.TeamGameResult teamGameResult = getTeamGameResults(List.of(teamId)).get(teamId);
         List<TeamDetailResponse.TeamTopScorer> scorers = getTeamTopScorers(List.of(teamId), TEAM_DETAIL_TOP_SCORERS_COUNT).get(teamId);
         List<TeamDetailResponse.Trophy> trophies = getTrophies(List.of(teamId)).get(teamId);
-        List<PlayerResponse> teamPlayers = getAllTeamPlayers(teamId);
+        List<PlayerResponse> teamPlayers = getAllTeamPlayers(teamId, disclosure);
 
         return new TeamDetailResponse(team, teamPlayers, teamGameResult, scorers, trophies);
     }

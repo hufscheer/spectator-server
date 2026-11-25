@@ -49,6 +49,7 @@ public class ExceptionMessages {
     public static final String GAME_SERVICE_DUPLICATE_PLAYER_IDS = "요청에 중복된 선수 ID가 포함되어 있습니다.";
 
     // CheerTalkService 관련
+    public static final String CHEER_TALK_NOT_IN_LEAGUE = "해당 대회에 속하지 않는 응원톡입니다";
     public static final String CHEER_TALK_GAME_TEAM_NOT_FOUND = "존재하지 않는 팀에 대한 응원톡 등록 요청입니다";
 
 }

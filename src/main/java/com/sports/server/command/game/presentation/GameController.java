@@ -45,23 +45,26 @@ public class GameController {
     @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/starter")
     @ResponseStatus(HttpStatus.OK)
     public void changePlayerStateToStarter(@PathVariable final Long gameId,
-                                           @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.changePlayerStateToStarter(gameId, lineupPlayerId);
+                                           @PathVariable final Long lineupPlayerId,
+                                           final Member member) {
+        lineupPlayerService.changePlayerStateToStarter(gameId, lineupPlayerId, member);
     }
 
     @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/candidate")
     @ResponseStatus(HttpStatus.OK)
     public void changePlayerStateToCandidate(@PathVariable final Long gameId,
-                                             @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId);
+                                             @PathVariable final Long lineupPlayerId,
+                                             final Member member) {
+        lineupPlayerService.changePlayerStateToCandidate(gameId, lineupPlayerId, member);
     }
 
     @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/position")
     @ResponseStatus(HttpStatus.OK)
     public void changePlayerPosition(@PathVariable final Long gameId,
                                      @PathVariable final Long lineupPlayerId,
-                                     @RequestBody final LineupPlayerPositionUpdateRequest request) {
-        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, request.position());
+                                     @RequestBody final LineupPlayerPositionUpdateRequest request,
+                                     final Member member) {
+        lineupPlayerService.changePlayerPosition(gameId, lineupPlayerId, request.position(), member);
     }
 
     @PostMapping("/leagues/{leagueId}/games")
@@ -95,29 +98,33 @@ public class GameController {
     @PutMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/register")
     @ResponseStatus(HttpStatus.OK)
     public void changePlayerToCaptain(@PathVariable final Long gameId,
-                                      @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.changePlayerToCaptain(gameId, lineupPlayerId);
+                                      @PathVariable final Long lineupPlayerId,
+                                      final Member member) {
+        lineupPlayerService.changePlayerToCaptain(gameId, lineupPlayerId, member);
     }
 
     @PatchMapping("/games/{gameId}/lineup-players/{lineupPlayerId}/captain/revoke")
     @ResponseStatus(HttpStatus.OK)
     public void revokeCaptainFromPlayer(@PathVariable final Long gameId,
-                                        @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId);
+                                        @PathVariable final Long lineupPlayerId,
+                                        final Member member) {
+        lineupPlayerService.revokeCaptainFromPlayer(gameId, lineupPlayerId, member);
     }
 
     @PostMapping("/game-teams/{gameTeamId}/lineup-players")
     @ResponseStatus(HttpStatus.CREATED)
     public Long addPlayerToLineup(@PathVariable final Long gameTeamId,
-                                  @RequestBody final GameRequest.LineupPlayerRequest request) {
-        return lineupPlayerService.addPlayerToLineup(gameTeamId, request);
+                                  @RequestBody final GameRequest.LineupPlayerRequest request,
+                                  final Member member) {
+        return lineupPlayerService.addPlayerToLineup(gameTeamId, request, member);
     }
 
     @DeleteMapping("/game-teams/{gameTeamId}/lineup-players/{lineupPlayerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removePlayerFromLineup(@PathVariable final Long gameTeamId,
-                                       @PathVariable final Long lineupPlayerId) {
-        lineupPlayerService.removePlayerFromLineup(gameTeamId, lineupPlayerId);
+                                       @PathVariable final Long lineupPlayerId,
+                                       final Member member) {
+        lineupPlayerService.removePlayerFromLineup(gameTeamId, lineupPlayerId, member);
     }
 
     @PostMapping("/admin/games/statistics/update")

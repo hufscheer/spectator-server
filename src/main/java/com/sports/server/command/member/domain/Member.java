@@ -41,6 +41,12 @@ public class Member extends BaseEntity<Member> {
         return new Member(email, password, true);
     }
 
+    // 학교 경계를 넘어 모든 자원을 다룰 수 있는 계정. League, Game 과 같은 기준이다.
+    // is_administrator 는 로그인 허가 플래그라 슈퍼유저 판정에 쓰지 않는다.
+    public boolean isSuperUser() {
+        return Long.valueOf(1L).equals(getId());
+    }
+
     private Member(String email, String password, boolean isAdministrator) {
         this.email = email;
         this.password = password;

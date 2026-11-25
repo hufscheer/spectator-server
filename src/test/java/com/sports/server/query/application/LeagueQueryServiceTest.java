@@ -19,6 +19,8 @@ import com.sports.server.query.dto.response.LeagueResponseWithInProgressGames.Ga
 import com.sports.server.query.dto.request.LeagueQueryRequestDto;
 import com.sports.server.support.ServiceTest;
 
+import com.sports.server.query.support.StudentNumberDisclosure;
+import com.sports.server.query.support.StudentNumberDisclosurePolicy;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -380,7 +382,7 @@ public class LeagueQueryServiceTest extends ServiceTest {
         Long leagueTeamId = 3L;
 
         // when
-        List<PlayerResponse> players = leagueQueryService.findPlayersByLeagueTeam(leagueTeamId);
+        List<PlayerResponse> players = leagueQueryService.findPlayersByLeagueTeam(leagueTeamId, anonymous());
 
         // then
         assertAll(
@@ -758,5 +760,9 @@ public class LeagueQueryServiceTest extends ServiceTest {
                     () -> assertThat(result.get(0).games()).isEmpty()
             );
         }
+    }
+
+    private StudentNumberDisclosure anonymous() {
+        return new StudentNumberDisclosurePolicy(null).forViewer(Optional.empty());
     }
 }

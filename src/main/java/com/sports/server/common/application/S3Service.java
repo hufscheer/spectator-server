@@ -116,7 +116,7 @@ public class S3Service {
         try {
             ObjectMetadata meta = amazonS3.getObjectMetadata(bucketName, key);
             if (meta.getContentLength() > MAX_DOWNLOAD_BYTES) {
-                throw new CustomException(HttpStatus.PAYLOAD_TOO_LARGE, "이미지 파일이 허용 용량(10MB)을 초과합니다.");
+                throw new CustomException(HttpStatus.CONTENT_TOO_LARGE, "이미지 파일이 허용 용량(10MB)을 초과합니다.");
             }
         } catch (CustomException e) {
             throw e;

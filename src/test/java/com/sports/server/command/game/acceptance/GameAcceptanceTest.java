@@ -60,6 +60,30 @@ public class GameAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 로그인하지_않고_포지션을_바꾸면_401이다() {
+        int status = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(Map.of("position", "LW"))
+                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/position", 1L, 2L)
+                .then().extract().statusCode();
+
+        assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void 경기_관리자가_아닌_매니저가_선수를_선발로_바꾸면_403이다() {
+        configureMockJwtForEmail("jane.smith@example.com");
+
+        int status = RestAssured.given()
+                .cookie(COOKIE_NAME, mockToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .patch("/games/{gameId}/lineup-players/{lineupPlayerId}/starter", 1L, 1L)
+                .then().extract().statusCode();
+
+        assertThat(status).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     void 라인업_선수의_상태를_선발로_변경한다() {
 
         // given

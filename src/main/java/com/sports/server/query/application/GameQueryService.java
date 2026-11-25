@@ -86,7 +86,7 @@ public class GameQueryService {
     }
 
     public VideoResponse getVideo(Long gameId) {
-        Game game = entityUtils.getEntity(gameId, Game.class);
+        Game game = gameQueryRepository.getActiveGame(gameId);
         return new VideoResponse(game.getVideoId());
     }
 

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import org.springframework.http.MediaType;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -378,11 +379,11 @@ public class LeagueQueryControllerTest extends DocumentationTest {
         Long leagueTeamId = 1L;
 
         List<PlayerResponse> responses = List.of(
-                new PlayerResponse(1L, 11L, "봄동나물진승희", "202022222", 10, 5, null),
-                new PlayerResponse(2L, 12L, "가을전어이동규", "202022221", 7, 3, null)
+                new PlayerResponse(1L, 11L, "봄동나물진승희", "202022222", "20", 10, 5, null),
+                new PlayerResponse(2L, 12L, "가을전어이동규", "202022221", "20", 7, 3, null)
         );
 
-        given(leagueQueryService.findPlayersByLeagueTeam(leagueTeamId))
+        given(leagueQueryService.findPlayersByLeagueTeam(eq(leagueTeamId), any()))
                 .willReturn(responses);
 
         // when
@@ -399,7 +400,8 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("대회 팀 선수 ID"),
                                 fieldWithPath("[].teamPlayerId").type(JsonFieldType.NUMBER).description("팀선수 ID (라인업 등록 시 사용)"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("대회 팀 선수 이름"),
-                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("대회 팀 선수 학번"),
+                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("관리 권한이 있는 매니저에게는 전체 학번, 그 밖(비로그인, 다른 학교 매니저)에는 앞 4자리만 남기고 나머지를 '*' 로 가린 값. 학번이 없거나 4자리 이하면 없다"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("입학연도 두 자리(학번의 3, 4번째 자리). 학번이 없거나 형식이 맞지 않으면 없다"),
                                 fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("대회 팀 선수 등번호(nullable)"),
                                 fieldWithPath("[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 전체 골 개수")
                         )

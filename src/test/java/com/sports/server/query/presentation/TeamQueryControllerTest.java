@@ -1,6 +1,7 @@
 package com.sports.server.query.presentation;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
@@ -112,16 +113,16 @@ public class TeamQueryControllerTest extends DocumentationTest {
         );
 
         List<PlayerResponse> teamPlayers = List.of(
-                new PlayerResponse(1L, 10L, "양선수", "202500001", 7, 5, null),
-                new PlayerResponse(2L, 20L, "김선수", "202500002", 11, 2, null),
-                new PlayerResponse(3L, 30L, "박선수", "202500003", 9, 2, null)
+                new PlayerResponse(1L, 10L, "양선수", "202500001", "25", 7, 5, null),
+                new PlayerResponse(2L, 20L, "김선수", "202500002", "25", 11, 2, null),
+                new PlayerResponse(3L, 30L, "박선수", "202500003", "25", 9, 2, null)
         );
 
         TeamDetailResponse response = new TeamDetailResponse(
                 1L, "정치외교학과 PSD", "s3:logoImageUrl1", "사회과학대학", "#F7CAC9", "SOCCER", teamPlayers,
                 5, 2, 3, topScorers, trophies);
 
-        given(teamQueryService.getTeamDetail(teamId)).willReturn(response);
+        given(teamQueryService.getTeamDetail(eq(teamId), any())).willReturn(response);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/{teamId}", teamId)
@@ -140,7 +141,8 @@ public class TeamQueryControllerTest extends DocumentationTest {
                                         fieldWithPath("teamPlayers[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
                                         fieldWithPath("teamPlayers[].teamPlayerId").type(JsonFieldType.NUMBER).description("팀선수 ID"),
                                         fieldWithPath("teamPlayers[].name").type(JsonFieldType.STRING).description("선수 이름"),
-                                        fieldWithPath("teamPlayers[].studentNumber").type(JsonFieldType.STRING).description("선수 학번"),
+                                        fieldWithPath("teamPlayers[].studentNumber").type(JsonFieldType.STRING).description("관리 권한이 있는 매니저에게는 전체 학번, 그 밖(비로그인, 다른 학교 매니저)에는 앞 4자리만 남기고 나머지를 '*' 로 가린 값. 학번이 없거나 4자리 이하면 없다"),
+                                        fieldWithPath("teamPlayers[].admissionYear").type(JsonFieldType.STRING).description("입학연도 두 자리(학번의 3, 4번째 자리). 학번이 없거나 형식이 맞지 않으면 없다"),
                                         fieldWithPath("teamPlayers[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수 등번호").optional(),
                                         fieldWithPath("teamPlayers[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 리그 내 총 득점 수"),
 
@@ -161,12 +163,12 @@ public class TeamQueryControllerTest extends DocumentationTest {
         // given
         Long teamId = 1L;
         List<PlayerResponse> players = List.of(
-                new PlayerResponse(1L, 10L, "양선수", "202500001", 7, 5, null),
-                new PlayerResponse(2L, 20L, "김선수", "202500002", 11, 2, null),
-                new PlayerResponse(3L, 30L, "박선수", "202500003", 9, 2, null)
+                new PlayerResponse(1L, 10L, "양선수", "202500001", "25", 7, 5, null),
+                new PlayerResponse(2L, 20L, "김선수", "202500002", "25", 11, 2, null),
+                new PlayerResponse(3L, 30L, "박선수", "202500003", "25", 9, 2, null)
         );
 
-        given(teamQueryService.getAllTeamPlayers(teamId)).willReturn(players);
+        given(teamQueryService.getAllTeamPlayers(eq(teamId), any())).willReturn(players);
 
         // when
         ResultActions result = mockMvc.perform(get("/teams/{teamId}/players", teamId)
@@ -182,7 +184,8 @@ public class TeamQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("[].playerId").type(JsonFieldType.NUMBER).description("선수 ID"),
                                 fieldWithPath("[].teamPlayerId").type(JsonFieldType.NUMBER).description("팀선수 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("선수 이름"),
-                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("선수 학번"),
+                                fieldWithPath("[].studentNumber").type(JsonFieldType.STRING).description("관리 권한이 있는 매니저에게는 전체 학번, 그 밖(비로그인, 다른 학교 매니저)에는 앞 4자리만 남기고 나머지를 '*' 로 가린 값. 학번이 없거나 4자리 이하면 없다"),
+                                fieldWithPath("[].admissionYear").type(JsonFieldType.STRING).description("입학연도 두 자리(학번의 3, 4번째 자리). 학번이 없거나 형식이 맞지 않으면 없다"),
                                 fieldWithPath("[].jerseyNumber").type(JsonFieldType.NUMBER).description("선수 등번호").optional(),
                                 fieldWithPath("[].totalGoalCount").type(JsonFieldType.NUMBER).description("선수의 리그 내 총 득점 수")
                         )

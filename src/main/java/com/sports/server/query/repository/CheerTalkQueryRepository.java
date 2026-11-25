@@ -10,7 +10,7 @@ public interface CheerTalkQueryRepository extends Repository<CheerTalk, Long> {
     @Query("SELECT COUNT(ct) " +
            "FROM CheerTalk ct " +
            "JOIN GameTeam gt ON ct.gameTeamId = gt.id " +
-           "WHERE gt.game.league.id = :leagueId " +
+           "WHERE fk(gt.game.league) = :leagueId " +
            "AND ct.blockStatus = com.sports.server.command.cheertalk.domain.CheerTalkBlockStatus.ACTIVE")
     Long countActiveCheerTalksByLeagueId(@Param("leagueId") Long leagueId);
 }

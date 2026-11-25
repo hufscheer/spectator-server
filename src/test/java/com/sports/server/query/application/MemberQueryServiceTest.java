@@ -1,6 +1,6 @@
 package com.sports.server.query.application;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.sports.server.command.member.domain.Member;

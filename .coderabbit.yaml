@@ -1,0 +1,67 @@
+# CodeRabbit 설정 레퍼런스: https://docs.coderabbit.ai/reference/configuration
+# 사람 리뷰를 대신하지 않는다. 머지는 그대로 사람 리뷰 후 squash 머지.
+language: ko-KR
+tone_instructions: '한국어로 간결하게 리뷰해 주세요. 근거가 확실한 문제를 먼저 짚고, 취향 차이는 짧게 제안만 해 주세요.'
+early_access: false
+
+reviews:
+  # chill: 균형 / assertive: 지적이 더 많아짐 / quiet: 중요한 것만
+  profile: chill
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    # 기본 브랜치(develop)는 따로 적지 않아도 리뷰된다. 일상 작업 PR 은 develop 으로 올라간다.
+    # main 은 넣지 않는다: develop -> main 릴리스 PR 은 이미 리뷰된 변경의 묶음이다.
+    base_branches:
+      - '^develop$'
+    # 무료 플랜은 시간당 리뷰 한도를 web 레포와 나눠 쓰므로, 새 코드가 없는 PR 은 건너뛴다.
+    ignore_title_keywords:
+      - 'WIP'
+      - 'release:'
+      - 'sync: main'
+    ignore_usernames:
+      - 'dependabot[bot]'
+
+  path_filters:
+    - '!build/**'
+    # tbls 로 생성하는 DB 스키마 문서 (scripts/generate-schema-docs.sh)
+    - '!docs/schema/**'
+    # asciidoctor 로 생성한 REST Docs HTML 사본 (build.gradle 의 bootJar 가 같은 경로로 jar 에 복사)
+    - '!src/main/resources/static/docs/**'
+    - '!gradle/wrapper/gradle-wrapper.jar'
+
+  path_instructions:
+    - path: 'src/main/java/**/*.java'
+      instructions: |
+        - 매니저가 League, Game, Team, Player(ManagedEntity) 를 바꾸거나 매니저 전용으로 읽는 서비스 메서드는
+          `PermissionValidator.checkPermission(entity, manager)` 로 `isManagedBy` 를 확인해야 합니다. 빠졌으면 지적해 주세요.
+        - `@TransactionalEventListener` + `@Async` 핸들러는 원 트랜잭션이 끝난 뒤 다른 스레드에서 돕니다.
+          이벤트에 JPA 엔티티를 담으면 detached 라 변경이 저장되지 않고 지연 로딩이 실패합니다.
+          지금처럼 `ReportEvent(Long reportId)` 같이 ID 나 값만 담고 핸들러에서 다시 조회하는지 확인해 주세요.
+        - Team, League 는 `@SQLDelete` + `@Where(is_deleted = 0)` soft delete 입니다. 지워진 팀을 가리키는
+          game_teams, league_teams 같은 연관을 지연 로딩하면 EntityNotFoundException(500) 이 납니다.
+          이 연관을 새로 따라가는 코드는 null 처리나 함께 읽기(left join fetch)를 하는지 확인해 주세요.
+        - 비밀 값(API 키, 토큰, 비밀번호, 접속 주소)을 코드에 직접 쓰면 지적해 주세요. 공개 레포이고,
+          비밀은 be-config 서브모듈과 환경 변수(`${...}`)로만 받습니다.
+    - path: 'src/main/java/**/query/**/*.java'
+      instructions: |
+        조회 전용 계층(QueryDSL, Spring Data)입니다. 반복문 안의 지연 로딩이나 쿼리 호출로 생기는 N+1 을 지적해 주세요.
+        fetch join 이 필요한 곳에 빠졌는지, 컬렉션 fetch join 과 페이징을 함께 써서 메모리 페이징이 되지 않는지 확인해 주세요.
+    - path: 'src/main/resources/db/migration/**'
+      instructions: |
+        Flyway 마이그레이션입니다. 실제로 적용되는 위치는 `db/migration/prod` 이고 `archive` 는 옛 파일 보관용입니다.
+        - 이미 머지된 V 파일을 고치면 체크섬이 바뀌어 배포가 실패합니다. 기존 파일 수정은 반드시 지적해 주세요.
+        - 새 파일은 `prod` 의 마지막 버전 다음 번호여야 합니다. 열려 있는 다른 PR 과 번호가 겹칠 수 있다고 알려 주세요.
+        - 운영 데이터가 있는 테이블입니다(MySQL). 기본값 없는 NOT NULL 추가, 기존 데이터와 맞지 않는 제약,
+          큰 테이블 잠금, 되돌릴 수 없는 삭제나 이름 변경은 영향과 함께 짚어 주세요.
+    - path: 'src/main/java/**/presentation/**/*Controller.java'
+      instructions: |
+        엔드포인트를 추가하거나 요청, 응답 필드를 바꾸면 같은 패키지 경로의 `*ControllerTest`(`DocumentationTest` 상속)에
+        REST Docs 테스트가 있고, `src/docs/asciidoc/api.adoc` 에 `operation::` 항목이 있어야 합니다.
+        CI 의 `scripts/check-api-docs.sh` 는 스니펫이 api.adoc 에 빠진 것만 잡고, 테스트 자체가 없는 것은 못 잡습니다.
+        둘 중 하나라도 빠졌으면 지적해 주세요.

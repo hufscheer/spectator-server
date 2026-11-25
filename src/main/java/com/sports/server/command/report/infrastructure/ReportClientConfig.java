@@ -19,7 +19,7 @@ public class ReportClientConfig {
                 .baseUrl(reportCheckOrigin)
                 .build();
         return HttpServiceProxyFactory
-                .builder(WebClientAdapter.forClient(client))
+                .builderFor(WebClientAdapter.create(client))
                 .build()
                 .createClient(ReportCheckClient.class);
     }

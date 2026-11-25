@@ -15,6 +15,7 @@ import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
 import com.sports.server.common.exception.NotFoundException;
+import com.sports.server.common.exception.ForbiddenException;
 import com.sports.server.common.exception.UnauthorizedException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.jdbc.core.JdbcTemplate;
+import com.sports.server.command.league.domain.SportType;
 
 @Sql("/league-fixture.sql")
 public class LeagueServiceTest extends ServiceTest {
@@ -35,6 +39,90 @@ public class LeagueServiceTest extends ServiceTest {
 
     @Autowired
     private LeagueTeamRepository leagueTeamRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Nested
+    @DisplayName("다른 학교 팀을 넣으려 할 때")
+    @Sql({"/league-fixture.sql", "/league-other-org-team-fixture.sql"})
+    class OtherOrganizationTeamTest {
+
+        private Long leagueTeamCount() {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM league_teams", Long.class);
+        }
+
+        private LeagueRequest.Register registerRequest(List<Long> teamIds) {
+            return new LeagueRequest.Register("새 대회", 8,
+                    LocalDateTime.of(2100, 1, 1, 0, 0), LocalDateTime.of(2100, 1, 2, 0, 0),
+                    teamIds, SportType.SOCCER, null, false, null);
+        }
+
+        private long leagueCount() {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM leagues", Long.class);
+        }
+
+        // 팀 7은 학교 2 팀이다. 회원 2는 학교 1 매니저이고 학교 2 대회를 관리하지 않는다
+        @Test
+        void 대회_생성에_다른_학교_팀이_섞이면_403이고_대회와_참가팀이_만들어지지_않는다() {
+            Member manager = entityUtils.getEntity(2L, Member.class);
+            long leagueCountBefore = leagueCount();
+            long before = leagueTeamCount();
+
+            assertThatThrownBy(() -> leagueService.register(manager, registerRequest(List.of(4L, 7L))))
+                    .isInstanceOf(ForbiddenException.class)
+                    .hasMessage(AuthorizationErrorMessages.PERMISSION_DENIED);
+            assertThat(leagueTeamCount()).isEqualTo(before);
+            assertThat(leagueCount()).isEqualTo(leagueCountBefore);
+        }
+
+        @Test
+        void 다른_학교_매니저가_그_학교_팀으로_새_대회를_만들어도_만들어지는_대회가_스스로_권한을_주지_않는다() {
+            Member manager = entityUtils.getEntity(2L, Member.class);
+            long leagueCountBefore = leagueCount();
+            long before = leagueTeamCount();
+
+            // 대회를 저장하기 전에 판정하므로, 새 대회의 관리자라는 사실이 팀 판정에 끼어들지 않는다
+            assertThatThrownBy(() -> leagueService.register(manager, registerRequest(List.of(7L))))
+                    .isInstanceOf(ForbiddenException.class);
+            assertThat(leagueCount()).isEqualTo(leagueCountBefore);
+            assertThat(leagueTeamCount()).isEqualTo(before);
+        }
+
+        @Test
+        void 참가팀_추가에_다른_학교_팀이_섞이면_403이고_거부된_뒤에도_그_팀_판정은_거부다() {
+            Member manager = entityUtils.getEntity(2L, Member.class);
+            long before = leagueTeamCount();
+
+            assertThatThrownBy(() -> leagueService.addTeams(manager, 100L, new LeagueRequest.Teams(List.of(4L, 7L))))
+                    .isInstanceOf(ForbiddenException.class)
+                    .hasMessage(AuthorizationErrorMessages.PERMISSION_DENIED);
+            assertThat(leagueTeamCount()).isEqualTo(before);
+
+            // 한 번 거부된 팀은 다시 시도해도 거부다. 앞선 시도가 권한을 만들지 않는다
+            assertThatThrownBy(() -> leagueService.addTeams(manager, 100L, new LeagueRequest.Teams(List.of(7L))))
+                    .isInstanceOf(ForbiddenException.class);
+            assertThat(leagueTeamCount()).isEqualTo(before);
+        }
+
+        @Test
+        void 슈퍼유저는_다른_학교_팀으로도_대회를_만들고_참가팀을_추가할_수_있다() {
+            Member superUser = entityUtils.getEntity(1L, Member.class);
+
+            assertDoesNotThrow(() -> leagueService.register(superUser, registerRequest(List.of(4L, 7L))));
+            assertDoesNotThrow(() -> leagueService.addTeams(superUser, 1L, new LeagueRequest.Teams(List.of(7L))));
+
+            assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM league_teams WHERE team_id = 7",
+                    Long.class)).isEqualTo(2L);
+        }
+
+        @Test
+        void 같은_학교_팀만_넣으면_일반_매니저도_통과한다() {
+            Member manager = entityUtils.getEntity(2L, Member.class);
+
+            assertDoesNotThrow(() -> leagueService.addTeams(manager, 100L, new LeagueRequest.Teams(List.of(4L))));
+        }
+    }
 
     @Nested
     @DisplayName("리그 정보를 수정할 때")

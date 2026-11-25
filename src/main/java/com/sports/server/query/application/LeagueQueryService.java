@@ -32,6 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.sports.server.query.support.PlayerInfoProvider;
+import com.sports.server.query.support.StudentNumberDisclosure;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -154,7 +155,7 @@ public class LeagueQueryService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 리그입니다"));
     }
 
-    public List<PlayerResponse> findPlayersByLeagueTeam(Long leagueTeamId) {
+    public List<PlayerResponse> findPlayersByLeagueTeam(Long leagueTeamId, StudentNumberDisclosure disclosure) {
         LeagueTeam leagueTeam = entityUtils.getEntity(leagueTeamId, LeagueTeam.class);
         Team team = leagueTeam.getTeam();
 
@@ -168,7 +169,7 @@ public class LeagueQueryService {
         Map<Long, Integer> goalCountMap = playerInfoProvider.getPlayersTotalGoalInfo(playerIds);
         return teamPlayers.stream().map(teamPlayer -> {
             int totalGoals = goalCountMap.getOrDefault(teamPlayer.getPlayer().getId(), 0);
-            return PlayerResponse.of(teamPlayer, totalGoals);
+            return PlayerResponse.of(teamPlayer, totalGoals, disclosure.canReveal(teamPlayer.getPlayer()));
         }).toList();
     }
 

@@ -4,6 +4,7 @@ import com.sports.server.command.cheertalk.dto.CheerTalkRequest;
 import com.sports.server.command.member.domain.Member;
 import com.sports.server.common.application.EntityUtils;
 import com.sports.server.common.exception.CustomException;
+import com.sports.server.common.exception.NotFoundException;
 import com.sports.server.support.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -20,6 +21,7 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -89,5 +91,26 @@ public class CheerTalkServiceTest extends ServiceTest {
         String saved = jdbcTemplate.queryForObject(
                 "SELECT author_key FROM cheer_talks WHERE content = ?", String.class, "작성자 키 확인");
         assertThat(saved).isEqualTo(expected).hasSize(16);
+    }
+
+    @Test
+    void 다른_대회의_응원톡을_차단하려_하면_404이고_상태가_바뀌지_않는다() {
+        // 응원톡 24 는 대회 2 소속, 경로 대회는 1
+        assertThatThrownBy(() -> cheerTalkService.block(leagueId, 24L, manager))
+                .isInstanceOf(NotFoundException.class);
+        assertThat(blockStatus(24L)).isEqualTo("ACTIVE");
+    }
+
+    @Test
+    void 다른_대회의_응원톡을_차단해제하려_하면_404이고_상태가_바뀌지_않는다() {
+        // 응원톡 26 은 대회 2 소속이고 차단된 상태
+        assertThatThrownBy(() -> cheerTalkService.unblock(leagueId, 26L, manager))
+                .isInstanceOf(NotFoundException.class);
+        assertThat(blockStatus(26L)).isEqualTo("BLOCKED_BY_ADMIN");
+    }
+
+    private String blockStatus(final Long cheerTalkId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT block_status FROM cheer_talks WHERE id = ?", String.class, cheerTalkId);
     }
 }

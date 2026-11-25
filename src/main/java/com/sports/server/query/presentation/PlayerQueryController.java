@@ -5,9 +5,13 @@ import com.sports.server.common.dto.CursorPageResponse;
 import com.sports.server.common.dto.PageRequestDto;
 import com.sports.server.query.application.PlayerQueryService;
 import com.sports.server.query.dto.response.PlayerResponse;
+import com.sports.server.query.support.StudentNumberDisclosure;
+import com.sports.server.query.support.StudentNumberDisclosurePolicy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class PlayerQueryController {
 
     private final PlayerQueryService playerQueryService;
+    private final StudentNumberDisclosurePolicy disclosurePolicy;
 
     @GetMapping
     public ResponseEntity<CursorPageResponse<PlayerResponse>> getAllPlayers(
@@ -26,7 +31,9 @@ public class PlayerQueryController {
     }
 
     @GetMapping("/{playerId}")
-    public ResponseEntity<PlayerResponse> getPlayerById(@PathVariable Long playerId){
-        return ResponseEntity.ok(playerQueryService.getPlayerDetail(playerId));
+    public ResponseEntity<PlayerResponse> getPlayerById(@PathVariable Long playerId, Optional<Member> member){
+        StudentNumberDisclosure disclosure = disclosurePolicy.forViewer(member);
+        PlayerResponse response = playerQueryService.getPlayerDetail(playerId, disclosure);
+        return StudentNumberDisclosure.respond(response, disclosure);
     }
 }

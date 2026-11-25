@@ -21,10 +21,10 @@ VALUES (1, 1, 'john@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iER
         '2024-06-15 10:00:00'),
        (5, 5, 'union@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true, NOW());
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
-VALUES (2, 1, 'jane@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
+VALUES (2, 1, 'jane@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-15 09:30:00');
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
-VALUES (3, 2, 'smith@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,
+VALUES (3, 2, 'smith@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', true,
         '2024-06-14 17:45:00');
 INSERT INTO members (id, organization_id, email, password, is_administrator, last_login)
 VALUES (4, 4, 'user4@example.com', '$2a$10$yviVCR3GmaU6cPJT.8vaMOwph9WzbX6wtn9iERu3148ZP8XlKbakO', false,

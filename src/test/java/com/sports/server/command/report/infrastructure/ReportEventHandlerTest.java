@@ -19,7 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -32,7 +32,7 @@ class ReportEventHandlerTest extends ServiceTest {
     @Autowired
     private ReportEventHandler reportEventHandler;
 
-    @MockBean
+    @MockitoBean
     protected ReportProcessor reportProcessor;
 
     @Autowired

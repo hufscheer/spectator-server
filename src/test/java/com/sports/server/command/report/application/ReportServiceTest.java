@@ -147,5 +147,18 @@ class ReportServiceTest extends ServiceTest {
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage("해당 응원톡에 대한 신고가 존재하지 않습니다.");
         }
+
+        @Test
+        @Sql(scripts = {"/report-fixture.sql", "/report-other-league-fixture.sql"})
+        void 다른_대회의_응원톡_신고를_무효처리하려_하면_404이고_신고_상태가_바뀌지_않는다() {
+            // given: 응원톡 5 는 대회 2 소속, 경로 대회는 1
+            manager = entityUtils.getEntity(1L, Member.class);
+
+            // when & then
+            assertThatThrownBy(() -> reportService.cancel(leagueId, 5L, manager))
+                    .isInstanceOf(NotFoundException.class);
+            assertThat(reportRepository.findByCheerTalkId(5L).orElseThrow().getState())
+                    .isEqualTo(ReportState.VALID);
+        }
     }
 }

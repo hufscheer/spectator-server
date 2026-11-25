@@ -4,7 +4,7 @@
 # 사용법: ./scripts/generate-schema-docs.sh
 # 필요:   Docker 실행 중일 것 (tbls는 로컬 설치본이 핀 버전과 같을 때만 쓰고, 아니면 Docker 이미지로 실행)
 #
-# 동작: 임시 MySQL 8.0 컨테이너에 db/migration/prod 마이그레이션을 순서대로 적용한 뒤
+# 동작: 임시 MySQL 8.4 컨테이너에 db/migration/prod 마이그레이션을 순서대로 적용한 뒤
 #       tbls로 docs/schema 문서를 재생성한다. 스키마 변경 PR에는 이 산출물을 함께 커밋할 것.
 #       --rm-dist로 docs/schema를 비우고 다시 만들므로, 이 디렉토리에 손으로 쓴 파일을 두지 말 것.
 set -euo pipefail
@@ -22,7 +22,7 @@ docker info >/dev/null 2>&1 || { echo "Docker를 먼저 실행해 주세요."; e
 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 docker run -d --name "$CONTAINER" \
   -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=hufscheer \
-  -p "$PORT":3306 mysql:8.0 >/dev/null
+  -p "$PORT":3306 mysql:8.4 >/dev/null
 trap 'docker rm -f "$CONTAINER" >/dev/null 2>&1' EXIT
 
 echo "MySQL 기동 대기 중..."
