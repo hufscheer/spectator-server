@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: 자바 17 설정
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'adopt'
