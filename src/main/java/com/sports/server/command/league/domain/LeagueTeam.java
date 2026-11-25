@@ -43,6 +43,11 @@ public class LeagueTeam extends BaseEntity<LeagueTeam> {
         return leagueTeam;
     }
 
+    public void updateTotals(int totalCheerCount, int totalTalkCount) {
+        this.totalCheerCount = totalCheerCount;
+        this.totalTalkCount = totalTalkCount;
+    }
+
     public void updateRanking(Integer ranking) {
         this.ranking = ranking;
     }

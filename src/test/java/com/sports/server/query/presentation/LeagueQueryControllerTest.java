@@ -247,6 +247,11 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                 .secondWinnerTeam(secondWinnerTeam)
                 .mostCheeredTeam(mostCheeredTeam)
                 .mostCheerTalksTeam(mostCheerTalksTeam)
+                .cheerRanking(List.of(
+                        new LeagueTeamRankingResponse(1, 1L, 1L, "경영 야생마", "s3:logoImageUrl1", 100, null),
+                        new LeagueTeamRankingResponse(2, 2L, 2L, "서어 뻬데뻬", "s3:logoImageUrl2", 80, null)))
+                .cheerTalksRanking(List.of(
+                        new LeagueTeamRankingResponse(1, 2L, 2L, "서어 뻬데뻬", "s3:logoImageUrl2", null, 120)))
                 .build();
         
         given(leagueQueryService.findLeagueStatistic(leagueId))
@@ -288,7 +293,21 @@ public class LeagueQueryControllerTest extends DocumentationTest {
                                 fieldWithPath("mostCheerTalksTeam.teamName").type(JsonFieldType.STRING).description("최다 응원톡 팀 이름"),
                                 fieldWithPath("mostCheerTalksTeam.logoImageUrl").type(JsonFieldType.STRING).description("최다 응원톡 팀 로고 이미지 URL"),
                                 fieldWithPath("mostCheerTalksTeam.sizeOfTeamPlayers").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 선수 수"),
-                                fieldWithPath("mostCheerTalksTeam.cheerTalksCount").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 응원톡 수")
+                                fieldWithPath("mostCheerTalksTeam.cheerTalksCount").type(JsonFieldType.NUMBER).description("최다 응원톡 팀 응원톡 수"),
+                                fieldWithPath("cheerRanking").type(JsonFieldType.ARRAY).description("응원왕 순위. 종료된 경기의 응원 수 합계 기준 3위까지(공동 순위면 모두), 응원 수가 0인 팀 제외"),
+                                fieldWithPath("cheerRanking[].ranking").type(JsonFieldType.NUMBER).description("순위 (공동 순위는 1,1,3 방식)"),
+                                fieldWithPath("cheerRanking[].teamId").type(JsonFieldType.NUMBER).description("팀 ID"),
+                                fieldWithPath("cheerRanking[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그팀 ID"),
+                                fieldWithPath("cheerRanking[].teamName").type(JsonFieldType.STRING).description("팀 이름"),
+                                fieldWithPath("cheerRanking[].logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 URL"),
+                                fieldWithPath("cheerRanking[].cheerCount").type(JsonFieldType.NUMBER).description("응원 수 합계"),
+                                fieldWithPath("cheerTalksRanking").type(JsonFieldType.ARRAY).description("댓글왕 순위. 종료된 경기의 활성 응원톡 수 기준 3위까지(공동 순위면 모두), 0건인 팀 제외"),
+                                fieldWithPath("cheerTalksRanking[].ranking").type(JsonFieldType.NUMBER).description("순위 (공동 순위는 1,1,3 방식)"),
+                                fieldWithPath("cheerTalksRanking[].teamId").type(JsonFieldType.NUMBER).description("팀 ID"),
+                                fieldWithPath("cheerTalksRanking[].leagueTeamId").type(JsonFieldType.NUMBER).description("리그팀 ID"),
+                                fieldWithPath("cheerTalksRanking[].teamName").type(JsonFieldType.STRING).description("팀 이름"),
+                                fieldWithPath("cheerTalksRanking[].logoImageUrl").type(JsonFieldType.STRING).description("팀 로고 이미지 URL"),
+                                fieldWithPath("cheerTalksRanking[].cheerTalksCount").type(JsonFieldType.NUMBER).description("응원톡 수")
                         )
                 ));
     }

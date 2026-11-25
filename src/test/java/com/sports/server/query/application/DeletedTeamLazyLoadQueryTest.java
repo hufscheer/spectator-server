@@ -120,6 +120,19 @@ class DeletedTeamLazyLoadQueryTest extends ServiceTest {
             assertThatCode(() -> leagueQueryService.findLeagueStatistic(1L))
                     .doesNotThrowAnyException();
         }
+
+        // league-fixture 리그 1 합계: 팀1 150/1, 팀2 100/3, 팀3 75/0. 팀 1, 2 는 지워졌다
+        @Test
+        void 지워진_팀은_응원_순위에서_빠지고_남은_팀이_1위가_된다() {
+            var response = leagueQueryService.findLeagueStatistic(1L);
+
+            assertThat(response.cheerRanking())
+                    .extracting(r -> r.ranking() + ":" + r.teamId() + ":" + r.cheerCount())
+                    .containsExactly("1:3:75");
+            assertThat(response.mostCheeredTeam().teamId()).isEqualTo(3L);
+            assertThat(response.cheerTalksRanking()).isEmpty();
+            assertThat(response.mostCheerTalksTeam()).isNull();
+        }
     }
 
     /**

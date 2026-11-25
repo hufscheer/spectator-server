@@ -11,10 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.ToIntFunction;
 
 import static com.sports.server.command.game.domain.Game.MINIMUM_TEAMS;
 
@@ -24,6 +22,7 @@ import static com.sports.server.command.game.domain.Game.MINIMUM_TEAMS;
 public class LeagueStatisticsService {
     private final LeagueStatisticsRepository leagueStatisticsRepository;
     private final LeagueTeamRepository leagueTeamRepository;
+    private final LeagueRepository leagueRepository;
     private final EntityUtils entityUtils;
     private final GameTeamQueryRepository gameTeamQueryRepository;
 
@@ -31,11 +30,16 @@ public class LeagueStatisticsService {
     public void updateLeagueStatisticFromFinalGame(Long finalGameId) {
         Game finalGame = entityUtils.getEntity(finalGameId, Game.class);
 
+        // 응원 순위 재집계와 통계 행 생성이 겹치지 않게 대회를 잠근다.
+        // 지워진 대회면 건너뛴다(던지면 자정 배치의 나머지 경기까지 멈춘다)
+        if (leagueRepository.findByIdForUpdate(finalGame.getLeague().getId()).isEmpty()) {
+            return;
+        }
+
         League league = finalGame.getLeague();
         LeagueStatistics leagueStatistics = getLeagueStatistics(league);
 
         updateWinnerTeamsFromGame(finalGame, leagueStatistics);
-        updateMostCheeredAndTalkedTeams(league, leagueStatistics);
     }
 
     private LeagueStatistics getLeagueStatistics(League league) {
@@ -74,25 +78,6 @@ public class LeagueStatisticsService {
                 });
     }
 
-    private void updateMostCheeredAndTalkedTeams(League league, LeagueStatistics leagueStatistic) {
-        List<LeagueTeam> leagueTeams = leagueTeamRepository.findByLeagueId(league.getId());
-        if (leagueTeams.isEmpty()) {
-            return;
-        }
-
-        findTeamWithMaxValue(leagueTeams, LeagueTeam::getTotalCheerCount, leagueStatistic::updateMostCheeredTeam);
-        findTeamWithMaxValue(leagueTeams, LeagueTeam::getTotalTalkCount, leagueStatistic::updateMostCheerTalksTeam);
-    }
-
-    private void findTeamWithMaxValue(List<LeagueTeam> leagueTeams,
-                                      ToIntFunction<LeagueTeam> valueExtractor,
-                                      Consumer<Team> teamUpdater) {
-        leagueTeams.stream()
-                .max(Comparator.comparingInt(valueExtractor))
-                .map(LeagueTeam::getTeam)
-                .ifPresent(teamUpdater);
-    }
-
     private void updateLeagueTeamRanking(League league, Team team, int ranking) {
         leagueTeamRepository.findByLeagueAndTeam(league, team)
                 .ifPresent(leagueTeam -> leagueTeam.updateRanking(ranking));
@@ -108,7 +93,7 @@ public class LeagueStatisticsService {
         }
         Team firstWinner = leagueStatistics.getFirstWinnerTeam();
         Team secondWinner = leagueStatistics.getSecondWinnerTeam();
-        leagueStatistics.clearFinalSnapshot();
+        leagueStatistics.clearWinners();
         resetLeagueTeamRanking(league, firstWinner);
         resetLeagueTeamRanking(league, secondWinner);
     }

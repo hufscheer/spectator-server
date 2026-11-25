@@ -56,12 +56,12 @@ VALUES
     (10, 1, 1, '삭제된 축구대회', '2001-08-01 10:00:00', '2100-08-15 22:00:00', true, '16강', '16강', 'SOCCER');
 
 
-INSERT INTO league_teams (id, league_id, team_id)
-VALUES (1, 1, 1),
-       (2, 1, 2),
-       (3, 1, 3),
-       (4, 2, 4),
-       (5, 2, 5);
+INSERT INTO league_teams (id, league_id, team_id, total_cheer_count, total_talk_count)
+VALUES (1, 1, 1, 150, 1),
+       (2, 1, 2, 100, 3),
+       (3, 1, 3, 75, 0),
+       (4, 2, 4, 0, 0),
+       (5, 2, 5, 0, 0);
 
 
 INSERT INTO games (id, administrator_id, league_id, start_time, name, round, state)
