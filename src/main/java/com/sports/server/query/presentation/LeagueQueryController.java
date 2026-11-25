@@ -60,6 +60,11 @@ public class LeagueQueryController {
         return ResponseEntity.ok(leagueQueryService.findTop20ScorersByLeagueId(leagueId));
     }
 
+    @GetMapping("/{leagueId}/top-assists")
+    public ResponseEntity<List<TopAssistResponse>> findTopAssistsByLeague(@PathVariable Long leagueId) {
+        return ResponseEntity.ok(leagueQueryService.findTop20AssistsByLeagueId(leagueId));
+    }
+
     @GetMapping("/teams/{leagueTeamId}/players")
     public ResponseEntity<List<PlayerResponse>> findPlayersByLeagueTeam(@PathVariable Long leagueTeamId,
                                                                         Optional<Member> member) {
