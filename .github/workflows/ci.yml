@@ -31,11 +31,11 @@ jobs:
       - name: 저장소 Checkout
         uses: actions/checkout@v7
 
-      - name: 자바 25 설정
+      - name: 자바 17 설정
         uses: actions/setup-java@v3
         with:
-          java-version: '25'
-          distribution: 'temurin'
+          java-version: '17'
+          distribution: 'adopt'
           cache: 'gradle'
 
       - name: MySQL 서비스 상태 확인

@@ -21,11 +21,11 @@ jobs:
           submodules: true
           token: ${{ secrets.ACTION_TOKEN }}
 
-      - name: 자바 25 설정
+      - name: 자바 17 설정
         uses: actions/setup-java@v3
         with:
-          java-version: '25'
-          distribution: 'temurin'
+          java-version: '17'
+          distribution: 'adopt'
           cache: 'gradle'
 
       # 전체 테스트는 PR CI 를 통과해야 develop·main 에 머지된다(브랜치 보호). 여기서 또 돌리면 배포가 6분 넘게 늦어진다.
