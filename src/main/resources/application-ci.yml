@@ -20,6 +20,8 @@ cors-allow-origins: http://localhost:3000
 jwt:
   secret-key: secret
   valid-time: 604800000 # 1000 * 60 * 60 * 24 * 7 (일주일, ms)
+  renew-before: 12h # 남은 수명이 이보다 짧으면 요청 응답에 새 토큰 쿠키를 내려 준다 (없으면 12h)
+  max-session-age: 7d # 처음 로그인부터 이 시간이 지나면 연장하지 않는다 (없으면 7d)
 
 cookie:
   valid-time: 604800 # 60 * 60 * 24 * 7 (일주일)
