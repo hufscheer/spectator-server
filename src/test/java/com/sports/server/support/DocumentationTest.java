@@ -1,6 +1,7 @@
 package com.sports.server.support;
 
 import tools.jackson.databind.ObjectMapper;
+import com.sports.server.auth.application.AccessTokenRenewer;
 import com.sports.server.auth.application.AuthService;
 import com.sports.server.auth.presentation.AuthController;
 import com.sports.server.auth.resolver.AuthMemberResolver;
@@ -159,6 +160,9 @@ public class DocumentationTest {
 
     @MockitoBean
     protected JwtUtil jwtUtil;
+
+    @MockitoBean
+    protected AccessTokenRenewer accessTokenRenewer;
 
     @MockitoBean
     protected AuthenticationEntryPoint authenticationEntryPoint;
