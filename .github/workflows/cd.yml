@@ -131,6 +131,47 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY_DEV }}
           script: |
+            set -e
             docker pull ${{ steps.env.outputs.IMG }}
             DOCKER_IMG=${{ steps.env.outputs.IMG }} docker compose -f docker-compose.dev.yml up -d --force-recreate
             docker image prune -f
+
+            # 컨테이너가 떠도 앱이 죽으면 배포가 성공으로 끝났다(11/11 #792 dev 크래시 루프 때 CD success).
+            # prod deploy.sh 처럼 Docker 헬스가 healthy 가 될 때까지 기다리고, 아니면 job 을 실패시킨다.
+            # 헬스체크 주기가 30초라 첫 판정이 30초 뒤에 나오므로 최대 180초 기다린다.
+            # 공개 레포라 실패해도 앱 로그는 찍지 않는다(서버에서 docker logs 로 본다).
+            C=hufscheer-server-dev
+            for i in $(seq 1 90); do
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' "$C" 2>/dev/null) || STATUS=missing
+              RESTARTS=$(docker inspect --format='{{.RestartCount}}' "$C" 2>/dev/null) || RESTARTS=0
+              if [ "$STATUS" = healthy ]; then
+                echo "[deploy] $C healthy after $((i*2))s"
+                exit 0
+              fi
+              if [ "$STATUS" = unhealthy ] || [ "$RESTARTS" -gt 0 ]; then
+                echo "[deploy] FAILED: $C status=$STATUS restarts=$RESTARTS"
+                exit 1
+              fi
+              sleep 2
+            done
+            echo "[deploy] FAILED: $C not healthy after 180s (status=$STATUS)"
+            exit 1
+
+      # 배포가 실패해도 아무도 몰라 7/17~8/13 두 달간 운영에 수정이 안 나갔다. 어느 단계든 실패하면 Slack 에 알린다.
+      - name: 실패 알림 (Slack)
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.CD_SLACK_WEBHOOK_URL }}
+          TARGET: ${{ steps.env.outputs.TARGET || github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "CD_SLACK_WEBHOOK_URL 이 없어 알림을 건너뛴다"
+            exit 0
+          fi
+          TITLE=$(printf '%s' "$COMMIT_MSG" | head -n1)
+          TEXT=$(printf '[CD 실패] spectator-server %s 배포 (%s, %s)\n%s\n%s' \
+            "$TARGET" "$GITHUB_REF_NAME" "${GITHUB_SHA:0:7}" "${TITLE:-$GITHUB_EVENT_NAME}" "$RUN_URL")
+          jq -n --arg text "$TEXT" '{text: $text}' \
+            | curl -fsS -X POST -H 'Content-Type: application/json' --data @- "$SLACK_WEBHOOK_URL"
